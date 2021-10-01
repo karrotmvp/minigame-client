@@ -2,7 +2,6 @@ import { INCREASE } from "../actions/actionTypes";
 
 const initialState = {
   number: 0,
-  diff: 1,
 }
 
 export default function increment(state = initialState, action: { type: any; }) {

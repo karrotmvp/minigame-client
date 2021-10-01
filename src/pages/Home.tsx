@@ -33,7 +33,6 @@ const Home = () => {
         <span css={textEmphasize}>로제엽떡살인마</span>님은 <br />
         우리동네에서 <span css={textEmphasize}>384793위</span> 에요!
       </h1>
-      {/* <Button onClick={handleGameStart} text={`시작하기`} /> */}
       <IndividualLeaderboard />
       <button css={fullWidthButton} onClick={handleGameStart}>
         시작하기
