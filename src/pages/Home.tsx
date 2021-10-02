@@ -8,8 +8,6 @@ import IndividualLeaderboard from '../components/IndividualLeaderboard';
 
 const headingStyle = css`
   margin: 0 32px;
-
-  font-family: Noto Sans;
   font-style: normal;
   font-weight: bold;
   font-size: 22px;

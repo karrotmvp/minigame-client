@@ -8,7 +8,6 @@ const row = ({ topRanking }: any) => css`
   margin: 4px;
   width: 100%;
   border-radius: 10px;
-  font-family: Pretendard;
   font-style: normal;
   font-weight: normal;
   font-size: 14px

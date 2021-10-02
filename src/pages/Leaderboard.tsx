@@ -11,7 +11,6 @@ import { AppEjectionButton } from 'components/AppEjectionButton';
 const headingStyle = css`
   width: 308px;
   height: 78px;
-  font-family: Noto Sans;
   font-style: normal;
   font-weight: bold;
   font-size: 24px;
