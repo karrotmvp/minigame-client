@@ -8,10 +8,7 @@ import Leaderboard from './pages/Leaderboard';
 import { Navigator, Screen } from '@karrotframe/navigator';
 
 const appStyle = css`
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  height: 98vh;
+  height: 100vh;
 `;
 
 // import Mini from '@karrotmarket/mini';
