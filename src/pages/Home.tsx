@@ -27,7 +27,7 @@ const Home = () => {
   };
   return (
     <div>
-      <ScreenHelmet title="홈" appendRight={<button>X</button>} />
+      <ScreenHelmet title="홈" closeButtonLocation="right" />
 
       <h1 css={headingStyle}>
         <span css={textEmphasize}>로제엽떡살인마</span>님은 <br />

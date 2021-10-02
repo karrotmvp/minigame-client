@@ -5,6 +5,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../reducers/rootReducer';
 import IndividualLeaderboard from '../components/IndividualLeaderboard';
+import { AppEjectionButton } from 'components/AppEjectionButton';
 // import Button from '../components/Button';
 
 const headingStyle = css`
@@ -28,7 +29,7 @@ const Leaderboard = () => {
 
   return (
     <div>
-      <ScreenHelmet title="리더보드" appendRight={<button>X</button>} />
+      <ScreenHelmet title="리더보드" appendRight={<AppEjectionButton />} />
       <div>img</div>
       <h2 css={headingStyle}>{number}개의 당근을 수확했어요!</h2>
       <div>
