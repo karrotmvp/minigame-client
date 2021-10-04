@@ -51,16 +51,21 @@ const scoreStyle = css`
   justify-content: flex-end;
   flex: 1;
 `;
-
-const UserRow = ({ topRanking }: any) => {
+interface UserRowProps {
+  rank: number | string;
+  nickname: string;
+  profileImage: any;
+  score: number;
+}
+const UserRow = ({ rank, nickname, profileImage, score }: UserRowProps) => {
   return (
-    <div css={row({ topRanking })}>
-      <div css={ranking}>1</div>
+    <div css={row({ rank })}>
       <div css={userInfo}>
-        <div css={circleProfile}></div>
-        <div>매우매우긴닉네임</div>
+        <div css={rankStyle}>{rank}</div>
+        <div css={circleProfile}>{profileImage}</div>
+        <div>{nickname}</div>
       </div>
-      <div css={score}>1230429342034909</div>
+      <div css={scoreStyle}>{score}</div>
     </div>
   );
 };

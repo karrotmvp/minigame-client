@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { ScreenHelmet, useNavigator } from '@karrotframe/navigator';
-import React from 'react';
+import { sampleUserData } from 'sampleUserData';
 import { largeTextStyle, mediumTextStyle } from 'styles/textStyle';
 import Button from '../components/Button';
 import IndividualLeaderboard from '../components/IndividualLeaderboard';

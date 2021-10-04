@@ -11,6 +11,10 @@ const leaderboardWrapperStyle = css`
   align-items: center;
   margin-top: 10px;
 `;
+interface IndividualLeaderboardProps {
+  userData: any[];
+}
+const IndividualLeaderboard = ({ userData }: IndividualLeaderboardProps) => {
   return (
     <div css={divStyle}>
       <u
@@ -22,11 +26,16 @@ const leaderboardWrapperStyle = css`
       </u>
 
       <div css={leaderboardWrapperStyle}>
-        <UserRow topRanking={`firstPlace`} />
-        <UserRow topRanking={`secondPlace`} />
-        <UserRow topRanking={`thirdPlace`} />
-        <UserRow topRanking={topRanking} />
-        <UserRow topRanking={topRanking} />
+        {userData.map((user) => {
+          return (
+            <UserRow
+              rank={user.rank}
+              nickname={user.nickname}
+              profileImage={user.profileImage}
+              score={user.score}
+            />
+          );
+        })}
       </div>
     </div>
   );
