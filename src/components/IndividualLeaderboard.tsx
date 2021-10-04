@@ -4,6 +4,8 @@ import { UserRow } from './UserRow';
 
 const divStyle = css`
   padding-top: 20px;
+  max-height: inherit;
+  box-sizing: border-box;
 `;
 const leaderboardWrapperStyle = css`
   display: flex;
@@ -29,6 +31,7 @@ const IndividualLeaderboard = ({ userData }: IndividualLeaderboardProps) => {
         {userData.map((user) => {
           return (
             <UserRow
+              key={user.id}
               rank={user.rank}
               nickname={user.nickname}
               profileImage={user.profileImage}
