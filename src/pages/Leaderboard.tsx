@@ -1,9 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { ScreenHelmet, useNavigator } from '@karrotframe/navigator';
-import React from 'react';
-import { useSelector } from 'react-redux';
-import { RootState } from '../reducers/rootReducer';
 import IndividualLeaderboard from '../components/IndividualLeaderboard';
 import { AppEjectionButton } from 'components/AppEjectionButton';
 import { largeTextStyle, emphasizedTextStyle } from 'styles/textStyle';
@@ -14,9 +11,6 @@ const divStyle = css`
   padding: 20px 26px 0px;
 `;
 const Leaderboard = () => {
-  const { number } = useSelector((state: RootState) => ({
-    number: state.increment.number,
-  }));
   const { push } = useNavigator();
   const handlePlayAgain = () => {
     push('/game');
