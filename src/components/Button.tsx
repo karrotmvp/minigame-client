@@ -82,7 +82,7 @@ interface ButtonProps {
   text: string;
   onClick: () => void;
 }
-const Button = ({ position, size, text, onClick }: ButtonProps) => {
+const Button = ({ size, position, text, onClick }: ButtonProps) => {
   return (
     <button css={buttonStyle({ size, position })} onClick={onClick}>
       {text}

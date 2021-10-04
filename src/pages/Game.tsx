@@ -1,5 +1,6 @@
 import { ScreenHelmet, useNavigator } from '@karrotframe/navigator';
 import { AppEjectionButton } from 'components/AppEjectionButton';
+import Button from 'components/Button';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { increase } from '../actions/incrementActions';
@@ -25,10 +26,15 @@ const Game = () => {
   return (
     <div>
       <ScreenHelmet title="당근키우기" appendRight={<AppEjectionButton />} />
-
-      <ClickerGame number={number} onIncrease={onIncrease} />
-
-      <button onClick={handleGameEnd}>게임끝</button>
+      <div style={{ display: `flex`, justifyContent: `center` }}>
+        <ClickerGame number={number} onIncrease={onIncrease} />
+        <Button
+          size={`large`}
+          position={`bottom`}
+          text={`게임끝`}
+          onClick={handleGameEnd}
+        />
+      </div>
     </div>
   );
 };
