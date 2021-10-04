@@ -25,8 +25,8 @@ const buttonStyle = ({ size, position }: any) => css`
   border: none;
   border-radius: 10px;
   padding: 10px 10px;
-  position: relative
-  z-index: 100;
+  // position: relative
+  // z-index: 100;
   //
   // button text style
   //
@@ -35,45 +35,41 @@ const buttonStyle = ({ size, position }: any) => css`
   line-height: 161.7%;
   /* identical to box height, or 26px */
   color: #ffffff;
-  ${
-    size === `fullWidth`
-      ? `
+  ${size === `fullWidth`
+    ? `
         padding-top: 20px;
         padding-bottom: 30px;
         width: 100%;
         border-radius: 0;
         font-size: 20px;
       `
-      : size === `large`
-      ? `
+    : size === `large`
+    ? `
      
         width: 80%;
         margin: 20px;
         border-radius: 10px;
         font-size: 16px;
       `
-      : size === `medium`
-      ? `
+    : size === `medium`
+    ? `
         width: 150px;
         padding: 10px 20px;
 
         `
-      : size === `small`
-      ? `
+    : size === `small`
+    ? `
         width: 100px;
         padding: 10px 20px;
 
         `
-      : null
-  }
-  ${
-    position === `bottom`
-      ? ` 
+    : null}
+  ${position === `bottom`
+    ? ` 
         position: absolute;
         bottom: 0;
         `
-      : null
-  }
+    : null}
 `;
 
 interface ButtonProps {
