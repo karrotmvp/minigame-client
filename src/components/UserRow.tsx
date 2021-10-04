@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 
-const row = ({ topRanking }: any) => css`
+const row = ({ rank }: any) => css`
   display: flex;
   flex-flow: row;
   padding: 12px 14px;
@@ -15,19 +15,21 @@ const row = ({ topRanking }: any) => css`
   align-items: center;
   
   ${
-    topRanking === `firstPlace`
-      ? `background-color: #EB5D0E`
-      : topRanking === `secondPlace`
-      ? `background-color: #FFB78F`
-      : topRanking === `thrirdPlace`
-      ? `background-color: #FFE2D1`
+    rank === 1
+      ? `background-color: #DCDCDC`
+      : rank === 2
+      ? `background-color: #EDEDED`
+      : rank === 3
+      ? `background-color: #F5F5F5`
+      : rank === `me`
+      ? `border: 2px solid #EB5D0E`
       : `background-color: #f9f9f9`
   }
 
 `;
 
-const ranking = css`
-  margin-right: 19px;
+const rankStyle = css`
+  margin-right: 2px;
 `;
 const userInfo = css`
   display: flex;
@@ -36,7 +38,6 @@ const userInfo = css`
   font-size: 16px;
   font-weight: 600;
   gap: 12px;
-  flex: 1;
 `;
 const circleProfile = css`
   width: 25px;
@@ -45,8 +46,7 @@ const circleProfile = css`
   background-color: #eb5d0e;
   flex-shrink: 0;
 `;
-
-const score = css`
+const scoreStyle = css`
   display: flex;
   justify-content: flex-end;
   flex: 1;
