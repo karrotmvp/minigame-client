@@ -1,36 +1,54 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { ScreenHelmet, useNavigator } from '@karrotframe/navigator';
-import React from 'react';
-import { useSelector } from 'react-redux';
-import { RootState } from '../reducers/rootReducer';
 import IndividualLeaderboard from '../components/IndividualLeaderboard';
 import { AppEjectionButton } from 'components/AppEjectionButton';
 import { largeTextStyle, emphasizedTextStyle } from 'styles/textStyle';
 import Button from 'components/Button';
 import { sampleUserData } from 'sampleUserData';
+import { UserRow } from 'components/UserRow';
+import { useSelector } from 'react-redux';
+import { RootState } from 'reducers/rootReducer';
 // import Button from '../components/Button';
 const divStyle = css`
   padding: 20px 26px 0px;
 `;
 const Leaderboard = () => {
-  const { number } = useSelector((state: RootState) => ({
-    number: state.increment.number,
-  }));
   const { push } = useNavigator();
   const handlePlayAgain = () => {
     push('/game');
   };
+
+  const { score } = useSelector((state: RootState) => ({
+    score: state.increment.score,
+  }));
+
+  // Data from backend
+  const currentUserData = {
+    rank: 123,
+    nickname: 'Jason',
+    profileImage: null,
+    totalScore: 323 + score,
+  };
+
   return (
     <div>
       <ScreenHelmet title="리더보드" appendRight={<AppEjectionButton />} />
       <div css={divStyle}>
         <h1 css={largeTextStyle}>
-          <span css={emphasizedTextStyle}>로제엽떡살인마</span>님은 <br />
-          우리동네에서 <span css={emphasizedTextStyle}>384793위</span> 에요!
+          <span css={emphasizedTextStyle}>Jason</span>님은 <br />
+          우리동네에서 <span css={emphasizedTextStyle}>121위</span> 에요!
         </h1>
 
         <IndividualLeaderboard userData={sampleUserData} />
+        <span style={{ content: '&#10247', fontSize: '100px' }} />
+        <UserRow
+          currentUser={true}
+          rank={currentUserData.rank}
+          nickname={currentUserData.nickname}
+          profileImage={currentUserData.profileImage}
+          score={currentUserData.totalScore}
+        />
         <div
           style={{
             width: `100%`,

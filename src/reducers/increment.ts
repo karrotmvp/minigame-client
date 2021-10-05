@@ -1,7 +1,7 @@
 import { INCREASE } from "../actions/actionTypes";
 
 const initialState = {
-  number: 0,
+  score: 0,
 }
 
 export default function increment(state = initialState, action: { type: any; }) {
@@ -9,7 +9,7 @@ export default function increment(state = initialState, action: { type: any; }) 
     case INCREASE:
       return {
         ...state,
-        number: state.number + 1
+        score: state.score + 1
       };
 
     default:

@@ -9,10 +9,10 @@ const fullScreen = css`
   overflow: hidden;
 `;
 
-function ClickerGame({ number, onIncrease }: any) {
+function ClickerGame({ score, onIncrease }: any) {
   return (
     <div css={fullScreen} onClick={onIncrease}>
-      <h1>{number}</h1>
+      <h1>{score}</h1>
     </div>
   );
 }

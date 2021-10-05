@@ -27,19 +27,19 @@ export const sampleUserData = [
     profileImage: null,
     score: 1345,
   }, {
-    id: 4,
+    id: 5,
     nickname: 'Tim',
     rank: 4,
     profileImage: null,
     score: 422,
   }, {
-    id: 4,
+    id: 6,
     nickname: 'Neil',
     rank: 4,
     profileImage: null,
     score: 23,
   }, {
-    id: 4,
+    id: 7,
     nickname: 'James',
     rank: 4,
     profileImage: null,
