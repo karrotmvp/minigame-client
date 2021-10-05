@@ -5,7 +5,7 @@ import GameEndModal from 'components/GameEndModal';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Route, useHistory } from 'react-router';
-import { increase } from '../actions/incrementActions';
+import { increase } from 'reducers/counterReducer';
 import ClickerGame from '../components/ClickerGame';
 import { RootState } from '../reducers/rootReducer';
 
@@ -23,7 +23,7 @@ const Game = () => {
   };
   // Get state of redux store using useSelector
   const { score } = useSelector((state: RootState) => ({
-    score: state.increment.score,
+    score: state.counterReducer.score,
   }));
 
   // useDispatch to dispatch actions

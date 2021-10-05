@@ -7,22 +7,29 @@ import { largeTextStyle, emphasizedTextStyle } from 'styles/textStyle';
 import Button from 'components/Button';
 import { sampleUserData } from 'sampleUserData';
 import { UserRow } from 'components/UserRow';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'reducers/rootReducer';
-// import Button from '../components/Button';
+import { reset } from 'reducers/counterReducer';
+
 const divStyle = css`
   padding: 20px 26px 0px;
 `;
+
 const Leaderboard = () => {
   const { push } = useNavigator();
-  const handlePlayAgain = () => {
-    push('/game');
-  };
 
   const { score } = useSelector((state: RootState) => ({
-    score: state.increment.score,
+    score: state.counterReducer.score,
   }));
 
+  // useDispatch to dispatch actions
+  const dispatch = useDispatch();
+  const onReset = () => dispatch(reset());
+
+  const handlePlayAgain = async () => {
+    onReset();
+    await push('/game');
+  };
   // Data from backend
   const currentUserData = {
     rank: 123,
