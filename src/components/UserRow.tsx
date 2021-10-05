@@ -1,9 +1,10 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 
-const row = ({ rank }: any) => css`
+const row = ({ rank, currentUser }: any) => css`
   display: flex;
   flex-flow: row;
+
   padding: 12px 14px;
   margin: 4px;
   width: 100%;
@@ -13,7 +14,13 @@ const row = ({ rank }: any) => css`
   font-size: 14px
   line-height: 161.7%;
   align-items: center;
-  
+  ${
+    currentUser
+      ? `border: 2px solid #EB5D0E;
+      margin: 4px 0;
+  `
+      : null
+  }
   ${
     rank === 1
       ? `background-color: #DCDCDC`
@@ -56,10 +63,17 @@ interface UserRowProps {
   nickname: string;
   profileImage: any;
   score: number;
+  currentUser: boolean;
 }
-const UserRow = ({ rank, nickname, profileImage, score }: UserRowProps) => {
+const UserRow = ({
+  rank,
+  nickname,
+  profileImage,
+  score,
+  currentUser = false,
+}: UserRowProps) => {
   return (
-    <div css={row({ rank })}>
+    <div css={row({ rank, currentUser })}>
       <div css={userInfo}>
         <div css={rankStyle}>{rank}</div>
         <div css={circleProfile}>{profileImage}</div>
