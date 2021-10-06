@@ -12,6 +12,7 @@ interface CloseButtonProps {
 }
 const CloseButton = ({ handleClose }: CloseButtonProps) => {
   return (
+    // eslint-disable-next-line jsx-a11y/anchor-is-valid
     <a
       onClick={handleClose}
       style={{ display: 'flex', justifyContent: 'flex-end' }}
