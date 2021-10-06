@@ -17,6 +17,11 @@ const gameEndDivStyle = css`
   padding: 30px;
 `;
 const Game = () => {
+  const [topUserText, setTopUserText] = useState<string>('');
+  const handleTopUserText = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTopUserText(e.target.value);
+  };
+  console.log(topUserText);
   const history = useHistory();
 
   const handleGameEnd = () => {
@@ -34,6 +39,8 @@ const Game = () => {
   const dispatch = useDispatch();
   const onIncrease = () => dispatch(increase());
 
+  let currentRank = 4;
+
   return (
     <div>
       <ScreenHelmet />
@@ -50,7 +57,13 @@ const Game = () => {
       </div>
 
       <Route path="/game/modal">
-        <GameEndModal handleCloseModal={handleCloseModal} score={score} />
+        <GameEndModal
+          handleCloseModal={handleCloseModal}
+          currentRank={currentRank}
+          score={score}
+          topUserText={topUserText}
+          handleTopUserText={handleTopUserText}
+        />
       </Route>
     </div>
   );
