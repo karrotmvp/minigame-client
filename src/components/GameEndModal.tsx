@@ -3,8 +3,6 @@ import { css } from '@emotion/react';
 import { useNavigator } from '@karrotframe/navigator';
 import IconClose from 'assets/IconClose';
 import { emphasizedTextStyle, largeTextStyle } from 'styles/textStyle';
-import IndividualLeaderboard from './IndividualLeaderboard';
-import { sampleUserData } from 'sampleUserData';
 import Button from './Button';
 
 interface CloseButtonProps {
