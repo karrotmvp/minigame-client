@@ -15,6 +15,31 @@ const divStyle = css`
   padding: 20px 26px 0px;
 `;
 
+const customNav = css`
+  left: 0;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  display: flex;
+  width: 100%;
+  height: 44px;
+  padding: 0 0.5rem;
+`;
+
+const custonNavIcon = css`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 1;
+  transition: opacity 300ms;
+  width: 2.25rem;
+  height: 2.75rem;
+  text-decoration: none;
+  outline: none;
+  z-index: 10;
+`;
+
 const Leaderboard = () => {
   const { push } = useNavigator();
 
@@ -40,7 +65,12 @@ const Leaderboard = () => {
 
   return (
     <div>
-      <ScreenHelmet title="리더보드" appendRight={<AppEjectionButton />} />
+      <div css={customNav}>
+        <div css={custonNavIcon}>
+          <AppEjectionButton />
+        </div>
+      </div>
+
       <div css={divStyle}>
         <h1 css={largeTextStyle}>
           <span css={emphasizedTextStyle}>Jason</span>님은 <br />
@@ -69,14 +99,12 @@ const Leaderboard = () => {
           <Button
             size={`medium`}
             color={`secondary`}
-            position={null}
             text={`다시하기`}
             onClick={handlePlayAgain}
           />
           <Button
             size={`medium`}
             color={`primary`}
-            position={null}
             text={`자랑하기`}
             onClick={handlePlayAgain}
           />
