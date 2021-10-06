@@ -45,6 +45,7 @@ const NewUserHome = ({ setIsNewUser }: NewUserHomeProps) => {
       </div>
       <Button
         size={`fullWidth`}
+        color={`primary`}
         position={`bottom`}
         text={`시작하기`}
         onClick={handleNewUserAgreement}

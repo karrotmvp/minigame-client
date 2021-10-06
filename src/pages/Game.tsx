@@ -37,6 +37,7 @@ const Game = () => {
         <ClickerGame score={score} onIncrease={onIncrease} />
         <Button
           size={`large`}
+          color={`primary`}
           position={`bottom`}
           text={`게임끝`}
           onClick={handleGameEnd}

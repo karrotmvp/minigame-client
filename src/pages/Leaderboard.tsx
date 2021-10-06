@@ -46,9 +46,6 @@ const Leaderboard = () => {
           <span css={emphasizedTextStyle}>Jason</span>님은 <br />
           우리동네에서 <span css={emphasizedTextStyle}>121위</span> 에요!
         </h1>
-
-        <IndividualLeaderboard userData={sampleUserData} />
-        <span style={{ content: '&#10247', fontSize: '100px' }} />
         <UserRow
           currentUser={true}
           rank={currentUserData.rank}
@@ -56,6 +53,8 @@ const Leaderboard = () => {
           profileImage={currentUserData.profileImage}
           score={currentUserData.totalScore}
         />
+        <IndividualLeaderboard userData={sampleUserData} />
+
         <div
           style={{
             width: `100%`,
@@ -69,12 +68,14 @@ const Leaderboard = () => {
         >
           <Button
             size={`medium`}
+            color={`secondary`}
             position={null}
             text={`다시하기`}
             onClick={handlePlayAgain}
           />
           <Button
             size={`medium`}
+            color={`primary`}
             position={null}
             text={`자랑하기`}
             onClick={handlePlayAgain}

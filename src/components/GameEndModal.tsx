@@ -69,13 +69,12 @@ const GameEndModal = ({ handleCloseModal, score }: GameEndModalProps) => {
             <br />
             수확했어요!
           </h1>
-          <div style={{ overflow: 'hidden', flex: '1 1 auto' }}>
-            <IndividualLeaderboard userData={sampleUserData} />
-          </div>
+          <div style={{ flex: '1' }}></div>
           <div
             style={{
               width: `100%`,
               display: `flex`,
+
               flex: '0 1 40px',
               justifyContent: `space-evenly`,
               paddingTop: `20px`,
@@ -84,14 +83,16 @@ const GameEndModal = ({ handleCloseModal, score }: GameEndModalProps) => {
           >
             <Button
               size={`medium`}
+              color={``}
               position={null}
               text={`계속하기`}
               onClick={handleCloseModal}
             />
             <Button
               size={`medium`}
+              color={`primary`}
               position={null}
-              text={`기록보기`}
+              text={`랭킹보기`}
               onClick={handleViewLeaderboard}
             />
           </div>
