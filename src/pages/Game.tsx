@@ -1,3 +1,5 @@
+/** @jsxImportSource @emotion/react */
+import { css } from '@emotion/react';
 import { ScreenHelmet } from '@karrotframe/navigator';
 import { AppEjectionButton } from 'components/AppEjectionButton';
 import Button from 'components/Button';
@@ -8,6 +10,12 @@ import { increase } from 'reducers/counterReducer';
 import ClickerGame from '../components/ClickerGame';
 import { RootState } from '../reducers/rootReducer';
 
+const gameEndDivStyle = css`
+  display: flex;
+  position: absolute;
+  bottom: 0;
+  padding: 30px;
+`;
 const Game = () => {
   const history = useHistory();
 
@@ -31,13 +39,14 @@ const Game = () => {
       <ScreenHelmet title="당근키우기" appendRight={<AppEjectionButton />} />
       <div style={{ display: `flex`, justifyContent: `center` }}>
         <ClickerGame score={score} onIncrease={onIncrease} />
-        <Button
-          size={`large`}
-          color={`primary`}
-          position={`bottom`}
-          text={`게임끝`}
-          onClick={handleGameEnd}
-        />
+        <div css={gameEndDivStyle}>
+          <Button
+            size={`medium`}
+            color={`primary`}
+            text={`게임끝`}
+            onClick={handleGameEnd}
+          />
+        </div>
       </div>
 
       <Route path="/game/modal">

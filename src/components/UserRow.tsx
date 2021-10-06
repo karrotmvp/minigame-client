@@ -8,7 +8,8 @@ const row = ({ rank, currentUser }: any) => css`
   padding: 12px 14px;
   margin: 4px;
   width: 100%;
-  border-radius: 10px;
+  box-shadow: 0px 0px 7px rgba(0, 0, 0, 0.15);
+border-radius: 5px;
   font-style: normal;
   font-weight: normal;
   font-size: 14px
@@ -23,14 +24,18 @@ const row = ({ rank, currentUser }: any) => css`
   }
   ${
     rank === 1
-      ? `background-color: #DCDCDC`
+      ? `
+        color: #EB5D0E
+      `
       : rank === 2
-      ? `background-color: #EDEDED`
+      ? `
+        color: #FF8946
+      `
       : rank === 3
-      ? `background-color: #F5F5F5`
-      : rank === `me`
-      ? `border: 2px solid #EB5D0E`
-      : `background-color: #f9f9f9`
+      ? `
+        color: #EB8E39
+      `
+      : null
   }
 
 `;
