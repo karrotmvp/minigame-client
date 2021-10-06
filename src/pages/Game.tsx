@@ -1,8 +1,7 @@
-import { ScreenHelmet, useNavigator } from '@karrotframe/navigator';
+import { ScreenHelmet } from '@karrotframe/navigator';
 import { AppEjectionButton } from 'components/AppEjectionButton';
 import Button from 'components/Button';
 import GameEndModal from 'components/GameEndModal';
-import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Route, useHistory } from 'react-router';
 import { increase } from 'reducers/counterReducer';
@@ -12,10 +11,7 @@ import { RootState } from '../reducers/rootReducer';
 const Game = () => {
   const history = useHistory();
 
-  // const { push } = useNavigator();
-
   const handleGameEnd = () => {
-    // push(`/leaderboard`);
     history.push('/game/modal');
   };
   const handleCloseModal = () => {
