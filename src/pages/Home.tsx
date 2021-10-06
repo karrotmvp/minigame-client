@@ -32,8 +32,8 @@ const Home = () => {
     push(`/game`);
   };
   return (
-    <div>
-      <ScreenHelmet title="홈" closeButtonLocation="right" />
+    <>
+      <ScreenHelmet title="홈" />
       <div css={divStyle}>
         <div css={contentWrapperStyle}>
           <h1 css={largeTextStyle}>강남구 이웃님! 아직 기록이 없어요</h1>

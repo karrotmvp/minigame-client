@@ -36,7 +36,7 @@ const Game = () => {
 
   return (
     <div>
-      <ScreenHelmet title="당근키우기" appendRight={<AppEjectionButton />} />
+      <ScreenHelmet />
       <div style={{ display: `flex`, justifyContent: `center` }}>
         <ClickerGame score={score} onIncrease={onIncrease} />
         <div css={gameEndDivStyle}>

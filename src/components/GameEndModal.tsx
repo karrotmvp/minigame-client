@@ -1,26 +1,9 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { useNavigator } from '@karrotframe/navigator';
-import IconClose from 'assets/IconClose';
 import { emphasizedTextStyle, largeTextStyle } from 'styles/textStyle';
-import IndividualLeaderboard from './IndividualLeaderboard';
-import { sampleUserData } from 'sampleUserData';
 import Button from './Button';
-
-interface CloseButtonProps {
-  handleClose: () => void;
-}
-const CloseButton = ({ handleClose }: CloseButtonProps) => {
-  return (
-    // eslint-disable-next-line jsx-a11y/anchor-is-valid
-    <a
-      onClick={handleClose}
-      style={{ display: 'flex', justifyContent: 'flex-end' }}
-    >
-      <IconClose />
-    </a>
-  );
-};
+import { ReactComponent as Karrot } from 'assets/karrot.svg';
 
 const modalStyle = css`
   position: absolute;
@@ -85,7 +68,6 @@ const GameEndModal = ({ handleCloseModal, score }: GameEndModalProps) => {
       }}
     >
       <div css={modalStyle}>
-        <CloseButton handleClose={handleCloseModal} />
         <Karrot />
         <h1
           css={[largeTextStyle, largeText]}
