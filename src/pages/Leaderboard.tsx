@@ -10,13 +10,15 @@ import { UserRow } from 'components/UserRow';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'reducers/rootReducer';
 import { reset } from 'reducers/counterReducer';
+import { useHistory } from 'react-router';
 
 const divStyle = css`
   padding: 20px 26px 0px;
 `;
 
 const Leaderboard = () => {
-  const { push } = useNavigator();
+  const { pop } = useNavigator();
+  const history = useHistory();
 
   const { score } = useSelector((state: RootState) => ({
     score: state.counterReducer.score,
@@ -28,7 +30,8 @@ const Leaderboard = () => {
 
   const handlePlayAgain = async () => {
     onReset();
-    await push('/game');
+    pop(1);
+    history.goBack();
   };
   // Data from backend
   const currentUserData = {
