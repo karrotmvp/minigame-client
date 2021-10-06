@@ -1,5 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
+
 const fullScreen = css`
   height: 100%;
   position: absolute;
@@ -14,38 +15,39 @@ interface ClickerGameProps {
 }
 
 const ClickerGame = ({ score, onIncrease }: ClickerGameProps) => {
+  //
+  // Convert the bottom code to React component
+  //
+  // Create 당근 component
+  // Pass posX and posY of screen to props
+  // When Clicked, the component is set to "visible" with corresponding posX and posY
+  // useState can be used for visibility [visible, setVisible]
+  //
+  // features may be added later:
+  // - random visible time (no need to have constant 1 sec)
   const gameContainer = document.getElementById('clicker-game__container');
+  const karrotImage = require('assets/karrot.png').default;
 
-  const clickerAnimation = async ({ posX, posY }: any) => {
-    let karrot = document.createElement('div');
+  const clickerAnimation = async (e: any) => {
+    let posX = e.pageX;
+    let posY = e.pageY;
+    let karrot = document.createElement('img');
+    karrot.src = karrotImage;
     karrot.className = `karrot`;
     karrot.style.position = `absolute`;
-    karrot.style.width = `30px`;
-    karrot.style.height = `30px`;
-    karrot.style.backgroundColor = 'hotpink';
-
-    let coords = `x pos: ${posX} & y pos: ${posY}`;
-    console.log(coords);
-
     karrot.style.left = `${posX}px`;
     karrot.style.top = `${posY}px`;
-    let karrotImage = document.createElement('img');
-    karrotImage.src = 'src/assets/karrot.png';
 
-    karrot.appendChild(karrotImage);
     gameContainer?.appendChild(karrot);
 
     setTimeout(() => {
       karrot.remove();
-    }, 10000);
-    console.log('works');
+    }, 1000);
   };
 
   const handleClick = async (e: any) => {
-    let posX = e.clientX;
-    let posY = e.clientY;
     await onIncrease();
-    await clickerAnimation({ posX, posY });
+    await clickerAnimation(e);
   };
   return (
     <div id="clicker-game__container" css={fullScreen} onClick={handleClick}>
