@@ -1,9 +1,9 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { ScreenHelmet } from '@karrotframe/navigator';
-import { AppEjectionButton } from 'components/AppEjectionButton';
 import Button from 'components/Button';
-import GameEndModal from 'components/GameEndModal';
+import GameEndModal from 'components/gameEndModal/GameEndModal';
+import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Route, useHistory } from 'react-router';
 import { increase } from 'reducers/counterReducer';

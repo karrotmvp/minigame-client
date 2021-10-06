@@ -4,7 +4,7 @@ import { ScreenHelmet, useNavigator } from '@karrotframe/navigator';
 import { sampleUserData } from 'sampleUserData';
 import { largeTextStyle, mediumTextStyle } from 'styles/textStyle';
 import Button from '../components/Button';
-import IndividualLeaderboard from '../components/IndividualLeaderboard';
+import IndividualLeaderboard from '../components/leaderboard/IndividualLeaderboard';
 import { getMini } from 'api/mini';
 
 const divStyle = css`

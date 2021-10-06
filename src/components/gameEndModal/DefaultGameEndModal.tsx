@@ -1,8 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { useNavigator } from '@karrotframe/navigator';
 import { emphasizedTextStyle, largeTextStyle } from 'styles/textStyle';
-import Button from './Button';
+import Button from '../Button';
 import { ReactComponent as Karrot } from 'assets/karrot.svg';
 
 const modalStyle = css`
@@ -47,17 +46,17 @@ const totalKarrotText = css`
 
   margin: 15px 0 23px;
 `;
-interface GameEndModalProps {
+
+interface DefaultGameEndModalProps {
   handleCloseModal: () => void;
+  handleViewLeaderboard: () => void;
   score: number;
 }
-const GameEndModal = ({ handleCloseModal, score }: GameEndModalProps) => {
-  const { push } = useNavigator();
-
-  const handleViewLeaderboard = () => {
-    push('/leaderboard');
-  };
-
+const DefaultGameEndModal = ({
+  handleCloseModal,
+  handleViewLeaderboard,
+  score,
+}: DefaultGameEndModalProps) => {
   return (
     <div
       style={{
@@ -108,4 +107,4 @@ const GameEndModal = ({ handleCloseModal, score }: GameEndModalProps) => {
   );
 };
 
-export default GameEndModal;
+export default DefaultGameEndModal;

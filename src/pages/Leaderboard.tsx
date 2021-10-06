@@ -1,12 +1,12 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { ScreenHelmet, useNavigator } from '@karrotframe/navigator';
-import IndividualLeaderboard from '../components/IndividualLeaderboard';
+import { useNavigator } from '@karrotframe/navigator';
+import IndividualLeaderboard from '../components/leaderboard/IndividualLeaderboard';
 import { AppEjectionButton } from 'components/AppEjectionButton';
 import { largeTextStyle, emphasizedTextStyle } from 'styles/textStyle';
 import Button from 'components/Button';
 import { sampleUserData } from 'sampleUserData';
-import { UserRow } from 'components/UserRow';
+import { UserRow } from 'components/leaderboard/UserRow';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'reducers/rootReducer';
 import { reset } from 'reducers/counterReducer';
