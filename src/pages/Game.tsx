@@ -1,21 +1,24 @@
-import { ScreenHelmet, useNavigator } from '@karrotframe/navigator';
-import { AppEjectionButton } from 'components/AppEjectionButton';
+/** @jsxImportSource @emotion/react */
+import { css } from '@emotion/react';
+import { ScreenHelmet } from '@karrotframe/navigator';
 import Button from 'components/Button';
-import GameEndModal from 'components/GameEndModal';
-import React from 'react';
+import DefaultGameEndModal from 'components/gameEndModal/DefaultGameEndModal';
 import { useDispatch, useSelector } from 'react-redux';
 import { Route, useHistory } from 'react-router';
 import { increase } from 'reducers/counterReducer';
 import ClickerGame from '../components/ClickerGame';
 import { RootState } from '../reducers/rootReducer';
 
+const gameEndDivStyle = css`
+  display: flex;
+  position: absolute;
+  bottom: 0;
+  margin: 30px;
+`;
 const Game = () => {
   const history = useHistory();
 
-  // const { push } = useNavigator();
-
   const handleGameEnd = () => {
-    // push(`/leaderboard`);
     history.push('/game/modal');
   };
   const handleCloseModal = () => {
@@ -30,22 +33,29 @@ const Game = () => {
   const dispatch = useDispatch();
   const onIncrease = () => dispatch(increase());
 
+  let currentRank = 7;
+
   return (
     <div>
-      <ScreenHelmet title="당근키우기" appendRight={<AppEjectionButton />} />
+      <ScreenHelmet />
       <div style={{ display: `flex`, justifyContent: `center` }}>
         <ClickerGame score={score} onIncrease={onIncrease} />
-        <Button
-          size={`large`}
-          color={`primary`}
-          position={`bottom`}
-          text={`게임끝`}
-          onClick={handleGameEnd}
-        />
+        <div css={gameEndDivStyle}>
+          <Button
+            size={`medium`}
+            color={`primary`}
+            text={`게임끝`}
+            onClick={handleGameEnd}
+          />
+        </div>
       </div>
 
       <Route path="/game/modal">
-        <GameEndModal handleCloseModal={handleCloseModal} score={score} />
+        <DefaultGameEndModal
+          handleCloseModal={handleCloseModal}
+          currentRank={currentRank}
+          score={score}
+        />
       </Route>
     </div>
   );

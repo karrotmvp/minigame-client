@@ -18,7 +18,6 @@ const counterReducer = (state = initialState,  action: { type: any; }) => {
       return initialState
     case INCREASE:
       return {
-        ...state,
         score: state.score + 1
       };
 

@@ -1,12 +1,12 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 
-const buttonStyle = ({ size, position, color }: any) => css`
+const buttonStyle = ({ size, color }: any) => css`
   background: ${color === `primary`
     ? `#eb5d0e`
     : `secondary`
-    ? `#EB8E39`
-    : `#FFE2D1`};
+    ? `#F39E6E`
+    : `#F39E6E`};
   text-align: center;
   border: none;
   border-radius: 10px;
@@ -30,8 +30,7 @@ const buttonStyle = ({ size, position, color }: any) => css`
     : size === `large`
     ? `
      
-        width: 80%;
-        margin: 20px;
+        width: 100%;
         border-radius: 10px;
         font-size: 16px;
       `
@@ -39,6 +38,8 @@ const buttonStyle = ({ size, position, color }: any) => css`
     ? `
         width: 150px;
         padding: 10px 20px;
+        font-size: 16px;
+
 
         `
     : size === `small`
@@ -48,24 +49,32 @@ const buttonStyle = ({ size, position, color }: any) => css`
 
         `
     : null}
-  ${position === `bottom`
-    ? ` 
-        position: absolute;
-        bottom: 0;
-        `
-    : null}
 `;
 
 interface ButtonProps {
-  position: string | null;
   size: string;
-  color: string;
+  color?: string;
   text: string;
-  onClick: () => void;
+  onClick?: () => void;
 }
-const Button = ({ size, color, position, text, onClick }: ButtonProps) => {
+
+export const DisabledButton = ({ size, text }: ButtonProps) => {
   return (
-    <button css={buttonStyle({ size, position, color })} onClick={onClick}>
+    <button
+      css={buttonStyle({ size })}
+      style={{
+        background: '#F7BE9F',
+      }}
+      disabled
+    >
+      {text}
+    </button>
+  );
+};
+
+const Button = ({ size, color, text, onClick }: ButtonProps) => {
+  return (
+    <button css={buttonStyle({ size, color })} onClick={onClick}>
       {text}
     </button>
   );

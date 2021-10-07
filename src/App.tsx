@@ -1,4 +1,3 @@
-// import React from 'react';
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import '@karrotframe/navigator/index.css';
@@ -14,6 +13,9 @@ const appStyle = css`
   height: 100vh;
 `;
 
+const navStyle = css`
+  --kf_navigator_navbar-borderColor: white;
+`;
 function App() {
   const [isNewUser, setIsNewUser] = useState<boolean>(false);
 
@@ -26,6 +28,7 @@ function App() {
     <div css={appStyle}>
       <Navigator
         theme="Cupertino"
+        css={navStyle}
         onClose={() => {
           console.log(`${handleAppEjection} 닫기버튼이 눌렸습니다`);
         }}
