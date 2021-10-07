@@ -3,10 +3,9 @@ import { css } from '@emotion/react';
 import { emphasizedTextStyle, largeTextStyle } from 'styles/textStyle';
 import Button from '../Button';
 import { ReactComponent as Karrot } from 'assets/karrot.svg';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from 'reducers/rootReducer';
+import { useDispatch } from 'react-redux';
 import { changeTopUserComment } from 'reducers/topUserReducer';
-import { SetStateAction, useState } from 'react';
+import { useState } from 'react';
 
 const modalStyle = css`
   position: absolute;
