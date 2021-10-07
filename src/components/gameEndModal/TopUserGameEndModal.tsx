@@ -93,8 +93,6 @@ TopUserGameEndModalProps) => {
       style={{
         position: 'absolute',
         inset: 0,
-        backgroundColor: 'rgba(10, 10, 10, .5)',
-        backdropFilter: 'blur(3px)',
       }}
     >
       <div css={modalStyle}>

@@ -13,7 +13,7 @@ const gameEndDivStyle = css`
   display: flex;
   position: absolute;
   bottom: 0;
-  padding: 30px;
+  margin: 30px;
 `;
 const Game = () => {
   const history = useHistory();

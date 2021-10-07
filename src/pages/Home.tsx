@@ -4,11 +4,7 @@ import { ScreenHelmet, useNavigator } from '@karrotframe/navigator';
 import DefaultUserRow from 'components/leaderboard/DefaultUserRow';
 import TopUserRow from 'components/leaderboard/TopUserRow';
 import { sampleUserData } from 'sampleUserData';
-import {
-  emphasizedTextStyle,
-  largeTextStyle,
-  mediumTextStyle,
-} from 'styles/textStyle';
+import { emphasizedTextStyle, largeTextStyle } from 'styles/textStyle';
 import Button from '../components/Button';
 import IndividualLeaderboard from '../components/leaderboard/IndividualLeaderboard';
 
