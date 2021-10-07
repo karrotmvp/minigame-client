@@ -2,7 +2,7 @@
 import { css } from '@emotion/react';
 import { ScreenHelmet } from '@karrotframe/navigator';
 import Button from 'components/Button';
-import GameEndModal from 'components/gameEndModal/GameEndModal';
+import DefaultGameEndModal from 'components/gameEndModal/DefaultGameEndModal';
 import { useDispatch, useSelector } from 'react-redux';
 import { Route, useHistory } from 'react-router';
 import { increase } from 'reducers/counterReducer';
@@ -33,7 +33,7 @@ const Game = () => {
   const dispatch = useDispatch();
   const onIncrease = () => dispatch(increase());
 
-  let currentRank = 4;
+  let currentRank = 7;
 
   return (
     <div>
@@ -51,7 +51,7 @@ const Game = () => {
       </div>
 
       <Route path="/game/modal">
-        <GameEndModal
+        <DefaultGameEndModal
           handleCloseModal={handleCloseModal}
           currentRank={currentRank}
           score={score}

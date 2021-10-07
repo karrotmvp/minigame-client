@@ -3,6 +3,9 @@ import { css } from '@emotion/react';
 import { emphasizedTextStyle, largeTextStyle } from 'styles/textStyle';
 import Button from '../Button';
 import { ReactComponent as Karrot } from 'assets/karrot.svg';
+import TopUserGameEndModal from './TopUserGameEndModal';
+import { useNavigator } from '@karrotframe/navigator';
+import { Route } from 'react-router';
 
 const modalStyle = css`
   position: absolute;
@@ -49,14 +52,24 @@ const totalKarrotText = css`
 
 interface DefaultGameEndModalProps {
   handleCloseModal: () => void;
-  handleViewLeaderboard: () => void;
   score: number;
+  currentRank: number;
 }
 const DefaultGameEndModal = ({
   handleCloseModal,
-  handleViewLeaderboard,
   score,
+  currentRank,
 }: DefaultGameEndModalProps) => {
+  const { push } = useNavigator();
+
+  const handleViewLeaderboard = () => {
+    push('/leaderboard');
+  };
+
+  const handleTopUserCommentModal = () => {
+    push('game/modal/top-user');
+  };
+
   return (
     <div
       style={{
@@ -99,10 +112,23 @@ const DefaultGameEndModal = ({
             size={`medium`}
             color={`primary`}
             text={`랭킹보기`}
-            onClick={handleViewLeaderboard}
+            onClick={() => {
+              if (currentRank <= 10) {
+                handleTopUserCommentModal();
+              } else {
+                handleViewLeaderboard();
+              }
+            }}
           />
         </div>
       </div>
+      <Route path="/game/modal/top-user">
+        <TopUserGameEndModal
+          handleViewLeaderboard={handleViewLeaderboard}
+          // score={score}
+          currentRank={currentRank}
+        />
+      </Route>
     </div>
   );
 };
