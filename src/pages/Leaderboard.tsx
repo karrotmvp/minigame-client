@@ -68,21 +68,16 @@ const Leaderboard = () => {
   const { push } = useNavigator();
   const dispatch = useDispatch();
 
-  const { score } = useSelector((state: RootState) => ({
-    score: state.counterReducer.score,
-  }));
-
   const onReset = () => dispatch(reset());
 
   const handlePlayAgain = async () => {
     onReset();
     await push('/game');
   };
-  // Data from backend
+  // Data from backend (GET)
   const currentUserData = {
-    rank: 123,
+    rank: 7,
     nickname: 'Jason',
-    profileImage: null,
     totalScore: 323,
     comment: '송파대표당근농부',
   };
