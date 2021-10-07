@@ -1,6 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import DefaultUserRow from './DefaultUserRow';
+import TopUserRow from './TopUserRow';
 
 const divStyle = css`
   padding-top: 20px;
@@ -29,13 +30,13 @@ const IndividualLeaderboard = ({ userData }: IndividualLeaderboardProps) => {
       </u>
 
       <div css={leaderboardWrapperStyle}>
-        {userData.slice(0, 5).map((user) => {
+        {userData.slice(0, 10).map((user) => {
           return (
-            <DefaultUserRow
-              currentUser={false}
+            <TopUserRow
               key={user.id}
               rank={user.rank}
               nickname={user.nickname}
+              comment={user.comment}
               score={user.score}
             />
           );

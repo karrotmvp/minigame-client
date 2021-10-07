@@ -14,6 +14,7 @@ import { reset } from 'reducers/counterReducer';
 const divStyle = css`
   padding: 20px 26px 0px;
 `;
+import TopUserRow from 'components/leaderboard/TopUserRow';
 
 const customNav = css`
   left: 0;
@@ -94,6 +95,20 @@ const Leaderboard = () => {
             left: `0`,
           }}
         >
+            {currentUserData.rank <= 10 ? (
+              <TopUserRow
+                rank={currentUserData.rank}
+                nickname={currentUserData.nickname}
+                score={currentUserData.totalScore}
+                comment={currentUserData.comment}
+              />
+            ) : (
+              <DefaultUserRow
+                rank={currentUserData.rank}
+                nickname={currentUserData.nickname}
+                score={currentUserData.totalScore}
+              />
+            )}
           <Button
             size={`medium`}
             color={`secondary`}
