@@ -6,7 +6,7 @@ import { AppEjectionButton } from 'components/AppEjectionButton';
 import { largeTextStyle, emphasizedTextStyle } from 'styles/textStyle';
 import Button from 'components/Button';
 import { sampleUserData } from 'sampleUserData';
-import { UserRow } from 'components/leaderboard/UserRow';
+import DefaultUserRow from 'components/leaderboard/DefaultUserRow';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'reducers/rootReducer';
 import { reset } from 'reducers/counterReducer';
@@ -42,13 +42,12 @@ const custonNavIcon = css`
 
 const Leaderboard = () => {
   const { push } = useNavigator();
+  const dispatch = useDispatch();
 
   const { score } = useSelector((state: RootState) => ({
     score: state.counterReducer.score,
   }));
 
-  // useDispatch to dispatch actions
-  const dispatch = useDispatch();
   const onReset = () => dispatch(reset());
 
   const handlePlayAgain = async () => {
@@ -76,11 +75,10 @@ const Leaderboard = () => {
           <span css={emphasizedTextStyle}>Jason</span>님은 <br />
           우리동네에서 <span css={emphasizedTextStyle}>121위</span> 에요!
         </h1>
-        <UserRow
+        <DefaultUserRow
           currentUser={true}
           rank={currentUserData.rank}
           nickname={currentUserData.nickname}
-          profileImage={currentUserData.profileImage}
           score={currentUserData.totalScore}
         />
         <IndividualLeaderboard userData={sampleUserData} />
