@@ -26,7 +26,6 @@ const GameEndModal = ({
     <>
       {currentRank <= 10 ? (
         <TopUserGameEndModal
-          handleCloseModal={handleCloseModal}
           handleViewLeaderboard={handleViewLeaderboard}
           // score={score}
           currentRank={currentRank}

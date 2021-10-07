@@ -5,7 +5,7 @@ const buttonStyle = ({ size, color }: any) => css`
   background: ${color === `primary`
     ? `#eb5d0e`
     : `secondary`
-    ? `#EB8E39`
+    ? `#F39E6E`
     : `#F39E6E`};
   text-align: center;
   border: none;

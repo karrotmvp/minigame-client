@@ -35,7 +35,7 @@ const horizontalLine = css`
   // padding: 0;
 `;
 
-const braggingText = css`
+const infoText = css`
   font-style: normal;
   font-weight: normal;
   font-size: 14px;
@@ -47,6 +47,12 @@ const braggingText = css`
   margin: 15px 0 23px;
 `;
 
+const textInput = css`
+  border: 1px solid #e5e5e5;
+  border-radius: 10px;
+  height: 40px;
+  padding: 10px;
+`;
 const bottomActionDiv = css`
   flex: 0 1 40px;
   display: flex;
@@ -58,7 +64,6 @@ const bottomActionDiv = css`
 `;
 
 interface TopUserGameEndModalProps {
-  handleCloseModal: () => void;
   handleViewLeaderboard: () => void;
   // score: number;
   currentRank: number;
@@ -66,7 +71,6 @@ interface TopUserGameEndModalProps {
   handleTopUserText: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 const TopUserGameEndModal = ({
-  handleCloseModal,
   handleViewLeaderboard,
   currentRank,
   topUserText,
@@ -93,15 +97,15 @@ TopUserGameEndModalProps) => {
           <span css={emphasizedTextStyle}>{currentRank}위</span>로 순위권에
           들었어요!
         </h1>
-        {/* <div style={{ flex: '1' }}></div> */}
         <hr css={horizontalLine} />
-        <p css={braggingText}>
+        <p css={infoText}>
           송파구 이웃들에게
           <br />
           하고 싶은 말을 남겨보세요
         </p>
         <div css={bottomActionDiv}>
           <input
+            css={textInput}
             type="text"
             onChange={handleTopUserText}
             value={topUserText}
