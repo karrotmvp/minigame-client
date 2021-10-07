@@ -6,7 +6,7 @@ import DefaultGameEndModal from 'components/gameEndModal/DefaultGameEndModal';
 import { useDispatch, useSelector } from 'react-redux';
 import { Route, useHistory } from 'react-router';
 import { increase } from 'reducers/counterReducer';
-import ClickerGame from '../components/ClickerGame';
+import GameContainer from '../components/GameContainer';
 import { RootState } from '../reducers/rootReducer';
 
 const gameEndDivStyle = css`
@@ -39,7 +39,7 @@ const Game = () => {
     <div>
       <ScreenHelmet />
       <div style={{ display: `flex`, justifyContent: `center` }}>
-        <ClickerGame score={score} onIncrease={onIncrease} />
+        <GameContainer score={score} onIncrease={onIncrease} />
         <div css={gameEndDivStyle}>
           <Button
             size={`medium`}
