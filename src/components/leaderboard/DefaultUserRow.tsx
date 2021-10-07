@@ -9,7 +9,7 @@ const row = ({ rank, currentUser }: any) => css`
   margin: 4px;
   width: 100%;
   box-shadow: 0px 0px 7px rgba(0, 0, 0, 0.15);
-border-radius: 5px;
+  border-radius: 5px;
   font-style: normal;
   font-weight: normal;
   font-size: 14px
@@ -51,37 +51,28 @@ const userInfo = css`
   font-weight: 600;
   gap: 12px;
 `;
-const circleProfile = css`
-  width: 25px;
-  height: 25px;
-  border-radius: 50%;
-  background-color: #eb5d0e;
-  flex-shrink: 0;
-`;
+
 const scoreStyle = css`
   display: flex;
   justify-content: flex-end;
   flex: 1;
 `;
-interface UserRowProps {
+interface DefaultUserRowProps {
   rank: number | string;
   nickname: string;
-  profileImage: any;
   score: number;
   currentUser: boolean;
 }
-const UserRow = ({
+const DefaultUserRow = ({
   rank,
   nickname,
-  profileImage,
   score,
   currentUser = false,
-}: UserRowProps) => {
+}: DefaultUserRowProps) => {
   return (
     <div css={row({ rank, currentUser })}>
       <div css={userInfo}>
         <div css={rankStyle}>{rank}</div>
-        <div css={circleProfile}>{profileImage}</div>
         <div>{nickname}</div>
       </div>
       <div css={scoreStyle}>{score}</div>
@@ -89,4 +80,4 @@ const UserRow = ({
   );
 };
 
-export { UserRow };
+export default DefaultUserRow;
