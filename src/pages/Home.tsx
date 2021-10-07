@@ -4,7 +4,11 @@ import { ScreenHelmet, useNavigator } from '@karrotframe/navigator';
 import DefaultUserRow from 'components/leaderboard/DefaultUserRow';
 import TopUserRow from 'components/leaderboard/TopUserRow';
 import { sampleUserData } from 'sampleUserData';
-import { largeTextStyle, mediumTextStyle } from 'styles/textStyle';
+import {
+  emphasizedTextStyle,
+  largeTextStyle,
+  mediumTextStyle,
+} from 'styles/textStyle';
 import Button from '../components/Button';
 import IndividualLeaderboard from '../components/leaderboard/IndividualLeaderboard';
 
@@ -14,18 +18,26 @@ const divStyle = css`
   height: 100%;
 `;
 
-const contentWrapperStyle = css`
+const headingWrapper = css`
   flex: 1;
-  padding: 20px 26px 0px;
+  padding: 20px 26px 20px; ;
 `;
-const actionItemDivStyle = css`
+
+const leaderboardWrapper = css`
+  overflow: auto;
+  padding: 0 26px;
+`;
+const actionItemWrapper = css`
   display: flex;
   justify-content: center;
   padding: 16px 24px 34px;
-  // box-shadow: 0px -1px 6px 0px rgba(50, 50, 50, 0.3);
-  border: 1px solid #ebebeb;
+  border-top: 1px solid #ebebeb;
   box-sizing: border-box;
   box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+`;
+
+const currentUserInfoRow = css`
+  margin: 20px 0 10px;
 `;
 
 const Home = () => {
@@ -33,13 +45,26 @@ const Home = () => {
   const handleGameStart = () => {
     push(`/game`);
   };
+
+  // DATA FROM API (GET)
+  const currentUserData = {
+    rank: 123,
+    nickname: 'Jason',
+    profileImage: null,
+    totalScore: 323,
+    comment: '송파대표당근농부',
+  };
   return (
     <>
       <ScreenHelmet title="홈" />
       <div css={divStyle}>
-        <div css={contentWrapperStyle}>
-          <h1 css={largeTextStyle}>강남구 이웃님! 아직 기록이 없어요</h1>
-          <h2 css={mediumTextStyle}>당근 키우기를 이웃들과 함께해요!</h2>
+        <div css={headingWrapper}>
+          <h1 css={largeTextStyle}>
+            <span css={emphasizedTextStyle}>Jason</span>님은
+            <br />
+            우리동네에서 <span css={emphasizedTextStyle}>23423위</span>에요!
+          </h1>
+          <div css={currentUserInfoRow}>
             {currentUserData.rank <= 10 ? (
               <TopUserRow
                 rank={currentUserData.rank}
@@ -54,10 +79,12 @@ const Home = () => {
                 score={currentUserData.totalScore}
               />
             )}
+          </div>
+        </div>
+        <div css={leaderboardWrapper}>
           <IndividualLeaderboard userData={sampleUserData} />
         </div>
-
-        <div css={actionItemDivStyle}>
+        <div css={actionItemWrapper}>
           <Button
             size={`large`}
             color={`primary`}

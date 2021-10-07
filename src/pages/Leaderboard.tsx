@@ -10,16 +10,12 @@ import DefaultUserRow from 'components/leaderboard/DefaultUserRow';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'reducers/rootReducer';
 import { reset } from 'reducers/counterReducer';
-
-const divStyle = css`
-  padding: 20px 26px 0px;
-`;
 import TopUserRow from 'components/leaderboard/TopUserRow';
 
 const customNav = css`
   left: 0;
   width: 100%;
-  height: 100%;
+  // height: 100%;
   top: 0;
   display: flex;
   width: 100%;
@@ -41,6 +37,33 @@ const custonNavIcon = css`
   z-index: 10;
 `;
 
+const divStyle = css`
+  display: flex;
+  flex-flow: column;
+  height: calc(100% - 44px);
+`;
+
+const headingWrapper = css`
+  flex: 1;
+  padding: 20px 26px 20px;
+`;
+const leaderboardWrapper = css`
+  overflow: auto;
+  padding: 0 26px;
+`;
+const actionItemWrapper = css`
+  display: flex;
+  justify-content: space-between;
+  padding: 16px 24px 34px;
+  border-top: 1px solid #ebebeb;
+  box-sizing: border-box;
+  box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+`;
+
+const currentUserInfoRow = css`
+  margin: 20px 0 10px;
+`;
+
 const Leaderboard = () => {
   const { push } = useNavigator();
   const dispatch = useDispatch();
@@ -60,11 +83,11 @@ const Leaderboard = () => {
     rank: 123,
     nickname: 'Jason',
     profileImage: null,
-    totalScore: 323 + score,
+    totalScore: 323,
+    comment: '송파대표당근농부',
   };
-
   return (
-    <div>
+    <>
       <div css={customNav}>
         <div css={custonNavIcon}>
           <AppEjectionButton />
@@ -72,29 +95,12 @@ const Leaderboard = () => {
       </div>
 
       <div css={divStyle}>
-        <h1 css={largeTextStyle}>
-          <span css={emphasizedTextStyle}>Jason</span>님은 <br />
-          우리동네에서 <span css={emphasizedTextStyle}>121위</span> 에요!
-        </h1>
-        <DefaultUserRow
-          currentUser={true}
-          rank={currentUserData.rank}
-          nickname={currentUserData.nickname}
-          score={currentUserData.totalScore}
-        />
-        <IndividualLeaderboard userData={sampleUserData} />
-
-        <div
-          style={{
-            width: `100%`,
-            display: `flex`,
-            justifyContent: `space-evenly`,
-            padding: `20px 0`,
-            position: `absolute`,
-            bottom: `0`,
-            left: `0`,
-          }}
-        >
+        <div css={headingWrapper}>
+          <h1 css={largeTextStyle}>
+            <span css={emphasizedTextStyle}>Jason</span>님은 <br />
+            우리동네에서 <span css={emphasizedTextStyle}>121위</span> 에요!
+          </h1>
+          <div css={currentUserInfoRow}>
             {currentUserData.rank <= 10 ? (
               <TopUserRow
                 rank={currentUserData.rank}
@@ -109,6 +115,12 @@ const Leaderboard = () => {
                 score={currentUserData.totalScore}
               />
             )}
+          </div>
+        </div>
+        <div css={leaderboardWrapper}>
+          <IndividualLeaderboard userData={sampleUserData} />
+        </div>
+        <div css={actionItemWrapper}>
           <Button
             size={`medium`}
             color={`secondary`}
@@ -123,7 +135,7 @@ const Leaderboard = () => {
           />
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

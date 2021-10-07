@@ -1,76 +1,68 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 
-const row = ({ rank, currentUser }: any) => css`
+const row = css`
   display: flex;
   flex-flow: row;
+  align-items: center;
 
   padding: 12px 14px;
-  margin: 4px;
+  margin: 4px 0;
   width: 100%;
   box-shadow: 0px 0px 7px rgba(0, 0, 0, 0.15);
   border-radius: 5px;
-  font-style: normal;
-  font-weight: normal;
-  font-size: 14px
-  line-height: 161.7%;
-  align-items: center;
-  ${
-    currentUser
-      ? `border: 2px solid #EB5D0E;
-      margin: 4px 0;
-  `
-      : null
-  }
-  ${
-    rank === 1
-      ? `
-        color: #EB5D0E
-      `
-      : rank === 2
-      ? `
-        color: #FF8946
-      `
-      : rank === 3
-      ? `
-        color: #EB8E39
-      `
-      : null
-  }
 
+  background: #ffffff;
 `;
 
 const rankStyle = css`
-  margin-right: 2px;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 161.7%;
+  /* or 19px */
+
+  color: #5b5b5b;
 `;
 const userInfo = css`
   display: flex;
   flex-flow: row;
   align-items: center;
   font-size: 16px;
-  font-weight: 600;
   gap: 12px;
+
+  font-style: normal;
+  font-weight: normal;
+  font-size: 16px;
+  line-height: 161.7%;
+  /* identical to box height, or 26px */
+
+  color: #7c7c7c;
 `;
 
 const scoreStyle = css`
   display: flex;
   justify-content: flex-end;
   flex: 1;
+
+  font-style: normal;
+  font-weight: normal;
+  font-size: 12px;
+  line-height: 161.7%;
+  /* or 19px */
+
+  text-align: right;
+
+  color: #7c7c7c;
 `;
 interface DefaultUserRowProps {
   rank: number | string;
   nickname: string;
   score: number;
-  currentUser: boolean;
 }
-const DefaultUserRow = ({
-  rank,
-  nickname,
-  score,
-  currentUser = false,
-}: DefaultUserRowProps) => {
+const DefaultUserRow = ({ rank, nickname, score }: DefaultUserRowProps) => {
   return (
-    <div css={row({ rank, currentUser })}>
+    <div css={row}>
       <div css={userInfo}>
         <div css={rankStyle}>{rank}</div>
         <div>{nickname}</div>
