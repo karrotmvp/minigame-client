@@ -16,12 +16,18 @@ const leaderboardWrapperStyle = css`
   align-items: center;
 `;
 
-const horizontalLine = css`
-  display: block;
-  height: 0;
-  width: 100%;
-  border: 1px solid #e6e6e6;
-  margin: 14px 0 13px;
+const infoText = css`
+  margin: 17px 0 17px;
+
+  font-style: normal;
+  font-weight: normal;
+  font-size: 16px;
+  line-height: 161.7%;
+  /* or 26px */
+
+  text-align: center;
+
+  color: #7c7c7c;
 `;
 
 interface IndividualLeaderboardProps {
@@ -42,7 +48,12 @@ const IndividualLeaderboard = ({ userData }: IndividualLeaderboardProps) => {
             />
           );
         })}
-        <hr css={horizontalLine} />
+        {/* <hr css={horizontalLine} /> */}
+        <p css={infoText}>
+          🎉 송파구 TOP 10 🎉 이 되어서
+          <br />
+          이웃들에게 한 마디를 남겨보세요!
+        </p>
         {userData.slice(10).map((user) => {
           return (
             <DefaultUserRow
