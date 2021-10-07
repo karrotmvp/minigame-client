@@ -6,7 +6,7 @@ import DefaultGameEndModal from 'components/gameEndModal/DefaultGameEndModal';
 import { useDispatch, useSelector } from 'react-redux';
 import { Route, useHistory } from 'react-router';
 import { increase } from 'reducers/counterReducer';
-import GameContainer from '../components/GameContainer';
+import GameContainer from '../components/game/GameContainer';
 import { RootState } from '../reducers/rootReducer';
 
 const gameEndDivStyle = css`
