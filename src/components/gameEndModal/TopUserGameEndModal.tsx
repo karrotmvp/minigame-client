@@ -3,6 +3,10 @@ import { css } from '@emotion/react';
 import { emphasizedTextStyle, largeTextStyle } from 'styles/textStyle';
 import Button from '../Button';
 import { ReactComponent as Karrot } from 'assets/karrot.svg';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from 'reducers/rootReducer';
+import { changeTopUserComment } from 'reducers/topUserReducer';
+import { SetStateAction, useState } from 'react';
 
 const modalStyle = css`
   position: absolute;
@@ -67,16 +71,24 @@ interface TopUserGameEndModalProps {
   handleViewLeaderboard: () => void;
   // score: number;
   currentRank: number;
-  topUserText: string;
-  handleTopUserText: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 const TopUserGameEndModal = ({
   handleViewLeaderboard,
   currentRank,
-  topUserText,
-  handleTopUserText,
 }: // score,
 TopUserGameEndModalProps) => {
+  const [topUserComment, setTopUserComment] = useState<string>('');
+  const dispatch = useDispatch();
+
+  const handleTopUserInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTopUserComment(e.target.value);
+  };
+
+  const updateCommentAndViewLeaderboard = () => {
+    dispatch(changeTopUserComment(topUserComment));
+    // POST: SEND topUserComment TO BACKEND
+    handleViewLeaderboard();
+  };
   return (
     <div
       style={{
@@ -107,8 +119,8 @@ TopUserGameEndModalProps) => {
           <input
             css={textInput}
             type="text"
-            onChange={handleTopUserText}
-            value={topUserText}
+            onChange={handleTopUserInput}
+            value={topUserComment}
             placeholder="예) 내가 송파짱!"
             maxLength={25}
           />
@@ -116,7 +128,7 @@ TopUserGameEndModalProps) => {
             size={`large`}
             color={`primary`}
             text={`등록하기`}
-            onClick={handleViewLeaderboard}
+            onClick={updateCommentAndViewLeaderboard}
           />
         </div>
       </div>

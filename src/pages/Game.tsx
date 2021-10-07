@@ -3,7 +3,6 @@ import { css } from '@emotion/react';
 import { ScreenHelmet } from '@karrotframe/navigator';
 import Button from 'components/Button';
 import GameEndModal from 'components/gameEndModal/GameEndModal';
-import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Route, useHistory } from 'react-router';
 import { increase } from 'reducers/counterReducer';
@@ -17,11 +16,6 @@ const gameEndDivStyle = css`
   padding: 30px;
 `;
 const Game = () => {
-  const [topUserText, setTopUserText] = useState<string>('');
-  const handleTopUserText = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTopUserText(e.target.value);
-  };
-  console.log(topUserText);
   const history = useHistory();
 
   const handleGameEnd = () => {
@@ -61,8 +55,6 @@ const Game = () => {
           handleCloseModal={handleCloseModal}
           currentRank={currentRank}
           score={score}
-          topUserText={topUserText}
-          handleTopUserText={handleTopUserText}
         />
       </Route>
     </div>
