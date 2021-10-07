@@ -1,9 +1,9 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { emphasizedTextStyle, largeTextStyle } from 'styles/textStyle';
-import Button from '../Button';
+import Button, { DisabledButton } from '../Button';
 import { ReactComponent as Karrot } from 'assets/karrot.svg';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { changeTopUserComment } from 'reducers/topUserReducer';
 import { useState } from 'react';
 
@@ -88,6 +88,7 @@ TopUserGameEndModalProps) => {
     // POST: SEND topUserComment TO BACKEND
     handleViewLeaderboard();
   };
+
   return (
     <div
       style={{
@@ -121,12 +122,16 @@ TopUserGameEndModalProps) => {
             placeholder="예) 내가 송파짱!"
             maxLength={25}
           />
-          <Button
-            size={`large`}
-            color={`primary`}
-            text={`등록하기`}
-            onClick={updateCommentAndViewLeaderboard}
-          />
+          {topUserComment ? (
+            <Button
+              size={`large`}
+              color={`primary`}
+              text={`등록하기`}
+              onClick={handleViewLeaderboard}
+            />
+          ) : (
+            <DisabledButton size={`large`} text={`등록하기`} />
+          )}
         </div>
       </div>
     </div>

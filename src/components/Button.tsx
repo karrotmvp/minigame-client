@@ -31,7 +31,6 @@ const buttonStyle = ({ size, color }: any) => css`
     ? `
      
         width: 100%;
-        // margin: 20px;
         border-radius: 10px;
         font-size: 16px;
       `
@@ -39,6 +38,8 @@ const buttonStyle = ({ size, color }: any) => css`
     ? `
         width: 150px;
         padding: 10px 20px;
+        font-size: 16px;
+
 
         `
     : size === `small`
@@ -52,10 +53,25 @@ const buttonStyle = ({ size, color }: any) => css`
 
 interface ButtonProps {
   size: string;
-  color: string;
+  color?: string;
   text: string;
-  onClick: () => void;
+  onClick?: () => void;
 }
+
+export const DisabledButton = ({ size, text }: ButtonProps) => {
+  return (
+    <button
+      css={buttonStyle({ size })}
+      style={{
+        background: '#F7BE9F',
+      }}
+      disabled
+    >
+      {text}
+    </button>
+  );
+};
+
 const Button = ({ size, color, text, onClick }: ButtonProps) => {
   return (
     <button css={buttonStyle({ size, color })} onClick={onClick}>
