@@ -1,52 +1,119 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { ScreenHelmet } from '@karrotframe/navigator';
-import Button from 'components/Button';
 import DefaultGameEndModal from 'components/gameEndModal/DefaultGameEndModal';
+import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Route, useHistory } from 'react-router';
-import { increase } from 'reducers/counterReducer';
-import ClickerGame from '../components/ClickerGame';
+import { increase, increaseKarrotCount } from 'reducers/counterReducer';
+import GameContainer from '../components/game/GameContainer';
 import { RootState } from '../reducers/rootReducer';
 
-const gameEndDivStyle = css`
+const customNavIcon = css`
   display: flex;
-  position: absolute;
-  bottom: 0;
-  margin: 30px;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 1;
+  transition: opacity 300ms;
+  height: 2.75rem;
+  text-decoration: none;
+  outline: none;
+  z-index: 10;
 `;
-const Game = () => {
-  const history = useHistory();
 
+const scoreWrapper = css`
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  justify-content: center;
+`;
+
+const karrotCountStyle = css`
+  margin-top: 5%;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 50px;
+
+  color: #85370c;
+`;
+
+const clickCountStyle = css`
+  font-style: normal;
+  font-weight: bold;
+  font-size: 18px;
+
+  color: #bc9c8a;
+`;
+const gameEndButtonStyle = css`
+  padding: 6px 13px;
+
+  background: #000;
+  border: none;
+  border-radius: 10px;
+
+  font-style: normal;
+  font-weight: bold;
+  font-size: 14px;
+  line-height: 161.7%;
+  /* identical to box height, or 23px */
+
+  color: #cc6023;
+`;
+interface GameEndButtonProps {
+  handleGameEnd: () => void;
+}
+const GameEndButton = ({ handleGameEnd }: GameEndButtonProps) => {
+  return (
+    <button css={gameEndButtonStyle} onClick={handleGameEnd}>
+      그만하기
+    </button>
+  );
+};
+const Game = () => {
+  // navigation
+  const history = useHistory();
   const handleGameEnd = () => {
     history.push('/game/modal');
   };
   const handleCloseModal = () => {
     history.goBack();
   };
-  // Get state of redux store using useSelector
-  const { score } = useSelector((state: RootState) => ({
-    score: state.counterReducer.score,
+  // game score
+  const [count, setCount] = useState(0);
+  const { clickCount, karrotCount } = useSelector((state: RootState) => ({
+    clickCount: state.counterReducer.clickCount,
+    karrotCount: state.counterReducer.karrotCount,
   }));
-
-  // useDispatch to dispatch actions
   const dispatch = useDispatch();
-  const onIncrease = () => dispatch(increase());
+  const countUp = async () => dispatch(increase());
+  const countUpKarrot = async () => dispatch(increaseKarrotCount());
+  const handleClick = async () => {
+    await countUp();
+    setCount(count + 1);
+    console.log(count);
+    if (count >= 9) {
+      await countUpKarrot();
+      setCount(0);
+    }
+  };
 
   let currentRank = 7;
 
   return (
-    <div>
-      <ScreenHelmet />
-      <div style={{ display: `flex`, justifyContent: `center` }}>
-        <ClickerGame score={score} onIncrease={onIncrease} />
-        <div css={gameEndDivStyle}>
-          <Button
-            size={`medium`}
-            color={`primary`}
-            text={`게임끝`}
-            onClick={handleGameEnd}
-          />
+    <>
+      <ScreenHelmet
+        appendRight={
+          <div css={customNavIcon}>
+            <GameEndButton handleGameEnd={handleGameEnd} />
+          </div>
+        }
+      />
+      <GameContainer onClick={handleClick} />
+      <div style={{ background: `#FAF5F4`, height: `100%` }}>
+        <div css={scoreWrapper}>
+          <h1 css={karrotCountStyle}>{karrotCount}</h1>
+          <h2 css={clickCountStyle}>{clickCount}</h2>
         </div>
       </div>
 
@@ -54,10 +121,10 @@ const Game = () => {
         <DefaultGameEndModal
           handleCloseModal={handleCloseModal}
           currentRank={currentRank}
-          score={score}
+          score={karrotCount}
         />
       </Route>
-    </div>
+    </>
   );
 };
 

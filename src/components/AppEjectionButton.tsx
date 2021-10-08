@@ -9,7 +9,7 @@ const AppEjectionButton = () => {
   };
   return (
     // eslint-disable-next-line jsx-a11y/anchor-is-valid
-    <a aria-label="Close" onClick={handleAppEjection}>
+    <a aria-label="Eject" onClick={handleAppEjection}>
       <IconClose />
     </a>
   );

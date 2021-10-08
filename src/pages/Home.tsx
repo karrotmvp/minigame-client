@@ -1,6 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { ScreenHelmet, useNavigator } from '@karrotframe/navigator';
+import IconClose from 'assets/IconClose';
 import DefaultUserRow from 'components/leaderboard/DefaultUserRow';
 import TopUserRow from 'components/leaderboard/TopUserRow';
 import { sampleUserData } from 'sampleUserData';
@@ -52,7 +53,7 @@ const Home = () => {
   };
   return (
     <>
-      <ScreenHelmet title="홈" />
+      <ScreenHelmet title="홈" customCloseButton={<IconClose />} />
       <div css={divStyle}>
         <div css={headingWrapper}>
           <h1 css={largeTextStyle}>

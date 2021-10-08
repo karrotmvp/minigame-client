@@ -10,6 +10,7 @@ import {
 import Button from '../components/Button';
 import IndividualLeaderboard from '../components/leaderboard/IndividualLeaderboard';
 import { getMini } from 'api/mini';
+import IconClose from 'assets/IconClose';
 
 const divStyle = css`
   display: flex;
@@ -60,7 +61,7 @@ const NewUserHome = ({ setIsNewUser }: NewUserHomeProps) => {
   };
   return (
     <>
-      <ScreenHelmet title="홈" closeButtonLocation="right" />
+      <ScreenHelmet title="홈" customCloseButton={<IconClose />} />
       <div css={divStyle}>
         <div css={headingWrapper}>
           <h1 css={largeTextStyle}>
