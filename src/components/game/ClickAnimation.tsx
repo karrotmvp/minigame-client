@@ -7,15 +7,15 @@ interface ExpireProps {
   visible: boolean;
 }
 const ClickAnimation = ({ posX, posY, visible }: ExpireProps) => {
-  let b = Math.floor(Math.random() * 100 + 1);
-  let d = ['flowOne', 'flowTwo', 'flowThree'];
-  let a = ['colOne', 'colTwo', 'colThree', 'colFour', 'colFive', 'colSix'];
-  let c = (Math.random() * (1.6 - 1.2) + 1.2).toFixed(1);
+  // let b = Math.floor(Math.random() * 100 + 1);
+  // let d = ['flowOne', 'flowTwo', 'flowThree'];
+  // let a = ['colOne', 'colTwo', 'colThree', 'colFour', 'colFive', 'colSix'];
+  // let c = (Math.random() * (1.6 - 1.2) + 1.2).toFixed(1);
   return (
     <>
       {visible ? (
         <Karrot
-          className={`${a[Math.floor(Math.random() * 6)]}`}
+          // className={`${a[Math.floor(Math.random() * 6)]}`}
           style={{
             position: 'absolute',
             left: `${posX}px`,

@@ -25,7 +25,7 @@ const GameContainer = ({ onClick }: ClickerGameProps) => {
   };
   const handleClick = async (e: any) => {
     e.stopPropagation();
-    await onClick();
+    onClick();
     await handleVisibility(e);
     setTimeout(() => {
       setVisible(false);

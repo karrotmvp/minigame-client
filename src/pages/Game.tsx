@@ -8,6 +8,8 @@ import { Route, useHistory } from 'react-router';
 import { increase, increaseKarrotCount } from 'reducers/counterReducer';
 import GameContainer from '../components/game/GameContainer';
 import { RootState } from '../reducers/rootReducer';
+import background from 'assets/Seocho_background.png';
+import karrot from 'assets/Seocho_daangn.png';
 
 const customNavIcon = css`
   display: flex;
@@ -21,14 +23,17 @@ const customNavIcon = css`
   outline: none;
   z-index: 10;
 `;
-
+const divStyle = css`
+  background-image: url(${background});
+  background-size: cover;
+  height: 100%;
+`;
 const scoreWrapper = css`
   display: flex;
   flex-flow: column;
   align-items: center;
   justify-content: center;
 `;
-
 const karrotCountStyle = css`
   margin-top: 5%;
   font-style: normal;
@@ -37,7 +42,6 @@ const karrotCountStyle = css`
 
   color: #85370c;
 `;
-
 const clickCountStyle = css`
   font-style: normal;
   font-weight: bold;
@@ -110,10 +114,11 @@ const Game = () => {
         }
       />
       <GameContainer onClick={handleClick} />
-      <div style={{ background: `#FAF5F4`, height: `100%` }}>
+      <div css={divStyle}>
         <div css={scoreWrapper}>
           <h1 css={karrotCountStyle}>{karrotCount}</h1>
           <h2 css={clickCountStyle}>{clickCount}</h2>
+          <img src={karrot} alt="" />
         </div>
       </div>
 
