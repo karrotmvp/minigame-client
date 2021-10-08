@@ -31,16 +31,18 @@ const infoText = css`
 `;
 
 interface IndividualLeaderboardProps {
-  userData: any[];
+  townRankData: any[];
 }
-const IndividualLeaderboard = ({ userData }: IndividualLeaderboardProps) => {
+const IndividualLeaderboard = ({
+  townRankData,
+}: IndividualLeaderboardProps) => {
   return (
     <div css={divStyle}>
       <div css={leaderboardWrapperStyle}>
-        {userData.slice(0, 10).map((user) => {
+        {townRankData.slice(0, 10).map((user) => {
           return (
             <TopUserRow
-              key={user.id}
+              key={user.userId}
               rank={user.rank}
               nickname={user.nickname}
               comment={user.comment}
@@ -54,10 +56,10 @@ const IndividualLeaderboard = ({ userData }: IndividualLeaderboardProps) => {
           <br />
           이웃들에게 한 마디를 남겨보세요!
         </p>
-        {userData.slice(10).map((user) => {
+        {townRankData.slice(10).map((user) => {
           return (
             <DefaultUserRow
-              key={user.id}
+              key={user.userId}
               rank={user.rank}
               nickname={user.nickname}
               score={user.score}

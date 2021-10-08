@@ -1,7 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { ScreenHelmet, useNavigator } from '@karrotframe/navigator';
-import { sampleUserData } from 'sampleUserData';
 import {
   emphasizedTextStyle,
   largeTextStyle,
@@ -11,6 +10,7 @@ import Button from '../components/Button';
 import IndividualLeaderboard from '../components/leaderboard/IndividualLeaderboard';
 import { getMini } from 'api/mini';
 import IconClose from 'assets/IconClose';
+import { sampleUserData } from 'sampleUserData';
 
 const divStyle = css`
   display: flex;
@@ -35,10 +35,8 @@ const actionItemWrapper = css`
   box-sizing: border-box;
   box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
 `;
-interface NewUserHomeProps {
-  setIsNewUser: any;
-}
-const NewUserHome = ({ setIsNewUser }: NewUserHomeProps) => {
+
+const NewUserHome = () => {
   const { push } = useNavigator();
   const mini = getMini();
   const appId = process.env.REACT_APP_APP_ID;
@@ -53,12 +51,12 @@ const NewUserHome = ({ setIsNewUser }: NewUserHomeProps) => {
         if (result && result.code) {
           console.log(result);
           console.log(`code: ${result.code}`);
-          setIsNewUser(false);
           push('/game');
         }
       },
     });
   };
+
   return (
     <>
       <ScreenHelmet title="홈" customCloseButton={<IconClose />} />
@@ -73,7 +71,7 @@ const NewUserHome = ({ setIsNewUser }: NewUserHomeProps) => {
           </h2>
         </div>
         <div css={leaderboardWrapper}>
-          <IndividualLeaderboard userData={sampleUserData} />
+          <IndividualLeaderboard townRankData={sampleUserData} />
         </div>
         <div css={actionItemWrapper}>
           <Button

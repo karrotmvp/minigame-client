@@ -11,6 +11,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'reducers/rootReducer';
 import { reset } from 'reducers/counterReducer';
 import TopUserRow from 'components/leaderboard/TopUserRow';
+import BackendService from 'services/backendService';
+import { useEffect, useState } from 'react';
 
 const customNav = css`
   left: 0;
@@ -65,6 +67,8 @@ const currentUserInfoRow = css`
 `;
 
 const Leaderboard = () => {
+  const [townRankData, setTownRankData] = useState<[]>([]);
+
   const { push } = useNavigator();
   const dispatch = useDispatch();
 
@@ -81,6 +85,25 @@ const Leaderboard = () => {
     totalScore: 323,
     comment: '송파대표당근농부',
   };
+
+  let townId = `9bdfe83b68f3`;
+  const getTownRank = async () => {
+    try {
+      const response = await BackendService.getTownRank(townId);
+      const responseData: any = response.data[`data`];
+      const indexedTownRankData = responseData.map((item: any, index: any) => ({
+        rank: index + 1,
+        ...item,
+      }));
+      setTownRankData(indexedTownRankData);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  useEffect(() => {
+    getTownRank();
+  }, []);
+
   return (
     <>
       <div css={customNav}>
@@ -113,7 +136,7 @@ const Leaderboard = () => {
           </div>
         </div>
         <div css={leaderboardWrapper}>
-          <IndividualLeaderboard userData={sampleUserData} />
+          <IndividualLeaderboard townRankData={townRankData} />
         </div>
         <div css={actionItemWrapper}>
           <Button

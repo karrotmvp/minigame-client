@@ -6,6 +6,7 @@ import { ReactComponent as Karrot } from 'assets/karrot.svg';
 import { useDispatch, useSelector } from 'react-redux';
 import { changeTopUserComment } from 'reducers/topUserReducer';
 import { useState } from 'react';
+import BackendService from 'services/backendService';
 
 const modalStyle = css`
   position: absolute;
@@ -26,7 +27,6 @@ const modalStyle = css`
   padding: 45px 15px 20px;
   border-radius: 21px;
 `;
-
 const largeText = css`
   margin: 15px 0;
 `;
@@ -37,7 +37,6 @@ const horizontalLine = css`
   border: 0.1px solid #e7e7e7;
   // padding: 0;
 `;
-
 const infoText = css`
   font-style: normal;
   font-weight: normal;
@@ -49,7 +48,6 @@ const infoText = css`
   text-align: center;
   margin: 15px 0 23px;
 `;
-
 const textInput = css`
   border: 1px solid #e5e5e5;
   border-radius: 10px;
@@ -77,15 +75,23 @@ const TopUserGameEndModal = ({
 }: // score,
 TopUserGameEndModalProps) => {
   const [topUserComment, setTopUserComment] = useState<string>('');
-  const dispatch = useDispatch();
-
+  // const dispatch = useDispatch();
+  const patchComment = async ({ comment }: any) => {
+    try {
+      const response = await BackendService.patchComment(comment);
+      console.log(response);
+    } catch (error) {
+      console.error(error);
+    }
+  };
   const handleTopUserInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTopUserComment(e.target.value);
   };
 
-  const updateCommentAndViewLeaderboard = () => {
-    dispatch(changeTopUserComment(topUserComment));
+  const handlePatchCommentAndViewLeaderboard = () => {
+    // dispatch(changeTopUserComment(topUserComment));
     // POST: SEND topUserComment TO BACKEND
+    patchComment(topUserComment);
     handleViewLeaderboard();
   };
 
@@ -127,7 +133,7 @@ TopUserGameEndModalProps) => {
               size={`large`}
               color={`primary`}
               text={`등록하기`}
-              onClick={handleViewLeaderboard}
+              onClick={handlePatchCommentAndViewLeaderboard}
             />
           ) : (
             <DisabledButton size={`large`} text={`등록하기`} />

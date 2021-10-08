@@ -26,11 +26,9 @@ const row = ({ rank }: any) => css`
       `
     : null}
 `;
-
 const contentWrapper = css`
   flex: 1;
 `;
-
 const rankStyle = css`
   display: flex;
   align-self: flex-start;
@@ -56,13 +54,11 @@ const userInfo = css`
 
   color: #7c7c7c;
 `;
-
 const scoreStyle = css`
   display: flex;
   justify-content: flex-end;
   flex: 1;
 `;
-
 const commentStyle = css`
   font-style: normal;
   font-weight: 600;
@@ -79,7 +75,7 @@ const horizontalLine = css`
 `;
 
 interface TopUserRowProps {
-  rank: number | string;
+  rank: number;
   nickname: string;
   score: number;
   comment: string;
