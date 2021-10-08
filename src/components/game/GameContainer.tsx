@@ -12,11 +12,10 @@ const fullScreen = css`
 `;
 
 interface ClickerGameProps {
-  score: number;
-  onIncrease: any;
+  onClick: () => void;
 }
 
-const GameContainer = ({ score, onIncrease }: ClickerGameProps) => {
+const GameContainer = ({ onClick }: ClickerGameProps) => {
   const [visible, setVisible] = useState<boolean>(false);
   const [position, setPosition] = useState<number[]>([]);
 
@@ -26,7 +25,7 @@ const GameContainer = ({ score, onIncrease }: ClickerGameProps) => {
   };
   const handleClick = async (e: any) => {
     e.stopPropagation();
-    await onIncrease();
+    await onClick();
     await handleVisibility(e);
     setTimeout(() => {
       setVisible(false);
@@ -35,7 +34,6 @@ const GameContainer = ({ score, onIncrease }: ClickerGameProps) => {
 
   return (
     <div id="clicker-game__container" css={fullScreen} onClick={handleClick}>
-      <h1>{score}</h1>
       <ClickAnimation posX={position[0]} posY={position[1]} visible={visible} />
     </div>
   );

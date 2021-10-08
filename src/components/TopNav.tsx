@@ -13,7 +13,7 @@ const customNav = css`
   padding: 0 0.5rem;
 `;
 
-const custonNavIcon = css`
+const customNavIcon = css`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -39,7 +39,7 @@ const TopNav = ({
 }: TopNavprops) => {
   return (
     <div css={customNav}>
-      <div css={custonNavIcon}>
+      <div css={customNavIcon}>
         {action === `eject` ? (
           <AppEjectionButton />
         ) : action === `back` ? (
