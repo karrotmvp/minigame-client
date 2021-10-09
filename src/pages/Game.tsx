@@ -7,7 +7,7 @@ import { increase, increaseKarrotCount } from 'reducers/counterReducer';
 import GameContainer from '../components/game/GameContainer';
 import { RootState } from '../reducers/rootReducer';
 import background from 'assets/Seocho_background.png';
-import { updateScore } from 'reducers/userDataReducer';
+// import { updateScore } from 'reducers/userDataReducer';
 import IconBack from 'assets/IconBack';
 import { Link } from 'react-router-dom';
 import { ReactComponent as BigKarrot } from 'assets/Seocho_daangn.svg';
@@ -128,9 +128,14 @@ const GameEndButton = ({ handleGameEnd }: GameEndButtonProps) => {
     </button>
   );
 };
+
 const Game = () => {
   const [count, setCount] = useState(0);
   const [modalIsOpen, setIsOpen] = useState(false);
+
+  const { userScore } = useSelector((state: RootState) => ({
+    userScore: state.userDataReducer.score,
+  }));
 
   const { clickCount, karrotCount } = useSelector((state: RootState) => ({
     clickCount: state.counterReducer.clickCount,
@@ -164,7 +169,6 @@ const Game = () => {
         },
       }
     );
-    dispatch(updateScore(karrotCount));
     setIsOpen(true);
   };
 
@@ -222,6 +226,20 @@ const Game = () => {
         }}
       >
         <DefaultGameEndModal closeModal={closeModal} />
+      </Modal>
+
+      <Modal
+        isOpen={userScore === 0 ? true : false}
+        shouldCloseOnOverlayClick={true}
+        contentLabel="Game Direction Popup Modal"
+        css={modalStyle}
+        // style={{
+        //   overlay: {
+        //     background: 'rgba(40, 40, 40, 0.8)',
+        //   },
+        // }}
+      >
+        <div>TEST</div>
       </Modal>
     </>
   );

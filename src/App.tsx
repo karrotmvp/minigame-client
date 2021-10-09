@@ -8,6 +8,8 @@ import { useEffect, useState } from 'react';
 import BackendService from 'services/backendService';
 import ReturningUserHome from 'pages/ReturningUserHome';
 import { Route, BrowserRouter as Router, Switch } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { getUserScore } from 'reducers/userDataReducer';
 
 const appStyle = css`
   height: 100vh;
@@ -15,6 +17,7 @@ const appStyle = css`
 
 function App() {
   const [isNewUser, setIsNewUser] = useState<boolean>(true);
+  const dispatch = useDispatch();
 
   const getCurrentuserInfo = async () => {
     try {
@@ -28,14 +31,15 @@ function App() {
 
   useEffect(() => {
     getCurrentuserInfo().then((data) => {
-      if (data.score < 0) {
+      dispatch(getUserScore(data.score));
+      if (data.score > 0) {
         setIsNewUser(false);
       } else {
         setIsNewUser(true);
       }
     });
-  }, []);
-  console.log(isNewUser);
+  }, [dispatch]);
+
   return (
     <div css={appStyle}>
       <Router>
