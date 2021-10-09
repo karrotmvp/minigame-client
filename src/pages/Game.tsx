@@ -11,24 +11,60 @@ import { RootState } from '../reducers/rootReducer';
 import background from 'assets/Seocho_background.png';
 import karrot from 'assets/Seocho_daangn.png';
 import BackendService from 'services/backendService';
-import { addData, updateScore } from 'reducers/userDataReducer';
+import { updateScore } from 'reducers/userDataReducer';
+import IconBack from 'assets/IconBack';
+import { Link } from 'react-router-dom';
+import { ReactComponent as BigKarrot } from 'assets/Seocho_daangn.svg';
+// nav
+const customNav = css`
+  left: 0;
+  width: 100%;
+  // height: 100%;
+  top: 0;
+  display: flex;
+  flex-flow: row;
+  justify-content: space-between;
+  width: 100%;
+  height: 44px;
+  padding: 0 0.5rem;
+`;
 
-const customNavIcon = css`
+const customNavIcon1 = css`
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   opacity: 1;
   transition: opacity 300ms;
+  width: 2.25rem;
   height: 2.75rem;
   text-decoration: none;
   outline: none;
   z-index: 10;
 `;
+
+const customNavIcon2 = css`
+  display: flex;
+  // flex-flow: row;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 1;
+  transition: opacity 300ms;
+  width: auto;
+  height: 2.75rem;
+  text-decoration: none;
+  outline: none;
+  z-index: 10;
+`;
+//
+
 const divStyle = css`
   background-image: url(${background});
   background-size: cover;
-  height: 100%;
+  height: calc(100% - 2.75rem);
+  display: flex;
+  flex-flow: column;
 `;
 const scoreWrapper = css`
   display: flex;
@@ -37,7 +73,7 @@ const scoreWrapper = css`
   justify-content: center;
 `;
 const karrotCountStyle = css`
-  margin-top: 5%;
+  margin-top: 10%;
   font-style: normal;
   font-weight: bold;
   font-size: 50px;
@@ -77,15 +113,13 @@ const GameEndButton = ({ handleGameEnd }: GameEndButtonProps) => {
   );
 };
 const Game = () => {
-  const history = useHistory();
+  // const history = useHistory();
   // game score
   const { clickCount, karrotCount } = useSelector((state: RootState) => ({
     clickCount: state.counterReducer.clickCount,
     karrotCount: state.counterReducer.karrotCount,
   }));
   const [count, setCount] = useState(0);
-  const [combinedScore, setCombinedScore] = useState(karrotCount);
-  const [isTopRanked, setIsTopRanked] = useState(false);
   const [currentRank, setCurrentRank] = useState(0);
 
   const dispatch = useDispatch();
@@ -94,7 +128,7 @@ const Game = () => {
   const handleClick = async () => {
     await countUp();
     setCount(count + 1);
-    console.log(count);
+    console.log('count');
     if (count >= 9) {
       await countUpKarrot();
       setCount(0);
@@ -124,45 +158,61 @@ const Game = () => {
 
     getCurrentuserInfo().then((data) => {
       console.log(data);
-      setCombinedScore(data.score);
-      if (data.rank <= 10) {
-        setIsTopRanked(true);
-      }
+
       setCurrentRank(data.rank);
     });
-    history.push('/game/modal');
+    // history.push('/game/modal');
   };
   const handleCloseModal = () => {
-    history.goBack();
+    // history.goBack();
   };
 
   return (
     <>
-      <ScreenHelmet
+      {/* <ScreenHelmet
         appendRight={
           <div css={customNavIcon}>
             <GameEndButton handleGameEnd={handleGameEnd} />
           </div>
         }
-      />
-      <GameContainer onClick={handleClick} />
-      <div css={divStyle}>
-        <div css={scoreWrapper}>
-          <h1 css={karrotCountStyle}>{karrotCount}</h1>
-          <h2 css={clickCountStyle}>{clickCount}</h2>
-          <img src={karrot} alt="" />
+      /> */}
+      <div css={customNav}>
+        <div css={customNavIcon1}>
+          <Link to="/returning-user">
+            <IconBack />
+          </Link>
+        </div>
+        <div css={customNavIcon2}>
+          <Link to="/game/modal">
+            <GameEndButton handleGameEnd={handleGameEnd} />
+          </Link>
         </div>
       </div>
 
-      <Route path="/game/modal">
-        <DefaultGameEndModal
-          handleCloseModal={handleCloseModal}
-          currentRank={currentRank}
-          currentSessionScore={karrotCount}
-          combinedScore={combinedScore}
-          isTopRanked={isTopRanked}
-        />
-      </Route>
+      <GameContainer onClick={handleClick} />
+
+      <div css={divStyle} onClick={handleClick}>
+        <div css={scoreWrapper}>
+          <h1 css={karrotCountStyle}>{karrotCount}</h1>
+          <h2 css={clickCountStyle}>{clickCount}</h2>
+        </div>
+        <div
+          style={{
+            flex: 1,
+            display: 'flex',
+            alignItems: 'flex-end',
+            justifyContent: 'center',
+            paddingBottom: '2rem',
+          }}
+        >
+          <BigKarrot
+            style={{
+              height: '25rem',
+              width: 'auto',
+            }}
+          />
+        </div>
+      </div>
     </>
   );
 };

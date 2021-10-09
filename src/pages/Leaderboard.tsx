@@ -11,9 +11,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'reducers/rootReducer';
 import { reset } from 'reducers/counterReducer';
 import TopUserRow from 'components/leaderboard/TopUserRow';
-import BackendService from 'services/backendService';
-import { useEffect, useState } from 'react';
-import { addData } from 'reducers/userDataReducer';
 import { sampleUserData } from 'sampleUserData';
 
 const customNav = css`
@@ -117,7 +114,7 @@ const Leaderboard = () => {
           </div>
         </div>
         <div css={leaderboardWrapper}>
-          <IndividualLeaderboard townRankData={sampleUserData} />
+          <IndividualLeaderboard />
         </div>
         <div css={actionItemWrapper}>
           <Button

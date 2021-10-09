@@ -63,7 +63,7 @@ const NewUserHome = ({ townRankData }: any) => {
 
   return (
     <>
-      <ScreenHelmet title="홈" customCloseButton={<IconClose />} />
+      {/* <ScreenHelmet title="홈" customCloseButton={<IconClose />} /> */}
       <div css={divStyle}>
         <div css={headingWrapper}>
           <h1 css={largeTextStyle}>
@@ -75,7 +75,7 @@ const NewUserHome = ({ townRankData }: any) => {
           </h2>
         </div>
         <div css={leaderboardWrapper}>
-          <IndividualLeaderboard townRankData={sampleUserData} />
+          <IndividualLeaderboard />
         </div>
         <div css={actionItemWrapper}>
           <Button

@@ -3,8 +3,6 @@ import { css } from '@emotion/react';
 import { emphasizedTextStyle, largeTextStyle } from 'styles/textStyle';
 import Button, { DisabledButton } from '../Button';
 import { ReactComponent as Karrot } from 'assets/karrot.svg';
-import { useDispatch, useSelector } from 'react-redux';
-import { changeTopUserComment } from 'reducers/topUserReducer';
 import { useState } from 'react';
 import BackendService from 'services/backendService';
 
