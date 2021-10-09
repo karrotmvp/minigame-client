@@ -4,8 +4,12 @@ import { emphasizedTextStyle, largeTextStyle } from 'styles/textStyle';
 import Button from '../Button';
 import { ReactComponent as Karrot } from 'assets/karrot.svg';
 import TopUserGameEndModal from './TopUserGameEndModal';
-import { useNavigator } from '@karrotframe/navigator';
-import { Route } from 'react-router';
+import { useHistory } from 'react-router';
+import BackendService from 'services/backendService';
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { RootState } from 'reducers/rootReducer';
+import Modal from 'react-modal';
 
 const modalStyle = css`
   position: absolute;
@@ -26,7 +30,6 @@ const modalStyle = css`
   padding: 45px 15px 20px;
   border-radius: 21px;
 `;
-
 const largeText = css`
   margin: 15px 0;
 `;
@@ -50,86 +53,107 @@ const totalKarrotText = css`
   margin: 15px 0 23px;
 `;
 
+const initialState = {
+  nickname: '',
+  score: 0,
+  rank: 100,
+  comment: '',
+};
+
 interface DefaultGameEndModalProps {
-  handleCloseModal: () => void;
-  score: number;
-  currentRank: number;
+  closeModal: () => void;
 }
-const DefaultGameEndModal = ({
-  handleCloseModal,
-  score,
-  currentRank,
-}: DefaultGameEndModalProps) => {
-  const { push } = useNavigator();
+const DefaultGameEndModal = ({ closeModal }: DefaultGameEndModalProps) => {
+  const [modalIsOpen, setIsOpen] = useState(false);
+  const [userData, setUserData] = useState(initialState);
+
+  const { karrotCount } = useSelector((state: RootState) => ({
+    karrotCount: state.counterReducer.karrotCount,
+  }));
+
+  let history = useHistory();
 
   const handleViewLeaderboard = () => {
-    push('/leaderboard');
+    history.push('/leaderboard');
   };
 
-  const handleTopUserCommentModal = () => {
-    push('game/modal/top-user');
+  const getCurrentuserInfo = async () => {
+    try {
+      const response = await BackendService.getCurrentUserInfo();
+      const responseData: any = response.data[`data`];
+      return responseData;
+    } catch (error) {
+      console.error(`getCurrentUserInfo: ${error}`);
+    }
   };
+
+  useEffect(() => {
+    getCurrentuserInfo().then((data) => {
+      setUserData({
+        nickname: data[`nickname`],
+        score: data[`score`],
+        rank: data[`rank`],
+        comment: data[`comment`],
+      });
+    });
+  }, []);
 
   return (
-    <div
-      style={{
-        position: 'absolute',
-        inset: 0,
-        backgroundColor: 'rgba(10, 10, 10, .5)',
-        backdropFilter: 'blur(3px)',
-      }}
-    >
-      <div css={modalStyle}>
-        <Karrot />
-        <h1
-          css={[largeTextStyle, largeText]}
-          style={{ textAlign: 'center', flex: '0 1 auto' }}
-        >
-          <span css={emphasizedTextStyle}>{score}개</span>의 당근을
-          <br />
-          수확했어요!
-        </h1>
-        {/* <div style={{ flex: '1' }}></div> */}
-        <hr css={horizontalLine} />
-        <p css={totalKarrotText}>총 당근 234,128개</p>
-        <div
-          style={{
-            width: `100%`,
-            display: `flex`,
+    <>
+      <Karrot />
+      <h1
+        css={[largeTextStyle, largeText]}
+        style={{ textAlign: 'center', flex: '0 1 auto' }}
+      >
+        <span css={emphasizedTextStyle}>{karrotCount}개</span>의 당근을
+        <br />
+        수확했어요!
+      </h1>
+      <hr css={horizontalLine} />
+      <p css={totalKarrotText}>총 당근 {userData.score}개</p>
+      <div
+        style={{
+          width: `100%`,
+          display: `flex`,
 
-            flex: '0 1 40px',
-            justifyContent: `space-evenly`,
-            gap: '10px',
-          }}
-        >
-          <Button
-            size={`medium`}
-            color={`secondary`}
-            text={`이어하기`}
-            onClick={handleCloseModal}
-          />
-          <Button
-            size={`medium`}
-            color={`primary`}
-            text={`랭킹보기`}
-            onClick={() => {
-              if (currentRank <= 10) {
-                handleTopUserCommentModal();
-              } else {
-                handleViewLeaderboard();
-              }
-            }}
-          />
-        </div>
-      </div>
-      <Route path="/game/modal/top-user">
-        <TopUserGameEndModal
-          handleViewLeaderboard={handleViewLeaderboard}
-          // score={score}
-          currentRank={currentRank}
+          flex: '0 1 40px',
+          justifyContent: `space-evenly`,
+          gap: '10px',
+        }}
+      >
+        <Button
+          size={`medium`}
+          color={`secondary`}
+          text={`이어하기`}
+          onClick={closeModal}
         />
-      </Route>
-    </div>
+        <Button
+          size={`medium`}
+          color={`primary`}
+          text={`랭킹보기`}
+          onClick={() => {
+            if (userData.rank <= 10) {
+              setIsOpen(true);
+            } else {
+              handleViewLeaderboard();
+            }
+          }}
+        />
+      </div>
+      <Modal
+        isOpen={modalIsOpen}
+        shouldCloseOnOverlayClick={false}
+        contentLabel="Top-User Game End Modal"
+        css={modalStyle}
+        style={{
+          overlay: {
+            background: 'rgba(40, 40, 40, 0.8)',
+          },
+        }}
+      >
+        <TopUserGameEndModal rank={userData.rank} />
+      </Modal>
+    </>
   );
 };
 

@@ -1,5 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
+import { useCallback, useEffect, useState } from 'react';
+import BackendService from 'services/backendService';
 import DefaultUserRow from './DefaultUserRow';
 import TopUserRow from './TopUserRow';
 
@@ -30,17 +32,36 @@ const infoText = css`
   color: #7c7c7c;
 `;
 
-interface IndividualLeaderboardProps {
-  userData: any[];
-}
-const IndividualLeaderboard = ({ userData }: IndividualLeaderboardProps) => {
+const IndividualLeaderboard = () => {
+  const [townRankData, setTownRankData] = useState<any[]>([]);
+
+  let townId = `9bdfe83b68f3`;
+  const getTownRank = useCallback(async () => {
+    try {
+      const response = await BackendService.getTownRank(townId);
+      const responseData: any = response.data[`data`];
+      const indexedTownRankData = responseData.map((item: any, index: any) => ({
+        rank: index + 1,
+        ...item,
+      }));
+      return indexedTownRankData;
+    } catch (error) {
+      console.error(error);
+    }
+  }, [townId]);
+
+  useEffect(() => {
+    getTownRank().then((data) => {
+      setTownRankData(data);
+    });
+  }, [getTownRank]);
   return (
     <div css={divStyle}>
       <div css={leaderboardWrapperStyle}>
-        {userData.slice(0, 10).map((user) => {
+        {townRankData.slice(0, 10).map((user) => {
           return (
             <TopUserRow
-              key={user.id}
+              key={user.userId}
               rank={user.rank}
               nickname={user.nickname}
               comment={user.comment}
@@ -48,16 +69,15 @@ const IndividualLeaderboard = ({ userData }: IndividualLeaderboardProps) => {
             />
           );
         })}
-        {/* <hr css={horizontalLine} /> */}
         <p css={infoText}>
           🎉 송파구 TOP 10 🎉 이 되어서
           <br />
           이웃들에게 한 마디를 남겨보세요!
         </p>
-        {userData.slice(10).map((user) => {
+        {townRankData.slice(10).map((user) => {
           return (
             <DefaultUserRow
-              key={user.id}
+              key={user.userId}
               rank={user.rank}
               nickname={user.nickname}
               score={user.score}

@@ -1,28 +1,27 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import IndividualLeaderboard from '../components/leaderboard/IndividualLeaderboard';
-import { AppEjectionButton } from 'components/AppEjectionButton';
-import { largeTextStyle, emphasizedTextStyle } from 'styles/textStyle';
-import Button from 'components/Button';
 import DefaultUserRow from 'components/leaderboard/DefaultUserRow';
-import { useDispatch } from 'react-redux';
-import { reset } from 'reducers/counterReducer';
 import TopUserRow from 'components/leaderboard/TopUserRow';
-import { useEffect, useState } from 'react';
+import { emphasizedTextStyle, largeTextStyle } from 'styles/textStyle';
+import Button from 'components/Button';
+import IndividualLeaderboard from 'components/leaderboard/IndividualLeaderboard';
 import BackendService from 'services/backendService';
-import { useHistory } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { AppEjectionButton } from 'components/AppEjectionButton';
+import { Link } from 'react-router-dom';
 
 // nav
 const customNav = css`
   left: 0;
   width: 100%;
+  // height: 100%;
   top: 0;
   display: flex;
   width: 100%;
   height: 44px;
   padding: 0 0.5rem;
 `;
-const customNavIcon = css`
+const custonNavIcon = css`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -43,7 +42,7 @@ const divStyle = css`
 `;
 const headingWrapper = css`
   flex: 1;
-  padding: 20px 26px 20px;
+  padding: 20px 26px 20px; ;
 `;
 const leaderboardWrapper = css`
   overflow: auto;
@@ -51,34 +50,27 @@ const leaderboardWrapper = css`
 `;
 const actionItemWrapper = css`
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   padding: 16px 24px 34px;
   border-top: 1px solid #ebebeb;
   box-sizing: border-box;
   box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+
+  text-decoration: none;
 `;
-const currentUserInfoRow = css`
+const currentuserDataInfoRow = css`
   margin: 20px 0 10px;
 `;
 
 const initialState = {
-  nickname: '서초구 이웃',
+  nickname: '',
   score: 0,
-  rank: 99999,
+  rank: 0,
   comment: '',
 };
 
-const Leaderboard = () => {
+const ReturningUserHome = () => {
   const [userData, setUserData] = useState(initialState);
-  const history = useHistory();
-  const dispatch = useDispatch();
-
-  const onReset = () => dispatch(reset());
-
-  const handlePlayAgain = async () => {
-    onReset();
-    history.push('/game');
-  };
 
   const getCurrentuserInfo = async () => {
     try {
@@ -100,23 +92,23 @@ const Leaderboard = () => {
       });
     });
   }, []);
+
   return (
     <>
       <div css={customNav}>
-        <div css={customNavIcon}>
+        <div css={custonNavIcon}>
           <AppEjectionButton />
         </div>
       </div>
-
       <div css={divStyle}>
         <div css={headingWrapper}>
           <h1 css={largeTextStyle}>
             <span css={emphasizedTextStyle}>{userData.nickname}</span>님은
             <br />
-            서초구에서 <span css={emphasizedTextStyle}>{userData.rank}위</span>
-            에요!
+            우리동네에서
+            <span css={emphasizedTextStyle}> {userData.rank}위</span>에요!
           </h1>
-          <div css={currentUserInfoRow}>
+          <div css={currentuserDataInfoRow}>
             {userData.rank <= 10 ? (
               <TopUserRow
                 rank={userData.rank}
@@ -136,23 +128,17 @@ const Leaderboard = () => {
         <div css={leaderboardWrapper}>
           <IndividualLeaderboard />
         </div>
-        <div css={actionItemWrapper}>
+        <Link to="/game" css={actionItemWrapper}>
           <Button
-            size={`medium`}
-            color={`secondary`}
-            text={`다시하기`}
-            onClick={handlePlayAgain}
-          />
-          <Button
-            size={`medium`}
+            size={`large`}
             color={`primary`}
-            text={`자랑하기`}
-            onClick={handlePlayAgain}
+            text={`시작하기`}
+            onClick={() => {}}
           />
-        </div>
+        </Link>
       </div>
     </>
   );
 };
 
-export default Leaderboard;
+export default ReturningUserHome;

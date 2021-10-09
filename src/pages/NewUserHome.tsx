@@ -1,7 +1,5 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { ScreenHelmet, useNavigator } from '@karrotframe/navigator';
-import { sampleUserData } from 'sampleUserData';
 import {
   emphasizedTextStyle,
   largeTextStyle,
@@ -10,19 +8,44 @@ import {
 import Button from '../components/Button';
 import IndividualLeaderboard from '../components/leaderboard/IndividualLeaderboard';
 import { getMini } from 'api/mini';
-import IconClose from 'assets/IconClose';
+import { AppEjectionButton } from 'components/AppEjectionButton';
+import { useHistory } from 'react-router-dom';
 
+const axios = require('axios').default;
+
+// nav
+const customNav = css`
+  left: 0;
+  width: 100%;
+  // height: 100%;
+  top: 0;
+  display: flex;
+  width: 100%;
+  height: 44px;
+  padding: 0 0.5rem;
+`;
+const custonNavIcon = css`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 1;
+  transition: opacity 300ms;
+  width: 2.25rem;
+  height: 2.75rem;
+  text-decoration: none;
+  outline: none;
+  z-index: 10;
+`;
 const divStyle = css`
   display: flex;
   flex-flow: column;
-  height: 100%;
+  height: calc(100% - 2.75rem);
 `;
-
 const headingWrapper = css`
   flex: 1;
   padding: 20px 26px 20px; ;
 `;
-
 const leaderboardWrapper = css`
   overflow: auto;
   padding: 0 26px;
@@ -35,37 +58,55 @@ const actionItemWrapper = css`
   box-sizing: border-box;
   box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
 `;
-interface NewUserHomeProps {
-  setIsNewUser: any;
-}
-const NewUserHome = ({ setIsNewUser }: NewUserHomeProps) => {
-  const { push } = useNavigator();
+
+const NewUserHome = () => {
+  let history = useHistory();
+
   const mini = getMini();
-  const appId = process.env.REACT_APP_APP_ID;
   const handleNewUserAgreement = () => {
     mini.startPreset({
       preset:
         'https://mini-assets.kr.karrotmarket.com/presets/common-login/alpha.html',
       params: {
-        appId: `${appId}`,
+        appId: `${process.env.REACT_APP_APP_ID}`,
       },
       onSuccess: function (result) {
         if (result && result.code) {
           console.log(result);
           console.log(`code: ${result.code}`);
-          setIsNewUser(false);
-          push('/game');
+          axios
+            .post(
+              `${process.env.REACT_APP_BASE_URL}/oauth`,
+              {
+                code: result.code,
+                regionId: `9bdfe83b68f3`,
+              },
+              {
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+              }
+            )
+            .then((response: any) => {
+              console.log(response);
+              history.push('/game');
+            });
         }
       },
     });
   };
+
   return (
     <>
-      <ScreenHelmet title="홈" customCloseButton={<IconClose />} />
+      <div css={customNav}>
+        <div css={custonNavIcon}>
+          <AppEjectionButton />
+        </div>
+      </div>
       <div css={divStyle}>
         <div css={headingWrapper}>
           <h1 css={largeTextStyle}>
-            <span css={emphasizedTextStyle}>송파구 이웃</span>님, 아직 기록이
+            <span css={emphasizedTextStyle}>서초구 이웃</span>님, 아직 기록이
             없어요
           </h1>
           <h2 css={mediumTextStyle}>
@@ -73,11 +114,11 @@ const NewUserHome = ({ setIsNewUser }: NewUserHomeProps) => {
           </h2>
         </div>
         <div css={leaderboardWrapper}>
-          <IndividualLeaderboard userData={sampleUserData} />
+          <IndividualLeaderboard />
         </div>
         <div css={actionItemWrapper}>
           <Button
-            size={`fullWidth`}
+            size={`large`}
             color={`primary`}
             text={`시작하기`}
             onClick={handleNewUserAgreement}
