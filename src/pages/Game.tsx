@@ -16,6 +16,7 @@ import IconBack from 'assets/IconBack';
 import { Link } from 'react-router-dom';
 import { ReactComponent as BigKarrot } from 'assets/Seocho_daangn.svg';
 import Modal from 'react-modal';
+const axios = require('axios').default;
 
 // nav
 const customNav = css`
@@ -139,6 +140,11 @@ const modalBackground = {
     background: '#FFFF00',
   },
 };
+
+const baseURL = `http://e0fe-222-106-174-149.ngrok.io/api/v1`;
+const ACCESS_TOEKEN =
+  'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqIiwiZXhwIjoxNjMzODQ2MTI2fQ.hQ9WWveNCatWeJTbimRi_bP1wqGuxBzdx7_egYE8JT2yJpVF2_qT7LRidUjy5m-557FP3jKRNcFhNDr1KRTUcg';
+
 Modal.setAppElement('body');
 
 interface GameEndButtonProps {
@@ -189,14 +195,14 @@ const Game = () => {
     }
   };
 
-  const patchCurrentScore = async ({ score }: any) => {
-    try {
-      const response = await BackendService.patchCurrentScore(score);
-      console.log(response);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  // const patchCurrentScore = async ({ karrotCount }: any) => {
+  //   try {
+  //     const response = await BackendService.patchCurrentScore(karrotCount);
+  //     console.log(response);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
   // const getCurrentuserInfo = async () => {
   //   try {
   //     const response = await BackendService.getCurrentUserInfo();
@@ -207,7 +213,20 @@ const Game = () => {
   //   }
   // };
   const handleGameEnd = () => {
-    patchCurrentScore(karrotCount);
+    axios.patch(
+      `${baseURL}/user-rank`,
+      {
+        score: karrotCount,
+      },
+      {
+        headers: {
+          Authorization: ACCESS_TOEKEN,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    // patchCurrentScore(karrotCount);
+    console.log(karrotCount);
     dispatch(updateScore(karrotCount));
     setIsOpen(true);
 

@@ -6,6 +6,7 @@ import { ReactComponent as Karrot } from 'assets/karrot.svg';
 import { useState } from 'react';
 import BackendService from 'services/backendService';
 import { useHistory } from 'react-router';
+const axios = require('axios').default;
 
 const modalStyle = css`
   position: absolute;
@@ -63,6 +64,10 @@ const bottomActionDiv = css`
   // justifyContent: space-evenly;
 `;
 
+const baseURL = `http://e0fe-222-106-174-149.ngrok.io/api/v1`;
+const ACCESS_TOEKEN =
+  'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqIiwiZXhwIjoxNjMzODQ2MTI2fQ.hQ9WWveNCatWeJTbimRi_bP1wqGuxBzdx7_egYE8JT2yJpVF2_qT7LRidUjy5m-557FP3jKRNcFhNDr1KRTUcg';
+
 interface TopUserGameEndModalProps {
   // handleViewLeaderboard: () => void;
   // score: number;
@@ -76,14 +81,14 @@ TopUserGameEndModalProps) => {
   // const dispatch = useDispatch();
   let history = useHistory();
 
-  const patchComment = async ({ comment }: any) => {
-    try {
-      const response = await BackendService.patchComment(comment);
-      console.log(response);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  // const patchComment = async ({ comment }: any) => {
+  //   try {
+  //     const response = await BackendService.patchComment(comment);
+  //     console.log(response);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
   const handleTopUserInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTopUserComment(e.target.value);
   };
@@ -91,8 +96,20 @@ TopUserGameEndModalProps) => {
   const handlePatchCommentAndViewLeaderboard = () => {
     // dispatch(changeTopUserComment(topUserComment));
     // POST: SEND topUserComment TO BACKEND
-    patchComment(topUserComment);
+    // patchComment(topUserComment);
     // handleViewLeaderboard();
+    axios.patch(
+      `${baseURL}/user-rank/comment`,
+      {
+        comment: topUserComment,
+      },
+      {
+        headers: {
+          Authorization: ACCESS_TOEKEN,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
     history.push('/leaderboard');
   };
 

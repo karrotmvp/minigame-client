@@ -105,7 +105,7 @@ const DefaultGameEndModal = ({ closeModal }: DefaultGameEndModalProps) => {
       });
     });
   }, []);
-  console.log(userData);
+
   return (
     <>
       <Karrot />

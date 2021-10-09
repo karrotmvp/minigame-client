@@ -100,6 +100,7 @@ const Leaderboard = () => {
     try {
       const response = await BackendService.getCurrentUserInfo();
       const responseData: any = response.data[`data`];
+      console.log(responseData);
       return responseData;
     } catch (error) {
       console.error(error);

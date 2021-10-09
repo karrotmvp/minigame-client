@@ -1,8 +1,8 @@
 // import axios from "axios";
 const axios = require('axios').default;
 
-const baseURL = `http://karrotraisedev-env.eba-23m2jwgv.ap-northeast-2.elasticbeanstalk.com/api/v1`;
-const ACCESS_TOEKEN = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhIiwiZXhwIjoxNjMzODQzOTc2fQ.LjCQGxtcD5kTZixvbAuffSeeyEl_VJAH7mGtcBNuDb5Ix4vuuSc7Z7aJCulCfQYQm8UGG9cscyEngLN3AMQiAw";
+const baseURL = `http://e0fe-222-106-174-149.ngrok.io/api/v1`;
+const ACCESS_TOEKEN = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqIiwiZXhwIjoxNjMzODQ2MTI2fQ.hQ9WWveNCatWeJTbimRi_bP1wqGuxBzdx7_egYE8JT2yJpVF2_qT7LRidUjy5m-557FP3jKRNcFhNDr1KRTUcg";
 
 // interface BackendServiceData {
 //   townId?: any | null,
@@ -28,22 +28,27 @@ const getCurrentUserInfo = async() => {
 }
 
 const patchCurrentScore = async(score: number) => {
+  console.log(score)
   return await axios.patch(`${baseURL}/user-rank`, {
-    "score": score
+    score: score
   }, {
     headers: {
-      "Authorization": ACCESS_TOEKEN
+      Authorization: ACCESS_TOEKEN,
+      "Content-Type": "application/json"
+
     }
   })
 }
 
 const patchComment = async(comment: string) => {
   return await axios.patch(`${baseURL}/user-rank/comment`, {
-    "comment": comment
+    comment: comment
   }, {
     headers: {
-      "Authorization": ACCESS_TOEKEN
+      "Authorization": ACCESS_TOEKEN,
+      "Content-Type": "application/json"
     }
+    
   })
 }
 const BackendService = {
