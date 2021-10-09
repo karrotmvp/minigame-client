@@ -8,19 +8,44 @@ import {
 import Button from '../components/Button';
 import IndividualLeaderboard from '../components/leaderboard/IndividualLeaderboard';
 import { getMini } from 'api/mini';
-import BackendService from 'services/backendService';
+import { AppEjectionButton } from 'components/AppEjectionButton';
+import { useHistory } from 'react-router-dom';
 
+const axios = require('axios').default;
+
+// nav
+const customNav = css`
+  left: 0;
+  width: 100%;
+  // height: 100%;
+  top: 0;
+  display: flex;
+  width: 100%;
+  height: 44px;
+  padding: 0 0.5rem;
+`;
+const custonNavIcon = css`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 1;
+  transition: opacity 300ms;
+  width: 2.25rem;
+  height: 2.75rem;
+  text-decoration: none;
+  outline: none;
+  z-index: 10;
+`;
 const divStyle = css`
   display: flex;
   flex-flow: column;
-  height: 100%;
+  height: calc(100% - 2.75rem);
 `;
-
 const headingWrapper = css`
   flex: 1;
   padding: 20px 26px 20px; ;
 `;
-
 const leaderboardWrapper = css`
   overflow: auto;
   padding: 0 26px;
@@ -35,22 +60,37 @@ const actionItemWrapper = css`
 `;
 
 const NewUserHome = () => {
+  let history = useHistory();
+
   const mini = getMini();
-  const appId = process.env.REACT_APP_APP_ID;
   const handleNewUserAgreement = () => {
     mini.startPreset({
       preset:
         'https://mini-assets.kr.karrotmarket.com/presets/common-login/alpha.html',
       params: {
-        appId: `${appId}`,
+        appId: `${process.env.REACT_APP_APP_ID}`,
       },
       onSuccess: function (result) {
         if (result && result.code) {
           console.log(result);
           console.log(`code: ${result.code}`);
-          BackendService.postOauth(result.code, `9bdfe83b68f3`).then(
-            (data: any) => console.log(data)
-          );
+          axios
+            .post(
+              `${process.env.REACT_APP_BASE_URL}/oauth`,
+              {
+                code: result.code,
+                regionId: `9bdfe83b68f3`,
+              },
+              {
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+              }
+            )
+            .then((response: any) => {
+              console.log(response);
+              history.push('/game');
+            });
         }
       },
     });
@@ -58,6 +98,11 @@ const NewUserHome = () => {
 
   return (
     <>
+      <div css={customNav}>
+        <div css={custonNavIcon}>
+          <AppEjectionButton />
+        </div>
+      </div>
       <div css={divStyle}>
         <div css={headingWrapper}>
           <h1 css={largeTextStyle}>
@@ -73,7 +118,7 @@ const NewUserHome = () => {
         </div>
         <div css={actionItemWrapper}>
           <Button
-            size={`fullWidth`}
+            size={`large`}
             color={`primary`}
             text={`시작하기`}
             onClick={handleNewUserAgreement}
