@@ -2,12 +2,13 @@
 import { css } from '@emotion/react';
 import { useState } from 'react';
 import ClickAnimation from './ClickAnimation';
+import BigKarrot from 'assets/Seocho_daangn.svg';
 
 const fullScreen = css`
   height: 100%;
   position: absolute;
   left: 0;
-  width: 100%;
+  height: calc(100% - 2.75rem);
   overflow: hidden;
 `;
 
@@ -33,9 +34,15 @@ const GameContainer = ({ onClick }: ClickerGameProps) => {
   };
 
   return (
-    <div id="clicker-game__container" css={fullScreen} onClick={handleClick}>
-      <ClickAnimation posX={position[0]} posY={position[1]} visible={visible} />
-    </div>
+    <>
+      <div id="clicker-game__container" css={fullScreen} onClick={handleClick}>
+        <ClickAnimation
+          posX={position[0]}
+          posY={position[1]}
+          visible={visible}
+        />
+      </div>
+    </>
   );
 };
 
