@@ -15,6 +15,8 @@ import { updateScore } from 'reducers/userDataReducer';
 import IconBack from 'assets/IconBack';
 import { Link } from 'react-router-dom';
 import { ReactComponent as BigKarrot } from 'assets/Seocho_daangn.svg';
+import Modal from 'react-modal';
+
 // nav
 const customNav = css`
   left: 0;
@@ -102,6 +104,43 @@ const gameEndButtonStyle = css`
 
   color: #cc6023;
 `;
+
+const customStyles = {
+  content: {
+    top: '50%',
+    left: '50%',
+    right: 'auto',
+    bottom: 'auto',
+    marginRight: '-50%',
+    transform: 'translate(-50%, -50%)',
+  },
+};
+const modalStyle = css`
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 80%;
+  max-width: 400px;
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  background: #fff;
+  // top: 25px;
+  // inset: 10% 8% 10%;
+  padding: 45px 15px 20px;
+  border-radius: 21px;
+`;
+const modalBackground = {
+  overlay: {
+    background: '#FFFF00',
+  },
+};
+Modal.setAppElement('body');
+
 interface GameEndButtonProps {
   handleGameEnd: () => void;
 }
@@ -120,7 +159,22 @@ const Game = () => {
     karrotCount: state.counterReducer.karrotCount,
   }));
   const [count, setCount] = useState(0);
-  const [currentRank, setCurrentRank] = useState(0);
+  // const [currentRank, setCurrentRank] = useState(0);
+
+  // let subtitle;
+  const [modalIsOpen, setIsOpen] = useState(false);
+  function openModal() {
+    setIsOpen(true);
+  }
+
+  function afterOpenModal() {
+    // references are now sync'd and can be accessed.
+    // subtitle.style.color = '#f00';
+  }
+
+  function closeModal() {
+    setIsOpen(false);
+  }
 
   const dispatch = useDispatch();
   const countUp = async () => dispatch(increase());
@@ -143,24 +197,25 @@ const Game = () => {
       console.error(error);
     }
   };
-  const getCurrentuserInfo = async () => {
-    try {
-      const response = await BackendService.getCurrentUserInfo();
-      const responseData: any = response.data[`data`];
-      return responseData;
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  // const getCurrentuserInfo = async () => {
+  //   try {
+  //     const response = await BackendService.getCurrentUserInfo();
+  //     const responseData: any = response.data[`data`];
+  //     return responseData;
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
   const handleGameEnd = () => {
     patchCurrentScore(karrotCount);
     dispatch(updateScore(karrotCount));
+    setIsOpen(true);
 
-    getCurrentuserInfo().then((data) => {
-      console.log(data);
+    // getCurrentuserInfo().then((data) => {
+    //   console.log(data);
 
-      setCurrentRank(data.rank);
-    });
+    //   setCurrentRank(data.rank);
+    // });
     // history.push('/game/modal');
   };
   const handleCloseModal = () => {
@@ -183,9 +238,9 @@ const Game = () => {
           </Link>
         </div>
         <div css={customNavIcon2}>
-          <Link to="/game/modal">
-            <GameEndButton handleGameEnd={handleGameEnd} />
-          </Link>
+          {/* <Link to="/game/modal"> */}
+          <GameEndButton handleGameEnd={handleGameEnd} />
+          {/* </Link> */}
         </div>
       </div>
 
@@ -213,6 +268,22 @@ const Game = () => {
           />
         </div>
       </div>
+      <Modal
+        isOpen={modalIsOpen}
+        onAfterOpen={afterOpenModal}
+        onRequestClose={closeModal}
+        // style={customStyles}
+        shouldCloseOnOverlayClick={false}
+        contentLabel="Default Game End Modal"
+        css={modalStyle}
+        style={{
+          overlay: {
+            background: 'rgba(40, 40, 40, 0.8)',
+          },
+        }}
+      >
+        <DefaultGameEndModal closeModal={closeModal} />
+      </Modal>
     </>
   );
 };

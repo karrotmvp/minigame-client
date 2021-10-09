@@ -12,6 +12,9 @@ import { RootState } from 'reducers/rootReducer';
 import { reset } from 'reducers/counterReducer';
 import TopUserRow from 'components/leaderboard/TopUserRow';
 import { sampleUserData } from 'sampleUserData';
+import { useEffect, useState } from 'react';
+import BackendService from 'services/backendService';
+import { useHistory } from 'react-router';
 
 const customNav = css`
   left: 0;
@@ -64,28 +67,55 @@ const actionItemWrapper = css`
 const currentUserInfoRow = css`
   margin: 20px 0 10px;
 `;
-
+const initialState = {
+  nickname: '',
+  score: 0,
+  rank: 0,
+  comment: '',
+};
 const Leaderboard = () => {
-  const { push } = useNavigator();
+  const [userData, setUserData] = useState(initialState);
+  const history = useHistory();
+  // const { push } = useNavigator();
   const dispatch = useDispatch();
 
   const onReset = () => dispatch(reset());
 
   const handlePlayAgain = async () => {
     onReset();
-    await push('/game');
+    history.push('/game');
+    // await push('/game');
   };
   // Data from backend (GET)
 
-  const { nickname, score, rank, comment } = useSelector(
-    (state: RootState) => ({
-      nickname: state.userDataReducer.nickname,
-      score: state.userDataReducer.score,
-      rank: state.userDataReducer.rank,
-      comment: state.userDataReducer.comment,
-    })
-  );
+  // const { nickname, score, rank, comment } = useSelector(
+  //   (state: RootState) => ({
+  //     nickname: state.userDataReducer.nickname,
+  //     score: state.userDataReducer.score,
+  //     rank: state.userDataReducer.rank,
+  //     comment: state.userDataReducer.comment,
+  //   })
+  // );
+  const getCurrentuserInfo = async () => {
+    try {
+      const response = await BackendService.getCurrentUserInfo();
+      const responseData: any = response.data[`data`];
+      return responseData;
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
+  useEffect(() => {
+    getCurrentuserInfo().then((data) => {
+      setUserData({
+        nickname: data[`nickname`],
+        score: data[`score`],
+        rank: data[`rank`],
+        comment: data[`comment`],
+      });
+    });
+  }, []);
   return (
     <>
       <div css={customNav}>
@@ -97,19 +127,25 @@ const Leaderboard = () => {
       <div css={divStyle}>
         <div css={headingWrapper}>
           <h1 css={largeTextStyle}>
-            <span css={emphasizedTextStyle}>{nickname}</span>님은 <br />
-            서초구에서 <span css={emphasizedTextStyle}>{rank}위</span>에요!
+            <span css={emphasizedTextStyle}>{userData.nickname}</span>님은{' '}
+            <br />
+            서초구에서 <span css={emphasizedTextStyle}>{userData.rank}위</span>
+            에요!
           </h1>
           <div css={currentUserInfoRow}>
-            {rank <= 10 ? (
+            {userData.rank <= 10 ? (
               <TopUserRow
-                rank={rank}
-                nickname={nickname}
-                score={score}
-                comment={comment}
+                rank={userData.rank}
+                nickname={userData.nickname}
+                score={userData.score}
+                comment={userData.comment}
               />
             ) : (
-              <DefaultUserRow rank={rank} nickname={nickname} score={score} />
+              <DefaultUserRow
+                rank={userData.rank}
+                nickname={userData.nickname}
+                score={userData.score}
+              />
             )}
           </div>
         </div>

@@ -5,6 +5,7 @@ import Button, { DisabledButton } from '../Button';
 import { ReactComponent as Karrot } from 'assets/karrot.svg';
 import { useState } from 'react';
 import BackendService from 'services/backendService';
+import { useHistory } from 'react-router';
 
 const modalStyle = css`
   position: absolute;
@@ -63,17 +64,18 @@ const bottomActionDiv = css`
 `;
 
 interface TopUserGameEndModalProps {
-  handleViewLeaderboard: () => void;
+  // handleViewLeaderboard: () => void;
   // score: number;
-  currentRank: number;
+  // currentRank: number;
 }
-const TopUserGameEndModal = ({
-  handleViewLeaderboard,
-  currentRank,
-}: // score,
+const TopUserGameEndModal = ({}: // handleViewLeaderboard,
+// currentRank,
+// score,
 TopUserGameEndModalProps) => {
   const [topUserComment, setTopUserComment] = useState<string>('');
   // const dispatch = useDispatch();
+  let history = useHistory();
+
   const patchComment = async ({ comment }: any) => {
     try {
       const response = await BackendService.patchComment(comment);
@@ -90,55 +92,48 @@ TopUserGameEndModalProps) => {
     // dispatch(changeTopUserComment(topUserComment));
     // POST: SEND topUserComment TO BACKEND
     patchComment(topUserComment);
-    handleViewLeaderboard();
+    // handleViewLeaderboard();
+    history.push('/leaderboard');
   };
 
   return (
-    <div
-      style={{
-        position: 'absolute',
-        inset: 0,
-      }}
-    >
-      <div css={modalStyle}>
-        <Karrot />
-        <h1
-          css={[largeTextStyle, largeText]}
-          style={{ textAlign: 'center', flex: '0 1 auto' }}
-        >
-          <span css={emphasizedTextStyle}>축하해요!</span>
-          <br />
-          <span css={emphasizedTextStyle}>{currentRank}위</span>로 순위권에
-          들었어요!
-        </h1>
-        <hr css={horizontalLine} />
-        <p css={infoText}>
-          송파구 이웃들에게
-          <br />
-          하고 싶은 말을 남겨보세요
-        </p>
-        <div css={bottomActionDiv}>
-          <input
-            css={textInput}
-            type="text"
-            onChange={handleTopUserInput}
-            value={topUserComment}
-            placeholder="예) 내가 송파짱!"
-            maxLength={25}
+    <>
+      <Karrot />
+      <h1
+        css={[largeTextStyle, largeText]}
+        style={{ textAlign: 'center', flex: '0 1 auto' }}
+      >
+        <span css={emphasizedTextStyle}>축하해요!</span>
+        <br />
+        <span css={emphasizedTextStyle}>2위</span>로 순위권에 들었어요!
+      </h1>
+      <hr css={horizontalLine} />
+      <p css={infoText}>
+        송파구 이웃들에게
+        <br />
+        하고 싶은 말을 남겨보세요
+      </p>
+      <div css={bottomActionDiv}>
+        <input
+          css={textInput}
+          type="text"
+          onChange={handleTopUserInput}
+          value={topUserComment}
+          placeholder="예) 내가 송파짱!"
+          maxLength={25}
+        />
+        {topUserComment ? (
+          <Button
+            size={`large`}
+            color={`primary`}
+            text={`등록하기`}
+            onClick={handlePatchCommentAndViewLeaderboard}
           />
-          {topUserComment ? (
-            <Button
-              size={`large`}
-              color={`primary`}
-              text={`등록하기`}
-              onClick={handlePatchCommentAndViewLeaderboard}
-            />
-          ) : (
-            <DisabledButton size={`large`} text={`등록하기`} />
-          )}
-        </div>
+        ) : (
+          <DisabledButton size={`large`} text={`등록하기`} />
+        )}
       </div>
-    </div>
+    </>
   );
 };
 
