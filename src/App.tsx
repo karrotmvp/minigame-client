@@ -1,7 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import '@karrotframe/navigator/index.css';
-import Home from './pages/Home';
 import NewUserHome from './pages/NewUserHome';
 import Game from './pages/Game';
 import Leaderboard from './pages/Leaderboard';
@@ -9,8 +8,13 @@ import { Navigator, Screen } from '@karrotframe/navigator';
 import { getMini } from 'api/mini';
 import { useEffect, useState } from 'react';
 import BackendService from 'services/backendService';
-import { useDispatch } from 'react-redux';
-import { addData } from 'reducers/userDataReducer';
+import ReturningUserHome from 'pages/ReturningUserHome';
+import {
+  Redirect,
+  Route,
+  BrowserRouter as Router,
+  Switch,
+} from 'react-router-dom';
 
 const appStyle = css`
   height: 100vh;
@@ -19,12 +23,7 @@ const navStyle = css`
   --kf_navigator_navbar-borderColor: white;
 `;
 function App() {
-  // const [userData, setUserData] = useState({
-  //   nickname: 'Neil',
-  //   score: 0,
-  //   rank: 12,
-  //   comment: '',
-  // });
+  const [isNewUser, setIsNewUser] = useState<boolean>(true);
   let userData = {
     rank: 12,
     comment: '',
@@ -34,47 +33,54 @@ function App() {
     mini.close();
   };
 
-  const dispatch = useDispatch();
-
   const getCurrentuserInfo = async () => {
     try {
       const response = await BackendService.getCurrentUserInfo();
       const responseData: any = response.data[`data`];
-      console.log(responseData);
-      // setUserData(userData);
-      // addUserData(responseData);
-      // dispatch(addData('Jason', 2));
+      return responseData;
     } catch (error) {
       console.error(error);
     }
   };
   useEffect(() => {
-    getCurrentuserInfo();
-    // addUserData('asdf');
-    // const updateNickname = async () => dispatch(addNickname('jason'));
-    // updateNickname();
-    // dispatch(addData('Jason', 2));
-  }, [dispatch]);
+    getCurrentuserInfo().then((data) => {
+      console.log(data.score);
+      if (data.score >= 0) {
+        setIsNewUser(true);
+      } else {
+        setIsNewUser(false);
+      }
+    });
+  }, []);
+  console.log(isNewUser);
 
   return (
     <div css={appStyle}>
-      <Navigator
-        theme="Cupertino"
-        css={navStyle}
-        onClose={() => {
-          console.log(`${handleAppEjection} 닫기버튼이 눌렸습니다`);
-        }}
-      >
-        <Screen path="/">
-          {window.localStorage.getItem('user') === null ? (
-            <NewUserHome />
-          ) : (
-            <Home userData={userData} />
-          )}
-        </Screen>
-        <Screen path="/game" component={Game} />
-        <Screen path="/leaderboard" component={Leaderboard} />
-      </Navigator>
+      <Router>
+        <Switch>
+          <Route
+            exact
+            path="/"
+            render={() => {
+              return isNewUser ? (
+                <Redirect to="/returning-user" />
+              ) : (
+                <Redirect to="/new-user" />
+              );
+            }}
+          />
+          <Route exact path="/new-user" component={NewUserHome} />
+
+          <Route exact path="/returning-user" component={ReturningUserHome} />
+
+          <Route exact path="/game">
+            <Game />
+          </Route>
+          <Route exact path="/leaderboard">
+            <Leaderboard />
+          </Route>
+        </Switch>
+      </Router>
     </div>
   );
 }
