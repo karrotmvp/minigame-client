@@ -1,5 +1,8 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
+import { render } from '@testing-library/react';
+import { useEffect, useState } from 'react';
+import BackendService from 'services/backendService';
 import DefaultUserRow from './DefaultUserRow';
 import TopUserRow from './TopUserRow';
 
@@ -30,16 +33,37 @@ const infoText = css`
   color: #7c7c7c;
 `;
 
-interface IndividualLeaderboardProps {
-  townRankData: any[];
-}
-const IndividualLeaderboard = ({
-  townRankData,
-}: IndividualLeaderboardProps) => {
+const IndividualLeaderboard = ({}) => {
+  const [townRankData, setTownRankData] = useState<any[]>([]);
+
+  let townId = `9bdfe83b68f3`;
+  const getTownRank = async () => {
+    try {
+      const response = await BackendService.getTownRank(townId);
+      const responseData: any = response.data[`data`];
+      const indexedTownRankData = responseData.map((item: any, index: any) => ({
+        rank: index + 1,
+        ...item,
+      }));
+      return indexedTownRankData;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    getTownRank().then((data) => {
+      // setTownRankData((result) => [...result, data]);
+      setTownRankData(data);
+    });
+    // console.log(townRankData[0]);
+  }, []);
+  // console.log(townRankData.map((user: any) => console.log(user)));
   return (
     <div css={divStyle}>
       <div css={leaderboardWrapperStyle}>
         {townRankData.slice(0, 10).map((user) => {
+          // console.log(townRankData);
           return (
             <TopUserRow
               key={user.userId}

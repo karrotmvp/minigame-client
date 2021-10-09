@@ -4,20 +4,47 @@ import { ScreenHelmet, useNavigator } from '@karrotframe/navigator';
 import IconClose from 'assets/IconClose';
 import DefaultUserRow from 'components/leaderboard/DefaultUserRow';
 import TopUserRow from 'components/leaderboard/TopUserRow';
-import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { RootState } from 'reducers/rootReducer';
-import { addData } from 'reducers/userDataReducer';
 import { sampleUserData } from 'sampleUserData';
-import BackendService from 'services/backendService';
 import { emphasizedTextStyle, largeTextStyle } from 'styles/textStyle';
 import Button from 'components/Button';
 import IndividualLeaderboard from 'components/leaderboard/IndividualLeaderboard';
+import BackendService from 'services/backendService';
+import { useEffect, useState } from 'react';
+import { AppEjectionButton } from 'components/AppEjectionButton';
+import { Link } from 'react-router-dom';
 
+// nav
+const customNav = css`
+  left: 0;
+  width: 100%;
+  // height: 100%;
+  top: 0;
+  display: flex;
+  width: 100%;
+  height: 44px;
+  padding: 0 0.5rem;
+`;
+
+const custonNavIcon = css`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 1;
+  transition: opacity 300ms;
+  width: 2.25rem;
+  height: 2.75rem;
+  text-decoration: none;
+  outline: none;
+  z-index: 10;
+`;
+//
 const divStyle = css`
   display: flex;
   flex-flow: column;
-  height: 100%;
+  height: calc(100% - 2.75rem);
 `;
 const headingWrapper = css`
   flex: 1;
@@ -34,79 +61,99 @@ const actionItemWrapper = css`
   border-top: 1px solid #ebebeb;
   box-sizing: border-box;
   box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+
+  text-decoration: none;
 `;
 const currentuserDataInfoRow = css`
   margin: 20px 0 10px;
 `;
-
-const ReturningUserHome = ({ townRankData }: any) => {
-  console.log(townRankData);
-  const { push } = useNavigator();
-
+const initialState = {
+  nickname: '',
+  score: 0,
+  rank: 0,
+  comment: '',
+};
+const ReturningUserHome = () => {
+  // console.log(townRankData);
+  const [userData, setUserData] = useState(initialState);
+  // const { push } = useNavigator();
   const handleGameStart = () => {
-    push(`/game`);
+    // push(`/game`);
   };
 
-  const { nickname, score, rank, comment } = useSelector(
-    (state: RootState) => ({
-      nickname: state.userDataReducer.nickname,
-      score: state.userDataReducer.score,
-      rank: state.userDataReducer.rank,
-      comment: state.userDataReducer.comment,
-    })
-  );
-  const dispatch = useDispatch();
+  // const { nickname, score, rank, comment } = useSelector(
+  //   (state: RootState) => ({
+  //     nickname: state.userDataReducer.nickname,
+  //     score: state.userDataReducer.score,
+  //     rank: state.userDataReducer.rank,
+  //     comment: state.userDataReducer.comment,
+  //   })
+  // );
+  const getCurrentuserInfo = async () => {
+    try {
+      const response = await BackendService.getCurrentUserInfo();
+      const responseData: any = response.data[`data`];
+      return responseData;
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
-  // let townId = `9bdfe83b68f3`;
-
-  // useEffect(() => {
-  //   Promise.all([
-  //     BackendService.getCurrentUserInfo(),
-  //     BackendService.getTownRank(townId),
-  //   ]).then(function (results) {
-  //     let userData = results[0].data[`data`];
-  //     let townRankData = results[1].data[`data`];
-  //     let { nickname, score, rank, comment } = userData;
-  //     dispatch(addData(nickname, score, rank, comment));
-  //     // return { userData, townRankData };
-  //   });
-  // }, []);
-
+  useEffect(() => {
+    getCurrentuserInfo().then((data) => {
+      setUserData({
+        nickname: data[`nickname`],
+        score: data[`score`],
+        rank: data[`rank`],
+        comment: data[`comment`],
+      });
+    });
+  }, []);
   return (
     <>
-      <ScreenHelmet title="홈" customCloseButton={<IconClose />} />
+      {/* <ScreenHelmet title="홈" customCloseButton={<IconClose />} /> */}
+      <div css={customNav}>
+        <div css={custonNavIcon}>
+          <AppEjectionButton />
+        </div>
+      </div>
+
       <div css={divStyle}>
         <div css={headingWrapper}>
           <h1 css={largeTextStyle}>
-            <span css={emphasizedTextStyle}>{nickname}</span>님은
+            <span css={emphasizedTextStyle}>{userData.nickname}</span>님은
             <br />
             우리동네에서
-            <span css={emphasizedTextStyle}> {rank}위</span>에요!
+            <span css={emphasizedTextStyle}> {userData.rank}위</span>에요!
           </h1>
           <div css={currentuserDataInfoRow}>
-            {rank <= 10 ? (
+            {userData.rank <= 10 ? (
               <TopUserRow
-                rank={rank}
-                nickname={nickname}
-                score={score}
-                comment={comment}
+                rank={userData.rank}
+                nickname={userData.nickname}
+                score={userData.score}
+                comment={userData.comment}
               />
             ) : (
-              <DefaultUserRow rank={rank} nickname={nickname} score={score} />
+              <DefaultUserRow
+                rank={userData.rank}
+                nickname={userData.nickname}
+                score={userData.score}
+              />
             )}
           </div>
         </div>
         <div css={leaderboardWrapper}>
-          <IndividualLeaderboard townRankData={sampleUserData} />
+          <IndividualLeaderboard />
         </div>
-        <div css={actionItemWrapper}>
+        <Link to="/game" css={actionItemWrapper}>
           <Button
             size={`large`}
             color={`primary`}
             text={`시작하기`}
             onClick={handleGameStart}
           />
-        </div>
+        </Link>
       </div>
     </>
   );
