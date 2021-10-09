@@ -100,7 +100,6 @@ const ReturningUserHome = () => {
           <AppEjectionButton />
         </div>
       </div>
-
       <div css={divStyle}>
         <div css={headingWrapper}>
           <h1 css={largeTextStyle}>

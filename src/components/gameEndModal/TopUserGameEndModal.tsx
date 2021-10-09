@@ -4,7 +4,7 @@ import { emphasizedTextStyle, largeTextStyle } from 'styles/textStyle';
 import Button, { DisabledButton } from '../Button';
 import { ReactComponent as Karrot } from 'assets/karrot.svg';
 import { FC, useState } from 'react';
-import { useHistory } from 'react-router';
+import { useHistory } from 'react-router-dom';
 const axios = require('axios').default;
 
 // const modalStyle = css`

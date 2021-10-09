@@ -10,20 +10,19 @@ import { reset } from 'reducers/counterReducer';
 import TopUserRow from 'components/leaderboard/TopUserRow';
 import { useEffect, useState } from 'react';
 import BackendService from 'services/backendService';
-import { useHistory } from 'react-router';
+import { useHistory } from 'react-router-dom';
 
+// nav
 const customNav = css`
   left: 0;
   width: 100%;
-  // height: 100%;
   top: 0;
   display: flex;
   width: 100%;
   height: 44px;
   padding: 0 0.5rem;
 `;
-
-const custonNavIcon = css`
+const customNavIcon = css`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -36,13 +35,12 @@ const custonNavIcon = css`
   outline: none;
   z-index: 10;
 `;
-
+// main div
 const divStyle = css`
   display: flex;
   flex-flow: column;
-  height: calc(100% - 44px);
+  height: calc(100% - 2.75rem);
 `;
-
 const headingWrapper = css`
   flex: 1;
   padding: 20px 26px 20px;
@@ -59,16 +57,17 @@ const actionItemWrapper = css`
   box-sizing: border-box;
   box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
 `;
-
 const currentUserInfoRow = css`
   margin: 20px 0 10px;
 `;
+
 const initialState = {
-  nickname: '',
+  nickname: '서초구 이웃',
   score: 0,
-  rank: 0,
+  rank: 99999,
   comment: '',
 };
+
 const Leaderboard = () => {
   const [userData, setUserData] = useState(initialState);
   const history = useHistory();
@@ -104,7 +103,7 @@ const Leaderboard = () => {
   return (
     <>
       <div css={customNav}>
-        <div css={custonNavIcon}>
+        <div css={customNavIcon}>
           <AppEjectionButton />
         </div>
       </div>
@@ -112,7 +111,7 @@ const Leaderboard = () => {
       <div css={divStyle}>
         <div css={headingWrapper}>
           <h1 css={largeTextStyle}>
-            <span css={emphasizedTextStyle}>{userData.nickname}</span>님은{' '}
+            <span css={emphasizedTextStyle}>{userData.nickname}</span>님은
             <br />
             서초구에서 <span css={emphasizedTextStyle}>{userData.rank}위</span>
             에요!

@@ -140,6 +140,7 @@ const Game = () => {
   const dispatch = useDispatch();
   const countUp = async () => dispatch(increase());
   const countUpKarrot = async () => dispatch(increaseKarrotCount());
+
   const handleClick = async () => {
     await countUp();
     setCount(count + 1);
@@ -175,7 +176,7 @@ const Game = () => {
     <>
       <div css={customNav}>
         <div css={customNavIcon1}>
-          <Link to="/returning-user">
+          <Link to="/">
             <IconBack />
           </Link>
         </div>

@@ -7,12 +7,7 @@ import Leaderboard from './pages/Leaderboard';
 import { useEffect, useState } from 'react';
 import BackendService from 'services/backendService';
 import ReturningUserHome from 'pages/ReturningUserHome';
-import {
-  Redirect,
-  Route,
-  BrowserRouter as Router,
-  Switch,
-} from 'react-router-dom';
+import { Route, BrowserRouter as Router, Switch } from 'react-router-dom';
 
 const appStyle = css`
   height: 100vh;
@@ -33,14 +28,14 @@ function App() {
 
   useEffect(() => {
     getCurrentuserInfo().then((data) => {
-      if (data.score >= 0) {
+      if (data.score < 0) {
         setIsNewUser(false);
       } else {
         setIsNewUser(true);
       }
     });
   }, []);
-
+  console.log(isNewUser);
   return (
     <div css={appStyle}>
       <Router>
@@ -48,16 +43,10 @@ function App() {
           <Route
             exact
             path="/"
-            render={() => {
-              return isNewUser ? (
-                <Redirect to="/returning-user" />
-              ) : (
-                <Redirect to="/new-user" />
-              );
-            }}
+            component={
+              isNewUser ? () => <NewUserHome /> : () => <ReturningUserHome />
+            }
           />
-          <Route exact path="/new-user" component={NewUserHome} />
-          <Route exact path="/returning-user" component={ReturningUserHome} />
           <Route exact path="/game">
             <Game />
           </Route>
