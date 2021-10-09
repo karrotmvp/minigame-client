@@ -1,17 +1,13 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { useNavigator } from '@karrotframe/navigator';
 import IndividualLeaderboard from '../components/leaderboard/IndividualLeaderboard';
 import { AppEjectionButton } from 'components/AppEjectionButton';
 import { largeTextStyle, emphasizedTextStyle } from 'styles/textStyle';
 import Button from 'components/Button';
-// import { sampleUserData } from 'sampleUserData';
 import DefaultUserRow from 'components/leaderboard/DefaultUserRow';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from 'reducers/rootReducer';
+import { useDispatch } from 'react-redux';
 import { reset } from 'reducers/counterReducer';
 import TopUserRow from 'components/leaderboard/TopUserRow';
-import { sampleUserData } from 'sampleUserData';
 import { useEffect, useState } from 'react';
 import BackendService from 'services/backendService';
 import { useHistory } from 'react-router';
@@ -76,7 +72,6 @@ const initialState = {
 const Leaderboard = () => {
   const [userData, setUserData] = useState(initialState);
   const history = useHistory();
-  // const { push } = useNavigator();
   const dispatch = useDispatch();
 
   const onReset = () => dispatch(reset());
@@ -84,23 +79,12 @@ const Leaderboard = () => {
   const handlePlayAgain = async () => {
     onReset();
     history.push('/game');
-    // await push('/game');
   };
-  // Data from backend (GET)
 
-  // const { nickname, score, rank, comment } = useSelector(
-  //   (state: RootState) => ({
-  //     nickname: state.userDataReducer.nickname,
-  //     score: state.userDataReducer.score,
-  //     rank: state.userDataReducer.rank,
-  //     comment: state.userDataReducer.comment,
-  //   })
-  // );
   const getCurrentuserInfo = async () => {
     try {
       const response = await BackendService.getCurrentUserInfo();
       const responseData: any = response.data[`data`];
-      console.log(responseData);
       return responseData;
     } catch (error) {
       console.error(error);

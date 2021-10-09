@@ -1,6 +1,5 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { ScreenHelmet, useNavigator } from '@karrotframe/navigator';
 import {
   emphasizedTextStyle,
   largeTextStyle,
@@ -9,8 +8,6 @@ import {
 import Button from '../components/Button';
 import IndividualLeaderboard from '../components/leaderboard/IndividualLeaderboard';
 import { getMini } from 'api/mini';
-import IconClose from 'assets/IconClose';
-import { sampleUserData } from 'sampleUserData';
 import BackendService from 'services/backendService';
 
 const divStyle = css`
@@ -37,8 +34,7 @@ const actionItemWrapper = css`
   box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
 `;
 
-const NewUserHome = ({ townRankData }: any) => {
-  const { push } = useNavigator();
+const NewUserHome = () => {
   const mini = getMini();
   const appId = process.env.REACT_APP_APP_ID;
   const handleNewUserAgreement = () => {
@@ -55,7 +51,6 @@ const NewUserHome = ({ townRankData }: any) => {
           BackendService.postOauth(result.code, `9bdfe83b68f3`).then(
             (data: any) => console.log(data)
           );
-          push('/game');
         }
       },
     });
@@ -63,7 +58,6 @@ const NewUserHome = ({ townRankData }: any) => {
 
   return (
     <>
-      {/* <ScreenHelmet title="홈" customCloseButton={<IconClose />} /> */}
       <div css={divStyle}>
         <div css={headingWrapper}>
           <h1 css={largeTextStyle}>

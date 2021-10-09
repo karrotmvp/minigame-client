@@ -3,30 +3,28 @@ import { css } from '@emotion/react';
 import { emphasizedTextStyle, largeTextStyle } from 'styles/textStyle';
 import Button, { DisabledButton } from '../Button';
 import { ReactComponent as Karrot } from 'assets/karrot.svg';
-import { useState } from 'react';
-import BackendService from 'services/backendService';
+import { FC, useState } from 'react';
 import { useHistory } from 'react-router';
 const axios = require('axios').default;
 
-const modalStyle = css`
-  position: absolute;
-  left: 0;
-  right: 0;
-  margin-left: auto;
-  margin-right: auto;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 80%;
-  max-width: 400px;
-  display: flex;
-  flex-flow: column;
-  align-items: center;
-  background: #fff;
-  // top: 25px;
-  // inset: 10% 8% 10%;
-  padding: 45px 15px 20px;
-  border-radius: 21px;
-`;
+// const modalStyle = css`
+//   position: absolute;
+//   left: 0;
+//   right: 0;
+//   margin-left: auto;
+//   margin-right: auto;
+//   top: 50%;
+//   transform: translateY(-50%);
+//   width: 80%;
+//   max-width: 400px;
+//   display: flex;
+//   flex-flow: column;
+//   align-items: center;
+//   background: #fff;
+
+//   padding: 45px 15px 20px;
+//   border-radius: 21px;
+// `;
 const largeText = css`
   margin: 15px 0;
 `;
@@ -35,7 +33,6 @@ const horizontalLine = css`
   height: 0;
   width: 100%;
   border: 0.1px solid #e7e7e7;
-  // padding: 0;
 `;
 const infoText = css`
   font-style: normal;
@@ -60,52 +57,29 @@ const bottomActionDiv = css`
   flex-flow: column;
   width: 100%;
   gap: 10px;
-
-  // justifyContent: space-evenly;
 `;
 
-const baseURL = `http://e0fe-222-106-174-149.ngrok.io/api/v1`;
-const ACCESS_TOEKEN =
-  'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqIiwiZXhwIjoxNjMzODQ2MTI2fQ.hQ9WWveNCatWeJTbimRi_bP1wqGuxBzdx7_egYE8JT2yJpVF2_qT7LRidUjy5m-557FP3jKRNcFhNDr1KRTUcg';
-
 interface TopUserGameEndModalProps {
-  // handleViewLeaderboard: () => void;
-  // score: number;
-  // currentRank: number;
+  rank: number;
 }
-const TopUserGameEndModal = ({}: // handleViewLeaderboard,
-// currentRank,
-// score,
-TopUserGameEndModalProps) => {
+const TopUserGameEndModal: FC<TopUserGameEndModalProps> = (props) => {
   const [topUserComment, setTopUserComment] = useState<string>('');
-  // const dispatch = useDispatch();
+
   let history = useHistory();
 
-  // const patchComment = async ({ comment }: any) => {
-  //   try {
-  //     const response = await BackendService.patchComment(comment);
-  //     console.log(response);
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
   const handleTopUserInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTopUserComment(e.target.value);
   };
 
-  const handlePatchCommentAndViewLeaderboard = () => {
-    // dispatch(changeTopUserComment(topUserComment));
-    // POST: SEND topUserComment TO BACKEND
-    // patchComment(topUserComment);
-    // handleViewLeaderboard();
-    axios.patch(
-      `${baseURL}/user-rank/comment`,
+  const handlePatchCommentAndViewLeaderboard = async () => {
+    await axios.patch(
+      `${process.env.REACT_APP_BASE_URL}/user-rank/comment`,
       {
         comment: topUserComment,
       },
       {
         headers: {
-          Authorization: ACCESS_TOEKEN,
+          Authorization: process.env.REACT_APP_ACCESS_TOKEN,
           'Content-Type': 'application/json',
         },
       }
@@ -122,11 +96,12 @@ TopUserGameEndModalProps) => {
       >
         <span css={emphasizedTextStyle}>축하해요!</span>
         <br />
-        <span css={emphasizedTextStyle}>2위</span>로 순위권에 들었어요!
+        <span css={emphasizedTextStyle}>{props.rank}위</span>로 순위권에
+        들었어요!
       </h1>
       <hr css={horizontalLine} />
       <p css={infoText}>
-        송파구 이웃들에게
+        서초구 이웃들에게
         <br />
         하고 싶은 말을 남겨보세요
       </p>
@@ -136,7 +111,7 @@ TopUserGameEndModalProps) => {
           type="text"
           onChange={handleTopUserInput}
           value={topUserComment}
-          placeholder="예) 내가 송파짱!"
+          placeholder="예) 내가 서초짱!"
           maxLength={25}
         />
         {topUserComment ? (

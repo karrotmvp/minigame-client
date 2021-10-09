@@ -1,16 +1,12 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { ScreenHelmet } from '@karrotframe/navigator';
 import DefaultGameEndModal from 'components/gameEndModal/DefaultGameEndModal';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Route, useHistory } from 'react-router';
 import { increase, increaseKarrotCount } from 'reducers/counterReducer';
 import GameContainer from '../components/game/GameContainer';
 import { RootState } from '../reducers/rootReducer';
 import background from 'assets/Seocho_background.png';
-import karrot from 'assets/Seocho_daangn.png';
-import BackendService from 'services/backendService';
 import { updateScore } from 'reducers/userDataReducer';
 import IconBack from 'assets/IconBack';
 import { Link } from 'react-router-dom';
@@ -22,7 +18,6 @@ const axios = require('axios').default;
 const customNav = css`
   left: 0;
   width: 100%;
-  // height: 100%;
   top: 0;
   display: flex;
   flex-flow: row;
@@ -31,7 +26,6 @@ const customNav = css`
   height: 44px;
   padding: 0 0.5rem;
 `;
-
 const customNavIcon1 = css`
   display: flex;
   align-items: center;
@@ -45,10 +39,8 @@ const customNavIcon1 = css`
   outline: none;
   z-index: 10;
 `;
-
 const customNavIcon2 = css`
   display: flex;
-  // flex-flow: row;
   align-items: center;
   justify-content: center;
   cursor: pointer;
@@ -60,8 +52,7 @@ const customNavIcon2 = css`
   outline: none;
   z-index: 10;
 `;
-//
-
+// main div
 const divStyle = css`
   background-image: url(${background});
   background-size: cover;
@@ -105,17 +96,7 @@ const gameEndButtonStyle = css`
 
   color: #cc6023;
 `;
-
-const customStyles = {
-  content: {
-    top: '50%',
-    left: '50%',
-    right: 'auto',
-    bottom: 'auto',
-    marginRight: '-50%',
-    transform: 'translate(-50%, -50%)',
-  },
-};
+// modal
 const modalStyle = css`
   position: absolute;
   left: 0;
@@ -130,20 +111,10 @@ const modalStyle = css`
   flex-flow: column;
   align-items: center;
   background: #fff;
-  // top: 25px;
-  // inset: 10% 8% 10%;
+
   padding: 45px 15px 20px;
   border-radius: 21px;
 `;
-const modalBackground = {
-  overlay: {
-    background: '#FFFF00',
-  },
-};
-
-const baseURL = `http://e0fe-222-106-174-149.ngrok.io/api/v1`;
-const ACCESS_TOEKEN =
-  'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqIiwiZXhwIjoxNjMzODQ2MTI2fQ.hQ9WWveNCatWeJTbimRi_bP1wqGuxBzdx7_egYE8JT2yJpVF2_qT7LRidUjy5m-557FP3jKRNcFhNDr1KRTUcg';
 
 Modal.setAppElement('body');
 
@@ -158,29 +129,13 @@ const GameEndButton = ({ handleGameEnd }: GameEndButtonProps) => {
   );
 };
 const Game = () => {
-  // const history = useHistory();
-  // game score
+  const [count, setCount] = useState(0);
+  const [modalIsOpen, setIsOpen] = useState(false);
+
   const { clickCount, karrotCount } = useSelector((state: RootState) => ({
     clickCount: state.counterReducer.clickCount,
     karrotCount: state.counterReducer.karrotCount,
   }));
-  const [count, setCount] = useState(0);
-  // const [currentRank, setCurrentRank] = useState(0);
-
-  // let subtitle;
-  const [modalIsOpen, setIsOpen] = useState(false);
-  function openModal() {
-    setIsOpen(true);
-  }
-
-  function afterOpenModal() {
-    // references are now sync'd and can be accessed.
-    // subtitle.style.color = '#f00';
-  }
-
-  function closeModal() {
-    setIsOpen(false);
-  }
 
   const dispatch = useDispatch();
   const countUp = async () => dispatch(increase());
@@ -195,61 +150,29 @@ const Game = () => {
     }
   };
 
-  // const patchCurrentScore = async ({ karrotCount }: any) => {
-  //   try {
-  //     const response = await BackendService.patchCurrentScore(karrotCount);
-  //     console.log(response);
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
-  // const getCurrentuserInfo = async () => {
-  //   try {
-  //     const response = await BackendService.getCurrentUserInfo();
-  //     const responseData: any = response.data[`data`];
-  //     return responseData;
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
-  const handleGameEnd = () => {
-    axios.patch(
-      `${baseURL}/user-rank`,
+  const handleGameEnd = async () => {
+    await axios.patch(
+      `${process.env.REACT_APP_BASE_URL}/user-rank`,
       {
         score: karrotCount,
       },
       {
         headers: {
-          Authorization: ACCESS_TOEKEN,
+          Authorization: process.env.REACT_APP_ACCESS_TOKEN,
           'Content-Type': 'application/json',
         },
       }
     );
-    // patchCurrentScore(karrotCount);
-    console.log(karrotCount);
     dispatch(updateScore(karrotCount));
     setIsOpen(true);
-
-    // getCurrentuserInfo().then((data) => {
-    //   console.log(data);
-
-    //   setCurrentRank(data.rank);
-    // });
-    // history.push('/game/modal');
   };
-  const handleCloseModal = () => {
-    // history.goBack();
-  };
+
+  function closeModal() {
+    setIsOpen(false);
+  }
 
   return (
     <>
-      {/* <ScreenHelmet
-        appendRight={
-          <div css={customNavIcon}>
-            <GameEndButton handleGameEnd={handleGameEnd} />
-          </div>
-        }
-      /> */}
       <div css={customNav}>
         <div css={customNavIcon1}>
           <Link to="/returning-user">
@@ -257,9 +180,7 @@ const Game = () => {
           </Link>
         </div>
         <div css={customNavIcon2}>
-          {/* <Link to="/game/modal"> */}
           <GameEndButton handleGameEnd={handleGameEnd} />
-          {/* </Link> */}
         </div>
       </div>
 
@@ -289,9 +210,7 @@ const Game = () => {
       </div>
       <Modal
         isOpen={modalIsOpen}
-        onAfterOpen={afterOpenModal}
         onRequestClose={closeModal}
-        // style={customStyles}
         shouldCloseOnOverlayClick={false}
         contentLabel="Default Game End Modal"
         css={modalStyle}

@@ -4,8 +4,6 @@ import '@karrotframe/navigator/index.css';
 import NewUserHome from './pages/NewUserHome';
 import Game from './pages/Game';
 import Leaderboard from './pages/Leaderboard';
-import { Navigator, Screen } from '@karrotframe/navigator';
-import { getMini } from 'api/mini';
 import { useEffect, useState } from 'react';
 import BackendService from 'services/backendService';
 import ReturningUserHome from 'pages/ReturningUserHome';
@@ -19,19 +17,9 @@ import {
 const appStyle = css`
   height: 100vh;
 `;
-const navStyle = css`
-  --kf_navigator_navbar-borderColor: white;
-`;
+
 function App() {
   const [isNewUser, setIsNewUser] = useState<boolean>(true);
-  let userData = {
-    rank: 12,
-    comment: '',
-  };
-  const handleAppEjection = () => {
-    const mini = getMini();
-    mini.close();
-  };
 
   const getCurrentuserInfo = async () => {
     try {
@@ -42,17 +30,16 @@ function App() {
       console.error(error);
     }
   };
+
   useEffect(() => {
     getCurrentuserInfo().then((data) => {
-      console.log(data.score);
       if (data.score >= 0) {
-        setIsNewUser(true);
-      } else {
         setIsNewUser(false);
+      } else {
+        setIsNewUser(true);
       }
     });
   }, []);
-  console.log(isNewUser);
 
   return (
     <div css={appStyle}>
@@ -70,9 +57,7 @@ function App() {
             }}
           />
           <Route exact path="/new-user" component={NewUserHome} />
-
           <Route exact path="/returning-user" component={ReturningUserHome} />
-
           <Route exact path="/game">
             <Game />
           </Route>

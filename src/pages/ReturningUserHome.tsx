@@ -1,12 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { ScreenHelmet, useNavigator } from '@karrotframe/navigator';
-import IconClose from 'assets/IconClose';
 import DefaultUserRow from 'components/leaderboard/DefaultUserRow';
 import TopUserRow from 'components/leaderboard/TopUserRow';
-import { useSelector } from 'react-redux';
-import { RootState } from 'reducers/rootReducer';
-import { sampleUserData } from 'sampleUserData';
 import { emphasizedTextStyle, largeTextStyle } from 'styles/textStyle';
 import Button from 'components/Button';
 import IndividualLeaderboard from 'components/leaderboard/IndividualLeaderboard';
@@ -26,7 +21,6 @@ const customNav = css`
   height: 44px;
   padding: 0 0.5rem;
 `;
-
 const custonNavIcon = css`
   display: flex;
   align-items: center;
@@ -40,7 +34,7 @@ const custonNavIcon = css`
   outline: none;
   z-index: 10;
 `;
-//
+// main div
 const divStyle = css`
   display: flex;
   flex-flow: column;
@@ -67,28 +61,17 @@ const actionItemWrapper = css`
 const currentuserDataInfoRow = css`
   margin: 20px 0 10px;
 `;
+
 const initialState = {
   nickname: '',
   score: 0,
   rank: 0,
   comment: '',
 };
-const ReturningUserHome = () => {
-  // console.log(townRankData);
-  const [userData, setUserData] = useState(initialState);
-  // const { push } = useNavigator();
-  const handleGameStart = () => {
-    // push(`/game`);
-  };
 
-  // const { nickname, score, rank, comment } = useSelector(
-  //   (state: RootState) => ({
-  //     nickname: state.userDataReducer.nickname,
-  //     score: state.userDataReducer.score,
-  //     rank: state.userDataReducer.rank,
-  //     comment: state.userDataReducer.comment,
-  //   })
-  // );
+const ReturningUserHome = () => {
+  const [userData, setUserData] = useState(initialState);
+
   const getCurrentuserInfo = async () => {
     try {
       const response = await BackendService.getCurrentUserInfo();
@@ -109,9 +92,9 @@ const ReturningUserHome = () => {
       });
     });
   }, []);
+
   return (
     <>
-      {/* <ScreenHelmet title="홈" customCloseButton={<IconClose />} /> */}
       <div css={customNav}>
         <div css={custonNavIcon}>
           <AppEjectionButton />
@@ -151,7 +134,7 @@ const ReturningUserHome = () => {
             size={`large`}
             color={`primary`}
             text={`시작하기`}
-            onClick={handleGameStart}
+            onClick={() => {}}
           />
         </Link>
       </div>

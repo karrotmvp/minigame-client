@@ -4,13 +4,13 @@ import { emphasizedTextStyle, largeTextStyle } from 'styles/textStyle';
 import Button from '../Button';
 import { ReactComponent as Karrot } from 'assets/karrot.svg';
 import TopUserGameEndModal from './TopUserGameEndModal';
-import { useNavigator } from '@karrotframe/navigator';
-import { Route, useHistory } from 'react-router';
+import { useHistory } from 'react-router';
 import BackendService from 'services/backendService';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'reducers/rootReducer';
 import Modal from 'react-modal';
+
 const modalStyle = css`
   position: absolute;
   left: 0;
@@ -56,35 +56,27 @@ const totalKarrotText = css`
 const initialState = {
   nickname: '',
   score: 0,
-  rank: 0,
+  rank: 100,
   comment: '',
 };
 
 interface DefaultGameEndModalProps {
   closeModal: () => void;
-  // score: number;
-  // currentRank: number;
 }
 const DefaultGameEndModal = ({ closeModal }: DefaultGameEndModalProps) => {
   const [modalIsOpen, setIsOpen] = useState(false);
   const [userData, setUserData] = useState(initialState);
 
-  // const { push } = useNavigator();
-  let history = useHistory();
-
   const { karrotCount } = useSelector((state: RootState) => ({
     karrotCount: state.counterReducer.karrotCount,
   }));
 
+  let history = useHistory();
+
   const handleViewLeaderboard = () => {
-    // push('/leaderboard');
     history.push('/leaderboard');
   };
 
-  const handleTopUserCommentModal = () => {
-    // push('game/modal/top-user');
-  };
-  const handleCloseModal = () => {};
   const getCurrentuserInfo = async () => {
     try {
       const response = await BackendService.getCurrentUserInfo();
@@ -117,7 +109,6 @@ const DefaultGameEndModal = ({ closeModal }: DefaultGameEndModalProps) => {
         <br />
         수확했어요!
       </h1>
-      {/* <div style={{ flex: '1' }}></div> */}
       <hr css={horizontalLine} />
       <p css={totalKarrotText}>총 당근 {userData.score}개</p>
       <div
@@ -149,13 +140,6 @@ const DefaultGameEndModal = ({ closeModal }: DefaultGameEndModalProps) => {
           }}
         />
       </div>
-      {/* <Route path="/game/modal/top-user">
-        <TopUserGameEndModal
-          handleViewLeaderboard={handleViewLeaderboard}
-          // score={score}
-          currentRank={userData.rank}
-        />
-      </Route> */}
       <Modal
         isOpen={modalIsOpen}
         shouldCloseOnOverlayClick={false}
@@ -167,7 +151,7 @@ const DefaultGameEndModal = ({ closeModal }: DefaultGameEndModalProps) => {
           },
         }}
       >
-        <TopUserGameEndModal />
+        <TopUserGameEndModal rank={userData.rank} />
       </Modal>
     </>
   );

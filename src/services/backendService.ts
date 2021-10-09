@@ -1,39 +1,30 @@
-// import axios from "axios";
 const axios = require('axios').default;
 
-const baseURL = `http://e0fe-222-106-174-149.ngrok.io/api/v1`;
-const ACCESS_TOEKEN = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqIiwiZXhwIjoxNjMzODQ2MTI2fQ.hQ9WWveNCatWeJTbimRi_bP1wqGuxBzdx7_egYE8JT2yJpVF2_qT7LRidUjy5m-557FP3jKRNcFhNDr1KRTUcg";
-
-// interface BackendServiceData {
-//   townId?: any | null,
-
-// }
-// let regionId = 9bdfe83b68f3;
 const postOauth = (code: any, regionId:any) => {
-  return axios.post(`${baseURL}/oauth`, {
+  return axios.post(`${process.env.REACT_APP_BASE_URL}/oauth`, {
     code: code,
     regionId: regionId
   })
 }
 const getTownRank = async(townId: any) => {
-  return await axios.get(`${baseURL}/towns/${townId}/user-rank`);
+  return await axios.get(`${process.env.REACT_APP_BASE_URL}/towns/${townId}/user-rank`);
 };
 
 const getCurrentUserInfo = async() => {
-  return await axios.get(`${baseURL}/users/me`, {
+  return await axios.get(`${process.env.REACT_APP_BASE_URL}/users/me`, {
     headers: {
-      "Authorization": ACCESS_TOEKEN
+      "Authorization": process.env.REACT_APP_ACCESS_TOKEN
     }
   })
 }
 
 const patchCurrentScore = async(score: number) => {
   console.log(score)
-  return await axios.patch(`${baseURL}/user-rank`, {
+  return await axios.patch(`${process.env.REACT_APP_BASE_URL}/user-rank`, {
     score: score
   }, {
     headers: {
-      Authorization: ACCESS_TOEKEN,
+      Authorization: process.env.REACT_APP_ACCESS_TOKEN,
       "Content-Type": "application/json"
 
     }
@@ -41,11 +32,11 @@ const patchCurrentScore = async(score: number) => {
 }
 
 const patchComment = async(comment: string) => {
-  return await axios.patch(`${baseURL}/user-rank/comment`, {
+  return await axios.patch(`${process.env.REACT_APP_BASE_URL}/user-rank/comment`, {
     comment: comment
   }, {
     headers: {
-      "Authorization": ACCESS_TOEKEN,
+      "Authorization": process.env.REACT_APP_ACCESS_TOKEN,
       "Content-Type": "application/json"
     }
     
@@ -60,48 +51,3 @@ const BackendService = {
 };
 
 export default BackendService;
-
-
-// const getCurrentuserInfo = async () => {
-//   try {
-//     const response = await BackendService.getCurrentUserInfo();
-//     // const responseData: any = response.data[`data`];
-//     return response;
-//   } catch (error) {
-//     console.error(error);
-//   }
-// };
-
-// let townId = `9bdfe83b68f3`;
-// const getTownRank = async () => {
-//   try {
-//     const response = await BackendService.getTownRank(townId);
-//     const responseData: any = response.data[`data`];
-//     const indexedTownRankData = responseData.map((item: any, index: any) => ({
-//       rank: index + 1,
-//       ...item,
-//     }));
-//     // console.log(indexedTownRankData);
-//     return indexedTownRankData;
-//   } catch (error) {
-//     console.error(error);
-//   }
-// };
-
-// const patchCurrentScore = async ({ score }: any) => {
-//   try {
-//     const response = await BackendService.patchCurrentScore(score);
-//     return response;
-//   } catch (error) {
-//     console.error(error);
-//   }
-// };
-
-// const patchComment = ({ comment }: any) => {
-//   try {
-//     const response = BackendService.patchComment(comment);
-//     return response;
-//   } catch (error) {
-//     console.error(error);
-//   }
-// };
