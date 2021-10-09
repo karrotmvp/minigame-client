@@ -1,21 +1,16 @@
 // action types
-// export const ADD_NICKNAME = 'userData/ADD_NICKNAME';
-// export const ADD_SCORE = 'userData/ADD_SCORE';
-// export const ADD_RANK = 'userData/ADD_RANK';
-// export const ADD_COMMENT = 'userData/ADD_COMMENT';
 export const ADD = 'userData/ADD';
+export const UPDATE_SCORE = 'userData/UPDATE_SCORE';
+
 // // actions,
-// export const addNickname = (nickname: string)=> ({ type: ADD_NICKNAME, nickname});
-// export const addScore = (score: number) => ({ type: ADD_SCORE, score });
-// export const addRank = (rank: number | null) => ({ type: ADD_RANK, rank });
-// export const addComment = (comment: string) => ({ type: ADD_COMMENT, comment });
-export const addData = (nickname: string, score: number,) => ({ type: ADD, nickname, score });
+export const addData = (nickname: string, score: number, rank: any, comment: string,) => ({ type: ADD, nickname, score, rank, comment });
+export const updateScore = (score:number) => ({ type: UPDATE_SCORE, score });
 // initial state
 const initialState =  {
-  nickname: "Neil",
+  nickname: "",
   score: 0,
-  // rank: null,
-  // comment: "",
+  rank: null,
+  comment: "",
   // town: {
   //     id: "9bdfe83b68f3",
   //     name1: "서울특별시",
@@ -23,22 +18,20 @@ const initialState =  {
   // }
 }
 
-// interface PayloadType {
-//   type: any;
-//   nickname: string;
-//   score: number;
-//   rank: number | null;
-//   comment: string
-
-// }
 // reducer
-const userDataReducer = (state = initialState,  action: { type: any; nickname:string, score: number} ) => {
+const userDataReducer = (state = initialState,  action: { type: any; nickname: string, score: number, rank: any, comment: string,} ) => {
   switch (action.type) {
     case ADD:
       return {
         nickname: action.nickname,
         score: action.score,
-        
+        rank: action.rank,
+        comment: action.comment,
+      }
+    case UPDATE_SCORE:
+      return {
+        ...state,
+        score: action.score + state.score
       }
 
     default:

@@ -11,6 +11,7 @@ import IndividualLeaderboard from '../components/leaderboard/IndividualLeaderboa
 import { getMini } from 'api/mini';
 import IconClose from 'assets/IconClose';
 import { sampleUserData } from 'sampleUserData';
+import BackendService from 'services/backendService';
 
 const divStyle = css`
   display: flex;
@@ -36,7 +37,7 @@ const actionItemWrapper = css`
   box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
 `;
 
-const NewUserHome = () => {
+const NewUserHome = ({ townRankData }: any) => {
   const { push } = useNavigator();
   const mini = getMini();
   const appId = process.env.REACT_APP_APP_ID;
@@ -51,6 +52,9 @@ const NewUserHome = () => {
         if (result && result.code) {
           console.log(result);
           console.log(`code: ${result.code}`);
+          BackendService.postOauth(result.code, `9bdfe83b68f3`).then(
+            (data: any) => console.log(data)
+          );
           push('/game');
         }
       },
@@ -63,7 +67,7 @@ const NewUserHome = () => {
       <div css={divStyle}>
         <div css={headingWrapper}>
           <h1 css={largeTextStyle}>
-            <span css={emphasizedTextStyle}>송파구 이웃</span>님, 아직 기록이
+            <span css={emphasizedTextStyle}>서초구 이웃</span>님, 아직 기록이
             없어요
           </h1>
           <h2 css={mediumTextStyle}>

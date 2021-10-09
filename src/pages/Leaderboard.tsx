@@ -5,7 +5,7 @@ import IndividualLeaderboard from '../components/leaderboard/IndividualLeaderboa
 import { AppEjectionButton } from 'components/AppEjectionButton';
 import { largeTextStyle, emphasizedTextStyle } from 'styles/textStyle';
 import Button from 'components/Button';
-import { sampleUserData } from 'sampleUserData';
+// import { sampleUserData } from 'sampleUserData';
 import DefaultUserRow from 'components/leaderboard/DefaultUserRow';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'reducers/rootReducer';
@@ -13,6 +13,8 @@ import { reset } from 'reducers/counterReducer';
 import TopUserRow from 'components/leaderboard/TopUserRow';
 import BackendService from 'services/backendService';
 import { useEffect, useState } from 'react';
+import { addData } from 'reducers/userDataReducer';
+import { sampleUserData } from 'sampleUserData';
 
 const customNav = css`
   left: 0;
@@ -67,8 +69,6 @@ const currentUserInfoRow = css`
 `;
 
 const Leaderboard = () => {
-  const [townRankData, setTownRankData] = useState<[]>([]);
-
   const { push } = useNavigator();
   const dispatch = useDispatch();
 
@@ -79,30 +79,15 @@ const Leaderboard = () => {
     await push('/game');
   };
   // Data from backend (GET)
-  const currentUserData = {
-    rank: 7,
-    nickname: 'Jason',
-    totalScore: 323,
-    comment: '송파대표당근농부',
-  };
 
-  let townId = `9bdfe83b68f3`;
-  const getTownRank = async () => {
-    try {
-      const response = await BackendService.getTownRank(townId);
-      const responseData: any = response.data[`data`];
-      const indexedTownRankData = responseData.map((item: any, index: any) => ({
-        rank: index + 1,
-        ...item,
-      }));
-      setTownRankData(indexedTownRankData);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-  useEffect(() => {
-    getTownRank();
-  }, []);
+  const { nickname, score, rank, comment } = useSelector(
+    (state: RootState) => ({
+      nickname: state.userDataReducer.nickname,
+      score: state.userDataReducer.score,
+      rank: state.userDataReducer.rank,
+      comment: state.userDataReducer.comment,
+    })
+  );
 
   return (
     <>
@@ -115,28 +100,24 @@ const Leaderboard = () => {
       <div css={divStyle}>
         <div css={headingWrapper}>
           <h1 css={largeTextStyle}>
-            <span css={emphasizedTextStyle}>Jason</span>님은 <br />
-            우리동네에서 <span css={emphasizedTextStyle}>121위</span> 에요!
+            <span css={emphasizedTextStyle}>{nickname}</span>님은 <br />
+            서초구에서 <span css={emphasizedTextStyle}>{rank}위</span>에요!
           </h1>
           <div css={currentUserInfoRow}>
-            {currentUserData.rank <= 10 ? (
+            {rank <= 10 ? (
               <TopUserRow
-                rank={currentUserData.rank}
-                nickname={currentUserData.nickname}
-                score={currentUserData.totalScore}
-                comment={currentUserData.comment}
+                rank={rank}
+                nickname={nickname}
+                score={score}
+                comment={comment}
               />
             ) : (
-              <DefaultUserRow
-                rank={currentUserData.rank}
-                nickname={currentUserData.nickname}
-                score={currentUserData.totalScore}
-              />
+              <DefaultUserRow rank={rank} nickname={nickname} score={score} />
             )}
           </div>
         </div>
         <div css={leaderboardWrapper}>
-          <IndividualLeaderboard townRankData={townRankData} />
+          <IndividualLeaderboard townRankData={sampleUserData} />
         </div>
         <div css={actionItemWrapper}>
           <Button

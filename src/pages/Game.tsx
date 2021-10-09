@@ -10,6 +10,8 @@ import GameContainer from '../components/game/GameContainer';
 import { RootState } from '../reducers/rootReducer';
 import background from 'assets/Seocho_background.png';
 import karrot from 'assets/Seocho_daangn.png';
+import BackendService from 'services/backendService';
+import { addData, updateScore } from 'reducers/userDataReducer';
 
 const customNavIcon = css`
   display: flex;
@@ -75,20 +77,17 @@ const GameEndButton = ({ handleGameEnd }: GameEndButtonProps) => {
   );
 };
 const Game = () => {
-  // navigation
   const history = useHistory();
-  const handleGameEnd = () => {
-    history.push('/game/modal');
-  };
-  const handleCloseModal = () => {
-    history.goBack();
-  };
   // game score
-  const [count, setCount] = useState(0);
   const { clickCount, karrotCount } = useSelector((state: RootState) => ({
     clickCount: state.counterReducer.clickCount,
     karrotCount: state.counterReducer.karrotCount,
   }));
+  const [count, setCount] = useState(0);
+  const [combinedScore, setCombinedScore] = useState(karrotCount);
+  const [isTopRanked, setIsTopRanked] = useState(false);
+  const [currentRank, setCurrentRank] = useState(0);
+
   const dispatch = useDispatch();
   const countUp = async () => dispatch(increase());
   const countUpKarrot = async () => dispatch(increaseKarrotCount());
@@ -102,7 +101,40 @@ const Game = () => {
     }
   };
 
-  let currentRank = 7;
+  const patchCurrentScore = async ({ score }: any) => {
+    try {
+      const response = await BackendService.patchCurrentScore(score);
+      console.log(response);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const getCurrentuserInfo = async () => {
+    try {
+      const response = await BackendService.getCurrentUserInfo();
+      const responseData: any = response.data[`data`];
+      return responseData;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const handleGameEnd = () => {
+    patchCurrentScore(karrotCount);
+    dispatch(updateScore(karrotCount));
+
+    getCurrentuserInfo().then((data) => {
+      console.log(data);
+      setCombinedScore(data.score);
+      if (data.rank <= 10) {
+        setIsTopRanked(true);
+      }
+      setCurrentRank(data.rank);
+    });
+    history.push('/game/modal');
+  };
+  const handleCloseModal = () => {
+    history.goBack();
+  };
 
   return (
     <>
@@ -126,7 +158,9 @@ const Game = () => {
         <DefaultGameEndModal
           handleCloseModal={handleCloseModal}
           currentRank={currentRank}
-          score={karrotCount}
+          currentSessionScore={karrotCount}
+          combinedScore={combinedScore}
+          isTopRanked={isTopRanked}
         />
       </Route>
     </>
