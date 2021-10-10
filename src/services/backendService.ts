@@ -1,5 +1,6 @@
 const axios = require('axios').default;
 
+
 const postOauth = (code: any, regionId:any) => {
   return axios.post(`${process.env.REACT_APP_BASE_URL}/oauth`, {
     code: code,
@@ -13,7 +14,7 @@ const getTownRank = async(townId: any) => {
 const getCurrentUserInfo = async() => {
   return await axios.get(`${process.env.REACT_APP_BASE_URL}/users/me`, {
     headers: {
-      "Authorization": process.env.REACT_APP_ACCESS_TOKEN
+      "Authorization": window.localStorage.getItem('ACCESS_TOKEN')
     }
   })
 }
@@ -24,7 +25,7 @@ const patchCurrentScore = async(score: number) => {
     score: score
   }, {
     headers: {
-      Authorization: process.env.REACT_APP_ACCESS_TOKEN,
+      Authorization: window.localStorage.getItem('ACCESS_TOKEN'),
       "Content-Type": "application/json"
 
     }
@@ -33,10 +34,10 @@ const patchCurrentScore = async(score: number) => {
 
 const patchComment = async(comment: string) => {
   return await axios.patch(`${process.env.REACT_APP_BASE_URL}/user-rank/comment`, {
-    comment: comment
+    comment: `${comment}`
   }, {
     headers: {
-      "Authorization": process.env.REACT_APP_ACCESS_TOKEN,
+      "Authorization": window.localStorage.getItem('ACCESS_TOKEN'),
       "Content-Type": "application/json"
     }
     
@@ -47,7 +48,7 @@ const BackendService = {
   getTownRank,
   getCurrentUserInfo,
   patchCurrentScore,
-  patchComment
+  patchComment,
 };
 
 export default BackendService;

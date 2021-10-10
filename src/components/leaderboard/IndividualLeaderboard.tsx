@@ -54,7 +54,7 @@ const IndividualLeaderboard = () => {
     getTownRank().then((data) => {
       setTownRankData(data);
     });
-  }, [getTownRank]);
+  }, []);
   return (
     <div css={divStyle}>
       <div css={leaderboardWrapperStyle}>

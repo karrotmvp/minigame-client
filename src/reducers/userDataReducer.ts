@@ -1,9 +1,9 @@
 // action types
-export const GET_USER_SCORE = 'userData/GET_USER_SCORE';
+export const UPDATE_USER_SCORE = 'userData/UPDATE_USER_SCORE';
 
 
 // actions,
-export const getUserScore = (score: number) => ({ type: GET_USER_SCORE, score });
+export const updateUserScore = (score: number) => ({ type: UPDATE_USER_SCORE, score });
 
 // initial state
 const initialState =  {
@@ -13,7 +13,7 @@ const initialState =  {
 // reducer
 const userDataReducer = (state = initialState,  action: { type: any; score: any; } ) => {
   switch (action.type) {
-    case GET_USER_SCORE:
+    case UPDATE_USER_SCORE:
       return {
         score: action.score
       }
