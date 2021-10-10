@@ -60,6 +60,8 @@ const initialState = {
   comment: '',
 };
 
+Modal.setAppElement(document.createElement('div'));
+
 interface DefaultGameEndModalProps {
   closeModal: () => void;
 }

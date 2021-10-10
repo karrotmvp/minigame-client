@@ -147,7 +147,7 @@ const popupModalStyle = css`
   animation: ${modalFadeout} 5s;
 `;
 
-// Modal.setAppElement('body');
+Modal.setAppElement(document.createElement('div'));
 
 interface GameEndButtonProps {
   handleGameEnd: () => void;
