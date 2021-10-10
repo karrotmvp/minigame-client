@@ -10,6 +10,7 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'reducers/rootReducer';
 import Modal from 'react-modal';
+import { commafy } from 'components/functions/commafy';
 
 const modalStyle = css`
   position: absolute;
@@ -107,12 +108,13 @@ const DefaultGameEndModal = ({ closeModal }: DefaultGameEndModalProps) => {
         css={[largeTextStyle, largeText]}
         style={{ textAlign: 'center', flex: '0 1 auto' }}
       >
-        <span css={emphasizedTextStyle}>{karrotCount}개</span>의 당근을
+        <span css={emphasizedTextStyle}>{commafy(karrotCount)}개</span>
+        의 당근을
         <br />
         수확했어요!
       </h1>
       <hr css={horizontalLine} />
-      <p css={totalKarrotText}>총 당근 {userData.score}개</p>
+      <p css={totalKarrotText}>총 당근 {commafy(userData.score)}개</p>
       <div
         style={{
           width: `100%`,
@@ -149,7 +151,8 @@ const DefaultGameEndModal = ({ closeModal }: DefaultGameEndModalProps) => {
         css={modalStyle}
         style={{
           overlay: {
-            background: 'rgba(40, 40, 40, 0.8)',
+            background: 'rgba(40, 40, 40, 0)',
+            zIndex: 100,
           },
         }}
       >
