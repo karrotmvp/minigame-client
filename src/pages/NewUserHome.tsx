@@ -88,6 +88,10 @@ const NewUserHome = () => {
               }
             )
             .then((response: any) => {
+              window.localStorage.setItem(
+                'ACCESS_TOKEN',
+                response.data[`data`][`accessToken`]
+              );
               console.log(response);
               history.push('/game');
             });

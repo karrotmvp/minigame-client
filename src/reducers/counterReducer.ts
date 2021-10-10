@@ -2,7 +2,6 @@
 export const RESET = 'counter/RESET';
 export const INCREASE = 'counter/INCREASE';
 export const INCREASE_KARROT_COUNT = 'counter/INCREASE_KARROT_COUNT';
-
 // actions
 export const increase = () => ({ type: INCREASE });
 export const reset = () => ({ type: RESET });

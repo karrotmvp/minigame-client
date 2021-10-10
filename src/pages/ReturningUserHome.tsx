@@ -83,6 +83,7 @@ const ReturningUserHome = () => {
   };
 
   useEffect(() => {
+    // ********************
     getCurrentuserInfo().then((data) => {
       setUserData({
         nickname: data[`nickname`],
@@ -91,6 +92,9 @@ const ReturningUserHome = () => {
         comment: data[`comment`],
       });
     });
+    // ********************
+
+    // setUserData(BackendService.sampleData);
   }, []);
 
   return (

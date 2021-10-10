@@ -1,17 +1,19 @@
 /** @jsxImportSource @emotion/react */
-import { css } from '@emotion/react';
+import { css, keyframes } from '@emotion/react';
 import DefaultGameEndModal from 'components/gameEndModal/DefaultGameEndModal';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { increase, increaseKarrotCount } from 'reducers/counterReducer';
 import GameContainer from '../components/game/GameContainer';
 import { RootState } from '../reducers/rootReducer';
 import background from 'assets/Seocho_background.png';
-import { updateScore } from 'reducers/userDataReducer';
+// import { updateScore } from 'reducers/userDataReducer';
 import IconBack from 'assets/IconBack';
 import { Link } from 'react-router-dom';
 import { ReactComponent as BigKarrot } from 'assets/Seocho_daangn.svg';
 import Modal from 'react-modal';
+import GameDirectionPopupModal from 'components/game/GameDirectionPopupModal';
+import { NONAME } from 'dns';
 const axios = require('axios').default;
 
 // nav
@@ -116,7 +118,38 @@ const modalStyle = css`
   border-radius: 21px;
 `;
 
-Modal.setAppElement('body');
+const modalFadeout = keyframes`
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+`;
+
+const popupModalStyle = css`
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+  top: 50%;
+  transform: translateY(-50%);
+  width: fit-content;
+  max-width: 400px;
+  display: flex;
+  flex-flow: column;
+  gap: 26px;
+  align-items: center;
+  background: rgba(80, 80, 80, 0.5);
+
+  padding: 55px 20px 25px;
+  border-radius: 21px;
+
+  animation: ${modalFadeout} 5s;
+`;
+
+// Modal.setAppElement('body');
 
 interface GameEndButtonProps {
   handleGameEnd: () => void;
@@ -128,9 +161,15 @@ const GameEndButton = ({ handleGameEnd }: GameEndButtonProps) => {
     </button>
   );
 };
+
 const Game = () => {
   const [count, setCount] = useState(0);
-  const [modalIsOpen, setIsOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [shouldPopup, setShouldPopup] = useState(false);
+
+  const { userScore } = useSelector((state: RootState) => ({
+    userScore: state.userDataReducer.score,
+  }));
 
   const { clickCount, karrotCount } = useSelector((state: RootState) => ({
     clickCount: state.counterReducer.clickCount,
@@ -159,18 +198,29 @@ const Game = () => {
       },
       {
         headers: {
-          Authorization: process.env.REACT_APP_ACCESS_TOKEN,
+          Authorization: window.localStorage.getItem('ACCESS_TOKEN'),
           'Content-Type': 'application/json',
         },
       }
     );
-    dispatch(updateScore(karrotCount));
-    setIsOpen(true);
+    setIsModalOpen(true);
   };
 
   function closeModal() {
-    setIsOpen(false);
+    setIsModalOpen(false);
   }
+
+  useEffect(() => {
+    if (userScore === 99) {
+      setShouldPopup(true);
+      const timer = setTimeout(() => {
+        setShouldPopup(false);
+      }, 5000);
+      return () => {
+        clearTimeout(timer);
+      };
+    }
+  }, [userScore]);
 
   return (
     <>
@@ -210,7 +260,7 @@ const Game = () => {
         </div>
       </div>
       <Modal
-        isOpen={modalIsOpen}
+        isOpen={isModalOpen}
         onRequestClose={closeModal}
         shouldCloseOnOverlayClick={false}
         contentLabel="Default Game End Modal"
@@ -222,6 +272,20 @@ const Game = () => {
         }}
       >
         <DefaultGameEndModal closeModal={closeModal} />
+      </Modal>
+      <Modal
+        isOpen={shouldPopup}
+        onRequestClose={() => setShouldPopup(false)}
+        shouldCloseOnOverlayClick={true}
+        contentLabel="Game Direction Popup Modal"
+        css={popupModalStyle}
+        style={{
+          overlay: {
+            background: `none`,
+          },
+        }}
+      >
+        <GameDirectionPopupModal />
       </Modal>
     </>
   );

@@ -79,7 +79,7 @@ const TopUserGameEndModal: FC<TopUserGameEndModalProps> = (props) => {
       },
       {
         headers: {
-          Authorization: process.env.REACT_APP_ACCESS_TOKEN,
+          Authorization: window.localStorage.getItem('ACCESS_TOKEN'),
           'Content-Type': 'application/json',
         },
       }
