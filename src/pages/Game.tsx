@@ -96,7 +96,7 @@ const gameEndButtonStyle = css`
 
   color: #cc6023;
 `;
-// modal
+// game end modal
 const modalStyle = css`
   position: absolute;
   left: 0;
@@ -115,8 +115,8 @@ const modalStyle = css`
   padding: 45px 15px 20px;
   border-radius: 21px;
 `;
-
-const modalFadeout = keyframes`
+// pop-up modal
+const fadeout = keyframes`
   50% {
     opacity: 1;
   }
@@ -124,7 +124,6 @@ const modalFadeout = keyframes`
     opacity: 0;
   }
 `;
-
 const popupModalStyle = css`
   position: absolute;
   left: 0;
@@ -144,7 +143,14 @@ const popupModalStyle = css`
   padding: 55px 20px 25px;
   border-radius: 21px;
 
-  animation: ${modalFadeout} 5s;
+  animation: ${fadeout} 5s;
+`;
+// big karrot animation
+const shakeRight = css`
+  transform: rotate(15deg);
+`;
+const shakeLeft = css`
+  transform: rotate(-15deg);
 `;
 
 Modal.setAppElement(document.createElement('div'));
@@ -164,6 +170,7 @@ const Game = () => {
   const [count, setCount] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [shouldPopup, setShouldPopup] = useState(false);
+  const [shakeToggle, setShakeToggle] = useState(false);
 
   const { userScore } = useSelector((state: RootState) => ({
     userScore: state.userDataReducer.score,
@@ -250,6 +257,10 @@ const Game = () => {
           }}
         >
           <BigKarrot
+            onClick={() => {
+              setShakeToggle((prevState) => !prevState);
+            }}
+            css={shakeToggle ? shakeLeft : shakeRight}
             style={{
               height: '25rem',
               width: 'auto',
