@@ -83,7 +83,6 @@ const ReturningUserHome = () => {
   };
 
   useEffect(() => {
-    // ********************
     getCurrentuserInfo().then((data) => {
       setUserData({
         nickname: data[`nickname`],
@@ -92,9 +91,6 @@ const ReturningUserHome = () => {
         comment: data[`comment`],
       });
     });
-    // ********************
-
-    // setUserData(BackendService.sampleData);
   }, []);
 
   return (
@@ -109,7 +105,7 @@ const ReturningUserHome = () => {
           <h1 css={largeTextStyle}>
             <span css={emphasizedTextStyle}>{userData.nickname}</span>님은
             <br />
-            우리동네에서
+            서초구에서
             <span css={emphasizedTextStyle}> {userData.rank}위</span>에요!
           </h1>
           <div css={currentuserDataInfoRow}>

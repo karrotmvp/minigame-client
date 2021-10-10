@@ -54,7 +54,8 @@ const IndividualLeaderboard = () => {
     getTownRank().then((data) => {
       setTownRankData(data);
     });
-  }, []);
+  }, [getTownRank]);
+
   return (
     <div css={divStyle}>
       <div css={leaderboardWrapperStyle}>
@@ -70,7 +71,7 @@ const IndividualLeaderboard = () => {
           );
         })}
         <p css={infoText}>
-          🎉 송파구 TOP 10 🎉 이 되어서
+          🎉 서초구 TOP 10 🎉 이 되어서
           <br />
           이웃들에게 한 마디를 남겨보세요!
         </p>

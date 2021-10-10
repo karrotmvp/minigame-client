@@ -91,7 +91,6 @@ const Leaderboard = () => {
   };
 
   useEffect(() => {
-    // *******************
     getCurrentuserInfo().then((data) => {
       setUserData({
         nickname: data[`nickname`],
@@ -100,10 +99,8 @@ const Leaderboard = () => {
         comment: data[`comment`],
       });
     });
-    // *******************
-
-    // setUserData(BackendService.sampleData);
   }, []);
+
   return (
     <>
       <div css={customNav}>

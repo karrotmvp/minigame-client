@@ -7,13 +7,11 @@ import { increase, increaseKarrotCount } from 'reducers/counterReducer';
 import GameContainer from '../components/game/GameContainer';
 import { RootState } from '../reducers/rootReducer';
 import background from 'assets/Seocho_background.png';
-// import { updateScore } from 'reducers/userDataReducer';
 import IconBack from 'assets/IconBack';
 import { Link } from 'react-router-dom';
 import { ReactComponent as BigKarrot } from 'assets/Seocho_daangn.svg';
 import Modal from 'react-modal';
 import GameDirectionPopupModal from 'components/game/GameDirectionPopupModal';
-import { NONAME } from 'dns';
 const axios = require('axios').default;
 
 // nav

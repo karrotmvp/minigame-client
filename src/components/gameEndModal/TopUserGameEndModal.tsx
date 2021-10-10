@@ -7,24 +7,6 @@ import { FC, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 const axios = require('axios').default;
 
-// const modalStyle = css`
-//   position: absolute;
-//   left: 0;
-//   right: 0;
-//   margin-left: auto;
-//   margin-right: auto;
-//   top: 50%;
-//   transform: translateY(-50%);
-//   width: 80%;
-//   max-width: 400px;
-//   display: flex;
-//   flex-flow: column;
-//   align-items: center;
-//   background: #fff;
-
-//   padding: 45px 15px 20px;
-//   border-radius: 21px;
-// `;
 const largeText = css`
   margin: 15px 0;
 `;
