@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css, keyframes } from '@emotion/react';
-import DefaultGameEndModal from 'components/gameEndModal/DefaultGameEndModal';
+import DefaultGameEndModal from 'components/modals/DefaultGameEndModal';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { increase, increaseKarrotCount } from 'reducers/counterReducer';
@@ -11,7 +11,8 @@ import IconBack from 'assets/IconBack';
 import { Link } from 'react-router-dom';
 import { ReactComponent as BigKarrot } from 'assets/Seocho_daangn.svg';
 import Modal from 'react-modal';
-import GameDirectionPopupModal from 'components/game/GameDirectionPopupModal';
+import GameDirectionPopupModal from 'components/modals/GameDirectionPopupModal';
+import { commafy } from 'components/functions/commafy';
 const axios = require('axios').default;
 
 // nav
@@ -84,8 +85,7 @@ const clickCountStyle = css`
 const gameEndButtonStyle = css`
   padding: 6px 13px;
 
-  background: #000;
-  border: none;
+  background: #ffffff;
   border-radius: 10px;
 
   font-style: normal;
@@ -244,8 +244,8 @@ const Game = () => {
 
       <div css={divStyle} onClick={handleClick}>
         <div css={scoreWrapper}>
-          <h1 css={karrotCountStyle}>{karrotCount}</h1>
-          <h2 css={clickCountStyle}>{clickCount}</h2>
+          <h1 css={karrotCountStyle}>{commafy(karrotCount)}</h1>
+          <h2 css={clickCountStyle}>{commafy(clickCount)}</h2>
         </div>
         <div
           style={{
@@ -277,6 +277,7 @@ const Game = () => {
         style={{
           overlay: {
             background: 'rgba(40, 40, 40, 0.8)',
+            zIndex: 100,
           },
         }}
       >
