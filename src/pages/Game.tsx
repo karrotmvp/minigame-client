@@ -147,10 +147,10 @@ const popupModalStyle = css`
 `;
 // big karrot animation
 const shakeRight = css`
-  transform: rotate(15deg);
+  transform: rotate(12deg);
 `;
 const shakeLeft = css`
-  transform: rotate(-15deg);
+  transform: rotate(-12deg);
 `;
 
 Modal.setAppElement(document.createElement('div'));
@@ -188,6 +188,7 @@ const Game = () => {
 
   const handleClick = async () => {
     await countUp();
+    setShakeToggle((prevState) => !prevState);
     setCount(count + 1);
     console.log('count');
     if (count >= 9) {
@@ -245,7 +246,7 @@ const Game = () => {
 
       <GameContainer onClick={handleClick} />
 
-      <div css={divStyle} onClick={handleClick}>
+      <div css={divStyle}>
         <div css={scoreWrapper}>
           <h1 css={karrotCountStyle}>{commafy(karrotCount)}</h1>
           <h2 css={clickCountStyle}>{commafy(clickCount)}</h2>
@@ -260,9 +261,7 @@ const Game = () => {
           }}
         >
           <BigKarrot
-            onClick={() => {
-              setShakeToggle((prevState) => !prevState);
-            }}
+            onClick={handleClick}
             css={shakeToggle ? shakeLeft : shakeRight}
             style={{
               height: '25rem',

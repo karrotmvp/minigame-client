@@ -10,6 +10,8 @@ import { useEffect, useState } from 'react';
 import { AppEjectionButton } from 'components/AppEjectionButton';
 import { Link } from 'react-router-dom';
 import { commafy } from 'components/functions/commafy';
+import { logEvent } from 'firebase/analytics';
+import { analytics } from 'services/firebase/firebaseConfig';
 
 // nav
 const customNav = css`
@@ -131,7 +133,13 @@ const ReturningUserHome = () => {
         <div css={leaderboardWrapper}>
           <IndividualLeaderboard />
         </div>
-        <Link to="/game" css={actionItemWrapper}>
+        <Link
+          to="/game"
+          css={actionItemWrapper}
+          onClick={() => {
+            logEvent(analytics, 'game_start');
+          }}
+        >
           <Button
             size={`large`}
             color={`primary`}
