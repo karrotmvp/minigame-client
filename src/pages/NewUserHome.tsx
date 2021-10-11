@@ -12,6 +12,8 @@ import { AppEjectionButton } from 'components/AppEjectionButton';
 import { useHistory } from 'react-router-dom';
 import BackendService from 'services/backendService';
 import { useEffect } from 'react';
+import { logEvent } from 'firebase/analytics';
+import { analytics } from 'services/firebase/firebaseConfig';
 
 const axios = require('axios').default;
 
@@ -97,6 +99,7 @@ const NewUserHome = () => {
               );
               console.log(response);
               history.push('/game');
+              logEvent(analytics, 'game_start', { type: 'new_user' });
             });
         }
       },

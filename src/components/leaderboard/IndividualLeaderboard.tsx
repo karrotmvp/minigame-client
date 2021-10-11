@@ -44,6 +44,7 @@ const IndividualLeaderboard = () => {
         rank: index + 1,
         ...item,
       }));
+      console.log(indexedTownRankData);
       return indexedTownRankData;
     } catch (error) {
       console.error(error);
