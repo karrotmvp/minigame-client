@@ -53,6 +53,20 @@ const customNavIcon2 = css`
   outline: none;
   z-index: 10;
 `;
+const gameEndButtonStyle = css`
+  padding: 6px 13px;
+
+  background: #ffffff;
+  border-radius: 10px;
+  border: none;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 14px;
+  line-height: 161.7%;
+  /* identical to box height, or 23px */
+
+  color: #cc6023;
+`;
 // main div
 const divStyle = css`
   background-image: url(${background});
@@ -81,20 +95,6 @@ const clickCountStyle = css`
   font-size: 18px;
 
   color: #bc9c8a;
-`;
-const gameEndButtonStyle = css`
-  padding: 6px 13px;
-
-  background: #ffffff;
-  border-radius: 10px;
-
-  font-style: normal;
-  font-weight: bold;
-  font-size: 14px;
-  line-height: 161.7%;
-  /* identical to box height, or 23px */
-
-  color: #cc6023;
 `;
 // game end modal
 const modalStyle = css`
@@ -168,6 +168,7 @@ const GameEndButton = ({ handleGameEnd }: GameEndButtonProps) => {
 
 const Game = () => {
   const [count, setCount] = useState(0);
+  const [karrotCountToPatch, setKarrotCountToPatch] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [shouldPopup, setShouldPopup] = useState(false);
   const [shakeToggle, setShakeToggle] = useState(false);
@@ -191,6 +192,7 @@ const Game = () => {
     console.log('count');
     if (count >= 9) {
       await countUpKarrot();
+      setKarrotCountToPatch((prev) => prev + 1);
       setCount(0);
     }
   };
@@ -199,7 +201,7 @@ const Game = () => {
     await axios.patch(
       `${process.env.REACT_APP_BASE_URL}/user-rank`,
       {
-        score: karrotCount,
+        score: karrotCountToPatch,
       },
       {
         headers: {
@@ -209,6 +211,7 @@ const Game = () => {
       }
     );
     setIsModalOpen(true);
+    setKarrotCountToPatch(0);
   };
 
   function closeModal() {

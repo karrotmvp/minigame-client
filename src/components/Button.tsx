@@ -36,7 +36,7 @@ const buttonStyle = ({ size, color }: any) => css`
       `
     : size === `medium`
     ? `
-        width: 150px;
+        width: 100%;
         padding: 10px 20px;
         font-size: 16px;
 

@@ -22,7 +22,7 @@ const customNav = css`
   height: 44px;
   padding: 0 0.5rem;
 `;
-const custonNavIcon = css`
+const customNavIcon = css`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -42,10 +42,11 @@ const divStyle = css`
   height: calc(100% - 2.75rem);
 `;
 const headingWrapper = css`
-  flex: 1;
   padding: 20px 26px 20px; ;
 `;
 const leaderboardWrapper = css`
+  flex: 1;
+
   overflow: auto;
   padding: 0 26px;
 `;
@@ -97,7 +98,7 @@ const ReturningUserHome = () => {
   return (
     <>
       <div css={customNav}>
-        <div css={custonNavIcon}>
+        <div css={customNavIcon}>
           <AppEjectionButton />
         </div>
       </div>

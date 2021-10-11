@@ -6,11 +6,11 @@ import Game from './pages/Game';
 import Leaderboard from './pages/Leaderboard';
 import { useEffect, useState } from 'react';
 import BackendService from 'services/backendService';
-import ReturningUserHome from 'pages/ReturningUserHome';
 import { Route, BrowserRouter as Router, Switch } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { updateUserScore } from 'reducers/userDataReducer';
 import { getMini } from 'api/mini';
+import ReturningUserHome from 'pages/ReturningUserHome';
 const axios = require('axios').default;
 
 const appStyle = css`
