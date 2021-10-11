@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css, keyframes } from '@emotion/react';
-import DefaultGameEndModal from 'components/gameEndModal/DefaultGameEndModal';
+import DefaultGameEndModal from 'components/modals/DefaultGameEndModal';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { increase, increaseKarrotCount } from 'reducers/counterReducer';
@@ -11,7 +11,8 @@ import IconBack from 'assets/IconBack';
 import { Link } from 'react-router-dom';
 import { ReactComponent as BigKarrot } from 'assets/Seocho_daangn.svg';
 import Modal from 'react-modal';
-import GameDirectionPopupModal from 'components/game/GameDirectionPopupModal';
+import GameDirectionPopupModal from 'components/modals/GameDirectionPopupModal';
+import { commafy } from 'components/functions/commafy';
 const axios = require('axios').default;
 
 // nav
@@ -52,6 +53,20 @@ const customNavIcon2 = css`
   outline: none;
   z-index: 10;
 `;
+const gameEndButtonStyle = css`
+  padding: 6px 13px;
+
+  background: #ffffff;
+  border-radius: 10px;
+  border: none;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 14px;
+  line-height: 161.7%;
+  /* identical to box height, or 23px */
+
+  color: #cc6023;
+`;
 // main div
 const divStyle = css`
   background-image: url(${background});
@@ -81,22 +96,7 @@ const clickCountStyle = css`
 
   color: #bc9c8a;
 `;
-const gameEndButtonStyle = css`
-  padding: 6px 13px;
-
-  background: #000;
-  border: none;
-  border-radius: 10px;
-
-  font-style: normal;
-  font-weight: bold;
-  font-size: 14px;
-  line-height: 161.7%;
-  /* identical to box height, or 23px */
-
-  color: #cc6023;
-`;
-// modal
+// game end modal
 const modalStyle = css`
   position: absolute;
   left: 0;
@@ -115,8 +115,8 @@ const modalStyle = css`
   padding: 45px 15px 20px;
   border-radius: 21px;
 `;
-
-const modalFadeout = keyframes`
+// pop-up modal
+const fadeout = keyframes`
   50% {
     opacity: 1;
   }
@@ -124,7 +124,6 @@ const modalFadeout = keyframes`
     opacity: 0;
   }
 `;
-
 const popupModalStyle = css`
   position: absolute;
   left: 0;
@@ -144,7 +143,14 @@ const popupModalStyle = css`
   padding: 55px 20px 25px;
   border-radius: 21px;
 
-  animation: ${modalFadeout} 5s;
+  animation: ${fadeout} 5s;
+`;
+// big karrot animation
+const shakeRight = css`
+  transform: rotate(15deg);
+`;
+const shakeLeft = css`
+  transform: rotate(-15deg);
 `;
 
 Modal.setAppElement(document.createElement('div'));
@@ -162,8 +168,10 @@ const GameEndButton = ({ handleGameEnd }: GameEndButtonProps) => {
 
 const Game = () => {
   const [count, setCount] = useState(0);
+  const [karrotCountToPatch, setKarrotCountToPatch] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [shouldPopup, setShouldPopup] = useState(false);
+  const [shakeToggle, setShakeToggle] = useState(false);
 
   const { userScore } = useSelector((state: RootState) => ({
     userScore: state.userDataReducer.score,
@@ -184,6 +192,7 @@ const Game = () => {
     console.log('count');
     if (count >= 9) {
       await countUpKarrot();
+      setKarrotCountToPatch((prev) => prev + 1);
       setCount(0);
     }
   };
@@ -192,7 +201,7 @@ const Game = () => {
     await axios.patch(
       `${process.env.REACT_APP_BASE_URL}/user-rank`,
       {
-        score: karrotCount,
+        score: karrotCountToPatch,
       },
       {
         headers: {
@@ -202,6 +211,7 @@ const Game = () => {
       }
     );
     setIsModalOpen(true);
+    setKarrotCountToPatch(0);
   };
 
   function closeModal() {
@@ -237,8 +247,8 @@ const Game = () => {
 
       <div css={divStyle} onClick={handleClick}>
         <div css={scoreWrapper}>
-          <h1 css={karrotCountStyle}>{karrotCount}</h1>
-          <h2 css={clickCountStyle}>{clickCount}</h2>
+          <h1 css={karrotCountStyle}>{commafy(karrotCount)}</h1>
+          <h2 css={clickCountStyle}>{commafy(clickCount)}</h2>
         </div>
         <div
           style={{
@@ -250,6 +260,10 @@ const Game = () => {
           }}
         >
           <BigKarrot
+            onClick={() => {
+              setShakeToggle((prevState) => !prevState);
+            }}
+            css={shakeToggle ? shakeLeft : shakeRight}
             style={{
               height: '25rem',
               width: 'auto',
@@ -266,6 +280,7 @@ const Game = () => {
         style={{
           overlay: {
             background: 'rgba(40, 40, 40, 0.8)',
+            zIndex: 100,
           },
         }}
       >

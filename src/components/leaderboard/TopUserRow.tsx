@@ -1,5 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
+import { commafy } from 'components/functions/commafy';
 
 const row = ({ rank }: any) => css`
   display: flex;
@@ -84,13 +85,13 @@ interface TopUserRowProps {
 const TopUserRow = ({ rank, nickname, score, comment }: TopUserRowProps) => {
   return (
     <div css={row({ rank })}>
-      <div css={rankStyle}>{rank}</div>
+      <div css={rankStyle}>{commafy(rank)}</div>
       <div css={contentWrapper}>
-        <div css={commentStyle}>"{comment}"</div>
+        <div css={commentStyle}>{comment}</div>
         <hr css={horizontalLine} />
         <div css={userInfo}>
           <div>ID {nickname}</div>
-          <div css={scoreStyle}>{score}</div>
+          <div css={scoreStyle}>{commafy(score)}</div>
         </div>
       </div>
     </div>

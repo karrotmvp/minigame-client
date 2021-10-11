@@ -1,5 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
+import { commafy } from 'components/functions/commafy';
 
 const row = css`
   display: flex;
@@ -56,7 +57,7 @@ const scoreStyle = css`
   color: #7c7c7c;
 `;
 interface DefaultUserRowProps {
-  rank: number | string;
+  rank: number;
   nickname: string;
   score: number;
 }
@@ -64,10 +65,10 @@ const DefaultUserRow = ({ rank, nickname, score }: DefaultUserRowProps) => {
   return (
     <div css={row}>
       <div css={userInfo}>
-        <div css={rankStyle}>{rank}</div>
+        <div css={rankStyle}>{commafy(rank)}</div>
         <div>{nickname}</div>
       </div>
-      <div css={scoreStyle}>{score}</div>
+      <div css={scoreStyle}>{commafy(score)}</div>
     </div>
   );
 };

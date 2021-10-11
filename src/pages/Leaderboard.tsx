@@ -42,15 +42,16 @@ const divStyle = css`
   height: calc(100% - 2.75rem);
 `;
 const headingWrapper = css`
-  flex: 1;
   padding: 20px 26px 20px;
 `;
 const leaderboardWrapper = css`
+  flex: 1;
   overflow: auto;
   padding: 0 26px;
 `;
 const actionItemWrapper = css`
   display: flex;
+  gap: 15px;
   justify-content: space-between;
   padding: 16px 24px 34px;
   border-top: 1px solid #ebebeb;
@@ -141,13 +142,13 @@ const Leaderboard = () => {
           <Button
             size={`medium`}
             color={`secondary`}
-            text={`다시하기`}
+            text={`자랑하기`}
             onClick={handlePlayAgain}
           />
           <Button
             size={`medium`}
             color={`primary`}
-            text={`자랑하기`}
+            text={`다시하기`}
             onClick={handlePlayAgain}
           />
         </div>

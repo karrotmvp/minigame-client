@@ -9,6 +9,7 @@ import BackendService from 'services/backendService';
 import { useEffect, useState } from 'react';
 import { AppEjectionButton } from 'components/AppEjectionButton';
 import { Link } from 'react-router-dom';
+import { commafy } from 'components/functions/commafy';
 
 // nav
 const customNav = css`
@@ -21,7 +22,7 @@ const customNav = css`
   height: 44px;
   padding: 0 0.5rem;
 `;
-const custonNavIcon = css`
+const customNavIcon = css`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -41,10 +42,11 @@ const divStyle = css`
   height: calc(100% - 2.75rem);
 `;
 const headingWrapper = css`
-  flex: 1;
   padding: 20px 26px 20px; ;
 `;
 const leaderboardWrapper = css`
+  flex: 1;
+
   overflow: auto;
   padding: 0 26px;
 `;
@@ -96,7 +98,7 @@ const ReturningUserHome = () => {
   return (
     <>
       <div css={customNav}>
-        <div css={custonNavIcon}>
+        <div css={customNavIcon}>
           <AppEjectionButton />
         </div>
       </div>
@@ -106,7 +108,8 @@ const ReturningUserHome = () => {
             <span css={emphasizedTextStyle}>{userData.nickname}</span>님은
             <br />
             서초구에서
-            <span css={emphasizedTextStyle}> {userData.rank}위</span>에요!
+            <span css={emphasizedTextStyle}> {commafy(userData.rank)}위</span>
+            에요!
           </h1>
           <div css={currentuserDataInfoRow}>
             {userData.rank <= 10 ? (
