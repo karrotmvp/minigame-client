@@ -70,10 +70,12 @@ const DefaultGameEndModal = ({ closeModal }: DefaultGameEndModalProps) => {
   const [modalIsOpen, setIsOpen] = useState(false);
   const [userData, setUserData] = useState(initialState);
 
-  const { karrotCount } = useSelector((state: RootState) => ({
-    karrotCount: state.counterReducer.karrotCount,
+  // const { karrotCount } = useSelector((state: RootState) => ({
+  //   karrotCount: state.counterReducer.karrotCount,
+  // }));
+  const { clickCount } = useSelector((state: RootState) => ({
+    clickCount: state.counterReducer.clickCount,
   }));
-
   let history = useHistory();
 
   const handleViewLeaderboard = () => {
@@ -108,7 +110,8 @@ const DefaultGameEndModal = ({ closeModal }: DefaultGameEndModalProps) => {
         css={[largeTextStyle, largeText]}
         style={{ textAlign: 'center', flex: '0 1 auto' }}
       >
-        <span css={emphasizedTextStyle}>{commafy(karrotCount)}개</span>
+        {/* <span css={emphasizedTextStyle}>{commafy(karrotCount)}개</span> */}
+        <span css={emphasizedTextStyle}>{commafy(clickCount)}개</span>
         의 당근을
         <br />
         수확했어요!

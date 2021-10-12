@@ -3,7 +3,11 @@ import { css, keyframes } from '@emotion/react';
 import DefaultGameEndModal from 'components/modals/DefaultGameEndModal';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { increase, increaseKarrotCount } from 'reducers/counterReducer';
+import {
+  // increase,
+  // increaseKarrotCount,
+  incrementClickCount,
+} from 'reducers/counterReducer';
 import { RootState } from '../reducers/rootReducer';
 import background from 'assets/Seocho_background.png';
 import IconBack from 'assets/IconBack';
@@ -176,7 +180,7 @@ const GameEndButton = ({ handleGameEnd }: GameEndButtonProps) => {
 
 const Game = () => {
   const [count, setCount] = useState(0);
-  const [karrotCountToPatch, setKarrotCountToPatch] = useState(0);
+  const [alreadyPatchedKarrot, setAlreadyPatchedKarrot] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [shouldPopup, setShouldPopup] = useState(false);
   const [shakeToggle, setShakeToggle] = useState(false);
@@ -185,32 +189,38 @@ const Game = () => {
     userScore: state.userDataReducer.score,
   }));
 
-  const { clickCount, karrotCount } = useSelector((state: RootState) => ({
+  const { clickCount } = useSelector((state: RootState) => ({
     clickCount: state.counterReducer.clickCount,
-    karrotCount: state.counterReducer.karrotCount,
+    // karrotCount: state.counterReducer.karrotCount,
   }));
   const dispatch = useDispatch();
-  const countUp = async () => dispatch(increase());
-  const countUpKarrot = async () => dispatch(increaseKarrotCount());
+  const clickCountUp = async () => dispatch(incrementClickCount());
+  // const countUpKarrot = async () => dispatch(increaseKarrotCount());
 
   const handleClick = async (e: { clientX: any; clientY: any }) => {
-    handleAddItem(e);
-    await countUp();
+    await handleAddItem(e);
+    await clickCountUp();
+    // await countUp();
     setShakeToggle((prevState) => !prevState);
     setCount(count + 1);
-    console.log('count');
-    if (count >= 9) {
-      await countUpKarrot();
-      setKarrotCountToPatch((prev) => prev + 1);
-      setCount(0);
-    }
+    // console.log('count');
+    // if (count >= 9) {
+    // await countUpKarrot();
+    // setKarrotCountToPatch((prev) => prev + 1);
+    // setCount(0);
+    // }
   };
 
-  const handleGameEnd = async () => {
-    await axios.patch(
+  const handleGameEnd = () => {
+    let karrotToPatch = clickCount - alreadyPatchedKarrot;
+    setAlreadyPatchedKarrot(clickCount);
+    console.log(clickCount, alreadyPatchedKarrot, karrotToPatch);
+
+    axios.patch(
       `${process.env.REACT_APP_BASE_URL}/user-rank`,
       {
-        score: karrotCountToPatch,
+        // score: karrotCountToPatch,
+        score: karrotToPatch,
       },
       {
         headers: {
@@ -220,11 +230,11 @@ const Game = () => {
       }
     );
     setIsModalOpen(true);
-    setKarrotCountToPatch(0);
   };
 
   function closeModal() {
     setIsModalOpen(false);
+    // setAlreadyPatchedKarrot(0);
   }
 
   useEffect(() => {
@@ -282,8 +292,8 @@ const Game = () => {
 
       <div css={divStyle}>
         <div css={scoreWrapper}>
-          <h1 css={karrotCountStyle}>{commafy(karrotCount)}</h1>
-          <h2 css={clickCountStyle}>{commafy(clickCount)}</h2>
+          <h1 css={clickCountStyle}>{commafy(clickCount)}</h1>
+          {/* <h2 css={clickCountStyle}>{}</h2> */}
         </div>
         <div
           style={{
