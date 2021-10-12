@@ -11,7 +11,8 @@ import TopUserRow from 'components/leaderboard/TopUserRow';
 import { useEffect, useState } from 'react';
 import BackendService from 'services/backendService';
 import { useHistory } from 'react-router-dom';
-
+import { logEvent } from 'firebase/analytics';
+import { analytics } from 'services/firebase/firebaseConfig';
 // nav
 const customNav = css`
   left: 0;
@@ -77,8 +78,13 @@ const Leaderboard = () => {
   const onReset = () => dispatch(reset());
 
   const handlePlayAgain = async () => {
+    logEvent(analytics, 'game_play_again');
     onReset();
     history.push('/game');
+  };
+
+  const handleShare = async () => {
+    logEvent(analytics, 'share_kakaotalk');
   };
 
   const getCurrentuserInfo = async () => {
@@ -143,7 +149,7 @@ const Leaderboard = () => {
             size={`medium`}
             color={`secondary`}
             text={`자랑하기`}
-            onClick={handlePlayAgain}
+            onClick={handleShare}
           />
           <Button
             size={`medium`}

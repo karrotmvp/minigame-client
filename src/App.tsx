@@ -10,6 +10,9 @@ import { Route, BrowserRouter as Router, Switch } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { updateUserScore } from 'reducers/userDataReducer';
 import ReturningUserHome from 'pages/ReturningUserHome';
+import { logEvent } from 'firebase/analytics';
+import { analytics } from 'services/firebase/firebaseConfig';
+
 const axios = require('axios').default;
 
 const appStyle = css`
