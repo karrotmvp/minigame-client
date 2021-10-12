@@ -10,8 +10,8 @@ import IndividualLeaderboard from '../components/leaderboard/IndividualLeaderboa
 import { getMini } from 'api/mini';
 import { AppEjectionButton } from 'components/AppEjectionButton';
 import { useHistory } from 'react-router-dom';
-import BackendService from 'services/backendService';
-import { useEffect } from 'react';
+// import BackendService from 'services/backendService';
+// import { useEffect } from 'react';
 import { logEvent } from 'firebase/analytics';
 import { analytics } from 'services/firebase/firebaseConfig';
 

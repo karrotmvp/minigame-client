@@ -2,7 +2,6 @@
 import { css } from '@emotion/react';
 import { useState } from 'react';
 import ClickAnimation from './ClickAnimation';
-import BigKarrot from 'assets/Seocho_daangn.svg';
 
 const fullScreen = css`
   height: 100%;
