@@ -37,13 +37,12 @@ jobs:
         run: npm run build
 
       - name: Deploy to S3
+        uses: jakejarvis/s3-sync-action@master
+        with:
+          args: --acl public-read --follow-symlinks --delete
         env:
           AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
           AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
           AWS_REGION: 'ap-northeast-2'
           AWS_S3_BUCKET: ${{secrets.AWS_S3_BUCKET}}
-        run: |
-          aws s3 sync ./dist ${{secrets.AWS_S3_BUCKET}}
-
-      - name: Invalidate CloudFront Cache
-        run: aws cloudfront create-invalidation --distribution-id ${{secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID}} --paths "/*"
+          SOURCE_DIR: 'dist'
