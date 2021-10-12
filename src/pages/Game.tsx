@@ -245,7 +245,10 @@ const Game = () => {
   }
   const [testArr, setTestArr] = useState<testArrProps[]>([]);
   const handleAddItem = (e: { clientX: any; clientY: any }) => {
-    setTestArr((testArr) => [...testArr, { posX: e.clientX, posY: e.clientY }]);
+    setTestArr((testArr) => [
+      ...testArr,
+      { posX: e.clientX - 25, posY: e.clientY - 50 },
+    ]);
     setTimeout(() => {
       setTestArr((testArr) => {
         const newArr = testArr.slice(1);
