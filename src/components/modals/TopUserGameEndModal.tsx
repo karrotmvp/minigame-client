@@ -74,11 +74,12 @@ const bottomActionDiv = css`
 
 interface TopUserGameEndModalProps {
   rank: number;
+  comment: string;
 }
 const TopUserGameEndModal: FC<TopUserGameEndModalProps> = (props) => {
   const [topUserComment, setTopUserComment] = useState({
-    comment: '',
-    length: 0,
+    comment: props.comment,
+    length: props.comment.length,
   });
 
   let history = useHistory();
@@ -137,7 +138,7 @@ const TopUserGameEndModal: FC<TopUserGameEndModalProps> = (props) => {
           <p css={commentLengthCount}>{topUserComment.length}/15</p>
         </div>
 
-        {topUserComment ? (
+        {topUserComment.length > 0 ? (
           <Button
             size={`large`}
             color={`primary`}

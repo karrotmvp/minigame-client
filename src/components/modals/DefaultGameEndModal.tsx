@@ -156,7 +156,7 @@ const DefaultGameEndModal = ({ closeModal }: DefaultGameEndModalProps) => {
           },
         }}
       >
-        <TopUserGameEndModal rank={userData.rank} />
+        <TopUserGameEndModal rank={userData.rank} comment={userData.comment} />
       </Modal>
     </>
   );
