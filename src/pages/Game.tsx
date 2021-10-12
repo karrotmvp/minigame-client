@@ -4,7 +4,6 @@ import DefaultGameEndModal from 'components/modals/DefaultGameEndModal';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { increase, increaseKarrotCount } from 'reducers/counterReducer';
-import GameContainer from '../components/game/GameContainer';
 import { RootState } from '../reducers/rootReducer';
 import background from 'assets/Seocho_background.png';
 import IconBack from 'assets/IconBack';
@@ -13,6 +12,8 @@ import { ReactComponent as BigKarrot } from 'assets/Seocho_daangn.svg';
 import Modal from 'react-modal';
 import GameDirectionPopupModal from 'components/modals/GameDirectionPopupModal';
 import { commafy } from 'components/functions/commafy';
+import ClickAnimation from 'components/game/ClickAnimation';
+
 const axios = require('axios').default;
 
 // nav
@@ -146,6 +147,13 @@ const popupModalStyle = css`
   animation: ${fadeout} 5s;
 `;
 // big karrot animation
+const fullScreenClickable = css`
+  // height: 100%;
+  position: absolute;
+  height: calc(100% - 2.75rem);
+  width: 100vw;
+  overflow: hidden;
+`;
 const shakeRight = css`
   transform: rotate(12deg);
 `;
@@ -181,12 +189,12 @@ const Game = () => {
     clickCount: state.counterReducer.clickCount,
     karrotCount: state.counterReducer.karrotCount,
   }));
-
   const dispatch = useDispatch();
   const countUp = async () => dispatch(increase());
   const countUpKarrot = async () => dispatch(increaseKarrotCount());
 
-  const handleClick = async () => {
+  const handleClick = async (e: { clientX: any; clientY: any }) => {
+    handleAddItem(e);
     await countUp();
     setShakeToggle((prevState) => !prevState);
     setCount(count + 1);
@@ -231,6 +239,24 @@ const Game = () => {
     }
   }, [userScore]);
 
+  interface testArrProps {
+    posX: number;
+    posY: number;
+  }
+  const [testArr, setTestArr] = useState<testArrProps[]>([]);
+  const handleAddItem = (e: { clientX: any; clientY: any }) => {
+    setTestArr((testArr) => [
+      ...testArr,
+      { posX: e.clientX - 25, posY: e.clientY - 50 },
+    ]);
+    setTimeout(() => {
+      setTestArr((testArr) => {
+        const newArr = testArr.slice(1);
+        return newArr;
+      });
+    }, 1000);
+  };
+
   return (
     <>
       <div css={customNav}>
@@ -244,7 +270,15 @@ const Game = () => {
         </div>
       </div>
 
-      <GameContainer onClick={handleClick} />
+      <div
+        className="wrapper"
+        css={fullScreenClickable}
+        onClick={handleAddItem}
+      >
+        {testArr.map((item, index) => (
+          <ClickAnimation posX={item.posX} posY={item.posY} key={index} />
+        ))}
+      </div>
 
       <div css={divStyle}>
         <div css={scoreWrapper}>
