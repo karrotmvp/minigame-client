@@ -2,7 +2,7 @@
 import { css } from '@emotion/react';
 import { Link } from 'react-router-dom';
 import IconBack from '../assets/IconBack';
-import { AppEjectionButton } from './AppEjectionButton';
+import { AppEjectionButton } from './buttons/AppEjectionButton';
 const customNav = css`
   left: 0;
   width: 100%;

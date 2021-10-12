@@ -1,9 +1,9 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import IndividualLeaderboard from '../components/leaderboard/IndividualLeaderboard';
-import { AppEjectionButton } from 'components/AppEjectionButton';
+import { AppEjectionButton } from 'components/buttons/AppEjectionButton';
 import { largeTextStyle, emphasizedTextStyle } from 'styles/textStyle';
-import Button from 'components/Button';
+import Button from 'components/buttons/Button';
 import DefaultUserRow from 'components/leaderboard/DefaultUserRow';
 import { useDispatch } from 'react-redux';
 import { reset } from 'reducers/counterReducer';

@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { emphasizedTextStyle, largeTextStyle } from 'styles/textStyle';
-import Button from '../Button';
+import Button from '../buttons/Button';
 import { ReactComponent as Karrot } from 'assets/karrot.svg';
 import TopUserGameEndModal from './TopUserGameEndModal';
 import { useHistory } from 'react-router';

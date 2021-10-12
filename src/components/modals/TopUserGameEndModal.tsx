@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { emphasizedTextStyle, largeTextStyle } from 'styles/textStyle';
-import Button, { DisabledButton } from '../Button';
+import Button, { DisabledButton } from '../buttons/Button';
 import { ReactComponent as Karrot } from 'assets/karrot.svg';
 import { FC, useState } from 'react';
 import { useHistory } from 'react-router-dom';

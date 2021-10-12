@@ -5,10 +5,10 @@ import {
   largeTextStyle,
   mediumTextStyle,
 } from 'styles/textStyle';
-import Button from '../components/Button';
+import Button from '../components/buttons/Button';
 import IndividualLeaderboard from '../components/leaderboard/IndividualLeaderboard';
 import { getMini } from 'api/mini';
-import { AppEjectionButton } from 'components/AppEjectionButton';
+import { AppEjectionButton } from 'components/buttons/AppEjectionButton';
 import { useHistory } from 'react-router-dom';
 // import BackendService from 'services/backendService';
 // import { useEffect } from 'react';
