@@ -1,14 +1,21 @@
 const axios = require('axios').default;
 
+const axiosInstance = axios.create({
+  baseURL: process.env.REACT_APP_BASE_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
 
 const postOauth = (code: any, regionId:any) => {
-  return axios.post(`${process.env.REACT_APP_BASE_URL}/oauth`, {
+  return axios.post(`/${process.env.REACT_APP_BASE_URL}/oauth`, {
     code: code,
     regionId: regionId
   })
 }
 const getTownRank = async(townId: any) => {
-  return await axios.get(`${process.env.REACT_APP_BASE_URL}/towns/${townId}/user-rank`);
+  return await axiosInstance.get(`/towns/${townId}/user-rank`);
 };
 
 const getCurrentUserInfo = async() => {
