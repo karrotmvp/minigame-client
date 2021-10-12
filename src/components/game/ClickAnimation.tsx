@@ -25,6 +25,9 @@ const karrotStyle = ({ posX, posY }: karrotStyleProps) => css`
   animation-name: ${animation};
 
   pointer-events: none;
+
+  // transform: translateX(0px) translateY(75px);
+  // transition: transform 500ms ease-in-out 25ms;
 `;
 interface ClickAnimationProps {
   posX: number;

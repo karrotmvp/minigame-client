@@ -86,7 +86,7 @@ const scoreWrapper = css`
   align-items: center;
   justify-content: center;
 `;
-const karrotCountStyle = css`
+const clickCountStyle = css`
   margin-top: 10%;
   font-style: normal;
   font-weight: bold;
@@ -94,13 +94,13 @@ const karrotCountStyle = css`
 
   color: #85370c;
 `;
-const clickCountStyle = css`
-  font-style: normal;
-  font-weight: bold;
-  font-size: 18px;
+// const clickCountStyle = css`
+//   font-style: normal;
+//   font-weight: bold;
+//   font-size: 18px;
 
-  color: #bc9c8a;
-`;
+//   color: #bc9c8a;
+// `;
 // game end modal
 const modalStyle = css`
   position: absolute;
@@ -148,7 +148,7 @@ const popupModalStyle = css`
   padding: 55px 20px 25px;
   border-radius: 21px;
 
-  animation: ${fadeout} 5s;
+  animation: ${fadeout} 3s;
 `;
 // big karrot animation
 const fullScreenClickable = css`
@@ -159,10 +159,10 @@ const fullScreenClickable = css`
   overflow: hidden;
 `;
 const shakeRight = css`
-  transform: rotate(12deg);
+  transform: rotate(10deg);
 `;
 const shakeLeft = css`
-  transform: rotate(-12deg);
+  transform: rotate(-10deg);
 `;
 
 Modal.setAppElement(document.createElement('div'));
@@ -238,11 +238,11 @@ const Game = () => {
   }
 
   useEffect(() => {
-    if (userScore === 99) {
+    if (userScore === 0) {
       setShouldPopup(true);
       const timer = setTimeout(() => {
         setShouldPopup(false);
-      }, 5000);
+      }, 3000);
       return () => {
         clearTimeout(timer);
       };
@@ -254,7 +254,7 @@ const Game = () => {
     posY: number;
   }
   const [testArr, setTestArr] = useState<testArrProps[]>([]);
-  const handleAddItem = (e: { clientX: any; clientY: any }) => {
+  const handleAddItem = async (e: { clientX: any; clientY: any }) => {
     setTestArr((testArr) => [
       ...testArr,
       { posX: e.clientX - 25, posY: e.clientY - 50 },
@@ -266,7 +266,6 @@ const Game = () => {
       });
     }, 1000);
   };
-
   return (
     <>
       <div css={customNav}>
@@ -301,7 +300,7 @@ const Game = () => {
             display: 'flex',
             alignItems: 'flex-end',
             justifyContent: 'center',
-            paddingBottom: '2rem',
+            paddingBottom: '20%',
           }}
         >
           <BigKarrot
@@ -340,6 +339,7 @@ const Game = () => {
             background: `none`,
           },
         }}
+        // onClick={handleClick}
       >
         <GameDirectionPopupModal />
       </Modal>
