@@ -8,7 +8,7 @@ import DefaultUserRow from 'components/leaderboard/DefaultUserRow';
 import { useDispatch } from 'react-redux';
 import { reset } from 'reducers/counterReducer';
 import TopUserRow from 'components/leaderboard/TopUserRow';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import BackendService from 'services/backendService';
 import { useHistory } from 'react-router-dom';
 import { logEvent } from 'firebase/analytics';

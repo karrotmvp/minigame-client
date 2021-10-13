@@ -254,10 +254,10 @@ const Game = () => {
       // && history.location.pathname === "any specific path")
       if (history.action === 'POP') {
         history.replace('/' /* the new state */);
-        onReset();
+        dispatch(reset());
       }
     };
-  }, [history, onReset]);
+  }, [dispatch, history]);
   return (
     <>
       <div css={customNav}>

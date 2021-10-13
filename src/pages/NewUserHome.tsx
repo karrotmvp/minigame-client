@@ -103,6 +103,7 @@ const NewUserHome = () => {
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
     console.log(window.location.search);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     userRegionId = searchParams.get('region_id');
     console.log(userRegionId);
   });
