@@ -1,7 +1,8 @@
 import { combineReducers } from "redux";
-import increment from "./increment";
+import counterReducer from "./counterReducer";
+import userDataReducer from './userDataReducer'
 
-const rootReducer = combineReducers({ increment: increment });
+const rootReducer = combineReducers({ counterReducer, userDataReducer });
 
 export default rootReducer
 
