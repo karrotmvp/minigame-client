@@ -2,7 +2,11 @@
 import { css } from '@emotion/react';
 import DefaultUserRow from 'components/leaderboard/DefaultUserRow';
 import TopUserRow from 'components/leaderboard/TopUserRow';
-import { emphasizedTextStyle, largeTextStyle } from 'styles/textStyle';
+import {
+  emphasizedTextStyle,
+  largeTextStyle,
+  mediumTextStyle,
+} from 'styles/textStyle';
 import Button from 'components/buttons/Button';
 import IndividualLeaderboard from 'components/leaderboard/IndividualLeaderboard';
 import BackendService from 'services/backendService';
@@ -37,7 +41,7 @@ const customNavIcon = css`
   outline: none;
   z-index: 10;
 `;
-// main div
+// main div`
 const divStyle = css`
   display: flex;
   flex-flow: column;
@@ -66,10 +70,61 @@ const currentuserDataInfoRow = css`
   margin: 20px 0 10px;
 `;
 
+interface UserScoreNullProps {
+  nickname: string;
+}
+const UserScoreNull: React.FC<UserScoreNullProps> = (props) => {
+  return (
+    <>
+      <h1 css={largeTextStyle}>
+        <span css={emphasizedTextStyle}>{props.nickname}</span>님, 아직 기록이
+        없어요
+      </h1>
+      <h2 css={mediumTextStyle}>
+        당근을 수확하고 이웃들에게 한 마디 남겨봐요!
+      </h2>
+    </>
+  );
+};
+interface UserScoreExistsProps {
+  nickname: string;
+  rank: number;
+  score: number;
+  comment: string;
+}
+const UserScoreExists: React.FC<UserScoreExistsProps> = (props) => {
+  return (
+    <>
+      <h1 css={largeTextStyle}>
+        <span css={emphasizedTextStyle}>{props.nickname}</span>님은
+        <br />
+        서초구에서
+        <span css={emphasizedTextStyle}> {commafy(props.rank)}위</span>
+        에요!
+      </h1>
+      <div css={currentuserDataInfoRow}>
+        {props.rank <= 10 ? (
+          <TopUserRow
+            rank={props.rank}
+            nickname={props.nickname}
+            score={props.score}
+            comment={props.comment}
+          />
+        ) : (
+          <DefaultUserRow
+            rank={props.rank}
+            nickname={props.nickname}
+            score={props.score}
+          />
+        )}
+      </div>
+    </>
+  );
+};
 const initialState = {
-  nickname: '',
+  nickname: '서초구 이웃',
   score: 0,
-  rank: 0,
+  rank: 999999,
   comment: '',
 };
 
@@ -88,6 +143,10 @@ const ReturningUserHome = () => {
 
   useEffect(() => {
     getCurrentuserInfo().then((data) => {
+      console.log(data);
+      // nickan;
+      const nickname = data[`nickname`];
+      // const score;
       setUserData({
         nickname: data[`nickname`],
         score: data[`score`],
@@ -95,6 +154,7 @@ const ReturningUserHome = () => {
         comment: data[`comment`],
       });
     });
+    // .catch();
   }, []);
 
   return (
@@ -106,29 +166,16 @@ const ReturningUserHome = () => {
       </div>
       <div css={divStyle}>
         <div css={headingWrapper}>
-          <h1 css={largeTextStyle}>
-            <span css={emphasizedTextStyle}>{userData.nickname}</span>님은
-            <br />
-            서초구에서
-            <span css={emphasizedTextStyle}> {commafy(userData.rank)}위</span>
-            에요!
-          </h1>
-          <div css={currentuserDataInfoRow}>
-            {userData.rank <= 10 ? (
-              <TopUserRow
-                rank={userData.rank}
-                nickname={userData.nickname}
-                score={userData.score}
-                comment={userData.comment}
-              />
-            ) : (
-              <DefaultUserRow
-                rank={userData.rank}
-                nickname={userData.nickname}
-                score={userData.score}
-              />
-            )}
-          </div>
+          {userData.rank !== null ? (
+            <UserScoreExists
+              nickname={userData.nickname}
+              rank={userData.rank}
+              score={userData.score}
+              comment={userData.comment}
+            />
+          ) : (
+            <UserScoreNull nickname={userData.nickname} />
+          )}
         </div>
         <div css={leaderboardWrapper}>
           <IndividualLeaderboard />
