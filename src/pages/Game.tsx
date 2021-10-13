@@ -198,11 +198,11 @@ const Game = () => {
   // const countUpKarrot = async () => dispatch(increaseKarrotCount());
 
   const handleClick = async (e: { clientX: any; clientY: any }) => {
-    await handleAddItem(e);
+    await handleClickAnimation(e);
     await clickCountUp();
     // await countUp();
     setShakeToggle((prevState) => !prevState);
-    setCount(count + 1);
+    setCount((prevCount) => prevCount + 1);
     // console.log('count');
     // if (count >= 9) {
     // await countUpKarrot();
@@ -254,7 +254,7 @@ const Game = () => {
     posY: number;
   }
   const [testArr, setTestArr] = useState<testArrProps[]>([]);
-  const handleAddItem = async (e: { clientX: any; clientY: any }) => {
+  const handleClickAnimation = async (e: { clientX: any; clientY: any }) => {
     setTestArr((testArr) => [
       ...testArr,
       { posX: e.clientX - 25, posY: e.clientY - 50 },
@@ -266,6 +266,28 @@ const Game = () => {
       });
     }, 1000);
   };
+
+  // const throttle = (func: { apply: (arg0: any, arg1: IArguments) => void; }, limit: number) => {
+  //   let lastFunc: NodeJS.Timeout;
+  //   let lastRan: number;
+  //   return function () {
+  //     const context = this;
+  //     const args = arguments;
+  //     if (!lastRan) {
+  //       func.apply(context, args);
+  //       lastRan = Date.now();
+  //     } else {
+  //       clearTimeout(lastFunc);
+  //       lastFunc = setTimeout(function () {
+  //         if (Date.now() - lastRan >= limit) {
+  //           func.apply(context, args);
+  //           lastRan = Date.now();
+  //         }
+  //       }, limit - (Date.now() - lastRan));
+  //     }
+  //   };
+  // };
+
   return (
     <>
       <div css={customNav}>
@@ -282,7 +304,7 @@ const Game = () => {
       <div
         className="wrapper"
         css={fullScreenClickable}
-        onClick={handleAddItem}
+        onClick={handleClickAnimation}
       >
         {testArr.map((item, index) => (
           <ClickAnimation posX={item.posX} posY={item.posY} key={index} />
