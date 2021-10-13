@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react';
 import BackendService from 'services/backendService';
 import { Route, BrowserRouter as Router, Switch } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { updateUserScore } from 'reducers/userDataReducer';
+// import { saveTownId, updateUserScore } from 'reducers/userDataReducer';
 import { logEvent } from 'firebase/analytics';
 import { analytics } from 'services/firebase/firebaseConfig';
 import ReturningUserHome from 'pages/ReturningUserHome';
@@ -21,21 +21,19 @@ const appStyle = css`
 
 function App() {
   const [isNewUser, setIsNewUser] = useState<boolean>(true);
-  const dispatch = useDispatch();
 
-  const getCurrentuserInfo = async () => {
-    try {
-      const response = await BackendService.getCurrentUserInfo();
-      const responseData: any = response.data[`data`];
-      return responseData;
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  // const getCurrentuserInfo = async () => {
+  //   try {
+  //     const response = await BackendService.getCurrentUserInfo();
+  //     const responseData: any = response.data[`data`];
+  //     return responseData;
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
 
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
-    console.log(window.location.search);
     const userCode = searchParams.get('code');
     const userRegionId = searchParams.get('region_id');
     // console.log(userCode, userRegionId);
@@ -116,7 +114,7 @@ function App() {
     //   },
     // });
     // });
-  }, [dispatch, isNewUser]);
+  }, []);
   console.log(isNewUser);
 
   return (

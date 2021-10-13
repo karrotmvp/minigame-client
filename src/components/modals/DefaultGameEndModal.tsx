@@ -79,7 +79,7 @@ const DefaultGameEndModal = ({ closeModal }: DefaultGameEndModalProps) => {
   let history = useHistory();
 
   const handleViewLeaderboard = () => {
-    history.push('/leaderboard');
+    history.replace('/leaderboard');
   };
 
   const getCurrentuserInfo = async () => {
@@ -93,14 +93,16 @@ const DefaultGameEndModal = ({ closeModal }: DefaultGameEndModalProps) => {
   };
 
   useEffect(() => {
-    getCurrentuserInfo().then((data) => {
-      setUserData({
-        nickname: data[`nickname`],
-        score: data[`score`],
-        rank: data[`rank`],
-        comment: data[`comment`],
-      });
-    });
+    getCurrentuserInfo()
+      .then((data) => {
+        setUserData({
+          nickname: data[`nickname`],
+          score: data[`score`],
+          rank: data[`rank`],
+          comment: data[`comment`],
+        });
+      })
+      .catch((error) => console.error(error));
   }, []);
 
   return (

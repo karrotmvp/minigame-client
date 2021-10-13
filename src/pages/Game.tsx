@@ -7,11 +7,12 @@ import {
   // increase,
   // increaseKarrotCount,
   incrementClickCount,
+  reset,
 } from 'reducers/counterReducer';
 import { RootState } from '../reducers/rootReducer';
 import background from 'assets/Seocho_background.png';
 import IconBack from 'assets/IconBack';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { ReactComponent as BigKarrot } from 'assets/Seocho_daangn.svg';
 import Modal from 'react-modal';
 import GameDirectionPopupModal from 'components/modals/GameDirectionPopupModal';
@@ -290,11 +291,24 @@ const Game = () => {
   //   };
   // };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const onReset = () => dispatch(reset());
+  const history = useHistory();
+  useEffect(() => {
+    return () => {
+      // && history.location.pathname === "any specific path")
+      if (history.action === 'POP') {
+        history.replace('/' /* the new state */);
+        onReset();
+      }
+    };
+  }, [history, onReset]);
+
   return (
     <>
       <div css={customNav}>
         <div css={customNavIcon1}>
-          <Link to="/">
+          <Link to="/" onClick={onReset}>
             <IconBack />
           </Link>
         </div>

@@ -1,9 +1,12 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { useCallback, useEffect, useState } from 'react';
+import { SetStateAction, useCallback, useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { RootState } from 'reducers/rootReducer';
 import BackendService from 'services/backendService';
 import DefaultUserRow from './DefaultUserRow';
 import TopUserRow from './TopUserRow';
+const axios = require('axios').default;
 
 const divStyle = css`
   padding-top: 10px;
@@ -34,28 +37,62 @@ const infoText = css`
 
 const IndividualLeaderboard = () => {
   const [townRankData, setTownRankData] = useState<any[]>([]);
-
-  let townId = `9bdfe83b68f3`;
-  const getTownRank = useCallback(async () => {
-    try {
-      const response = await BackendService.getTownRank(townId);
-      const responseData: any = response.data[`data`];
-      const indexedTownRankData = responseData.map((item: any, index: any) => ({
-        rank: index + 1,
-        ...item,
-      }));
-      console.log(indexedTownRankData);
-      return indexedTownRankData;
-    } catch (error) {
-      console.error(error);
-    }
-  }, [townId]);
+  // const { townId } = useSelector((state: RootState) => ({
+  //   townId: state.userDataReducer.townId,
+  // }));
 
   useEffect(() => {
-    getTownRank().then((data) => {
-      setTownRankData(data);
-    });
-  }, [getTownRank]);
+    axios
+      .get(`${process.env.REACT_APP_BASE_URL}/users/me`, {
+        headers: {
+          Authorization: window.localStorage.getItem('ACCESS_TOKEN'),
+        },
+      })
+      .then((response: any) => {
+        const townId = response.data.data.town.id;
+        axios
+          .get(`${process.env.REACT_APP_BASE_URL}/towns/${townId}/user-rank`)
+          .then((response: any) => {
+            const responseData: any = response.data.data;
+            const indexedTownRankData = responseData.map(
+              (item: any, index: number) => ({
+                rank: index + 1,
+                ...item,
+              })
+            );
+            console.log(indexedTownRankData);
+
+            setTownRankData(indexedTownRankData);
+          })
+          .catch((error: any) => console.error(error));
+      })
+      .catch((error: any) => console.error(error));
+  }, []);
+  // let townId = `9bdfe83b68f3`;
+  // const getTownRank = async((townId) => {
+  //   try {
+  //     const response = await BackendService.getTownRank(townId);
+  //     const responseData: any = response.data[`data`];
+  //     const indexedTownRankData = responseData.map((item: any, index: any) => ({
+  //       rank: index + 1,
+  //       ...item,
+  //     }));
+  //     console.log(indexedTownRankData);
+  //     return indexedTownRankData;
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // });
+
+  // useEffect(() => {
+  //   getTownRank(townId)
+  //     .then((data) => {
+  //       setTownRankData(data);
+  //     })
+  //     .catch((error) => {
+  //       console.error(error);
+  //     });
+  // }, [getTownRank, townId]);
 
   return (
     <div css={divStyle}>

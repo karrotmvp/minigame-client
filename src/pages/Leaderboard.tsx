@@ -74,17 +74,15 @@ const Leaderboard = () => {
   const [userData, setUserData] = useState(initialState);
   const history = useHistory();
   const dispatch = useDispatch();
-
   const onReset = () => dispatch(reset());
 
   const handlePlayAgain = async () => {
     logEvent(analytics, 'game_play_again');
     onReset();
-    history.push('/game');
+    history.replace('/game');
   };
 
   // Share must be triggered by "user activation"
-
   const handleShare = async () => {
     const shareData = {
       title: '미니게임 - 당근모아',
@@ -96,8 +94,6 @@ const Leaderboard = () => {
       await navigator.share(shareData);
       console.log('web share api fired');
       logEvent(analytics, 'share');
-
-      // resultPara.textContent = 'MDN shared successfully'
     } catch (error) {
       console.error(error);
     }
@@ -114,16 +110,28 @@ const Leaderboard = () => {
   };
 
   useEffect(() => {
-    getCurrentuserInfo().then((data) => {
-      setUserData({
-        nickname: data[`nickname`],
-        score: data[`score`],
-        rank: data[`rank`],
-        comment: data[`comment`],
-      });
-    });
+    getCurrentuserInfo()
+      .then((data) => {
+        // console.log('leaderboard', data);
+        setUserData({
+          nickname: data[`nickname`],
+          score: data[`score`],
+          rank: data[`rank`],
+          comment: data[`comment`],
+        });
+      })
+      .catch((error) => console.error(error));
   }, []);
 
+  useEffect(() => {
+    return () => {
+      // && history.location.pathname === "any specific path")
+      if (history.action === 'POP') {
+        history.replace('/game' /* the new state */);
+        onReset();
+      }
+    };
+  }, [history, onReset]);
   return (
     <>
       <div css={customNav}>
