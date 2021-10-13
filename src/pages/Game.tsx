@@ -179,7 +179,7 @@ const GameEndButton = ({ handleGameEnd }: GameEndButtonProps) => {
 };
 
 const Game = () => {
-  const [count, setCount] = useState(0);
+  // const [count, setCount] = useState(0);
   const [alreadyPatchedKarrot, setAlreadyPatchedKarrot] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [shouldPopup, setShouldPopup] = useState(false);
@@ -202,7 +202,7 @@ const Game = () => {
     await clickCountUp();
     // await countUp();
     setShakeToggle((prevState) => !prevState);
-    setCount((prevCount) => prevCount + 1);
+    // setCount((prevCount) => prevCount + 1);
     // console.log('count');
     // if (count >= 9) {
     // await countUpKarrot();
