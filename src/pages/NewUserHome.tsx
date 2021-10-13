@@ -5,10 +5,10 @@ import {
   largeTextStyle,
   mediumTextStyle,
 } from 'styles/textStyle';
-import Button from '../components/Button';
+import Button from '../components/buttons/Button';
 import IndividualLeaderboard from '../components/leaderboard/IndividualLeaderboard';
 import { getMini } from 'api/mini';
-import { AppEjectionButton } from 'components/AppEjectionButton';
+import { AppEjectionButton } from 'components/buttons/AppEjectionButton';
 import { useHistory } from 'react-router-dom';
 // import BackendService from 'services/backendService';
 // import { useEffect } from 'react';
@@ -76,9 +76,8 @@ const NewUserHome = () => {
         appId: `${process.env.REACT_APP_APP_ID}`,
       },
       onSuccess: function (result) {
+        console.log(window.location.search);
         if (result && result.code) {
-          console.log(result);
-          console.log(`code: ${result.code}`);
           axios
             .post(
               `${process.env.REACT_APP_BASE_URL}/oauth`,

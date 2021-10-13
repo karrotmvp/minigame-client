@@ -1,9 +1,9 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import IndividualLeaderboard from '../components/leaderboard/IndividualLeaderboard';
-import { AppEjectionButton } from 'components/AppEjectionButton';
+import { AppEjectionButton } from 'components/buttons/AppEjectionButton';
 import { largeTextStyle, emphasizedTextStyle } from 'styles/textStyle';
-import Button from 'components/Button';
+import Button from 'components/buttons/Button';
 import DefaultUserRow from 'components/leaderboard/DefaultUserRow';
 import { useDispatch } from 'react-redux';
 import { reset } from 'reducers/counterReducer';
@@ -11,7 +11,8 @@ import TopUserRow from 'components/leaderboard/TopUserRow';
 import { useEffect, useState } from 'react';
 import BackendService from 'services/backendService';
 import { useHistory } from 'react-router-dom';
-
+import { logEvent } from 'firebase/analytics';
+import { analytics } from 'services/firebase/firebaseConfig';
 // nav
 const customNav = css`
   left: 0;
@@ -77,8 +78,29 @@ const Leaderboard = () => {
   const onReset = () => dispatch(reset());
 
   const handlePlayAgain = async () => {
+    logEvent(analytics, 'game_play_again');
     onReset();
     history.push('/game');
+  };
+
+  // Share must be triggered by "user activation"
+
+  const handleShare = async () => {
+    const shareData = {
+      title: '미니게임 - 당근모아',
+      text: '미니게임 - 당근모아를 플레이 하고 서초구 이웃들에게 한 마디를 남겨보세요!',
+      url: 'https://developer.mozilla.org',
+    };
+
+    try {
+      await navigator.share(shareData);
+      console.log('web share api fired');
+      logEvent(analytics, 'share');
+
+      // resultPara.textContent = 'MDN shared successfully'
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const getCurrentuserInfo = async () => {
@@ -143,7 +165,7 @@ const Leaderboard = () => {
             size={`medium`}
             color={`secondary`}
             text={`자랑하기`}
-            onClick={handlePlayAgain}
+            onClick={handleShare}
           />
           <Button
             size={`medium`}

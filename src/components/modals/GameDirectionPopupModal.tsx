@@ -1,6 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { ReactComponent as PointingFinger } from 'assets/PointingFinger.svg';
+import React from 'react';
 
 const directionText = css`
   font-style: normal;
@@ -18,9 +19,9 @@ const GameDirectionPopupModal = () => {
     <>
       <PointingFinger />
       <p css={directionText}>
-        아무 곳이나 눌러보세요!
+        당근을 눌러보세요!
         <br />
-        10번을 누르면
+        한번의 터치에
         <br />
         1개의 당근을 모을 수 있어요
       </p>

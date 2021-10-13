@@ -3,7 +3,11 @@ import { css, keyframes } from '@emotion/react';
 import DefaultGameEndModal from 'components/modals/DefaultGameEndModal';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { increase, increaseKarrotCount } from 'reducers/counterReducer';
+import {
+  // increase,
+  // increaseKarrotCount,
+  incrementClickCount,
+} from 'reducers/counterReducer';
 import { RootState } from '../reducers/rootReducer';
 import background from 'assets/Seocho_background.png';
 import IconBack from 'assets/IconBack';
@@ -82,7 +86,7 @@ const scoreWrapper = css`
   align-items: center;
   justify-content: center;
 `;
-const karrotCountStyle = css`
+const clickCountStyle = css`
   margin-top: 10%;
   font-style: normal;
   font-weight: bold;
@@ -90,13 +94,13 @@ const karrotCountStyle = css`
 
   color: #85370c;
 `;
-const clickCountStyle = css`
-  font-style: normal;
-  font-weight: bold;
-  font-size: 18px;
+// const clickCountStyle = css`
+//   font-style: normal;
+//   font-weight: bold;
+//   font-size: 18px;
 
-  color: #bc9c8a;
-`;
+//   color: #bc9c8a;
+// `;
 // game end modal
 const modalStyle = css`
   position: absolute;
@@ -144,7 +148,7 @@ const popupModalStyle = css`
   padding: 55px 20px 25px;
   border-radius: 21px;
 
-  animation: ${fadeout} 5s;
+  animation: ${fadeout} 3s;
 `;
 // big karrot animation
 const fullScreenClickable = css`
@@ -155,10 +159,10 @@ const fullScreenClickable = css`
   overflow: hidden;
 `;
 const shakeRight = css`
-  transform: rotate(12deg);
+  transform: rotate(10deg);
 `;
 const shakeLeft = css`
-  transform: rotate(-12deg);
+  transform: rotate(-10deg);
 `;
 
 Modal.setAppElement(document.createElement('div'));
@@ -176,7 +180,7 @@ const GameEndButton = ({ handleGameEnd }: GameEndButtonProps) => {
 
 const Game = () => {
   const [count, setCount] = useState(0);
-  const [karrotCountToPatch, setKarrotCountToPatch] = useState(0);
+  const [alreadyPatchedKarrot, setAlreadyPatchedKarrot] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [shouldPopup, setShouldPopup] = useState(false);
   const [shakeToggle, setShakeToggle] = useState(false);
@@ -185,32 +189,38 @@ const Game = () => {
     userScore: state.userDataReducer.score,
   }));
 
-  const { clickCount, karrotCount } = useSelector((state: RootState) => ({
+  const { clickCount } = useSelector((state: RootState) => ({
     clickCount: state.counterReducer.clickCount,
-    karrotCount: state.counterReducer.karrotCount,
+    // karrotCount: state.counterReducer.karrotCount,
   }));
   const dispatch = useDispatch();
-  const countUp = async () => dispatch(increase());
-  const countUpKarrot = async () => dispatch(increaseKarrotCount());
+  const clickCountUp = async () => dispatch(incrementClickCount());
+  // const countUpKarrot = async () => dispatch(increaseKarrotCount());
 
   const handleClick = async (e: { clientX: any; clientY: any }) => {
-    handleAddItem(e);
-    await countUp();
+    await handleClickAnimation(e);
+    await clickCountUp();
+    // await countUp();
     setShakeToggle((prevState) => !prevState);
-    setCount(count + 1);
-    console.log('count');
-    if (count >= 9) {
-      await countUpKarrot();
-      setKarrotCountToPatch((prev) => prev + 1);
-      setCount(0);
-    }
+    setCount((prevCount) => prevCount + 1);
+    // console.log('count');
+    // if (count >= 9) {
+    // await countUpKarrot();
+    // setKarrotCountToPatch((prev) => prev + 1);
+    // setCount(0);
+    // }
   };
 
-  const handleGameEnd = async () => {
-    await axios.patch(
+  const handleGameEnd = () => {
+    let karrotToPatch = clickCount - alreadyPatchedKarrot;
+    setAlreadyPatchedKarrot(clickCount);
+    console.log(clickCount, alreadyPatchedKarrot, karrotToPatch);
+
+    axios.patch(
       `${process.env.REACT_APP_BASE_URL}/user-rank`,
       {
-        score: karrotCountToPatch,
+        // score: karrotCountToPatch,
+        score: karrotToPatch,
       },
       {
         headers: {
@@ -220,19 +230,19 @@ const Game = () => {
       }
     );
     setIsModalOpen(true);
-    setKarrotCountToPatch(0);
   };
 
   function closeModal() {
     setIsModalOpen(false);
+    // setAlreadyPatchedKarrot(0);
   }
 
   useEffect(() => {
-    if (userScore === 99) {
+    if (userScore === 0) {
       setShouldPopup(true);
       const timer = setTimeout(() => {
         setShouldPopup(false);
-      }, 5000);
+      }, 3000);
       return () => {
         clearTimeout(timer);
       };
@@ -244,7 +254,7 @@ const Game = () => {
     posY: number;
   }
   const [testArr, setTestArr] = useState<testArrProps[]>([]);
-  const handleAddItem = (e: { clientX: any; clientY: any }) => {
+  const handleClickAnimation = async (e: { clientX: any; clientY: any }) => {
     setTestArr((testArr) => [
       ...testArr,
       { posX: e.clientX - 25, posY: e.clientY - 50 },
@@ -256,6 +266,27 @@ const Game = () => {
       });
     }, 1000);
   };
+
+  // const throttle = (func: { apply: (arg0: any, arg1: IArguments) => void; }, limit: number) => {
+  //   let lastFunc: NodeJS.Timeout;
+  //   let lastRan: number;
+  //   return function () {
+  //     const context = this;
+  //     const args = arguments;
+  //     if (!lastRan) {
+  //       func.apply(context, args);
+  //       lastRan = Date.now();
+  //     } else {
+  //       clearTimeout(lastFunc);
+  //       lastFunc = setTimeout(function () {
+  //         if (Date.now() - lastRan >= limit) {
+  //           func.apply(context, args);
+  //           lastRan = Date.now();
+  //         }
+  //       }, limit - (Date.now() - lastRan));
+  //     }
+  //   };
+  // };
 
   return (
     <>
@@ -273,7 +304,7 @@ const Game = () => {
       <div
         className="wrapper"
         css={fullScreenClickable}
-        onClick={handleAddItem}
+        onClick={handleClickAnimation}
       >
         {testArr.map((item, index) => (
           <ClickAnimation posX={item.posX} posY={item.posY} key={index} />
@@ -282,8 +313,8 @@ const Game = () => {
 
       <div css={divStyle}>
         <div css={scoreWrapper}>
-          <h1 css={karrotCountStyle}>{commafy(karrotCount)}</h1>
-          <h2 css={clickCountStyle}>{commafy(clickCount)}</h2>
+          <h1 css={clickCountStyle}>{commafy(clickCount)}</h1>
+          {/* <h2 css={clickCountStyle}>{}</h2> */}
         </div>
         <div
           style={{
@@ -291,7 +322,7 @@ const Game = () => {
             display: 'flex',
             alignItems: 'flex-end',
             justifyContent: 'center',
-            paddingBottom: '2rem',
+            paddingBottom: '20%',
           }}
         >
           <BigKarrot
@@ -330,6 +361,7 @@ const Game = () => {
             background: `none`,
           },
         }}
+        // onClick={handleClick}
       >
         <GameDirectionPopupModal />
       </Modal>
