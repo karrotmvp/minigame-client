@@ -5,11 +5,17 @@ import NewUserHome from './pages/NewUserHome';
 import Game from './pages/Game';
 import Leaderboard from './pages/Leaderboard';
 import { useEffect, useState } from 'react';
-import { Route, BrowserRouter as Router, Switch } from 'react-router-dom';
+import {
+  Route,
+  BrowserRouter as Router,
+  Switch,
+  Redirect,
+} from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { logEvent } from 'firebase/analytics';
 import { analytics } from 'services/firebase/firebaseConfig';
 import ReturningUserHome from 'pages/ReturningUserHome';
+import NonServiceArea from 'pages/NonServiceArea';
 
 const axios = require('axios').default;
 
@@ -41,18 +47,35 @@ function App() {
           }
         )
         .then((response: any) => {
-          window.localStorage.setItem(
-            'ACCESS_TOKEN',
-            response.data[`data`][`accessToken`]
-          );
-          setIsNewUser(false);
-        });
-    } else {
-      setIsNewUser(true);
-      console.log('direct to new-user-home');
+          // redirect if townid !== 서초구 (df5370052b3c)
+          console.log(response);
+          if (response.data) {
+            return (
+              <Redirect
+                to={{
+                  pathname: '/non-service-area',
+                  state: { townid: 'testId', townName: 'testName' },
+                }}
+              />
+            );
+          }
+          // returning user if townid === 서초구
+          else if (response.data) {
+            window.localStorage.setItem(
+              'ACCESS_TOKEN',
+              response.data[`data`][`accessToken`]
+            );
+            setIsNewUser(false);
+          }
+          // new user in 서초구
+          else {
+            setIsNewUser(true);
+            console.log('direct to new-user-home');
+          }
+        })
+        .catch((error: any) => console.error(error));
     }
   }, [dispatch, isNewUser]);
-  console.log(isNewUser);
 
   return (
     <div css={appStyle}>
@@ -71,6 +94,11 @@ function App() {
           <Route exact path="/leaderboard">
             <Leaderboard />
           </Route>
+          <Route
+            exact
+            path="/non-service-area"
+            render={(props) => <NonServiceArea {...props} />}
+          />
         </Switch>
       </Router>
     </div>
