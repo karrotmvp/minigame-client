@@ -79,7 +79,7 @@ const DefaultGameEndModal = ({ closeModal }: DefaultGameEndModalProps) => {
   let history = useHistory();
 
   const handleViewLeaderboard = () => {
-    history.push('/leaderboard');
+    history.replace('/leaderboard');
   };
 
   const getCurrentuserInfo = async () => {
