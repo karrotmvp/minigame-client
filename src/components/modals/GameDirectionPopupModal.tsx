@@ -1,7 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { ReactComponent as PointingFinger } from 'assets/PointingFinger.svg';
-import React from 'react';
 
 const directionText = css`
   font-style: normal;

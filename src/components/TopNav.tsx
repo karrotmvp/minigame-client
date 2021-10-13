@@ -1,6 +1,5 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { Link } from 'react-router-dom';
 import IconBack from '../assets/IconBack';
 import { AppEjectionButton } from './buttons/AppEjectionButton';
 const customNav = css`
@@ -30,14 +29,9 @@ const customNavIcon = css`
 
 interface TopNavprops {
   action: string;
-  handleNavCloseAction?: () => void;
   handleNavBackAction?: () => void;
 }
-const TopNav = ({
-  action,
-  handleNavCloseAction,
-  handleNavBackAction,
-}: TopNavprops) => {
+const TopNav = ({ action, handleNavBackAction }: TopNavprops) => {
   return (
     <div css={customNav}>
       <div css={customNavIcon}>

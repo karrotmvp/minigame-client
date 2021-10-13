@@ -10,12 +10,7 @@ import IndividualLeaderboard from '../components/leaderboard/IndividualLeaderboa
 import { getMini } from 'api/mini';
 import { AppEjectionButton } from 'components/buttons/AppEjectionButton';
 import { useHistory } from 'react-router-dom';
-// import BackendService from 'services/backendService';
-// import { useEffect } from 'react';
-import { logEvent } from 'firebase/analytics';
-import { analytics } from 'services/firebase/firebaseConfig';
-import { SetStateAction, useEffect, useState } from 'react';
-import BackendService from 'services/backendService';
+import { useEffect } from 'react';
 
 const axios = require('axios').default;
 
@@ -66,22 +61,8 @@ const actionItemWrapper = css`
   box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
 `;
 
-// interface NewUserHometype {
-//   setIsNewUser: React.Dispatch<SetStateAction<boolean | undefined>>;
-// }
 const NewUserHome = () => {
-  // const [userData, setUserData] = useState(initialState);
   let history = useHistory();
-
-  const getCurrentuserInfo = async () => {
-    try {
-      const response = await BackendService.getCurrentUserInfo();
-      const responseData: any = response.data[`data`];
-      return responseData;
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
   const mini = getMini();
   const handleNewUserAgreement = () => {
@@ -112,17 +93,6 @@ const NewUserHome = () => {
                 'ACCESS_TOKEN',
                 response.data[`data`][`accessToken`]
               );
-              // await getCurrentuserInfo().then(data => {
-              //   setUserData({
-              //     nickname: data[`nickname`],
-              //     score: data[`score`],
-              //     rank: data[`rank`],
-              //     comment: data[`comment`],
-              //   });
-              // })
-              // console.log(response);
-              // setIsNewUser(false);
-              // console.log('preset fired');
               history.push('/game');
             });
         }
@@ -133,7 +103,6 @@ const NewUserHome = () => {
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
     console.log(window.location.search);
-    // const userCode = searchParams.get('code');
     userRegionId = searchParams.get('region_id');
     console.log(userRegionId);
   });

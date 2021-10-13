@@ -3,11 +3,7 @@ import { css, keyframes } from '@emotion/react';
 import DefaultGameEndModal from 'components/modals/DefaultGameEndModal';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  // increase,
-  // increaseKarrotCount,
-  incrementClickCount,
-} from 'reducers/counterReducer';
+import { incrementClickCount } from 'reducers/counterReducer';
 import { RootState } from '../reducers/rootReducer';
 import background from 'assets/Seocho_background.png';
 import IconBack from 'assets/IconBack';
@@ -94,13 +90,6 @@ const clickCountStyle = css`
 
   color: #85370c;
 `;
-// const clickCountStyle = css`
-//   font-style: normal;
-//   font-weight: bold;
-//   font-size: 18px;
-
-//   color: #bc9c8a;
-// `;
 // game end modal
 const modalStyle = css`
   position: absolute;
@@ -183,7 +172,6 @@ interface animationArrProps {
   posY: number;
 }
 const Game = () => {
-  // const [count, setCount] = useState(0);
   const [alreadyPatchedKarrot, setAlreadyPatchedKarrot] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [shouldPopup, setShouldPopup] = useState(false);
@@ -196,11 +184,9 @@ const Game = () => {
 
   const { clickCount } = useSelector((state: RootState) => ({
     clickCount: state.counterReducer.clickCount,
-    // karrotCount: state.counterReducer.karrotCount,
   }));
   const dispatch = useDispatch();
   const clickCountUp = async () => dispatch(incrementClickCount());
-  // const countUpKarrot = async () => dispatch(increaseKarrotCount());
 
   const handleClickAnimation = async (e: { clientX: any; clientY: any }) => {
     setAnimationArr((animationArr) => [
@@ -218,14 +204,6 @@ const Game = () => {
   const handleScreenClick = async (e: { clientX: any; clientY: any }) => {
     await handleClickAnimation(e);
     await clickCountUp();
-    // await countUp();
-    // setCount((prevCount) => prevCount + 1);
-    // console.log('count');
-    // if (count >= 9) {
-    // await countUpKarrot();
-    // setKarrotCountToPatch((prev) => prev + 1);
-    // setCount(0);
-    // }
   };
   const handleBigKarrotClick = async (e: { clientX: any; clientY: any }) => {
     await handleScreenClick(e);
@@ -239,7 +217,6 @@ const Game = () => {
     axios.patch(
       `${process.env.REACT_APP_BASE_URL}/user-rank`,
       {
-        // score: karrotCountToPatch,
         score: karrotToPatch,
       },
       {
@@ -254,7 +231,6 @@ const Game = () => {
 
   function closeModal() {
     setIsModalOpen(false);
-    // setAlreadyPatchedKarrot(0);
   }
 
   useEffect(() => {
@@ -268,27 +244,6 @@ const Game = () => {
       };
     }
   }, [userScore]);
-
-  // const throttle = (func: { apply: (arg0: any, arg1: IArguments) => void; }, limit: number) => {
-  //   let lastFunc: NodeJS.Timeout;
-  //   let lastRan: number;
-  //   return function () {
-  //     const context = this;
-  //     const args = arguments;
-  //     if (!lastRan) {
-  //       func.apply(context, args);
-  //       lastRan = Date.now();
-  //     } else {
-  //       clearTimeout(lastFunc);
-  //       lastFunc = setTimeout(function () {
-  //         if (Date.now() - lastRan >= limit) {
-  //           func.apply(context, args);
-  //           lastRan = Date.now();
-  //         }
-  //       }, limit - (Date.now() - lastRan));
-  //     }
-  //   };
-  // };
 
   return (
     <>
@@ -360,7 +315,6 @@ const Game = () => {
             background: `none`,
           },
         }}
-        // onClick={handleClick}
       >
         <GameDirectionPopupModal />
       </Modal>

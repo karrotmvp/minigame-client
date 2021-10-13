@@ -96,8 +96,6 @@ const Leaderboard = () => {
       await navigator.share(shareData);
       console.log('web share api fired');
       logEvent(analytics, 'share');
-
-      // resultPara.textContent = 'MDN shared successfully'
     } catch (error) {
       console.error(error);
     }

@@ -142,19 +142,17 @@ const ReturningUserHome = () => {
   };
 
   useEffect(() => {
-    getCurrentuserInfo().then((data) => {
-      console.log(data);
-      // nickan;
-      const nickname = data[`nickname`];
-      // const score;
-      setUserData({
-        nickname: data[`nickname`],
-        score: data[`score`],
-        rank: data[`rank`],
-        comment: data[`comment`],
-      });
-    });
-    // .catch();
+    getCurrentuserInfo()
+      .then((data) => {
+        console.log(data);
+        setUserData({
+          nickname: data[`nickname`],
+          score: data[`score`],
+          rank: data[`rank`],
+          comment: data[`comment`],
+        });
+      })
+      .catch((error) => console.error(error));
   }, []);
 
   return (
