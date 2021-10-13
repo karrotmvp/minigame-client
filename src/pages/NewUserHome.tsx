@@ -68,7 +68,7 @@ const NewUserHome = () => {
   const handleNewUserAgreement = () => {
     mini.startPreset({
       preset:
-        'https://mini-assets.kr.karrotmarket.com/presets/common-login/alpha.html',
+        'https://mini-assets.kr.karrotmarket.com/presets/mvp-game-login/alpha.html',
       params: {
         appId: `${process.env.REACT_APP_APP_ID}`,
       },
