@@ -83,8 +83,24 @@ const Leaderboard = () => {
     history.push('/game');
   };
 
+  // Share must be triggered by "user activation"
+
   const handleShare = async () => {
-    logEvent(analytics, 'share_kakaotalk');
+    const shareData = {
+      title: '미니게임 - 당근모아',
+      text: '미니게임 - 당근모아를 플레이 하고 서초구 이웃들에게 한 마디를 남겨보세요!',
+      url: 'https://developer.mozilla.org',
+    };
+
+    try {
+      await navigator.share(shareData);
+      console.log('web share api fired');
+      logEvent(analytics, 'share');
+
+      // resultPara.textContent = 'MDN shared successfully'
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const getCurrentuserInfo = async () => {
