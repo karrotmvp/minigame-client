@@ -14,6 +14,8 @@ import { useHistory } from 'react-router-dom';
 // import { useEffect } from 'react';
 import { logEvent } from 'firebase/analytics';
 import { analytics } from 'services/firebase/firebaseConfig';
+import { SetStateAction, useEffect, useState } from 'react';
+import BackendService from 'services/backendService';
 
 const axios = require('axios').default;
 
@@ -64,8 +66,22 @@ const actionItemWrapper = css`
   box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
 `;
 
+// interface NewUserHometype {
+//   setIsNewUser: React.Dispatch<SetStateAction<boolean | undefined>>;
+// }
 const NewUserHome = () => {
+  // const [userData, setUserData] = useState(initialState);
   let history = useHistory();
+
+  const getCurrentuserInfo = async () => {
+    try {
+      const response = await BackendService.getCurrentUserInfo();
+      const responseData: any = response.data[`data`];
+      return responseData;
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const mini = getMini();
   const handleNewUserAgreement = () => {
@@ -83,7 +99,7 @@ const NewUserHome = () => {
               `${process.env.REACT_APP_BASE_URL}/oauth`,
               {
                 code: result.code,
-                regionId: `9bdfe83b68f3`,
+                regionId: userRegionId,
               },
               {
                 headers: {
@@ -96,15 +112,31 @@ const NewUserHome = () => {
                 'ACCESS_TOKEN',
                 response.data[`data`][`accessToken`]
               );
-              console.log(response);
+              // await getCurrentuserInfo().then(data => {
+              //   setUserData({
+              //     nickname: data[`nickname`],
+              //     score: data[`score`],
+              //     rank: data[`rank`],
+              //     comment: data[`comment`],
+              //   });
+              // })
+              // console.log(response);
+              // setIsNewUser(false);
+              // console.log('preset fired');
               history.push('/game');
-              logEvent(analytics, 'game_start', { type: 'new_user' });
             });
         }
       },
     });
   };
-
+  let userRegionId: string | null;
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    console.log(window.location.search);
+    // const userCode = searchParams.get('code');
+    userRegionId = searchParams.get('region_id');
+    console.log(userRegionId);
+  });
   return (
     <>
       <div css={customNav}>

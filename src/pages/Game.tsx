@@ -178,12 +178,17 @@ const GameEndButton = ({ handleGameEnd }: GameEndButtonProps) => {
   );
 };
 
+interface animationArrProps {
+  posX: number;
+  posY: number;
+}
 const Game = () => {
   // const [count, setCount] = useState(0);
   const [alreadyPatchedKarrot, setAlreadyPatchedKarrot] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [shouldPopup, setShouldPopup] = useState(false);
   const [shakeToggle, setShakeToggle] = useState(false);
+  const [animationArr, setAnimationArr] = useState<animationArrProps[]>([]);
 
   const { userScore } = useSelector((state: RootState) => ({
     userScore: state.userDataReducer.score,
@@ -197,11 +202,23 @@ const Game = () => {
   const clickCountUp = async () => dispatch(incrementClickCount());
   // const countUpKarrot = async () => dispatch(increaseKarrotCount());
 
-  const handleClick = async (e: { clientX: any; clientY: any }) => {
+  const handleClickAnimation = async (e: { clientX: any; clientY: any }) => {
+    setAnimationArr((animationArr) => [
+      ...animationArr,
+      { posX: e.clientX - 25, posY: e.clientY - 50 },
+    ]);
+    setTimeout(() => {
+      setAnimationArr((animationArr) => {
+        const newArr = animationArr.slice(1);
+        return newArr;
+      });
+    }, 1000);
+  };
+
+  const handleScreenClick = async (e: { clientX: any; clientY: any }) => {
     await handleClickAnimation(e);
     await clickCountUp();
     // await countUp();
-    setShakeToggle((prevState) => !prevState);
     // setCount((prevCount) => prevCount + 1);
     // console.log('count');
     // if (count >= 9) {
@@ -210,7 +227,10 @@ const Game = () => {
     // setCount(0);
     // }
   };
-
+  const handleBigKarrotClick = async (e: { clientX: any; clientY: any }) => {
+    await handleScreenClick(e);
+    setShakeToggle((prevState) => !prevState);
+  };
   const handleGameEnd = () => {
     let karrotToPatch = clickCount - alreadyPatchedKarrot;
     setAlreadyPatchedKarrot(clickCount);
@@ -249,24 +269,6 @@ const Game = () => {
     }
   }, [userScore]);
 
-  interface testArrProps {
-    posX: number;
-    posY: number;
-  }
-  const [testArr, setTestArr] = useState<testArrProps[]>([]);
-  const handleClickAnimation = async (e: { clientX: any; clientY: any }) => {
-    setTestArr((testArr) => [
-      ...testArr,
-      { posX: e.clientX - 25, posY: e.clientY - 50 },
-    ]);
-    setTimeout(() => {
-      setTestArr((testArr) => {
-        const newArr = testArr.slice(1);
-        return newArr;
-      });
-    }, 1000);
-  };
-
   // const throttle = (func: { apply: (arg0: any, arg1: IArguments) => void; }, limit: number) => {
   //   let lastFunc: NodeJS.Timeout;
   //   let lastRan: number;
@@ -300,21 +302,18 @@ const Game = () => {
           <GameEndButton handleGameEnd={handleGameEnd} />
         </div>
       </div>
-
       <div
         className="wrapper"
         css={fullScreenClickable}
-        onClick={handleClickAnimation}
+        onClick={handleScreenClick}
       >
-        {testArr.map((item, index) => (
+        {animationArr.map((item, index) => (
           <ClickAnimation posX={item.posX} posY={item.posY} key={index} />
         ))}
       </div>
-
       <div css={divStyle}>
         <div css={scoreWrapper}>
           <h1 css={clickCountStyle}>{commafy(clickCount)}</h1>
-          {/* <h2 css={clickCountStyle}>{}</h2> */}
         </div>
         <div
           style={{
@@ -326,7 +325,7 @@ const Game = () => {
           }}
         >
           <BigKarrot
-            onClick={handleClick}
+            onClick={handleBigKarrotClick}
             css={shakeToggle ? shakeLeft : shakeRight}
             style={{
               height: '25rem',

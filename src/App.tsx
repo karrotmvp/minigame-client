@@ -20,7 +20,7 @@ const appStyle = css`
 `;
 
 function App() {
-  const [isNewUser, setIsNewUser] = useState<boolean>();
+  const [isNewUser, setIsNewUser] = useState<boolean>(true);
   const dispatch = useDispatch();
 
   const getCurrentuserInfo = async () => {
@@ -38,37 +38,45 @@ function App() {
     console.log(window.location.search);
     const userCode = searchParams.get('code');
     const userRegionId = searchParams.get('region_id');
-    console.log(userCode, userRegionId);
+    // console.log(userCode, userRegionId);
     logEvent(analytics, 'app_launched');
-
-    axios
-      .post(
-        `${process.env.REACT_APP_BASE_URL}/oauth`,
-        {
-          code: `${userCode}`,
-          regionId: `${userRegionId}`,
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
+    if (userCode !== null && userRegionId !== null) {
+      axios
+        .post(
+          `${process.env.REACT_APP_BASE_URL}/oauth`,
+          {
+            code: userCode,
+            regionId: userRegionId,
           },
-        }
-      )
-      .then((response: any) => {
-        window.localStorage.setItem(
-          'ACCESS_TOKEN',
-          response.data[`data`][`accessToken`]
-        );
-        getCurrentuserInfo().then((data) => {
-          dispatch(updateUserScore(data.score));
-          console.log(`user's current total score: ${data.score}`);
-          if (data.score > 0) {
-            setIsNewUser(false);
-          } else {
-            setIsNewUser(true);
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
           }
+        )
+        .then((response: any) => {
+          window.localStorage.setItem(
+            'ACCESS_TOKEN',
+            response.data[`data`][`accessToken`]
+          );
+          // console.log(response.data[`data`][`accessToken`]);
+          setIsNewUser(false);
+          console.log('direct to returning-user-home');
+
+          // getCurrentuserInfo().then((data) => {
+          //   dispatch(updateUserScore(data.score));
+          //   console.log(`user's current total score: ${data.score}`);
+          //   if (data.score > 0) {
+          //     setIsNewUser(false);
+          //   } else {
+          //     setIsNewUser(true);
+          //   }
+          // });
         });
-      });
+    } else {
+      setIsNewUser(true);
+      console.log('direct to new-user-home');
+    }
 
     // .catch((error) => {
     // console.log(error);
@@ -108,7 +116,8 @@ function App() {
     //   },
     // });
     // });
-  }, [dispatch]);
+  }, [dispatch, isNewUser]);
+  console.log(isNewUser);
 
   return (
     <div css={appStyle}>

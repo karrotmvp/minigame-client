@@ -10,8 +10,8 @@ const axiosInstance = axios.create({
 
 const postOauth = (code: string, regionId: string) => {
   return axios.post(`/${process.env.REACT_APP_BASE_URL}/oauth`, {
-    code: `${code}`,
-    regionId: `${regionId}`
+    code: code,
+    regionId: regionId
   })
 }
 const getTownRank = async(townId: string) => {
