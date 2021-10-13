@@ -181,7 +181,6 @@ const Game = () => {
 
   const history = useHistory();
   const dispatch = useDispatch();
-  const onReset = () => dispatch(reset());
 
   const { userScore } = useSelector((state: RootState) => ({
     userScore: state.userDataReducer.score,
