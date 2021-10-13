@@ -188,7 +188,7 @@ const ReturningUserHome = () => {
           <Button
             size={`large`}
             color={`primary`}
-            text={`시작하기`}
+            text={`게임 시작`}
             onClick={() => {}}
           />
         </Link>
