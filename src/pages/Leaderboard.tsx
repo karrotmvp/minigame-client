@@ -13,6 +13,7 @@ import BackendService from 'services/backendService';
 import { useHistory } from 'react-router-dom';
 import { logEvent } from 'firebase/analytics';
 import { analytics } from 'services/firebase/firebaseConfig';
+import { getMini } from 'api/mini';
 // nav
 const customNav = css`
   left: 0;
@@ -83,19 +84,11 @@ const Leaderboard = () => {
 
   // Share must be triggered by "user activation"
   const handleShare = async () => {
-    const shareData = {
-      title: '미니게임 - 당근모아',
-      text: '미니게임 - 당근모아를 플레이 하고 서초구 이웃들에게 한 마디를 남겨보세요!',
-      url: 'https://developer.mozilla.org',
-    };
-
-    try {
-      await navigator.share(shareData);
-      console.log('web share api fired');
-      logEvent(analytics, 'share');
-    } catch (error) {
-      console.error(error);
-    }
+    // const mini = getMini();
+    // mini.share({
+    //   url: 'https://daangn.onelink.me/HhUa/3a219555',
+    //   text: '당근모아를 플레이 하고 동네 이웃들에게 한 마디를 남겨보세요!',
+    // });
   };
 
   const getCurrentuserInfo = async () => {
