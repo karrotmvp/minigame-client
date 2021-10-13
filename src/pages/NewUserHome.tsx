@@ -68,16 +68,16 @@ const NewUserHome = () => {
   const handleNewUserAgreement = () => {
     mini.startPreset({
       preset:
-        'https://mini-assets.kr.karrotmarket.com/presets/common-login/alpha.html',
+        'https://mini-assets.kr.karrotmarket.com/presets/mvp-game-login/production.html',
       params: {
-        appId: `${process.env.REACT_APP_APP_ID}`,
+        appId: `${process.env.REACT_APP_APP_ID_PRODUCTION}`,
       },
       onSuccess: function (result) {
         console.log(window.location.search);
         if (result && result.code) {
           axios
             .post(
-              `${process.env.REACT_APP_BASE_URL}/oauth`,
+              `${process.env.REACT_APP_BASE_URL_PRODUCTION}/oauth`,
               {
                 code: result.code,
                 regionId: userRegionId,

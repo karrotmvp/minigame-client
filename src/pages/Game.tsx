@@ -218,7 +218,7 @@ const Game = () => {
     console.log(clickCount, alreadyPatchedKarrot, karrotToPatch);
 
     axios.patch(
-      `${process.env.REACT_APP_BASE_URL}/user-rank`,
+      `${process.env.REACT_APP_BASE_URL_PRODUCTION}/user-rank`,
       {
         score: karrotToPatch,
       },

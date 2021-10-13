@@ -36,7 +36,7 @@ const IndividualLeaderboard = () => {
   const [townRankData, setTownRankData] = useState<any[]>([]);
   useEffect(() => {
     axios
-      .get(`${process.env.REACT_APP_BASE_URL}/users/me`, {
+      .get(`${process.env.REACT_APP_BASE_URL_PRODUCTION}/users/me`, {
         headers: {
           Authorization: window.localStorage.getItem('ACCESS_TOKEN'),
         },
@@ -44,7 +44,9 @@ const IndividualLeaderboard = () => {
       .then((response: any) => {
         const townId = response.data.data.town.id;
         axios
-          .get(`${process.env.REACT_APP_BASE_URL}/towns/${townId}/user-rank`)
+          .get(
+            `${process.env.REACT_APP_BASE_URL_PRODUCTION}/towns/${townId}/user-rank`
+          )
           .then((response: any) => {
             const responseData: any = response.data.data;
             const indexedTownRankData = responseData.map(

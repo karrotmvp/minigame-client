@@ -29,7 +29,7 @@ function App() {
     if (userCode !== null && userRegionId !== null) {
       axios
         .post(
-          `${process.env.REACT_APP_BASE_URL}/oauth`,
+          `${process.env.REACT_APP_BASE_URL_PRODUCTION}/oauth`,
           {
             code: userCode,
             regionId: userRegionId,
