@@ -94,8 +94,6 @@ const Leaderboard = () => {
       await navigator.share(shareData);
       console.log('web share api fired');
       logEvent(analytics, 'share');
-
-      // resultPara.textContent = 'MDN shared successfully'
     } catch (error) {
       console.error(error);
     }
@@ -112,14 +110,17 @@ const Leaderboard = () => {
   };
 
   useEffect(() => {
-    getCurrentuserInfo().then((data) => {
-      setUserData({
-        nickname: data[`nickname`],
-        score: data[`score`],
-        rank: data[`rank`],
-        comment: data[`comment`],
-      });
-    });
+    getCurrentuserInfo()
+      .then((data) => {
+        // console.log('leaderboard', data);
+        setUserData({
+          nickname: data[`nickname`],
+          score: data[`score`],
+          rank: data[`rank`],
+          comment: data[`comment`],
+        });
+      })
+      .catch((error) => console.error(error));
   }, []);
 
   useEffect(() => {
