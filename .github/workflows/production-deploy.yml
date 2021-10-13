@@ -1,4 +1,4 @@
-name: Develop-branch deploy actions
+name: Main-branch (Production) deploy actions
 on:
   push:
     branches:
