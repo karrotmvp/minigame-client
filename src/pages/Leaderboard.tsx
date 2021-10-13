@@ -84,11 +84,11 @@ const Leaderboard = () => {
 
   // Share must be triggered by "user activation"
   const handleShare = async () => {
-    // const mini = getMini();
-    // mini.share({
-    //   url: 'https://daangn.onelink.me/HhUa/3a219555',
-    //   text: '당근모아를 플레이 하고 동네 이웃들에게 한 마디를 남겨보세요!',
-    // });
+    const mini = getMini();
+    mini.share({
+      url: 'https://daangn.onelink.me/HhUa/3a219555',
+      text: '당근모아를 플레이 하고 동네 이웃들에게 한 마디를 남겨보세요!',
+    });
   };
 
   const getCurrentuserInfo = async () => {
