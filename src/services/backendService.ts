@@ -1,27 +1,19 @@
 const axios = require('axios').default;
 
-const axiosInstance = axios.create({
-  baseURL: process.env.REACT_APP_BASE_URL,
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
-
-
 const postOauth = (code: string, regionId: string) => {
-  return axios.post(`/${process.env.REACT_APP_BASE_URL}/oauth`, {
+  return axios.post(`${process.env.REACT_APP_BASE_URL}/oauth`, {
     code: code,
     regionId: regionId
   })
 }
 const getTownRank = async(townId: string) => {
-  return await axiosInstance.get(`/towns/${townId}/user-rank`);
+  return await axios.get(`${process.env.REACT_APP_BASE_URL}/towns/${townId}/user-rank`);
 };
 
 const getCurrentUserInfo = async() => {
   return await axios.get(`${process.env.REACT_APP_BASE_URL}/users/me`, {
     headers: {
-      "Authorization": window.localStorage.getItem('ACCESS_TOKEN')
+      Authorization: window.localStorage.getItem('ACCESS_TOKEN')
     }
   })
 }
@@ -44,7 +36,7 @@ const patchComment = async(comment: string) => {
     comment: `${comment}`
   }, {
     headers: {
-      "Authorization": window.localStorage.getItem('ACCESS_TOKEN'),
+      Authorization: window.localStorage.getItem('ACCESS_TOKEN'),
       "Content-Type": "application/json"
     }
     
