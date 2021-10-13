@@ -8,7 +8,7 @@ import DefaultUserRow from 'components/leaderboard/DefaultUserRow';
 import { useDispatch } from 'react-redux';
 import { reset } from 'reducers/counterReducer';
 import TopUserRow from 'components/leaderboard/TopUserRow';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import BackendService from 'services/backendService';
 import { useHistory } from 'react-router-dom';
 import { logEvent } from 'firebase/analytics';
@@ -74,11 +74,10 @@ const Leaderboard = () => {
   const [userData, setUserData] = useState(initialState);
   const history = useHistory();
   const dispatch = useDispatch();
-  const onReset = () => dispatch(reset());
 
   const handlePlayAgain = async () => {
     logEvent(analytics, 'game_play_again');
-    onReset();
+    dispatch(reset());
     history.replace('/game');
   };
 
@@ -112,7 +111,6 @@ const Leaderboard = () => {
   useEffect(() => {
     getCurrentuserInfo()
       .then((data) => {
-        // console.log('leaderboard', data);
         setUserData({
           nickname: data[`nickname`],
           score: data[`score`],
@@ -128,10 +126,10 @@ const Leaderboard = () => {
       // && history.location.pathname === "any specific path")
       if (history.action === 'POP') {
         history.replace('/game' /* the new state */);
-        onReset();
+        dispatch(reset());
       }
     };
-  }, [history, onReset]);
+  }, [dispatch, history]);
   return (
     <>
       <div css={customNav}>

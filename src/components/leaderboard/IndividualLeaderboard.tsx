@@ -1,9 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { SetStateAction, useCallback, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { RootState } from 'reducers/rootReducer';
-import BackendService from 'services/backendService';
+import { useEffect, useState } from 'react';
 import DefaultUserRow from './DefaultUserRow';
 import TopUserRow from './TopUserRow';
 const axios = require('axios').default;
@@ -37,10 +34,6 @@ const infoText = css`
 
 const IndividualLeaderboard = () => {
   const [townRankData, setTownRankData] = useState<any[]>([]);
-  // const { townId } = useSelector((state: RootState) => ({
-  //   townId: state.userDataReducer.townId,
-  // }));
-
   useEffect(() => {
     axios
       .get(`${process.env.REACT_APP_BASE_URL}/users/me`, {
@@ -68,32 +61,6 @@ const IndividualLeaderboard = () => {
       })
       .catch((error: any) => console.error(error));
   }, []);
-  // let townId = `9bdfe83b68f3`;
-  // const getTownRank = async((townId) => {
-  //   try {
-  //     const response = await BackendService.getTownRank(townId);
-  //     const responseData: any = response.data[`data`];
-  //     const indexedTownRankData = responseData.map((item: any, index: any) => ({
-  //       rank: index + 1,
-  //       ...item,
-  //     }));
-  //     console.log(indexedTownRankData);
-  //     return indexedTownRankData;
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // });
-
-  // useEffect(() => {
-  //   getTownRank(townId)
-  //     .then((data) => {
-  //       setTownRankData(data);
-  //     })
-  //     .catch((error) => {
-  //       console.error(error);
-  //     });
-  // }, [getTownRank, townId]);
-
   return (
     <div css={divStyle}>
       <div css={leaderboardWrapperStyle}>

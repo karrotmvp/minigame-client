@@ -3,7 +3,7 @@ import { css, keyframes } from '@emotion/react';
 import DefaultGameEndModal from 'components/modals/DefaultGameEndModal';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { incrementClickCount } from 'reducers/counterReducer';
+import { incrementClickCount, reset } from 'reducers/counterReducer';
 import { RootState } from '../reducers/rootReducer';
 import background from 'assets/Seocho_background.png';
 import IconBack from 'assets/IconBack';
@@ -13,6 +13,7 @@ import Modal from 'react-modal';
 import GameDirectionPopupModal from 'components/modals/GameDirectionPopupModal';
 import { commafy } from 'components/functions/commafy';
 import ClickAnimation from 'components/game/ClickAnimation';
+import { useHistory } from 'react-router-dom';
 
 const axios = require('axios').default;
 
@@ -178,6 +179,10 @@ const Game = () => {
   const [shakeToggle, setShakeToggle] = useState(false);
   const [animationArr, setAnimationArr] = useState<animationArrProps[]>([]);
 
+  const history = useHistory();
+  const dispatch = useDispatch();
+  const onReset = () => dispatch(reset());
+
   const { userScore } = useSelector((state: RootState) => ({
     userScore: state.userDataReducer.score,
   }));
@@ -185,7 +190,6 @@ const Game = () => {
   const { clickCount } = useSelector((state: RootState) => ({
     clickCount: state.counterReducer.clickCount,
   }));
-  const dispatch = useDispatch();
   const clickCountUp = async () => dispatch(incrementClickCount());
 
   const handleClickAnimation = async (e: { clientX: any; clientY: any }) => {
@@ -245,6 +249,15 @@ const Game = () => {
     }
   }, [userScore]);
 
+  useEffect(() => {
+    return () => {
+      // && history.location.pathname === "any specific path")
+      if (history.action === 'POP') {
+        history.replace('/' /* the new state */);
+        onReset();
+      }
+    };
+  }, [history, onReset]);
   return (
     <>
       <div css={customNav}>
