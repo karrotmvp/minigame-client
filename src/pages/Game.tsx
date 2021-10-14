@@ -229,34 +229,14 @@ const Game = () => {
   useEffect(() => {
     if (userScore === 0) {
       setShouldPopup(true);
-      // const timer = setTimeout(() => {
-      //   setShouldPopup(false);
-      // }, 3000);
-      // return () => {
-      //   clearTimeout(timer);
-      // };
     } else {
       setShouldPopup(false);
     }
   }, [userScore]);
 
-  // useEffect(() => {
-  //   return () => {
-  //     // && history.location.pathname === "any specific path")
-  //     if (history.action === 'POP') {
-  //       history.replace('/' /* the new state */);
-  //       dispatch(reset());
-  //     }
-  //   };
-  // }, [dispatch, history]);
   return (
     <>
       <div css={customNav}>
-        {/* <div css={customNavIcon1}>
-          <Link to="/">
-            <IconBack />
-          </Link>
-        </div> */}
         <div css={customNavIcon}>
           <GameEndButton handleGameEnd={handleGameEnd} />
         </div>
