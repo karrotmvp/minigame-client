@@ -177,7 +177,6 @@ const Game = () => {
   const [shakeToggle, setShakeToggle] = useState(false);
   const [animationArr, setAnimationArr] = useState<animationArrProps[]>([]);
 
-  const history = useHistory();
   const dispatch = useDispatch();
 
   const { userScore } = useSelector((state: RootState) => ({
