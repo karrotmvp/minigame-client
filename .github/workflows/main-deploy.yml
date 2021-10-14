@@ -1,8 +1,8 @@
-name: Develop-branch deploy actions
+name: Main-branch (Production) deploy actions
 on:
   push:
     branches:
-      - develop
+      - main
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -20,8 +20,8 @@ jobs:
         shell: bash
         run: |
           touch .env
-          echo REACT_APP_BASE_URL=${{secrets.REACT_APP_BASE_URL}} >> .env
-          echo REACT_APP_APP_ID=${{secrets.REACT_APP_APP_ID}} >> .env
+          echo REACT_APP_BASE_URL_PRODUCTION=${{secrets.REACT_APP_BASE_URL_PRODUCTION}} >> .env
+          echo REACT_APP_APP_ID_PRODUCTION=${{secrets.REACT_APP_APP_ID_PRODUCTION}} >> .env
           echo REACT_APP_FIREBASE_API_KEY=${{secrets.REACT_APP_FIREBASE_API_KEY}} >> .env
           echo REACT_APP_FIREBASE_AUTH_DOMAIN=${{secrets.REACT_APP_FIREBASE_AUTH_DOMAIN}} >> .env
           echo REACT_APP_FIREBASE_PROJECT_ID=${{secrets.REACT_APP_FIREBASE_PROJECT_ID}} >> .env
@@ -44,5 +44,5 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
           AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
           AWS_REGION: 'ap-northeast-2'
-          AWS_S3_BUCKET: ${{secrets.AWS_S3_BUCKET}}
+          AWS_S3_BUCKET: ${{secrets.AWS_S3_BUCKET_PRODUCTION}}
           SOURCE_DIR: 'build'

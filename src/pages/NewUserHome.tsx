@@ -10,7 +10,8 @@ import IndividualLeaderboard from '../components/leaderboard/IndividualLeaderboa
 import { getMini } from 'api/mini';
 import { AppEjectionButton } from 'components/buttons/AppEjectionButton';
 import { useHistory } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { RootState } from 'reducers/rootReducer';
 
 const axios = require('axios').default;
 
@@ -64,23 +65,29 @@ const actionItemWrapper = css`
 const NewUserHome = () => {
   let history = useHistory();
 
+  const { townName, regionId } = useSelector((state: RootState) => ({
+    townName: state.userDataReducer.townName,
+    regionId: state.userDataReducer.regionId,
+  }));
+
   const mini = getMini();
   const handleNewUserAgreement = () => {
+    console.log('preset open');
     mini.startPreset({
       preset:
         'https://mini-assets.kr.karrotmarket.com/presets/mvp-game-login/alpha.html',
       params: {
-        appId: `${process.env.REACT_APP_APP_ID}`,
+        appId: `${process.env.REACT_APP_APP_ID_PRODUCTION}`,
       },
       onSuccess: function (result) {
         console.log(window.location.search);
         if (result && result.code) {
           axios
             .post(
-              `${process.env.REACT_APP_BASE_URL}/oauth`,
+              `${process.env.REACT_APP_BASE_URL_PRODUCTION}/oauth`,
               {
                 code: result.code,
-                regionId: userRegionId,
+                regionId: regionId,
               },
               {
                 headers: {
@@ -91,7 +98,7 @@ const NewUserHome = () => {
             .then((response: any) => {
               window.localStorage.setItem(
                 'ACCESS_TOKEN',
-                response.data[`data`][`accessToken`]
+                response.data.data.accessToken
               );
               history.push('/game');
             });
@@ -99,14 +106,6 @@ const NewUserHome = () => {
       },
     });
   };
-  let userRegionId: string | null;
-  useEffect(() => {
-    const searchParams = new URLSearchParams(window.location.search);
-    console.log(window.location.search);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    userRegionId = searchParams.get('region_id');
-    console.log(userRegionId);
-  });
   return (
     <>
       <div css={customNav}>
@@ -117,8 +116,8 @@ const NewUserHome = () => {
       <div css={divStyle}>
         <div css={headingWrapper}>
           <h1 css={largeTextStyle}>
-            <span css={emphasizedTextStyle}>서초구 이웃</span>님, 아직 기록이
-            없어요
+            <span css={emphasizedTextStyle}>{townName} 이웃</span>님, 아직
+            기록이 없어요
           </h1>
           <h2 css={mediumTextStyle}>
             당근을 수확하고 이웃들에게 한 마디 남겨봐요!
@@ -131,7 +130,7 @@ const NewUserHome = () => {
           <Button
             size={`large`}
             color={`primary`}
-            text={`시작하기`}
+            text={`게임 시작`}
             onClick={handleNewUserAgreement}
           />
         </div>

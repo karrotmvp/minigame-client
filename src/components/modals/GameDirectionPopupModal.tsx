@@ -1,6 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { ReactComponent as PointingFinger } from 'assets/PointingFinger.svg';
+import Button from 'components/buttons/Button';
 
 const directionText = css`
   font-style: normal;
@@ -13,7 +14,11 @@ const directionText = css`
 
   color: #ffffff;
 `;
-const GameDirectionPopupModal = () => {
+
+interface PopupModalProps {
+  setShouldPopup: any;
+}
+const GameDirectionPopupModal: React.FC<PopupModalProps> = (props) => {
   return (
     <>
       <PointingFinger />
@@ -24,6 +29,14 @@ const GameDirectionPopupModal = () => {
         <br />
         1개의 당근을 모을 수 있어요
       </p>
+      <Button
+        size={`medium`}
+        color={`secondary`}
+        text={`게임 시작하기`}
+        onClick={() => {
+          props.setShouldPopup(false);
+        }}
+      />
     </>
   );
 };

@@ -1,17 +1,17 @@
 const axios = require('axios').default;
 
 const postOauth = (code: string, regionId: string) => {
-  return axios.post(`${process.env.REACT_APP_BASE_URL}/oauth`, {
+  return axios.post(`${process.env.REACT_APP_BASE_URL_PRODUCTION}/oauth`, {
     code: code,
     regionId: regionId
   })
 }
 const getTownRank = async(townId: string) => {
-  return await axios.get(`${process.env.REACT_APP_BASE_URL}/towns/${townId}/user-rank`);
+  return await axios.get(`${process.env.REACT_APP_BASE_URL_PRODUCTION}/towns/${townId}/user-rank`);
 };
 
 const getCurrentUserInfo = async() => {
-  return await axios.get(`${process.env.REACT_APP_BASE_URL}/users/me`, {
+  return await axios.get(`${process.env.REACT_APP_BASE_URL_PRODUCTION}/users/me`, {
     headers: {
       Authorization: window.localStorage.getItem('ACCESS_TOKEN')
     }
@@ -20,7 +20,7 @@ const getCurrentUserInfo = async() => {
 
 const patchCurrentScore = async(score: number) => {
   console.log(score)
-  return await axios.patch(`${process.env.REACT_APP_BASE_URL}/user-rank`, {
+  return await axios.patch(`${process.env.REACT_APP_BASE_URL_PRODUCTION}/user-rank`, {
     score: score
   }, {
     headers: {
@@ -32,7 +32,7 @@ const patchCurrentScore = async(score: number) => {
 }
 
 const patchComment = async(comment: string) => {
-  return await axios.patch(`${process.env.REACT_APP_BASE_URL}/user-rank/comment`, {
+  return await axios.patch(`${process.env.REACT_APP_BASE_URL_PRODUCTION}/user-rank/comment`, {
     comment: `${comment}`
   }, {
     headers: {

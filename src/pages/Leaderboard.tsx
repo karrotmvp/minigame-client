@@ -5,14 +5,18 @@ import { AppEjectionButton } from 'components/buttons/AppEjectionButton';
 import { largeTextStyle, emphasizedTextStyle } from 'styles/textStyle';
 import Button from 'components/buttons/Button';
 import DefaultUserRow from 'components/leaderboard/DefaultUserRow';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { reset } from 'reducers/counterReducer';
 import TopUserRow from 'components/leaderboard/TopUserRow';
 import { useEffect, useState } from 'react';
-import BackendService from 'services/backendService';
+// import BackendService from 'services/backendService';
 import { useHistory } from 'react-router-dom';
 import { logEvent } from 'firebase/analytics';
 import { analytics } from 'services/firebase/firebaseConfig';
+import { getMini } from 'api/mini';
+import { RootState } from 'reducers/rootReducer';
+const axios = require('axios').default;
+
 // nav
 const customNav = css`
   left: 0;
@@ -45,6 +49,10 @@ const divStyle = css`
 const headingWrapper = css`
   padding: 20px 26px 20px;
 `;
+
+// const divierDiv =css`
+
+// `
 const leaderboardWrapper = css`
   flex: 1;
   overflow: auto;
@@ -75,6 +83,10 @@ const Leaderboard = () => {
   const history = useHistory();
   const dispatch = useDispatch();
 
+  const { townName } = useSelector((state: RootState) => ({
+    townName: state.userDataReducer.townName,
+  }));
+
   const handlePlayAgain = async () => {
     logEvent(analytics, 'game_play_again');
     dispatch(reset());
@@ -83,47 +95,45 @@ const Leaderboard = () => {
 
   // Share must be triggered by "user activation"
   const handleShare = async () => {
-    const shareData = {
-      title: '미니게임 - 당근모아',
-      text: '미니게임 - 당근모아를 플레이 하고 서초구 이웃들에게 한 마디를 남겨보세요!',
-      url: 'https://developer.mozilla.org',
-    };
-
-    try {
-      await navigator.share(shareData);
-      console.log('web share api fired');
-      logEvent(analytics, 'share');
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const getCurrentuserInfo = async () => {
-    try {
-      const response = await BackendService.getCurrentUserInfo();
-      const responseData: any = response.data[`data`];
-      return responseData;
-    } catch (error) {
-      console.error(error);
-    }
+    const mini = getMini();
+    mini.share({
+      url: 'https://daangn.onelink.me/HhUa/3a219555',
+      text: '당근모아를 플레이 하고 동네 이웃들에게 한 마디를 남겨보세요!',
+    });
   };
 
   useEffect(() => {
-    getCurrentuserInfo()
-      .then((data) => {
-        setUserData({
-          nickname: data[`nickname`],
-          score: data[`score`],
-          rank: data[`rank`],
-          comment: data[`comment`],
-        });
+    axios
+      .get(`${process.env.REACT_APP_BASE_URL_PRODUCTION}/users/me`, {
+        headers: {
+          Authorization: window.localStorage.getItem('ACCESS_TOKEN'),
+        },
       })
-      .catch((error) => console.error(error));
+      .then(
+        (response: {
+          data: {
+            data: {
+              nickname: string;
+              score: number;
+              rank: number;
+              comment: string;
+            };
+          };
+        }) => {
+          const { nickname, score, rank, comment } = response.data.data;
+          setUserData({
+            nickname: nickname,
+            score: score,
+            rank: rank,
+            comment: comment,
+          });
+        }
+      )
+      .catch((error: Error) => console.error(error));
   }, []);
 
   useEffect(() => {
     return () => {
-      // && history.location.pathname === "any specific path")
       if (history.action === 'POP') {
         history.replace('/game' /* the new state */);
         dispatch(reset());
@@ -143,7 +153,8 @@ const Leaderboard = () => {
           <h1 css={largeTextStyle}>
             <span css={emphasizedTextStyle}>{userData.nickname}</span>님은
             <br />
-            서초구에서 <span css={emphasizedTextStyle}>{userData.rank}위</span>
+            {townName}에서
+            <span css={emphasizedTextStyle}> {userData.rank}위</span>
             에요!
           </h1>
           <div css={currentUserInfoRow}>
@@ -163,6 +174,7 @@ const Leaderboard = () => {
             )}
           </div>
         </div>
+        {/* <div css={dividerDiv}></div> */}
         <div css={leaderboardWrapper}>
           <IndividualLeaderboard />
         </div>
