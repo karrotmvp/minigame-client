@@ -136,13 +136,13 @@ const DefaultGameEndModal = ({ closeModal }: DefaultGameEndModalProps) => {
         <Button
           size={`medium`}
           color={`secondary`}
-          text={`이어하기`}
+          text={`계속하기`}
           onClick={closeModal}
         />
         <Button
           size={`medium`}
           color={`primary`}
-          text={`랭킹보기`}
+          text={`게임종료`}
           onClick={() => {
             if (userData.rank <= 10) {
               setIsOpen(true);

@@ -116,8 +116,8 @@ const NewUserHome = () => {
       <div css={divStyle}>
         <div css={headingWrapper}>
           <h1 css={largeTextStyle}>
-            <span css={emphasizedTextStyle}>서초구 이웃</span>님, 아직 기록이
-            없어요
+            <span css={emphasizedTextStyle}>{townName} 이웃</span>님, 아직
+            기록이 없어요
           </h1>
           <h2 css={mediumTextStyle}>
             당근을 수확하고 이웃들에게 한 마디 남겨봐요!

@@ -48,6 +48,10 @@ const divStyle = css`
 const headingWrapper = css`
   padding: 20px 26px 20px;
 `;
+
+// const divierDiv =css`
+
+// `
 const leaderboardWrapper = css`
   flex: 1;
   overflow: auto;
@@ -122,7 +126,6 @@ const Leaderboard = () => {
 
   useEffect(() => {
     return () => {
-      // && history.location.pathname === "any specific path")
       if (history.action === 'POP') {
         history.replace('/game' /* the new state */);
         dispatch(reset());
@@ -142,7 +145,8 @@ const Leaderboard = () => {
           <h1 css={largeTextStyle}>
             <span css={emphasizedTextStyle}>{userData.nickname}</span>님은
             <br />
-            서초구에서 <span css={emphasizedTextStyle}>{userData.rank}위</span>
+            {townName}에서
+            <span css={emphasizedTextStyle}> {userData.rank}위</span>
             에요!
           </h1>
           <div css={currentUserInfoRow}>
@@ -162,6 +166,7 @@ const Leaderboard = () => {
             )}
           </div>
         </div>
+        {/* <div css={dividerDiv}></div> */}
         <div css={leaderboardWrapper}>
           <IndividualLeaderboard />
         </div>

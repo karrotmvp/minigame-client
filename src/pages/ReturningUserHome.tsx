@@ -101,7 +101,7 @@ const UserScoreExists: React.FC<UserScoreExistsProps> = (props) => {
       <h1 css={largeTextStyle}>
         <span css={emphasizedTextStyle}>{props.nickname}</span>님은
         <br />
-        서초구에서
+        {props.townName}에서
         <span css={emphasizedTextStyle}> {commafy(props.rank)}위</span>
         에요!
       </h1>
@@ -190,12 +190,10 @@ const ReturningUserHome = () => {
         <div css={leaderboardWrapper}>
           <IndividualLeaderboard />
         </div>
-        <Link
-          to="/game"
+        <div
+          // to="/game"
           css={actionItemWrapper}
-          onClick={() => {
-            logEvent(analytics, 'game_start');
-          }}
+          onClick={handleGameStart}
         >
           <Button
             size={`large`}
@@ -203,7 +201,7 @@ const ReturningUserHome = () => {
             text={`게임 시작`}
             onClick={() => {}}
           />
-        </Link>
+        </div>
       </div>
     </>
   );

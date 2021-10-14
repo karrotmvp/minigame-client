@@ -87,10 +87,10 @@ const TopUserRow = ({ rank, nickname, score, comment }: TopUserRowProps) => {
     <div css={row({ rank })}>
       <div css={rankStyle}>{commafy(rank)}</div>
       <div css={contentWrapper}>
-        <div css={commentStyle}>{comment}</div>
+        <div css={commentStyle}>"{comment}"</div>
         <hr css={horizontalLine} />
         <div css={userInfo}>
-          <div>ID {nickname}</div>
+          <div>{nickname}</div>
           <div css={scoreStyle}>{commafy(score)}</div>
         </div>
       </div>

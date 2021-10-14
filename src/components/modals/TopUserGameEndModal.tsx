@@ -129,7 +129,7 @@ const TopUserGameEndModal: FC<TopUserGameEndModalProps> = (props) => {
       </h1>
       <hr css={horizontalLine} />
       <p css={infoText}>
-        서초구 이웃들에게
+        {townName} 이웃들에게
         <br />
         하고 싶은 말을 남겨보세요
       </p>
@@ -140,7 +140,7 @@ const TopUserGameEndModal: FC<TopUserGameEndModalProps> = (props) => {
             type="text"
             onChange={handleTopUserInput}
             value={topUserComment.comment}
-            placeholder="예) 내가 서초짱!"
+            placeholder={`예) 내가 ${townName}짱!`}
             maxLength={15}
           />
           <p css={commentLengthCount}>{topUserComment.length}/15</p>

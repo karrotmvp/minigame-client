@@ -6,8 +6,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { incrementClickCount } from 'reducers/counterReducer';
 import { RootState } from '../reducers/rootReducer';
 import background from 'assets/Seocho_background.png';
-import IconBack from 'assets/IconBack';
-import { Link } from 'react-router-dom';
 import { ReactComponent as BigKarrot } from 'assets/Seocho_daangn.svg';
 import Modal from 'react-modal';
 import GameDirectionPopupModal from 'components/modals/GameDirectionPopupModal';
@@ -29,20 +27,20 @@ const customNav = css`
   height: 44px;
   padding: 0 0.5rem;
 `;
-const customNavIcon1 = css`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  opacity: 1;
-  transition: opacity 300ms;
-  width: 2.25rem;
-  height: 2.75rem;
-  text-decoration: none;
-  outline: none;
-  z-index: 10;
-`;
-const customNavIcon2 = css`
+// const customNavIcon1 = css`
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+//   cursor: pointer;
+//   opacity: 1;
+//   transition: opacity 300ms;
+//   width: 2.25rem;
+//   height: 2.75rem;
+//   text-decoration: none;
+//   outline: none;
+//   z-index: 10;
+// `;
+const customNavIcon = css`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -263,12 +261,12 @@ const Game = () => {
   return (
     <>
       <div css={customNav}>
-        <div css={customNavIcon1}>
+        {/* <div css={customNavIcon1}>
           <Link to="/">
             <IconBack />
           </Link>
-        </div>
-        <div css={customNavIcon2}>
+        </div> */}
+        <div css={customNavIcon}>
           <GameEndButton handleGameEnd={handleGameEnd} />
         </div>
       </div>

@@ -73,7 +73,7 @@ const IndividualLeaderboard = () => {
           );
         })}
         <p css={infoText}>
-          🎉 서초구 TOP 10 🎉 이 되어서
+          🎉 {townName} TOP 10 🎉 이 되어서
           <br />
           이웃들에게 한 마디를 남겨보세요!
         </p>
