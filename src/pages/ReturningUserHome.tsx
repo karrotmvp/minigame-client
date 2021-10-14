@@ -9,15 +9,17 @@ import {
 } from 'styles/textStyle';
 import Button from 'components/buttons/Button';
 import IndividualLeaderboard from 'components/leaderboard/IndividualLeaderboard';
-import BackendService from 'services/backendService';
 import { useEffect, useState } from 'react';
 import { AppEjectionButton } from 'components/buttons/AppEjectionButton';
 import { commafy } from 'components/functions/commafy';
 import { logEvent } from 'firebase/analytics';
 import { analytics } from 'services/firebase/firebaseConfig';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'reducers/rootReducer';
 import { useHistory } from 'react-router-dom';
+import { updateUserScore } from 'reducers/userDataReducer';
+
+const axios = require('axios').default;
 
 // nav
 const customNav = css`
@@ -125,7 +127,7 @@ const UserScoreExists: React.FC<UserScoreExistsProps> = (props) => {
   );
 };
 const initialState = {
-  nickname: '서초구 이웃',
+  nickname: '이웃',
   score: 0,
   rank: 999999,
   comment: '',
@@ -134,36 +136,45 @@ const initialState = {
 const ReturningUserHome = () => {
   const [userData, setUserData] = useState(initialState);
   const history = useHistory();
-
+  const dispatch = useDispatch();
   const { townName } = useSelector((state: RootState) => ({
     townName: state.userDataReducer.townName,
   }));
-  const getCurrentuserInfo = async () => {
-    try {
-      const response = await BackendService.getCurrentUserInfo();
-      const responseData: any = response.data[`data`];
-      return responseData;
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
   const handleGameStart = () => {
     logEvent(analytics, 'game_start');
     history.push('/game');
   };
   useEffect(() => {
-    getCurrentuserInfo()
-      .then((data) => {
-        console.log(data);
-        setUserData({
-          nickname: data[`nickname`],
-          score: data[`score`],
-          rank: data[`rank`],
-          comment: data[`comment`],
-        });
+    axios
+      .get(`${process.env.REACT_APP_BASE_URL_PRODUCTION}/users/me`, {
+        headers: {
+          Authorization: window.localStorage.getItem('ACCESS_TOKEN'),
+        },
       })
-      .catch((error) => console.error(error));
+      .then(
+        (response: {
+          data: {
+            data: {
+              nickname: string;
+              score: number;
+              rank: number;
+              comment: string;
+            };
+          };
+        }) => {
+          const { nickname, score, rank, comment } = response.data.data;
+          setUserData({
+            nickname: nickname,
+            score: score,
+            rank: rank,
+            comment: comment,
+          });
+          dispatch(updateUserScore(score));
+        }
+      )
+      .catch((error: any) => console.error(error));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
