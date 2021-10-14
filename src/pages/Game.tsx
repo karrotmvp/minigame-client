@@ -3,11 +3,9 @@ import { css, keyframes } from '@emotion/react';
 import DefaultGameEndModal from 'components/modals/DefaultGameEndModal';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { incrementClickCount, reset } from 'reducers/counterReducer';
+import { incrementClickCount } from 'reducers/counterReducer';
 import { RootState } from '../reducers/rootReducer';
 import background from 'assets/Seocho_background.png';
-import IconBack from 'assets/IconBack';
-import { Link } from 'react-router-dom';
 import { ReactComponent as BigKarrot } from 'assets/Seocho_daangn.svg';
 import Modal from 'react-modal';
 import GameDirectionPopupModal from 'components/modals/GameDirectionPopupModal';
@@ -29,20 +27,20 @@ const customNav = css`
   height: 44px;
   padding: 0 0.5rem;
 `;
-const customNavIcon1 = css`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  opacity: 1;
-  transition: opacity 300ms;
-  width: 2.25rem;
-  height: 2.75rem;
-  text-decoration: none;
-  outline: none;
-  z-index: 10;
-`;
-const customNavIcon2 = css`
+// const customNavIcon1 = css`
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+//   cursor: pointer;
+//   opacity: 1;
+//   transition: opacity 300ms;
+//   width: 2.25rem;
+//   height: 2.75rem;
+//   text-decoration: none;
+//   outline: none;
+//   z-index: 10;
+// `;
+const customNavIcon = css`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -214,28 +212,31 @@ const Game = () => {
   };
   const handleGameEnd = () => {
     let karrotToPatch = clickCount - alreadyPatchedKarrot;
-    setAlreadyPatchedKarrot(clickCount);
     console.log(clickCount, alreadyPatchedKarrot, karrotToPatch);
-
-    axios.patch(
-      `${process.env.REACT_APP_BASE_URL_PRODUCTION}/user-rank`,
-      {
-        score: karrotToPatch,
-      },
-      {
-        headers: {
-          Authorization: window.localStorage.getItem('ACCESS_TOKEN'),
-          'Content-Type': 'application/json',
+    axios
+      .patch(
+        `${process.env.REACT_APP_BASE_URL_PRODUCTION}/user-rank`,
+        {
+          score: karrotToPatch,
         },
-      }
-    );
-    setIsModalOpen(true);
+        {
+          headers: {
+            Authorization: window.localStorage.getItem('ACCESS_TOKEN'),
+            'Content-Type': 'application/json',
+          },
+        }
+      )
+      .then((response: any) => {
+        console.log('scorePatched:', response);
+        setIsModalOpen(true);
+        setAlreadyPatchedKarrot(clickCount);
+      });
   };
 
   function closeModal() {
     setIsModalOpen(false);
   }
-
+  // Popup modal if use is new
   useEffect(() => {
     if (userScore === 0) {
       setShouldPopup(true);
@@ -248,24 +249,24 @@ const Game = () => {
     }
   }, [userScore]);
 
-  useEffect(() => {
-    return () => {
-      // && history.location.pathname === "any specific path")
-      if (history.action === 'POP') {
-        history.replace('/' /* the new state */);
-        dispatch(reset());
-      }
-    };
-  }, [dispatch, history]);
+  // useEffect(() => {
+  //   return () => {
+  //     // && history.location.pathname === "any specific path")
+  //     if (history.action === 'POP') {
+  //       history.replace('/' /* the new state */);
+  //       dispatch(reset());
+  //     }
+  //   };
+  // }, [dispatch, history]);
   return (
     <>
       <div css={customNav}>
-        <div css={customNavIcon1}>
+        {/* <div css={customNavIcon1}>
           <Link to="/">
             <IconBack />
           </Link>
-        </div>
-        <div css={customNavIcon2}>
+        </div> */}
+        <div css={customNavIcon}>
           <GameEndButton handleGameEnd={handleGameEnd} />
         </div>
       </div>
