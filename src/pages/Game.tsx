@@ -3,7 +3,7 @@ import { css, keyframes } from '@emotion/react';
 import DefaultGameEndModal from 'components/modals/DefaultGameEndModal';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { incrementClickCount, reset } from 'reducers/counterReducer';
+import { incrementClickCount } from 'reducers/counterReducer';
 import { RootState } from '../reducers/rootReducer';
 import background from 'assets/Seocho_background.png';
 import IconBack from 'assets/IconBack';
@@ -214,28 +214,31 @@ const Game = () => {
   };
   const handleGameEnd = () => {
     let karrotToPatch = clickCount - alreadyPatchedKarrot;
-    setAlreadyPatchedKarrot(clickCount);
     console.log(clickCount, alreadyPatchedKarrot, karrotToPatch);
-
-    axios.patch(
-      `${process.env.REACT_APP_BASE_URL_PRODUCTION}/user-rank`,
-      {
-        score: karrotToPatch,
-      },
-      {
-        headers: {
-          Authorization: window.localStorage.getItem('ACCESS_TOKEN'),
-          'Content-Type': 'application/json',
+    axios
+      .patch(
+        `${process.env.REACT_APP_BASE_URL_PRODUCTION}/user-rank`,
+        {
+          score: karrotToPatch,
         },
-      }
-    );
-    setIsModalOpen(true);
+        {
+          headers: {
+            Authorization: window.localStorage.getItem('ACCESS_TOKEN'),
+            'Content-Type': 'application/json',
+          },
+        }
+      )
+      .then((response: any) => {
+        console.log('scorePatched:', response);
+        setIsModalOpen(true);
+        setAlreadyPatchedKarrot(clickCount);
+      });
   };
 
   function closeModal() {
     setIsModalOpen(false);
   }
-
+  // Popup modal if use is new
   useEffect(() => {
     if (userScore === 0) {
       setShouldPopup(true);
@@ -248,15 +251,15 @@ const Game = () => {
     }
   }, [userScore]);
 
-  useEffect(() => {
-    return () => {
-      // && history.location.pathname === "any specific path")
-      if (history.action === 'POP') {
-        history.replace('/' /* the new state */);
-        dispatch(reset());
-      }
-    };
-  }, [dispatch, history]);
+  // useEffect(() => {
+  //   return () => {
+  //     // && history.location.pathname === "any specific path")
+  //     if (history.action === 'POP') {
+  //       history.replace('/' /* the new state */);
+  //       dispatch(reset());
+  //     }
+  //   };
+  // }, [dispatch, history]);
   return (
     <>
       <div css={customNav}>
