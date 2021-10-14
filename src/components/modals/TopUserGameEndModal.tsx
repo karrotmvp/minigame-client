@@ -5,6 +5,8 @@ import Button, { DisabledButton } from '../buttons/Button';
 import { ReactComponent as Karrot } from 'assets/karrot.svg';
 import { FC, useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { RootState } from 'reducers/rootReducer';
 const axios = require('axios').default;
 
 const largeText = css`
@@ -84,6 +86,10 @@ const TopUserGameEndModal: FC<TopUserGameEndModalProps> = (props) => {
 
   let history = useHistory();
 
+  const { townName } = useSelector((state: RootState) => ({
+    townName: state.userDataReducer.townName,
+  }));
+
   const handleTopUserInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTopUserComment({
       comment: e.target.value.slice(0, 14),
@@ -91,20 +97,22 @@ const TopUserGameEndModal: FC<TopUserGameEndModalProps> = (props) => {
     });
   };
 
-  const handlePatchCommentAndViewLeaderboard = async () => {
-    await axios.patch(
-      `${process.env.REACT_APP_BASE_URL_PRODUCTION}/user-rank/comment`,
-      {
-        comment: topUserComment.comment,
-      },
-      {
-        headers: {
-          Authorization: window.localStorage.getItem('ACCESS_TOKEN'),
-          'Content-Type': 'application/json',
+  const handlePatchCommentAndViewLeaderboard = () => {
+    axios
+      .patch(
+        `${process.env.REACT_APP_BASE_URL_PRODUCTION}/user-rank/comment`,
+        {
+          comment: topUserComment.comment,
         },
-      }
-    );
-    history.push('/leaderboard');
+        {
+          headers: {
+            Authorization: window.localStorage.getItem('ACCESS_TOKEN'),
+            'Content-Type': 'application/json',
+          },
+        }
+      )
+      .then(history.replace('/leaderboard'))
+      .catch((error: any) => console.error(error));
   };
 
   return (

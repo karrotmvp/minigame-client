@@ -10,7 +10,8 @@ import IndividualLeaderboard from '../components/leaderboard/IndividualLeaderboa
 import { getMini } from 'api/mini';
 import { AppEjectionButton } from 'components/buttons/AppEjectionButton';
 import { useHistory } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { RootState } from 'reducers/rootReducer';
 
 const axios = require('axios').default;
 
@@ -64,8 +65,14 @@ const actionItemWrapper = css`
 const NewUserHome = () => {
   let history = useHistory();
 
+  const { townName, regionId } = useSelector((state: RootState) => ({
+    townName: state.userDataReducer.townName,
+    regionId: state.userDataReducer.regionId,
+  }));
+
   const mini = getMini();
   const handleNewUserAgreement = () => {
+    console.log('preset open');
     mini.startPreset({
       preset:
         'https://mini-assets.kr.karrotmarket.com/presets/mvp-game-login/production.html',
@@ -80,7 +87,7 @@ const NewUserHome = () => {
               `${process.env.REACT_APP_BASE_URL_PRODUCTION}/oauth`,
               {
                 code: result.code,
-                regionId: userRegionId,
+                regionId: regionId,
               },
               {
                 headers: {
@@ -91,7 +98,7 @@ const NewUserHome = () => {
             .then((response: any) => {
               window.localStorage.setItem(
                 'ACCESS_TOKEN',
-                response.data[`data`][`accessToken`]
+                response.data.data.accessToken
               );
               history.push('/game');
             });
@@ -99,14 +106,6 @@ const NewUserHome = () => {
       },
     });
   };
-  let userRegionId: string | null;
-  useEffect(() => {
-    const searchParams = new URLSearchParams(window.location.search);
-    console.log(window.location.search);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    userRegionId = searchParams.get('region_id');
-    console.log(userRegionId);
-  });
   return (
     <>
       <div css={customNav}>

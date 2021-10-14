@@ -5,7 +5,7 @@ import { AppEjectionButton } from 'components/buttons/AppEjectionButton';
 import { largeTextStyle, emphasizedTextStyle } from 'styles/textStyle';
 import Button from 'components/buttons/Button';
 import DefaultUserRow from 'components/leaderboard/DefaultUserRow';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { reset } from 'reducers/counterReducer';
 import TopUserRow from 'components/leaderboard/TopUserRow';
 import { useEffect, useState } from 'react';
@@ -14,6 +14,8 @@ import { useHistory } from 'react-router-dom';
 import { logEvent } from 'firebase/analytics';
 import { analytics } from 'services/firebase/firebaseConfig';
 import { getMini } from 'api/mini';
+import { RootState } from 'reducers/rootReducer';
+
 // nav
 const customNav = css`
   left: 0;
@@ -75,6 +77,10 @@ const Leaderboard = () => {
   const [userData, setUserData] = useState(initialState);
   const history = useHistory();
   const dispatch = useDispatch();
+
+  const { townName } = useSelector((state: RootState) => ({
+    townName: state.userDataReducer.townName,
+  }));
 
   const handlePlayAgain = async () => {
     logEvent(analytics, 'game_play_again');

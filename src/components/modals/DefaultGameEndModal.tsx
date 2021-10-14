@@ -5,12 +5,12 @@ import Button from '../buttons/Button';
 import { ReactComponent as Karrot } from 'assets/karrot.svg';
 import TopUserGameEndModal from './TopUserGameEndModal';
 import { useHistory } from 'react-router';
-import BackendService from 'services/backendService';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'reducers/rootReducer';
 import Modal from 'react-modal';
 import { commafy } from 'components/functions/commafy';
+const axios = require('axios').default;
 
 const modalStyle = css`
   position: absolute;
@@ -79,27 +79,34 @@ const DefaultGameEndModal = ({ closeModal }: DefaultGameEndModalProps) => {
     history.replace('/leaderboard');
   };
 
-  const getCurrentuserInfo = async () => {
-    try {
-      const response = await BackendService.getCurrentUserInfo();
-      const responseData: any = response.data[`data`];
-      return responseData;
-    } catch (error) {
-      console.error(`getCurrentUserInfo: ${error}`);
-    }
-  };
-
   useEffect(() => {
-    getCurrentuserInfo()
-      .then((data) => {
-        setUserData({
-          nickname: data[`nickname`],
-          score: data[`score`],
-          rank: data[`rank`],
-          comment: data[`comment`],
-        });
+    axios
+      .get(`${process.env.REACT_APP_BASE_URL_PRODUCTION}/users/me`, {
+        headers: {
+          Authorization: window.localStorage.getItem('ACCESS_TOKEN'),
+        },
       })
-      .catch((error) => console.error(error));
+      .then(
+        (response: {
+          data: {
+            data: {
+              nickname: string;
+              score: number;
+              rank: number;
+              comment: string;
+            };
+          };
+        }) => {
+          const { nickname, score, rank, comment } = response.data.data;
+          setUserData({
+            nickname: nickname,
+            score: score,
+            rank: rank,
+            comment: comment,
+          });
+        }
+      )
+      .catch((error: any) => console.error(error));
   }, []);
 
   return (

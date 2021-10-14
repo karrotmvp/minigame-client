@@ -16,6 +16,11 @@ import { logEvent } from 'firebase/analytics';
 import { analytics } from 'services/firebase/firebaseConfig';
 import ReturningUserHome from 'pages/ReturningUserHome';
 import NonServiceArea from 'pages/NonServiceArea';
+import {
+  saveRegionId,
+  saveTownId,
+  saveTownName,
+} from 'reducers/userDataReducer';
 
 const axios = require('axios').default;
 

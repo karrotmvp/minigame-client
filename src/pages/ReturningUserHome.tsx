@@ -12,10 +12,12 @@ import IndividualLeaderboard from 'components/leaderboard/IndividualLeaderboard'
 import BackendService from 'services/backendService';
 import { useEffect, useState } from 'react';
 import { AppEjectionButton } from 'components/buttons/AppEjectionButton';
-import { Link } from 'react-router-dom';
 import { commafy } from 'components/functions/commafy';
 import { logEvent } from 'firebase/analytics';
 import { analytics } from 'services/firebase/firebaseConfig';
+import { useSelector } from 'react-redux';
+import { RootState } from 'reducers/rootReducer';
+import { useHistory } from 'react-router-dom';
 
 // nav
 const customNav = css`
@@ -91,6 +93,7 @@ interface UserScoreExistsProps {
   rank: number;
   score: number;
   comment: string;
+  townName: string;
 }
 const UserScoreExists: React.FC<UserScoreExistsProps> = (props) => {
   return (
@@ -130,7 +133,11 @@ const initialState = {
 
 const ReturningUserHome = () => {
   const [userData, setUserData] = useState(initialState);
+  const history = useHistory();
 
+  const { townName } = useSelector((state: RootState) => ({
+    townName: state.userDataReducer.townName,
+  }));
   const getCurrentuserInfo = async () => {
     try {
       const response = await BackendService.getCurrentUserInfo();
@@ -141,6 +148,10 @@ const ReturningUserHome = () => {
     }
   };
 
+  const handleGameStart = () => {
+    logEvent(analytics, 'game_start');
+    history.push('/game');
+  };
   useEffect(() => {
     getCurrentuserInfo()
       .then((data) => {
@@ -170,6 +181,7 @@ const ReturningUserHome = () => {
               rank={userData.rank}
               score={userData.score}
               comment={userData.comment}
+              townName={townName}
             />
           ) : (
             <UserScoreNull nickname={userData.nickname} />
