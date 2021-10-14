@@ -11,7 +11,6 @@ import Modal from 'react-modal';
 import GameDirectionPopupModal from 'components/modals/GameDirectionPopupModal';
 import { commafy } from 'components/functions/commafy';
 import ClickAnimation from 'components/game/ClickAnimation';
-import { useHistory } from 'react-router-dom';
 
 const axios = require('axios').default;
 
