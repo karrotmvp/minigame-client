@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { css, keyframes } from '@emotion/react';
+import { css } from '@emotion/react';
 import DefaultGameEndModal from 'components/modals/DefaultGameEndModal';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
