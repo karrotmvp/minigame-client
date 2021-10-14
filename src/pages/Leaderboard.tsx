@@ -9,12 +9,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { reset } from 'reducers/counterReducer';
 import TopUserRow from 'components/leaderboard/TopUserRow';
 import { useEffect, useState } from 'react';
-import BackendService from 'services/backendService';
+// import BackendService from 'services/backendService';
 import { useHistory } from 'react-router-dom';
 import { logEvent } from 'firebase/analytics';
 import { analytics } from 'services/firebase/firebaseConfig';
 import { getMini } from 'api/mini';
 import { RootState } from 'reducers/rootReducer';
+const axios = require('axios').default;
 
 // nav
 const customNav = css`
@@ -101,27 +102,34 @@ const Leaderboard = () => {
     });
   };
 
-  const getCurrentuserInfo = async () => {
-    try {
-      const response = await BackendService.getCurrentUserInfo();
-      const responseData: any = response.data[`data`];
-      return responseData;
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   useEffect(() => {
-    getCurrentuserInfo()
-      .then((data) => {
-        setUserData({
-          nickname: data[`nickname`],
-          score: data[`score`],
-          rank: data[`rank`],
-          comment: data[`comment`],
-        });
+    axios
+      .get(`${process.env.REACT_APP_BASE_URL_PRODUCTION}/users/me`, {
+        headers: {
+          Authorization: window.localStorage.getItem('ACCESS_TOKEN'),
+        },
       })
-      .catch((error) => console.error(error));
+      .then(
+        (response: {
+          data: {
+            data: {
+              nickname: string;
+              score: number;
+              rank: number;
+              comment: string;
+            };
+          };
+        }) => {
+          const { nickname, score, rank, comment } = response.data.data;
+          setUserData({
+            nickname: nickname,
+            score: score,
+            rank: rank,
+            comment: comment,
+          });
+        }
+      )
+      .catch((error: Error) => console.error(error));
   }, []);
 
   useEffect(() => {

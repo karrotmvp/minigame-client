@@ -57,7 +57,8 @@ const IndividualLeaderboard = () => {
         setTownRankData(indexedTownRankData);
       })
       .catch((error: any) => console.error(error));
-  }, [townId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return (
     <div css={divStyle}>
       <div css={leaderboardWrapperStyle}>
