@@ -21,10 +21,11 @@ const customNav = css`
   top: 0;
   display: flex;
   flex-flow: row;
-  justify-content: space-between;
+  justify-content: flex-end;
   width: 100%;
   height: 44px;
   padding: 0 0.5rem;
+  background: rgb(249, 244, 245);
 `;
 // const customNavIcon1 = css`
 //   display: flex;
@@ -108,14 +109,6 @@ const modalStyle = css`
   border-radius: 21px;
 `;
 // pop-up modal
-const fadeout = keyframes`
-  50% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
-`;
 const popupModalStyle = css`
   position: absolute;
   left: 0;
@@ -134,8 +127,6 @@ const popupModalStyle = css`
 
   padding: 55px 20px 25px;
   border-radius: 21px;
-
-  animation: ${fadeout} 3s;
 `;
 // big karrot animation
 const fullScreenClickable = css`
@@ -172,7 +163,7 @@ interface animationArrProps {
 const Game = () => {
   const [alreadyPatchedKarrot, setAlreadyPatchedKarrot] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [shouldPopup, setShouldPopup] = useState(false);
+  const [shouldPopup, setShouldPopup] = useState<boolean>(false);
   const [shakeToggle, setShakeToggle] = useState(false);
   const [animationArr, setAnimationArr] = useState<animationArrProps[]>([]);
 
@@ -238,12 +229,14 @@ const Game = () => {
   useEffect(() => {
     if (userScore === 0) {
       setShouldPopup(true);
-      const timer = setTimeout(() => {
-        setShouldPopup(false);
-      }, 3000);
-      return () => {
-        clearTimeout(timer);
-      };
+      // const timer = setTimeout(() => {
+      //   setShouldPopup(false);
+      // }, 3000);
+      // return () => {
+      //   clearTimeout(timer);
+      // };
+    } else {
+      setShouldPopup(false);
     }
   }, [userScore]);
 
@@ -327,7 +320,7 @@ const Game = () => {
           },
         }}
       >
-        <GameDirectionPopupModal />
+        <GameDirectionPopupModal setShouldPopup={setShouldPopup} />
       </Modal>
     </>
   );
