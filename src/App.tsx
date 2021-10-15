@@ -72,6 +72,8 @@ function App() {
   //   // };
   // }, []);
   // BELOW WORKS
+  const [nonServiceUserBack, setNonServiceUserBack] = useState(false);
+
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
     const userCode: string | null = searchParams.get('code');
@@ -79,6 +81,7 @@ function App() {
     console.log(userCode, userRegionId);
     dispatch(saveRegionId(userRegionId));
     logEvent(analytics, 'app_launched');
+
     // Check user's townId(지역구) using regionId
     axios
       .get(`${process.env.REACT_APP_BASE_URL}/town?regionId=${userRegionId}`)
@@ -89,6 +92,9 @@ function App() {
         dispatch(saveTownName(townName));
         setUserTownData([townId, townName]);
         if (townId !== 'df5370052b3c') {
+          if (userCode !== null || undefined) {
+            setNonServiceUserBack(true);
+          }
           setPageRedirection(1);
           // return (
           //   <Redirect
@@ -154,16 +160,14 @@ function App() {
                     state: {
                       townId: userTownData[0],
                       townName: userTownData[1],
+                      nonServiceUserBack: nonServiceUserBack,
                     },
                   }}
                 />
               ) : pageRedirection === 2 ? (
                 <Redirect to="/home" />
               ) : pageRedirection === 3 ? (
-                <Redirect
-                  to="/new-user-home"
-                  // }}
-                />
+                <Redirect to="/new-user-home" />
               ) : null;
             }}
           />
