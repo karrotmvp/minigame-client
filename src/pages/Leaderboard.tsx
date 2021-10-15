@@ -104,7 +104,7 @@ const Leaderboard = () => {
 
   useEffect(() => {
     axios
-      .get(`${process.env.REACT_APP_BASE_URL_PRODUCTION}/users/me`, {
+      .get(`${process.env.REACT_APP_BASE_URL}/users/me`, {
         headers: {
           Authorization: window.localStorage.getItem('ACCESS_TOKEN'),
         },

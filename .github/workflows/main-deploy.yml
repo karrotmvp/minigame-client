@@ -20,8 +20,10 @@ jobs:
         shell: bash
         run: |
           touch .env
-          echo REACT_APP_BASE_URL_PRODUCTION=${{secrets.REACT_APP_BASE_URL_PRODUCTION}} >> .env
-          echo REACT_APP_APP_ID_PRODUCTION=${{secrets.REACT_APP_APP_ID_PRODUCTION}} >> .env
+          echo REACT_APP_BASE_URL=${{secrets.REACT_APP_BASE_URL_PRODUCTION}} >> .env
+          echo REACT_APP_APP_ID=${{secrets.REACT_APP_APP_ID_PRODUCTION}} >> .env
+          echo REACT_APP_MINI_PRESET=${{secrets.REACT_APP_MINI_PRESET_PRODUCTION}} >> .env
+
           echo REACT_APP_FIREBASE_API_KEY=${{secrets.REACT_APP_FIREBASE_API_KEY}} >> .env
           echo REACT_APP_FIREBASE_AUTH_DOMAIN=${{secrets.REACT_APP_FIREBASE_AUTH_DOMAIN}} >> .env
           echo REACT_APP_FIREBASE_PROJECT_ID=${{secrets.REACT_APP_FIREBASE_PROJECT_ID}} >> .env
