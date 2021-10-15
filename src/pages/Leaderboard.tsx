@@ -121,15 +121,17 @@ const Leaderboard = () => {
   useEffect(() => {
     getUserInfo()
       .then((response) => {
-        console.log('Leaderboard, getUserInfo', response);
+        // console.log('Leaderboard, getUserInfo', response);
         setUserData({
           nickname: response.nickname,
           score: response.score,
           rank: response.rank,
           comment: response.comment,
         });
+        console.log('Leaderboard, getUserInfo', userData);
       })
       .catch(console.error);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
