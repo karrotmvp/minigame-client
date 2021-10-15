@@ -11,8 +11,7 @@
   box-sizing: border-box;
 }
 
-*:not(input, textarea),
-*:focus:not(input, textarea) {
+*:not(input) {
   user-select: none;
 }
 *:focus {
