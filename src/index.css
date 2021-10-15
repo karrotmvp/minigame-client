@@ -9,9 +9,12 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  user-select: none;
 }
 
+*:not(input, textarea),
+*:focus:not(input, textarea) {
+  user-select: none;
+}
 *:focus {
   outline: none;
   border: none;
