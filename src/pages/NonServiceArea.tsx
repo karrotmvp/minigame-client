@@ -1,9 +1,14 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { logEvent } from '@firebase/analytics';
+import { getMini } from 'api/mini';
 import { ReactComponent as WaitSvg } from 'assets/wait.svg';
+import axios from 'axios';
 import { AppEjectionButton } from 'components/buttons/AppEjectionButton';
-import { useEffect } from 'react';
+import Button, { DisabledButton } from 'components/buttons/Button';
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { RootState } from 'reducers/rootReducer';
 import { analytics } from 'services/firebase/firebaseConfig';
 
 const customNav = css`
@@ -76,10 +81,116 @@ const subText = css`
 
   color: #7c7c7c;
 `;
+const actionItemWraper = css`
+  position: absolute;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 30px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  text-align: center;
+  width: 80%;
+`;
+const coloredText = css`
+  color: #eb5d0e;
+`;
 interface NonServiceAreaProps {
   location: any;
 }
+// const baseUrl = process.env.REACT_APP_BASE_URL;
+
 const NonServiceArea = (props: NonServiceAreaProps) => {
+  const [isClicked, setIsClicked] = useState<boolean>(false);
+  const { regionId } = useSelector((state: RootState) => ({
+    // townName: state.userDataReducer.townName,
+    regionId: state.userDataReducer.regionId,
+  }));
+
+  // async function getAccessToken({
+  //   code,
+  //   regionId,
+  // }: BackendServiceRequest): Promise<void> {
+  //   const { data } = await axios.post(
+  //     `${baseUrl}/oauth`,
+  //     { code: code, regionId: regionId },
+
+  //     {
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //     }
+  //   );
+  //   const { accessToken } = await data.data;
+  //   return window.localStorage.setItem('ACCESS_TOKEN', accessToken);
+  // }
+
+  // async function postDemand(accessToken: any) {
+  //   await axios.post(`${process.env.REACT_APP_BASE_URL}/demand`, {
+  //     headers: {
+  //       Authorization: accessToken,
+  //     },
+  //   });
+  // }
+  async function handleDemand() {
+    const mini = getMini();
+    mini.startPreset({
+      preset: `${process.env.REACT_APP_MINI_PRESET}`,
+      params: {
+        appId: `${process.env.REACT_APP_APP_ID}`,
+      },
+      onSuccess: function (result) {
+        if (result && result.code) {
+          axios
+            .post(
+              `${process.env.REACT_APP_BASE_URL}/oauth`,
+              {
+                code: result.code,
+                regionId: regionId,
+              },
+              {
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+              }
+            )
+            .then((response: any) => {
+              window.localStorage.setItem(
+                'ACCESS_TOKEN',
+                response.data.data.accessToken
+              );
+              // console.log(response.data.data.accessToken);
+              //  postDemand(response.data.data.accessToken)
+              //   .then(() => console.log('오픈 알림 성공'))
+              //   .catch((error) => console.error('에러'));
+            })
+            .then(() => {
+              console.log(window.localStorage.getItem('ACCESS_TOKEN'));
+              axios
+                .post(`${process.env.REACT_APP_BASE_URL}/demand`, null, {
+                  headers: {
+                    Authorization: `${window.localStorage.getItem(
+                      'ACCESS_TOKEN'
+                    )}`,
+                    'Content-Type': 'application/json',
+                  },
+                })
+                .then((response) => {
+                  console.log('xxxxx', response);
+                  setIsClicked(true);
+                })
+                .catch((error) => {
+                  console.log(error.response);
+                  if (error.response.status === 400) {
+                    setIsClicked(true);
+                  }
+                });
+            });
+        }
+      },
+    });
+  }
   useEffect(() => {
     logEvent(analytics, 'non_service_area');
     console.log('non service area');
@@ -94,11 +205,27 @@ const NonServiceArea = (props: NonServiceAreaProps) => {
       <div css={backgroundStyle}>
         <WaitSvg css={svgStyle} />
         <h1 css={mainText}>
-          {props.location.state.townName} 지역은
+          <span css={coloredText}>{props.location.state.townName}</span> 지역은
           <br />
           아직 준비 중이에요
         </h1>
-        <h2 css={subText}>조금만 기다려주세요!</h2>
+        <h2 css={subText}>
+          <span css={coloredText}>오픈 알림</span>을 신청하시면
+          <br />
+          대회에 빠르게 참여하실 수 있어요!
+        </h2>
+      </div>
+      <div css={actionItemWraper}>
+        {isClicked ? (
+          <DisabledButton size={`large`} text={`오픈 알림 신청 완료`} />
+        ) : (
+          <Button
+            size={`medium`}
+            color={`primary`}
+            text={`오픈 알림 받기`}
+            onClick={handleDemand}
+          />
+        )}
       </div>
     </>
   );

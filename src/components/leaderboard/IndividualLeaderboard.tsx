@@ -1,13 +1,13 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'reducers/rootReducer';
 import DefaultUserRow from './DefaultUserRow';
 import TopUserRow from './TopUserRow';
-const axios = require('axios').default;
-const baseUrl = process.env.REACT_APP_BASE_URL;
-// const accessToken = window.localStorage.getItem('ACCESS_TOKEN');
+import { ReactComponent as RefreshIcon } from 'assets/refresh.svg';
+import { updateUserData } from 'reducers/userDataReducer';
+
 const divStyle = css`
   padding-top: 10px;
   padding-bottom: 10px;
@@ -19,6 +19,32 @@ const leaderboardWrapperStyle = css`
   display: flex;
   flex-flow: column;
   align-items: center;
+`;
+const refreshDivStyle = css`
+  display: flex;
+  flex-flow: row;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  p {
+    font-style: normal;
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 161.7%;
+    /* or 19px */
+
+    color: #5b5b5b;
+  }
+`;
+
+const refreshIconStyle = css`
+  border: none;
+  background: none;
+  color: inherit;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  outline: inherit;
 `;
 
 const infoText = css`
@@ -34,6 +60,9 @@ const infoText = css`
 
   color: #7c7c7c;
 `;
+const axios = require('axios').default;
+const baseUrl = process.env.REACT_APP_BASE_URL;
+const accessToken = window.localStorage.getItem('ACCESS_TOKEN');
 
 const IndividualLeaderboard = () => {
   const [townRankData, setTownRankData] = useState<any[]>([]);
@@ -41,7 +70,18 @@ const IndividualLeaderboard = () => {
     townId: state.userDataReducer.townId,
     townName: state.userDataReducer.townName,
   }));
+  const dispatch = useDispatch();
 
+  async function getUserData() {
+    const { data } = await axios.get(`${baseUrl}/users/me`, {
+      headers: {
+        Authorization: accessToken,
+      },
+    });
+    const { nickname, score, rank, comment } = await data.data;
+    dispatch(updateUserData(nickname, score, rank, comment));
+    console.log('user data refreshed');
+  }
   async function getTownLeaderboard(townId: string) {
     const { data } = await axios.get(`${baseUrl}/towns/${townId}/user-rank`);
     const responseData = await data.data;
@@ -52,7 +92,13 @@ const IndividualLeaderboard = () => {
       })
     );
     setTownRankData(indexedTownRankData);
+    console.log('leaderboard data refreshed');
   }
+
+  const refreshLeaderboard = async () => {
+    await getUserData();
+    await getTownLeaderboard(townId);
+  };
 
   useEffect(() => {
     getTownLeaderboard(townId)
@@ -65,6 +111,13 @@ const IndividualLeaderboard = () => {
 
   return (
     <div css={divStyle}>
+      <div css={refreshDivStyle}>
+        <p>이번 주 랭킹</p>
+        <button onClick={refreshLeaderboard} css={refreshIconStyle}>
+          <RefreshIcon />
+        </button>
+      </div>
+
       <div css={leaderboardWrapperStyle}>
         {townRankData.slice(0, 10).map((user) => {
           return (

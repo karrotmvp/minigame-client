@@ -185,7 +185,7 @@ const Leaderboard = () => {
             )}
           </div>
         </div>
-        {/* <div css={dividerDiv}></div> */}
+
         <div css={leaderboardWrapper}>
           <IndividualLeaderboard />
         </div>
