@@ -6,7 +6,8 @@ import { RootState } from 'reducers/rootReducer';
 import DefaultUserRow from './DefaultUserRow';
 import TopUserRow from './TopUserRow';
 const axios = require('axios').default;
-
+const baseUrl = process.env.REACT_APP_BASE_URL_PRODUCTION;
+// const accessToken = window.localStorage.getItem('ACCESS_TOKEN');
 const divStyle = css`
   padding-top: 10px;
   padding-bottom: 10px;
@@ -41,24 +42,27 @@ const IndividualLeaderboard = () => {
     townName: state.userDataReducer.townName,
   }));
 
-  useEffect(() => {
-    axios
-      .get(
-        `${process.env.REACT_APP_BASE_URL_PRODUCTION}/towns/${townId}/user-rank`
-      )
-      .then((response: { data: { data: any } }) => {
-        const responseData = response.data.data;
-        const indexedTownRankData = responseData.map(
-          (item: any, index: number) => ({
-            rank: index + 1,
-            ...item,
-          })
-        );
-        setTownRankData(indexedTownRankData);
+  async function getTownLeaderboard(townId: string) {
+    const { data } = await axios.get(`${baseUrl}/towns/${townId}/user-rank`);
+    const responseData = await data.data;
+    const indexedTownRankData = await responseData.map(
+      (item: any, index: number) => ({
+        rank: index + 1,
+        ...item,
       })
-      .catch((error: any) => console.error(error));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    );
+    return indexedTownRankData;
+  }
+
+  useEffect(() => {
+    getTownLeaderboard(townId)
+      .then((resolve) => {
+        setTownRankData(resolve);
+        console.log('IndividualLeaderboard, getTownLeaderboard', resolve);
+      })
+      .catch(console.error);
+  }, [townId]);
+
   return (
     <div css={divStyle}>
       <div css={leaderboardWrapperStyle}>
