@@ -133,6 +133,7 @@ const NonServiceArea = (props: NonServiceAreaProps) => {
   //     },
   //   });
   // }
+
   async function handleDemand() {
     const mini = getMini();
     mini.startPreset({
@@ -192,9 +193,14 @@ const NonServiceArea = (props: NonServiceAreaProps) => {
     });
   }
   useEffect(() => {
+    if (props.location.state.nonServiceUserBack === true) {
+      setIsClicked(true);
+    }
     logEvent(analytics, 'non_service_area');
     console.log('non service area');
-  });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <>
       <div css={customNav}>
