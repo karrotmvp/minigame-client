@@ -51,17 +51,17 @@ const IndividualLeaderboard = () => {
         ...item,
       })
     );
-    return indexedTownRankData;
+    setTownRankData(indexedTownRankData);
   }
 
   useEffect(() => {
     getTownLeaderboard(townId)
-      .then((resolve) => {
-        setTownRankData(resolve);
-        console.log('IndividualLeaderboard, getTownLeaderboard', resolve);
+      .then((response) => {
+        console.log('IndividualLeaderboard, getTownLeaderboard', response);
       })
       .catch(console.error);
-  }, [townId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div css={divStyle}>
