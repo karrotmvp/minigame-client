@@ -6,7 +6,7 @@ import {
 const axios = require('axios').default;
 
 const baseUrl = process.env.REACT_APP_BASE_URL_PRODUCTION;
-const accessToken = window.localStorage.getItem('ACCESS_TOKEN');
+// const accessToken = window.localStorage.getItem('ACCESS_TOKEN');
 
 async function getTownId(
   regionId: BackendServiceRequest

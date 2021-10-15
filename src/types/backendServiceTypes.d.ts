@@ -6,5 +6,10 @@ export interface BackendServiceRequest {
 export interface BackendServiceResponse {
   townId: string;
   townName: string;
+
+  // nickname: string;
+  // score: number;
+  // rank: number | null;
+  // comment: string;
   // void: () => void;
 }
