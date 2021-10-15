@@ -1,10 +1,9 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { logEvent } from '@firebase/analytics';
 import { ReactComponent as WaitSvg } from 'assets/wait.svg';
 import { AppEjectionButton } from 'components/buttons/AppEjectionButton';
 import { useEffect } from 'react';
-import { analytics } from 'services/firebase/firebaseConfig';
+import { useAnalytics } from 'services/analytics';
 
 const customNav = css`
   left: 0;
@@ -80,10 +79,11 @@ interface NonServiceAreaProps {
   location: any;
 }
 const NonServiceArea = (props: NonServiceAreaProps) => {
+  const analytics = useAnalytics();
   useEffect(() => {
-    logEvent(analytics, 'non_service_area');
+    analytics.logEvent('non_service_area');
     console.log('non service area');
-  });
+  }, [analytics]);
   return (
     <>
       <div css={customNav}>

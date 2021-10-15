@@ -12,8 +12,8 @@ import {
   Redirect,
 } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { logEvent } from 'firebase/analytics';
-import { analytics } from 'services/firebase/firebaseConfig';
+import { AnalyticsContext, emptyAnalytics } from 'services/analytics';
+import { createFirebaseAnalytics, loadFromEnv as loadFirebaseAnalyticsConfig } from 'services/analytics/firebase';
 import ReturningUserHome from 'pages/ReturningUserHome';
 import NonServiceArea from 'pages/NonServiceArea';
 import {
@@ -33,6 +33,18 @@ function App() {
   const [pageRedirection, setPageRedirection] = useState<number>();
   const [userTownData, setUserTownData] = useState<string[]>([]);
   const dispatch = useDispatch();
+
+  const [analytics, setAnalytics] = useState(emptyAnalytics);
+  // Firebase Analytics가 설정되어 있으면 인스턴스를 초기화하고 교체합니다.
+  useEffect(() => {
+    try {
+      const config = loadFirebaseAnalyticsConfig();
+      const analytics = createFirebaseAnalytics(config);
+      setAnalytics(analytics);
+    } catch {
+      // noop
+    }
+  }, []);
 
   // async function getQueryParams(): Promise<{
   //   userCode: any;
@@ -78,7 +90,7 @@ function App() {
     const userRegionId: any = searchParams.get('region_id');
     console.log(userCode, userRegionId);
     dispatch(saveRegionId(userRegionId));
-    logEvent(analytics, 'app_launched');
+    analytics.logEvent('app_launched');
     // Check user's townId(지역구) using regionId
     axios
       .get(`${process.env.REACT_APP_BASE_URL}/town?regionId=${userRegionId}`)
@@ -136,7 +148,7 @@ function App() {
         }
       })
       .catch((error: any) => console.error(error));
-  }, [dispatch]);
+  }, [dispatch, analytics]);
 
   return (
     <div css={appStyle}>

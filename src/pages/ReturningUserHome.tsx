@@ -12,8 +12,7 @@ import IndividualLeaderboard from 'components/leaderboard/IndividualLeaderboard'
 import { useEffect, useState } from 'react';
 import { AppEjectionButton } from 'components/buttons/AppEjectionButton';
 import { commafy } from 'components/functions/commafy';
-import { logEvent } from 'firebase/analytics';
-import { analytics } from 'services/firebase/firebaseConfig';
+import { useAnalytics } from 'services/analytics';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'reducers/rootReducer';
 import { useHistory } from 'react-router-dom';
@@ -141,8 +140,10 @@ const ReturningUserHome = () => {
     townName: state.userDataReducer.townName,
   }));
 
+  const analytics = useAnalytics();
+
   const handleGameStart = () => {
-    logEvent(analytics, 'game_start');
+    analytics.logEvent('game_start');
     history.push('/game');
   };
   useEffect(() => {

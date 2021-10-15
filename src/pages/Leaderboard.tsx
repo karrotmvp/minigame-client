@@ -11,8 +11,7 @@ import TopUserRow from 'components/leaderboard/TopUserRow';
 import { useEffect, useState } from 'react';
 // import BackendService from 'services/backendService';
 import { useHistory } from 'react-router-dom';
-import { logEvent } from 'firebase/analytics';
-import { analytics } from 'services/firebase/firebaseConfig';
+import { useAnalytics } from 'services/analytics';
 import { getMini } from 'api/mini';
 import { RootState } from 'reducers/rootReducer';
 const axios = require('axios').default;
@@ -83,13 +82,14 @@ const Leaderboard = () => {
   const [userData, setUserData] = useState(initialState);
   const history = useHistory();
   const dispatch = useDispatch();
+  const analytics = useAnalytics();
 
   const { townName } = useSelector((state: RootState) => ({
     townName: state.userDataReducer.townName,
   }));
 
   const handlePlayAgain = async () => {
-    logEvent(analytics, 'game_play_again');
+    analytics.logEvent('game_play_again');
     dispatch(reset());
     history.replace('/game');
   };
