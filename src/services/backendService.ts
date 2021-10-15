@@ -60,7 +60,6 @@ const patchCurrentScore = async (score: number) => {
   console.log(score);
   return await axios.patch(
     `${process.env.REACT_APP_BASE_URL}/user-rank`,
-
     {
       score: score,
     },
@@ -76,7 +75,6 @@ const patchCurrentScore = async (score: number) => {
 const patchComment = async (comment: string) => {
   return await axios.patch(
     `${process.env.REACT_APP_BASE_URL}/user-rank/comment`,
-
     {
       comment: `${comment}`,
     },

@@ -16,7 +16,7 @@ import { analytics } from 'services/firebase/firebaseConfig';
 import { getMini } from 'api/mini';
 import { RootState } from 'reducers/rootReducer';
 const axios = require('axios').default;
-const baseUrl = process.env.REACT_APP_BASE_URL_PRODUCTION;
+const baseUrl = process.env.REACT_APP_BASE_URL;
 const accessToken = window.localStorage.getItem('ACCESS_TOKEN');
 // nav
 const customNav = css`
@@ -104,32 +104,43 @@ const Leaderboard = () => {
   };
 
   async function getUserInfo() {
-    const { data } = await axios.get(`${baseUrl}/users/me`, {
-      headers: {
-        Authorization: accessToken,
-      },
-    });
-    const { nickname, score, rank, comment } = await data.data;
-    return {
-      nickname: nickname,
-      score: score,
-      rank: rank,
-      comment: comment,
-    };
+    await axios
+      .get(`${baseUrl}/users/me`, {
+        headers: {
+          Authorization: accessToken,
+        },
+      })
+      .then(
+        (response: {
+          data: {
+            data: { nickname: any; score: any; rank: any; comment: any };
+          };
+        }) => {
+          const { nickname, score, rank, comment } = response.data.data;
+          setUserData({
+            nickname: nickname,
+            score: score,
+            rank: rank,
+            comment: comment,
+          });
+        }
+        // (response: {
+        //   data: { nickname: any; score: any; rank: any; comment: any };
+        // }) => {
+        //   const { nickname, score, rank, comment } = response.data;
+        //   setUserData({
+        //     nickname: nickname,
+        //     score: score,
+        //     rank: rank,
+        //     comment: comment,
+        //   });
+        // }
+      )
+      .catch(console.error);
   }
 
   useEffect(() => {
-    getUserInfo()
-      .then((response) => {
-        console.log('Leaderboard, getUserInfo', response);
-        setUserData({
-          nickname: response.nickname,
-          score: response.score,
-          rank: response.rank,
-          comment: response.comment,
-        });
-      })
-      .catch(console.error);
+    getUserInfo();
   }, []);
 
   useEffect(() => {

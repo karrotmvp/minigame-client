@@ -6,7 +6,7 @@ import { RootState } from 'reducers/rootReducer';
 import DefaultUserRow from './DefaultUserRow';
 import TopUserRow from './TopUserRow';
 const axios = require('axios').default;
-const baseUrl = process.env.REACT_APP_BASE_URL_PRODUCTION;
+const baseUrl = process.env.REACT_APP_BASE_URL;
 // const accessToken = window.localStorage.getItem('ACCESS_TOKEN');
 const divStyle = css`
   padding-top: 10px;
@@ -51,17 +51,17 @@ const IndividualLeaderboard = () => {
         ...item,
       })
     );
-    return indexedTownRankData;
+    setTownRankData(indexedTownRankData);
   }
 
   useEffect(() => {
     getTownLeaderboard(townId)
-      .then((resolve) => {
-        setTownRankData(resolve);
-        console.log('IndividualLeaderboard, getTownLeaderboard', resolve);
+      .then((response) => {
+        console.log('IndividualLeaderboard, getTownLeaderboard', response);
       })
       .catch(console.error);
-  }, [townId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div css={divStyle}>
