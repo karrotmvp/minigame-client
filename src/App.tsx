@@ -41,9 +41,7 @@ function App() {
     logEvent(analytics, 'app_launched');
     // Check user's townId(지역구) using regionId
     axios
-      .get(
-        `${process.env.REACT_APP_BASE_URL_PRODUCTION}/town?regionId=${userRegionId}`
-      )
+      .get(`${process.env.REACT_APP_BASE_URL}/town?regionId=${userRegionId}`)
       .then((response: { data: { data: { id: string; name2: string } } }) => {
         const townId: string = response.data.data.id;
         const townName: string = response.data.data.name2;
@@ -62,7 +60,7 @@ function App() {
           if (userCode !== null && userRegionId !== null) {
             axios
               .post(
-                `${process.env.REACT_APP_BASE_URL_PRODUCTION}/oauth`,
+                `${process.env.REACT_APP_BASE_URL}/oauth`,
                 {
                   code: userCode,
                   regionId: userRegionId,

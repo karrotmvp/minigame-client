@@ -43,9 +43,7 @@ const IndividualLeaderboard = () => {
 
   useEffect(() => {
     axios
-      .get(
-        `${process.env.REACT_APP_BASE_URL_PRODUCTION}/towns/${townId}/user-rank`
-      )
+      .get(`${process.env.REACT_APP_BASE_URL}/towns/${townId}/user-rank`)
       .then((response: { data: { data: any } }) => {
         const responseData = response.data.data;
         const indexedTownRankData = responseData.map(
