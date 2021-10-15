@@ -112,9 +112,11 @@ const Leaderboard = () => {
       })
       .then(
         (response: {
-          data: { nickname: any; score: any; rank: any; comment: any };
+          data: {
+            data: { nickname: any; score: any; rank: any; comment: any };
+          };
         }) => {
-          const { nickname, score, rank, comment } = response.data;
+          const { nickname, score, rank, comment } = response.data.data;
           setUserData({
             nickname: nickname,
             score: score,
@@ -122,6 +124,17 @@ const Leaderboard = () => {
             comment: comment,
           });
         }
+        // (response: {
+        //   data: { nickname: any; score: any; rank: any; comment: any };
+        // }) => {
+        //   const { nickname, score, rank, comment } = response.data;
+        //   setUserData({
+        //     nickname: nickname,
+        //     score: score,
+        //     rank: rank,
+        //     comment: comment,
+        //   });
+        // }
       )
       .catch(console.error);
   }
