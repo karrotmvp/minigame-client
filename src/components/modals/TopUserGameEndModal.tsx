@@ -111,7 +111,10 @@ const TopUserGameEndModal: FC<TopUserGameEndModalProps> = (props) => {
           },
         }
       )
-      .then(history.replace('/leaderboard'))
+      .then((response: any) => {
+        history.replace('/leaderboard');
+        console.log('comment-modal, patchComment', response);
+      })
       .catch((error: any) => console.error(error));
   };
 

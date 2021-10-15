@@ -104,34 +104,30 @@ const Leaderboard = () => {
   };
 
   async function getUserInfo() {
-    const { data } = await axios.get(`${baseUrl}/users/me`, {
-      headers: {
-        Authorization: accessToken,
-      },
-    });
-    const { nickname, score, rank, comment } = await data.data;
-    return {
-      nickname: nickname,
-      score: score,
-      rank: rank,
-      comment: comment,
-    };
+    await axios
+      .get(`${baseUrl}/users/me`, {
+        headers: {
+          Authorization: accessToken,
+        },
+      })
+      .then(
+        (response: {
+          data: { nickname: any; score: any; rank: any; comment: any };
+        }) => {
+          const { nickname, score, rank, comment } = response.data;
+          setUserData({
+            nickname: nickname,
+            score: score,
+            rank: rank,
+            comment: comment,
+          });
+        }
+      )
+      .catch(console.error);
   }
 
   useEffect(() => {
-    getUserInfo()
-      .then((response) => {
-        // console.log('Leaderboard, getUserInfo', response);
-        setUserData({
-          nickname: response.nickname,
-          score: response.score,
-          rank: response.rank,
-          comment: response.comment,
-        });
-        console.log('Leaderboard, getUserInfo', userData);
-      })
-      .catch(console.error);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    getUserInfo();
   }, []);
 
   useEffect(() => {
