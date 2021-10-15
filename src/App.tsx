@@ -21,6 +21,7 @@ import {
   saveTownId,
   saveTownName,
 } from 'reducers/userDataReducer';
+// import BackendService from 'services/backendService';
 
 const axios = require('axios').default;
 
@@ -33,17 +34,54 @@ function App() {
   const [userTownData, setUserTownData] = useState<string[]>([]);
   const dispatch = useDispatch();
 
+  // async function getQueryParams(): Promise<{
+  //   userCode: any;
+  //   userRegionId: any;
+  // }> {
+  //   const searchParams = new URLSearchParams(window.location.search);
+  //   const userCode: any = searchParams.get('code');
+  //   const userRegionId: any = searchParams.get('region_id');
+  //   dispatch(saveRegionId(userRegionId));
+  //   return { userCode, userRegionId };
+  // }
+
+  // async function handleNonServiceArea(regionId: any): Promise<void> {
+  //   const userTownData = await BackendService.getTownId(regionId);
+  //   const { townId, townName } = userTownData;
+  //   dispatch(saveTownId(townId));
+  //   dispatch(saveTownName(townName));
+  //   setUserTownData([townId, townName]);
+  // }
+
+  // useEffect(() => {
+  //   getQueryParams().then((response) => {
+  //     const { userCode, userRegionId } = response;
+  //     handleNonServiceArea(userRegionId);
+  //     if (userRegionId !== 'df5370052b3c') {
+  //       setPageRedirection(1);
+  //     } else {
+  //       if (userCode !== null && userRegionId !== null) {
+  //         BackendService.postOauth(userCode, userRegionId);
+  //         setPageRedirection(2);
+  //       }
+  //     }
+  //   });
+
+  //   // return () => {
+  //   //   cleanup;
+  //   // };
+  // }, []);
+  // BELOW WORKS
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
     const userCode: string | null = searchParams.get('code');
-    const userRegionId: string | null = searchParams.get('region_id');
+    const userRegionId: any = searchParams.get('region_id');
+    console.log(userCode, userRegionId);
     dispatch(saveRegionId(userRegionId));
     logEvent(analytics, 'app_launched');
     // Check user's townId(지역구) using regionId
     axios
-      .get(
-        `${process.env.REACT_APP_BASE_URL_PRODUCTION}/town?regionId=${userRegionId}`
-      )
+      .get(`${process.env.REACT_APP_BASE_URL}/town?regionId=${userRegionId}`)
       .then((response: { data: { data: { id: string; name2: string } } }) => {
         const townId: string = response.data.data.id;
         const townName: string = response.data.data.name2;
@@ -62,7 +100,7 @@ function App() {
           if (userCode !== null && userRegionId !== null) {
             axios
               .post(
-                `${process.env.REACT_APP_BASE_URL_PRODUCTION}/oauth`,
+                `${process.env.REACT_APP_BASE_URL}/oauth`,
                 {
                   code: userCode,
                   regionId: userRegionId,

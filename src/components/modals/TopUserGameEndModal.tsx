@@ -100,7 +100,7 @@ const TopUserGameEndModal: FC<TopUserGameEndModalProps> = (props) => {
   const handlePatchCommentAndViewLeaderboard = () => {
     axios
       .patch(
-        `${process.env.REACT_APP_BASE_URL_PRODUCTION}/user-rank/comment`,
+        `${process.env.REACT_APP_BASE_URL}/user-rank/comment`,
         {
           comment: topUserComment.comment,
         },

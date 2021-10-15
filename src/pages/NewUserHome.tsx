@@ -74,17 +74,16 @@ const NewUserHome = () => {
   const handleNewUserAgreement = () => {
     console.log('preset open');
     mini.startPreset({
-      preset:
-        'https://mini-assets.kr.karrotmarket.com/presets/mvp-game-login/production.html',
+      preset: `${process.env.REACT_APP_MINI_PRESET}`,
       params: {
-        appId: `${process.env.REACT_APP_APP_ID_PRODUCTION}`,
+        appId: `${process.env.REACT_APP_APP_ID}`,
       },
       onSuccess: function (result) {
         console.log(window.location.search);
         if (result && result.code) {
           axios
             .post(
-              `${process.env.REACT_APP_BASE_URL_PRODUCTION}/oauth`,
+              `${process.env.REACT_APP_BASE_URL}/oauth`,
               {
                 code: result.code,
                 regionId: regionId,
