@@ -16,7 +16,7 @@ import { analytics } from 'services/firebase/firebaseConfig';
 import { getMini } from 'api/mini';
 import { RootState } from 'reducers/rootReducer';
 const axios = require('axios').default;
-const baseUrl = process.env.REACT_APP_BASE_URL_PRODUCTION;
+const baseUrl = process.env.REACT_APP_BASE_URL;
 const accessToken = window.localStorage.getItem('ACCESS_TOKEN');
 // nav
 const customNav = css`
