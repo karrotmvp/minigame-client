@@ -1,7 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { logEvent } from '@firebase/analytics';
-import { getMini } from 'api/mini';
 import { ReactComponent as WaitSvg } from 'assets/wait.svg';
 import axios from 'axios';
 import { AppEjectionButton } from 'components/buttons/AppEjectionButton';
@@ -10,6 +9,7 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'reducers/rootReducer';
 import { analytics } from 'services/firebase/firebaseConfig';
+import { getMini } from 'services/karrotmarket/mini';
 
 const customNav = css`
   left: 0;
@@ -161,10 +161,6 @@ const NonServiceArea = (props: NonServiceAreaProps) => {
                 'ACCESS_TOKEN',
                 response.data.data.accessToken
               );
-              // console.log(response.data.data.accessToken);
-              //  postDemand(response.data.data.accessToken)
-              //   .then(() => console.log('오픈 알림 성공'))
-              //   .catch((error) => console.error('에러'));
             })
             .then(() => {
               console.log(window.localStorage.getItem('ACCESS_TOKEN'));

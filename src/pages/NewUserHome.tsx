@@ -7,11 +7,11 @@ import {
 } from 'styles/textStyle';
 import Button from '../components/buttons/Button';
 import IndividualLeaderboard from '../components/leaderboard/IndividualLeaderboard';
-import { getMini } from 'api/mini';
 import { AppEjectionButton } from 'components/buttons/AppEjectionButton';
 import { useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from 'reducers/rootReducer';
+import { getMini } from 'services/karrotmarket/mini';
 
 const axios = require('axios').default;
 
