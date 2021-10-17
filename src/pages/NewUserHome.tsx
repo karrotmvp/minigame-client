@@ -13,6 +13,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'reducers/rootReducer';
 import { getMini } from 'services/karrotmarket/mini';
 import BackendApi from 'services/backendApi/backendApi';
+import { useCallback } from 'react';
 
 // nav
 const customNav = css`
@@ -71,6 +72,24 @@ const NewUserHome = () => {
     regionId: state.userDataReducer.regionId,
   }));
 
+  const getAccessToken = useCallback(
+    async (code: string | null, regionId: string) => {
+      if (code !== null) {
+        const result = await BackendApi.postOauth2({
+          code: code,
+          regionId: regionId,
+        });
+        if (result.isFetched && result.data) {
+          const { accessToken } = result.data.data;
+          window.localStorage.setItem('ACCESS_TOKEN', accessToken);
+        }
+      } else {
+        throw new Error('Either code OR regionId is null');
+      }
+    },
+    []
+  );
+
   const mini = getMini();
   const handleNewUserAgreement = (preset: string, appId: string) => {
     mini.startPreset({
@@ -80,19 +99,20 @@ const NewUserHome = () => {
       },
       onSuccess: async function (result) {
         if (result && result.code) {
-          try {
-            await BackendApi.postOauth2({
-              code: result.code,
-              regionId: regionId,
-            }).then((response) => {
-              const accessToken = response.data.accessToken;
-              console.log('Access token generated (new-user): ', accessToken);
-              window.localStorage.setItem('ACCESS_TOKEN', accessToken);
-              history.push('/game');
-            });
-          } catch (error) {
-            console.error(error);
-          }
+          await getAccessToken(result.code, regionId);
+          history.push('/game');
+          //   await BackendApi.postOauth2({
+          //     code: result.code,
+          //     regionId: regionId,
+          //   }).then((response) => {
+          //     const accessToken = response.data.accessToken;
+          //     console.log('Access token generated (new-user): ', accessToken);
+          //     window.localStorage.setItem('ACCESS_TOKEN', accessToken);
+          //     history.push('/game');
+          //   });
+          // } catch (error) {
+          //   console.error(error);
+          // }
         }
       },
       onFailure() {
