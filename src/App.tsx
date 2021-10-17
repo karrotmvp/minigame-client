@@ -35,10 +35,10 @@ function App() {
 
   const filterNonServiceTown = useCallback(
     async (code: string | null, regionId: string) => {
-      const result = await BackendApi.getTownId({ regionId: regionId });
+      const response = await BackendApi.getTownId({ regionId: regionId });
       // example -> city=서울특별시(name1) district=서초구(name2)
-      if (result.isFetched && result.data) {
-        const { id: districtId, name2: districtName } = result.data.data;
+      if (response.isFetched && response.data) {
+        const { id: districtId, name2: districtName } = response.data.data;
         dispatch(saveTownId(districtId));
         dispatch(saveTownName(districtName));
         setUserTownData([districtId, districtName]);
@@ -58,12 +58,12 @@ function App() {
     async (code: string | null, regionId: string) => {
       // code !== null means user is a returning user
       if (code !== null) {
-        const result = await BackendApi.postOauth2({
+        const response = await BackendApi.postOauth2({
           code: code,
           regionId: regionId,
         });
-        if (result.isFetched && result.data) {
-          const { accessToken } = result.data.data;
+        if (response.isFetched && response.data) {
+          const { accessToken } = response.data.data;
           console.log('access-token', accessToken);
           window.localStorage.setItem('ACCESS_TOKEN', accessToken);
           setPageRedirection('home');
@@ -98,7 +98,6 @@ function App() {
                   to={{
                     pathname: '/non-service-area',
                     state: {
-                      townId: userTownData[0],
                       townName: userTownData[1],
                       isNonServiceUserBack: isNonServiceUserBack,
                     },
@@ -128,7 +127,7 @@ function App() {
           <Route
             exact
             path="/non-service-area"
-            render={(props) => <NonServiceArea {...props} />}
+            render={(props: any) => <NonServiceArea {...props} />}
           />
         </Switch>
       </Router>

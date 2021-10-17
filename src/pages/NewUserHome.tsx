@@ -75,12 +75,12 @@ const NewUserHome = () => {
   const getAccessToken = useCallback(
     async (code: string | null, regionId: string) => {
       if (code !== null) {
-        const result = await BackendApi.postOauth2({
+        const response = await BackendApi.postOauth2({
           code: code,
           regionId: regionId,
         });
-        if (result.isFetched && result.data) {
-          const { accessToken } = result.data.data;
+        if (response.isFetched && response.data) {
+          const { accessToken } = response.data.data;
           window.localStorage.setItem('ACCESS_TOKEN', accessToken);
         }
       } else {
@@ -91,7 +91,7 @@ const NewUserHome = () => {
   );
 
   const mini = getMini();
-  const handleNewUserAgreement = (preset: string, appId: string) => {
+  const handleNewUserAgreement = async (preset: string, appId: string) => {
     mini.startPreset({
       preset: preset,
       params: {
@@ -99,20 +99,9 @@ const NewUserHome = () => {
       },
       onSuccess: async function (result) {
         if (result && result.code) {
-          await getAccessToken(result.code, regionId);
-          history.push('/game');
-          //   await BackendApi.postOauth2({
-          //     code: result.code,
-          //     regionId: regionId,
-          //   }).then((response) => {
-          //     const accessToken = response.data.accessToken;
-          //     console.log('Access token generated (new-user): ', accessToken);
-          //     window.localStorage.setItem('ACCESS_TOKEN', accessToken);
-          //     history.push('/game');
-          //   });
-          // } catch (error) {
-          //   console.error(error);
-          // }
+          await getAccessToken(result.code, regionId).then(() => {
+            history.push('/game');
+          });
         }
       },
       onFailure() {

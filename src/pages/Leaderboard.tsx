@@ -16,9 +16,6 @@ import { analytics } from 'services/firebase/firebaseConfig';
 import { RootState } from 'reducers/rootReducer';
 import { getMini } from 'services/karrotmarket/mini';
 import BackendApi from 'services/backendApi/backendApi';
-const axios = require('axios').default;
-const baseUrl = process.env.REACT_APP_BASE_URL;
-const accessToken = window.localStorage.getItem('ACCESS_TOKEN');
 // nav
 const customNav = css`
   left: 0;
@@ -107,12 +104,12 @@ const Leaderboard = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const accessToken = window.localStorage.getItem('ACCESS_TOKEN');
   const getUserData = useCallback(async (baseUrl, accessToken) => {
-    const result = await BackendApi.getUserInfo({
+    const response = await BackendApi.getUserInfo({
       baseUrl: baseUrl,
       accessToken: accessToken,
     });
-    if (result.isFetched && result.data) {
-      const { nickname, score, rank, comment } = result.data.data;
+    if (response.isFetched && response.data) {
+      const { nickname, score, rank, comment } = response.data.data;
       setUserData({
         nickname: nickname,
         score: score,

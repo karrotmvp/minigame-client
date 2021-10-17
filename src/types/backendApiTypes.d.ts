@@ -32,14 +32,14 @@ export interface getTownUserRankRequest {
   townId: string;
 }
 export interface getTownUserRankResponse {
-  data?: [
-    {
+  data?: {
+    data: {
       comment: string;
       nickname: string;
       score: number;
       userId: string;
-    }
-  ];
+    }[];
+  };
   isFetched: boolean;
 }
 // user api types
@@ -63,4 +63,38 @@ export interface getUserInfoResponse {
     };
   };
   isFetched: boolean;
+}
+
+// user-rank api types
+export interface patchUserScoreRequest {
+  baseUrl: string;
+  accessToken: string;
+  score: number;
+}
+export interface patchUserScoreResponse {
+  isFetched: boolean;
+}
+export interface patchCommentRequest {
+  baseUrl: string;
+  accessToken: string;
+  comment: string;
+}
+export interface patchCommentResponse {
+  isFetched: boolean;
+}
+
+// demand-controller api types
+export interface demandApiRequest {
+  baseUrl: string;
+  accessToken: string;
+}
+export interface demandApiResponse {
+  isFetched: boolean;
+  error?: {
+    response: {
+      data: {
+        message: string;
+      };
+    };
+  };
 }

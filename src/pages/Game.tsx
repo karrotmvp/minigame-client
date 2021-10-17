@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import DefaultGameEndModal from 'components/modals/DefaultGameEndModal';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { incrementClickCount } from 'reducers/counterReducer';
 import { RootState } from '../reducers/rootReducer';
@@ -11,8 +11,7 @@ import Modal from 'react-modal';
 import GameDirectionPopupModal from 'components/modals/GameDirectionPopupModal';
 import { commafy } from 'components/functions/commafy';
 import ClickAnimation from 'components/game/ClickAnimation';
-
-const axios = require('axios').default;
+import BackendApi from 'services/backendApi/backendApi';
 
 // nav
 const customNav = css`
@@ -199,33 +198,27 @@ const Game = () => {
     await handleScreenClick(e);
     setShakeToggle((prevState) => !prevState);
   };
-  const handleGameEnd = () => {
-    let karrotToPatch = clickCount - alreadyPatchedKarrot;
-    console.log(clickCount, alreadyPatchedKarrot, karrotToPatch);
-    axios
-      .patch(
-        `${process.env.REACT_APP_BASE_URL}/user-rank`,
-        {
-          score: karrotToPatch,
-        },
-        {
-          headers: {
-            Authorization: window.localStorage.getItem('ACCESS_TOKEN'),
-            'Content-Type': 'application/json',
-          },
-        }
-      )
-      .then((response: any) => {
-        console.log('scorePatched:', response);
-        setIsModalOpen(true);
-        setAlreadyPatchedKarrot(clickCount);
+
+  const baseUrl = process.env.REACT_APP_BASE_URL;
+  const accessToken = window.localStorage.getItem('ACCESS_TOKEN');
+  const handleGameEnd = useCallback(
+    async (baseUrl, accessToken) => {
+      let karrotToPatch = clickCount - alreadyPatchedKarrot;
+      await BackendApi.patchUserScore({
+        baseUrl: baseUrl,
+        accessToken: accessToken,
+        score: karrotToPatch,
       });
-  };
+      setIsModalOpen(true);
+      setAlreadyPatchedKarrot(clickCount);
+    },
+    [alreadyPatchedKarrot, clickCount]
+  );
 
   function closeModal() {
     setIsModalOpen(false);
   }
-  // Popup modal if use is new
+  // Popup modal if user is new
   useEffect(() => {
     if (userScore === 0) {
       setShouldPopup(true);
@@ -238,7 +231,11 @@ const Game = () => {
     <>
       <div css={customNav}>
         <div css={customNavIcon}>
-          <GameEndButton handleGameEnd={handleGameEnd} />
+          <GameEndButton
+            handleGameEnd={() => {
+              handleGameEnd(baseUrl, accessToken);
+            }}
+          />
         </div>
       </div>
       <div

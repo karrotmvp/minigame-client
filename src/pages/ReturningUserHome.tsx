@@ -20,8 +20,6 @@ import { useHistory } from 'react-router-dom';
 import { updateUserScore } from 'reducers/userDataReducer';
 import BackendApi from 'services/backendApi/backendApi';
 
-const axios = require('axios').default;
-
 // nav
 const customNav = css`
   left: 0;
@@ -150,12 +148,12 @@ const ReturningUserHome = () => {
   const accessToken = window.localStorage.getItem('ACCESS_TOKEN');
   const getUserData = useCallback(
     async (baseUrl, accessToken) => {
-      const result = await BackendApi.getUserInfo({
+      const response = await BackendApi.getUserInfo({
         baseUrl: baseUrl,
         accessToken: accessToken,
       });
-      if (result.isFetched === true && result.data) {
-        const { nickname, score, rank, comment } = result.data.data;
+      if (response.isFetched === true && response.data) {
+        const { nickname, score, rank, comment } = response.data.data;
         setUserData({
           nickname: nickname,
           score: score,
@@ -192,6 +190,7 @@ const ReturningUserHome = () => {
             <UserScoreNull nickname={userData.nickname} />
           )}
         </div>
+
         <div css={leaderboardWrapper}>
           <IndividualLeaderboard />
         </div>

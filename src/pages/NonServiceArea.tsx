@@ -2,12 +2,12 @@
 import { css } from '@emotion/react';
 import { logEvent } from '@firebase/analytics';
 import { ReactComponent as WaitSvg } from 'assets/wait.svg';
-import axios from 'axios';
 import { AppEjectionButton } from 'components/buttons/AppEjectionButton';
 import Button, { DisabledButton } from 'components/buttons/Button';
-import { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'reducers/rootReducer';
+import BackendApi from 'services/backendApi/backendApi';
 import { analytics } from 'services/firebase/firebaseConfig';
 import { getMini } from 'services/karrotmarket/mini';
 
@@ -96,100 +96,85 @@ const actionItemWraper = css`
 const coloredText = css`
   color: #eb5d0e;
 `;
-interface NonServiceAreaProps {
-  location: any;
-}
-// const baseUrl = process.env.REACT_APP_BASE_URL;
 
-const NonServiceArea = (props: NonServiceAreaProps) => {
+const presetUrl = `${process.env.REACT_APP_MINI_PRESET}`;
+const appId = `${process.env.REACT_APP_APP_ID}`;
+const baseUrl = `${process.env.REACT_APP_BASE_URL}`;
+const accessToken = `${window.localStorage.getItem('ACCESS_TOKEN')}`;
+interface handleDemandTypes {
+  preset: string;
+  appId: string;
+  baseUrl: string;
+  accessToken: string;
+}
+
+interface NonServiceAreaProps {
+  location: {
+    state: {
+      isNonServiceUserBack: boolean;
+      townName: string;
+    };
+  };
+}
+const NonServiceArea: React.FC<NonServiceAreaProps> = (props) => {
   const [isClicked, setIsClicked] = useState<boolean>(false);
   const { regionId } = useSelector((state: RootState) => ({
-    // townName: state.userDataReducer.townName,
     regionId: state.userDataReducer.regionId,
   }));
 
-  // async function getAccessToken({
-  //   code,
-  //   regionId,
-  // }: BackendServiceRequest): Promise<void> {
-  //   const { data } = await axios.post(
-  //     `${baseUrl}/oauth`,
-  //     { code: code, regionId: regionId },
+  const getAccessToken = useCallback(
+    async (code: string | null, regionId: string) => {
+      if (code !== null) {
+        const response = await BackendApi.postOauth2({
+          code: code,
+          regionId: regionId,
+        });
+        if (response.isFetched && response.data) {
+          const { accessToken } = response.data.data;
+          window.localStorage.setItem('ACCESS_TOKEN', accessToken);
+        }
+      } else {
+        throw new Error('Either code OR regionId is null');
+      }
+    },
+    []
+  );
 
-  //     {
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //     }
-  //   );
-  //   const { accessToken } = await data.data;
-  //   return window.localStorage.setItem('ACCESS_TOKEN', accessToken);
-  // }
-
-  // async function postDemand(accessToken: any) {
-  //   await axios.post(`${process.env.REACT_APP_BASE_URL}/demand`, {
-  //     headers: {
-  //       Authorization: accessToken,
-  //     },
-  //   });
-  // }
-
-  async function handleDemand() {
-    const mini = getMini();
+  const mini = getMini();
+  const handleDemand = async ({
+    preset,
+    appId,
+    baseUrl,
+    accessToken,
+  }: handleDemandTypes) => {
     mini.startPreset({
-      preset: `${process.env.REACT_APP_MINI_PRESET}`,
+      preset: preset,
       params: {
-        appId: `${process.env.REACT_APP_APP_ID}`,
+        appId: appId,
       },
-      onSuccess: function (result) {
+      onSuccess: async function (result) {
         if (result && result.code) {
-          axios
-            .post(
-              `${process.env.REACT_APP_BASE_URL}/oauth`,
-              {
-                code: result.code,
-                regionId: regionId,
-              },
-              {
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-              }
-            )
-            .then((response: any) => {
-              window.localStorage.setItem(
-                'ACCESS_TOKEN',
-                response.data.data.accessToken
-              );
-            })
-            .then(() => {
-              console.log(window.localStorage.getItem('ACCESS_TOKEN'));
-              axios
-                .post(`${process.env.REACT_APP_BASE_URL}/demand`, null, {
-                  headers: {
-                    Authorization: `${window.localStorage.getItem(
-                      'ACCESS_TOKEN'
-                    )}`,
-                    'Content-Type': 'application/json',
-                  },
-                })
-                .then((response) => {
-                  console.log('xxxxx', response);
-                  setIsClicked(true);
-                })
-                .catch((error) => {
-                  console.log(error.response);
-                  if (error.response.status === 400) {
-                    setIsClicked(true);
-                  }
-                });
-            });
+          console.log();
+          await getAccessToken(result.code, regionId);
+          const response = await BackendApi.postDemand({
+            baseUrl: baseUrl,
+            accessToken: accessToken,
+          });
+          console.log(response);
+          if (response.isFetched === true) {
+            setIsClicked(true);
+            logEvent(analytics, 'non_service_area_demand');
+          }
         }
       },
+      onFailure() {
+        throw new Error('mini-app preset failed');
+      },
     });
-  }
+  };
+
   useEffect(() => {
-    if (props.location.state.nonServiceUserBack === true) {
+    if (props.location.state.isNonServiceUserBack === true) {
       setIsClicked(true);
     }
     logEvent(analytics, 'non_service_area');
@@ -225,7 +210,14 @@ const NonServiceArea = (props: NonServiceAreaProps) => {
             size={`medium`}
             color={`primary`}
             text={`오픈 알림 받기`}
-            onClick={handleDemand}
+            onClick={() => {
+              handleDemand({
+                preset: presetUrl,
+                appId: appId,
+                baseUrl: baseUrl,
+                accessToken: accessToken,
+              });
+            }}
           />
         )}
       </div>
