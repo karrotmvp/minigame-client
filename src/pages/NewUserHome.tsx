@@ -12,8 +12,7 @@ import { useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from 'reducers/rootReducer';
 import { getMini } from 'services/karrotmarket/mini';
-
-const axios = require('axios').default;
+import BackendApi from 'services/backendApi/backendApi';
 
 // nav
 const customNav = css`
@@ -62,49 +61,46 @@ const actionItemWrapper = css`
   box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
 `;
 
+const presetUrl: string = `${process.env.REACT_APP_MINI_PRESET}`;
+const appId: string = `${process.env.REACT_APP_APP_ID}`;
+
 const NewUserHome = () => {
   let history = useHistory();
-
   const { townName, regionId } = useSelector((state: RootState) => ({
     townName: state.userDataReducer.townName,
     regionId: state.userDataReducer.regionId,
   }));
 
   const mini = getMini();
-  const handleNewUserAgreement = () => {
-    console.log('preset open');
+  const handleNewUserAgreement = (preset: string, appId: string) => {
     mini.startPreset({
-      preset: `${process.env.REACT_APP_MINI_PRESET}`,
+      preset: preset,
       params: {
-        appId: `${process.env.REACT_APP_APP_ID}`,
+        appId: appId,
       },
-      onSuccess: function (result) {
-        console.log(window.location.search);
+      onSuccess: async function (result) {
         if (result && result.code) {
-          axios
-            .post(
-              `${process.env.REACT_APP_BASE_URL}/oauth`,
-              {
-                code: result.code,
-                regionId: regionId,
-              },
-              {
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-              }
-            )
-            .then((response: any) => {
-              window.localStorage.setItem(
-                'ACCESS_TOKEN',
-                response.data.data.accessToken
-              );
+          try {
+            await BackendApi.postOauth2({
+              code: result.code,
+              regionId: regionId,
+            }).then((response) => {
+              const accessToken = response.data.accessToken;
+              console.log('Access token generated (new-user): ', accessToken);
+              window.localStorage.setItem('ACCESS_TOKEN', accessToken);
               history.push('/game');
             });
+          } catch (error) {
+            console.error(error);
+          }
         }
+      },
+      onFailure() {
+        throw new Error('mini-app preset failed');
       },
     });
   };
+
   return (
     <>
       <div css={customNav}>
@@ -130,7 +126,9 @@ const NewUserHome = () => {
             size={`large`}
             color={`primary`}
             text={`게임 시작`}
-            onClick={handleNewUserAgreement}
+            onClick={() => {
+              handleNewUserAgreement(presetUrl, appId);
+            }}
           />
         </div>
       </div>
