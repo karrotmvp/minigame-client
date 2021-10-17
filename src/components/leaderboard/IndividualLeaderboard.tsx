@@ -1,12 +1,13 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'reducers/rootReducer';
 import DefaultUserRow from './DefaultUserRow';
 import TopUserRow from './TopUserRow';
 import { ReactComponent as RefreshIcon } from 'assets/refresh.svg';
 import { updateUserData } from 'reducers/userDataReducer';
+import BackendApi from 'services/backendApi/backendApi';
 
 const divStyle = css`
   padding-top: 10px;
@@ -35,7 +36,6 @@ const refreshDivStyle = css`
     color: #5b5b5b;
   }
 `;
-
 const refreshIconStyle = css`
   border: none;
   background: none;
@@ -60,9 +60,6 @@ const infoText = css`
 
   color: #7c7c7c;
 `;
-const axios = require('axios').default;
-const baseUrl = process.env.REACT_APP_BASE_URL;
-const accessToken = window.localStorage.getItem('ACCESS_TOKEN');
 
 const IndividualLeaderboard = () => {
   const [townRankData, setTownRankData] = useState<any[]>([]);
@@ -72,40 +69,48 @@ const IndividualLeaderboard = () => {
   }));
   const dispatch = useDispatch();
 
-  async function getUserData() {
-    const { data } = await axios.get(`${baseUrl}/users/me`, {
-      headers: {
-        Authorization: accessToken,
-      },
+  const baseUrl = process.env.REACT_APP_BASE_URL;
+  const accessToken = window.localStorage.getItem('ACCESS_TOKEN');
+  const getUserData = useCallback(
+    async (baseUrl, accessToken) => {
+      const response = await BackendApi.getUserInfo({
+        baseUrl: baseUrl,
+        accessToken: accessToken,
+      });
+      if (response.isFetched === true && response.data) {
+        const { nickname, score, rank, comment } = response.data.data;
+        dispatch(updateUserData(nickname, score, rank, comment));
+        console.log('user data refreshed');
+      }
+    },
+    [dispatch]
+  );
+
+  const getTownLeaderboard = useCallback(async (baseUrl, townId) => {
+    const response = await BackendApi.getTownUserRank({
+      baseUrl: baseUrl,
+      townId: townId,
     });
-    const { nickname, score, rank, comment } = await data.data;
-    dispatch(updateUserData(nickname, score, rank, comment));
-    console.log('user data refreshed');
-  }
-  async function getTownLeaderboard(townId: string) {
-    const { data } = await axios.get(`${baseUrl}/towns/${townId}/user-rank`);
-    const responseData = await data.data;
-    const indexedTownRankData = await responseData.map(
-      (item: any, index: number) => ({
-        rank: index + 1,
-        ...item,
-      })
-    );
-    setTownRankData(indexedTownRankData);
-    console.log('leaderboard data refreshed');
-  }
+    if (response.isFetched && response.data) {
+      const responseData = response.data.data;
+      const indexedTownRankData = responseData.map(
+        (item: any, index: number) => ({
+          rank: index + 1,
+          ...item,
+        })
+      );
+      setTownRankData(indexedTownRankData);
+      console.log('leaderboard data refreshed');
+    }
+  }, []);
 
   const refreshLeaderboard = async () => {
-    await getUserData();
-    await getTownLeaderboard(townId);
+    await getUserData(baseUrl, accessToken);
+    await getTownLeaderboard(baseUrl, townId);
   };
 
   useEffect(() => {
-    getTownLeaderboard(townId)
-      .then((response) => {
-        console.log('IndividualLeaderboard, getTownLeaderboard', response);
-      })
-      .catch(console.error);
+    refreshLeaderboard();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

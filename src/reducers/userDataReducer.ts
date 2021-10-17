@@ -48,13 +48,13 @@ const userDataReducer = (
   state = initialState,
   action: {
     type: any;
-    nickname: any;
-    score: any;
-    rank: any;
-    comment: any;
-    townId: any;
-    townName: any;
-    regionId: any;
+    nickname: string;
+    score: number;
+    rank: number;
+    comment: string;
+    townId: string;
+    townName: string;
+    regionId: string;
   }
 ) => {
   switch (action.type) {
