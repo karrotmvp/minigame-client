@@ -21,9 +21,7 @@ import {
   saveTownId,
   saveTownName,
 } from 'reducers/userDataReducer';
-// import BackendService from 'services/backendService';
-
-const axios = require('axios').default;
+import BackendApi from 'services/backendApi/backendApi';
 
 const appStyle = css`
   height: 100vh;
@@ -67,12 +65,21 @@ function App() {
   //     }
   //   });
 
-  //   // return () => {
-  //   //   cleanup;
-  //   // };
-  // }, []);
-  // BELOW WORKS
-  const [nonServiceUserBack, setNonServiceUserBack] = useState(false);
+  async function getAccessToken(code: string | null, regionId: string | null) {
+    try {
+      if (code !== null && regionId !== null) {
+        const data = BackendApi.postOauth2({
+          code: code,
+          regionId: regionId,
+        });
+        return data;
+      } else {
+        throw new Error('Either code OR regionId is null');
+      }
+    } catch (error) {
+      console.error('oops', error);
+    }
+  }
 
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
@@ -143,6 +150,20 @@ function App() {
       })
       .catch((error: any) => console.error(error));
   }, [dispatch]);
+      getAccessToken(userCode, userRegionId)
+        .then((response) => {
+          const accessToken = response.data.accessToken;
+          console.log('Access token generated: ', accessToken);
+          window.localStorage.setItem('ACCESS_TOKEN', accessToken);
+          setPageRedirection('home');
+        })
+        .catch((error) => {
+          console.error(
+            'Access token generation failed, possibly no code exists (aka new user)',
+            error
+          );
+          setPageRedirection('new-user-home');
+        });
 
   return (
     <div css={appStyle}>
