@@ -16,6 +16,7 @@ import { analytics } from 'services/firebase/firebaseConfig';
 import { RootState } from 'reducers/rootReducer';
 import { getMini } from 'services/karrotmarket/mini';
 import BackendApi from 'services/backendApi/backendApi';
+
 // nav
 const customNav = css`
   left: 0;
@@ -45,18 +46,19 @@ const divStyle = css`
   flex-flow: column;
   height: calc(100% - 2.75rem);
 `;
+// heading
 const headingWrapper = css`
   padding: 20px 26px 20px;
 `;
+// refresh
 
-// const divierDiv =css`
-
-// `
+// leaderboard
 const leaderboardWrapper = css`
   flex: 1;
   overflow: auto;
   padding: 0 26px;
 `;
+// action
 const actionItemWrapper = css`
   display: flex;
   gap: 15px;

@@ -26,19 +26,6 @@ const customNav = css`
   padding: 0 0.5rem;
   background: rgb(249, 244, 245);
 `;
-// const customNavIcon1 = css`
-//   display: flex;
-//   align-items: center;
-//   justify-content: center;
-//   cursor: pointer;
-//   opacity: 1;
-//   transition: opacity 300ms;
-//   width: 2.25rem;
-//   height: 2.75rem;
-//   text-decoration: none;
-//   outline: none;
-//   z-index: 10;
-// `;
 const customNavIcon = css`
   display: flex;
   align-items: center;
