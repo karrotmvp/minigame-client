@@ -7,3 +7,10 @@ export interface postOauth2Request {
 //   data: any | undefined;
 // }
 
+export interface getTownIdRequest {
+  data: {
+    id: string;
+    name1: string;
+    name2: string;
+  };
+}

@@ -28,42 +28,31 @@ const appStyle = css`
 `;
 
 function App() {
-  const [pageRedirection, setPageRedirection] = useState<number>();
+  const [pageRedirection, setPageRedirection] = useState<string>('loading');
   const [userTownData, setUserTownData] = useState<string[]>([]);
+  const [isNonServiceUserBack, setIsNonServiceUserBack] = useState(false);
   const dispatch = useDispatch();
 
-  // async function getQueryParams(): Promise<{
-  //   userCode: any;
-  //   userRegionId: any;
-  // }> {
-  //   const searchParams = new URLSearchParams(window.location.search);
-  //   const userCode: any = searchParams.get('code');
-  //   const userRegionId: any = searchParams.get('region_id');
-  //   dispatch(saveRegionId(userRegionId));
-  //   return { userCode, userRegionId };
-  // }
-
-  // async function handleNonServiceArea(regionId: any): Promise<void> {
-  //   const userTownData = await BackendService.getTownId(regionId);
-  //   const { townId, townName } = userTownData;
-  //   dispatch(saveTownId(townId));
-  //   dispatch(saveTownName(townName));
-  //   setUserTownData([townId, townName]);
-  // }
-
-  // useEffect(() => {
-  //   getQueryParams().then((response) => {
-  //     const { userCode, userRegionId } = response;
-  //     handleNonServiceArea(userRegionId);
-  //     if (userRegionId !== 'df5370052b3c') {
-  //       setPageRedirection(1);
-  //     } else {
-  //       if (userCode !== null && userRegionId !== null) {
-  //         BackendService.postOauth(userCode, userRegionId);
-  //         setPageRedirection(2);
-  //       }
-  //     }
-  //   });
+  async function filterNonServiceTown(code: string | null, regionId: any) {
+    try {
+      const { data } = await BackendApi.getTownId(regionId);
+      // example -> city=서울특별시(name1) district=서초구(name2)
+      const { id: districtId, name2: districtName } = data;
+      dispatch(saveTownId(districtId));
+      dispatch(saveTownName(districtName));
+      setUserTownData([districtId, districtName]);
+      // Filter out if user is not in 서초구
+      // 서초구id = df5370052b3c
+      if (districtId !== 'df5370052b3c') {
+        if (code !== null || undefined) {
+          setIsNonServiceUserBack(true);
+        }
+        setPageRedirection('non-service-area');
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   async function getAccessToken(code: string | null, regionId: string | null) {
     try {
@@ -89,26 +78,6 @@ function App() {
     dispatch(saveRegionId(userRegionId));
     logEvent(analytics, 'app_launched');
 
-    // Check user's townId(지역구) using regionId
-    axios
-      .get(`${process.env.REACT_APP_BASE_URL}/town?regionId=${userRegionId}`)
-      .then((response: { data: { data: { id: string; name2: string } } }) => {
-        const townId: string = response.data.data.id;
-        const townName: string = response.data.data.name2;
-        dispatch(saveTownId(townId));
-        dispatch(saveTownName(townName));
-        setUserTownData([townId, townName]);
-        if (townId !== 'df5370052b3c') {
-          if (userCode !== null || undefined) {
-            setNonServiceUserBack(true);
-          }
-          setPageRedirection(1);
-          // return (
-          //   <Redirect
-          //     to="non-service-area"
-
-          //   />
-          // );
         } else {
           if (userCode !== null && userRegionId !== null) {
             axios
@@ -150,6 +119,9 @@ function App() {
       })
       .catch((error: any) => console.error(error));
   }, [dispatch]);
+    try {
+      dispatch(saveRegionId(userRegionId));
+      filterNonServiceTown(userCode, userRegionId);
       getAccessToken(userCode, userRegionId)
         .then((response) => {
           const accessToken = response.data.accessToken;
@@ -164,6 +136,14 @@ function App() {
           );
           setPageRedirection('new-user-home');
         });
+      // Promise.all([promise1, promise2]).then((values) => {
+      //   console.log(values);
+      // });
+    } catch (error) {
+      console.error(error);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div css={appStyle}>
