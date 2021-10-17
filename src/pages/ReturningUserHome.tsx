@@ -9,7 +9,7 @@ import {
 } from 'styles/textStyle';
 import Button from 'components/buttons/Button';
 import IndividualLeaderboard from 'components/leaderboard/IndividualLeaderboard';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { AppEjectionButton } from 'components/buttons/AppEjectionButton';
 import { commafy } from 'components/functions/commafy';
 import { logEvent } from 'firebase/analytics';
@@ -18,6 +18,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'reducers/rootReducer';
 import { useHistory } from 'react-router-dom';
 import { updateUserScore } from 'reducers/userDataReducer';
+import BackendApi from 'services/backendApi/backendApi';
 
 const axios = require('axios').default;
 
@@ -145,37 +146,30 @@ const ReturningUserHome = () => {
     logEvent(analytics, 'game_start');
     history.push('/game');
   };
+  const baseUrl = process.env.REACT_APP_BASE_URL;
+  const accessToken = window.localStorage.getItem('ACCESS_TOKEN');
+  const getUserData = useCallback(
+    async (baseUrl, accessToken) => {
+      const result = await BackendApi.getUserInfo({
+        baseUrl: baseUrl,
+        accessToken: accessToken,
+      });
+      if (result.isFetched === true && result.data) {
+        const { nickname, score, rank, comment } = result.data.data;
+        setUserData({
+          nickname: nickname,
+          score: score,
+          rank: rank,
+          comment: comment,
+        });
+        dispatch(updateUserScore(score));
+      }
+    },
+    [dispatch]
+  );
   useEffect(() => {
-    axios
-      .get(`${process.env.REACT_APP_BASE_URL}/users/me`, {
-        headers: {
-          Authorization: window.localStorage.getItem('ACCESS_TOKEN'),
-        },
-      })
-      .then(
-        (response: {
-          data: {
-            data: {
-              nickname: string;
-              score: number;
-              rank: number;
-              comment: string;
-            };
-          };
-        }) => {
-          const { nickname, score, rank, comment } = response.data.data;
-          setUserData({
-            nickname: nickname,
-            score: score,
-            rank: rank,
-            comment: comment,
-          });
-          dispatch(updateUserScore(score));
-        }
-      )
-      .catch((error: any) => console.error(error));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    getUserData(baseUrl, accessToken);
+  }, [accessToken, baseUrl, getUserData]);
 
   return (
     <>

@@ -8,13 +8,14 @@ import DefaultUserRow from 'components/leaderboard/DefaultUserRow';
 import { useDispatch, useSelector } from 'react-redux';
 import { reset } from 'reducers/counterReducer';
 import TopUserRow from 'components/leaderboard/TopUserRow';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 // import BackendService from 'services/backendService';
 import { useHistory } from 'react-router-dom';
 import { logEvent } from 'firebase/analytics';
 import { analytics } from 'services/firebase/firebaseConfig';
 import { RootState } from 'reducers/rootReducer';
 import { getMini } from 'services/karrotmarket/mini';
+import BackendApi from 'services/backendApi/backendApi';
 const axios = require('axios').default;
 const baseUrl = process.env.REACT_APP_BASE_URL;
 const accessToken = window.localStorage.getItem('ACCESS_TOKEN');
@@ -103,45 +104,27 @@ const Leaderboard = () => {
     });
   };
 
-  async function getUserInfo() {
-    await axios
-      .get(`${baseUrl}/users/me`, {
-        headers: {
-          Authorization: accessToken,
-        },
-      })
-      .then(
-        (response: {
-          data: {
-            data: { nickname: any; score: any; rank: any; comment: any };
-          };
-        }) => {
-          const { nickname, score, rank, comment } = response.data.data;
-          setUserData({
-            nickname: nickname,
-            score: score,
-            rank: rank,
-            comment: comment,
-          });
-        }
-        // (response: {
-        //   data: { nickname: any; score: any; rank: any; comment: any };
-        // }) => {
-        //   const { nickname, score, rank, comment } = response.data;
-        //   setUserData({
-        //     nickname: nickname,
-        //     score: score,
-        //     rank: rank,
-        //     comment: comment,
-        //   });
-        // }
-      )
-      .catch(console.error);
-  }
+  const baseUrl = process.env.REACT_APP_BASE_URL;
+  const accessToken = window.localStorage.getItem('ACCESS_TOKEN');
+  const getUserData = useCallback(async (baseUrl, accessToken) => {
+    const result = await BackendApi.getUserInfo({
+      baseUrl: baseUrl,
+      accessToken: accessToken,
+    });
+    if (result.isFetched && result.data) {
+      const { nickname, score, rank, comment } = result.data.data;
+      setUserData({
+        nickname: nickname,
+        score: score,
+        rank: rank,
+        comment: comment,
+      });
+    }
+  }, []);
 
   useEffect(() => {
-    getUserInfo();
-  }, []);
+    getUserData(baseUrl, accessToken);
+  }, [accessToken, baseUrl, getUserData]);
 
   useEffect(() => {
     return () => {
