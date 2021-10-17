@@ -73,52 +73,7 @@ function App() {
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
     const userCode: string | null = searchParams.get('code');
-    const userRegionId: any = searchParams.get('region_id');
-    console.log(userCode, userRegionId);
-    dispatch(saveRegionId(userRegionId));
-    logEvent(analytics, 'app_launched');
-
-        } else {
-          if (userCode !== null && userRegionId !== null) {
-            axios
-              .post(
-                `${process.env.REACT_APP_BASE_URL}/oauth`,
-                {
-                  code: userCode,
-                  regionId: userRegionId,
-                },
-                {
-                  headers: {
-                    'Content-Type': 'application/json',
-                  },
-                }
-              )
-              .then((response: { data: { data: { accessToken: string } } }) => {
-                window.localStorage.setItem(
-                  'ACCESS_TOKEN',
-                  response.data.data.accessToken
-                );
-                setPageRedirection(2);
-                // return (
-                //   <Redirect
-                //     to="/home"
-                //     // }}
-                //   />
-                // );
-              });
-          } else {
-            setPageRedirection(3);
-            // return (
-            //   <Redirect
-            //     to="/new-user-home"
-            //     // }}
-            //   />
-            // );
-          }
-        }
-      })
-      .catch((error: any) => console.error(error));
-  }, [dispatch]);
+    const userRegionId: string | null = searchParams.get('region_id');
     try {
       dispatch(saveRegionId(userRegionId));
       filterNonServiceTown(userCode, userRegionId);
@@ -153,28 +108,27 @@ function App() {
             exact
             path="/"
             render={() => {
-              console.log(pageRedirection);
-              return pageRedirection === 1 ? (
+              console.log(`Redirect page to ${pageRedirection}`);
+              return pageRedirection === 'non-service-area' ? (
                 <Redirect
                   to={{
                     pathname: '/non-service-area',
                     state: {
                       townId: userTownData[0],
                       townName: userTownData[1],
-                      nonServiceUserBack: nonServiceUserBack,
+                      isNonServiceUserBack: isNonServiceUserBack,
                     },
                   }}
                 />
-              ) : pageRedirection === 2 ? (
+              ) : pageRedirection === 'home' ? (
                 <Redirect to="/home" />
-              ) : pageRedirection === 3 ? (
+              ) : pageRedirection === 'new-user-home' ? (
                 <Redirect to="/new-user-home" />
-              ) : null;
+              ) : (
+                <div>loading</div>
+              );
             }}
           />
-          {/* <Route exact path="/">
-            <div>loading</div>
-          </Route> */}
           <Route exact path="/new-user-home">
             <NewUserHome />
           </Route>
