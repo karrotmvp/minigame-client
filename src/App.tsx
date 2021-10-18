@@ -14,7 +14,7 @@ import {
 import { useDispatch } from 'react-redux';
 import { logEvent } from 'firebase/analytics';
 import { analytics } from 'services/firebase/firebaseConfig';
-import LoadingScreen from 'pages/LoadingScreen';
+import LoadingScreen from 'components/LoadingScreen';
 import ReturningUserHome from 'pages/ReturningUserHome';
 import NonServiceArea from 'pages/NonServiceArea';
 import {
