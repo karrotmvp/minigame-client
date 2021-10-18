@@ -8,7 +8,6 @@ import { useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from 'reducers/rootReducer';
 import BackendApi from 'services/backendApi/backendApi';
-
 const largeText = css`
   margin: 15px 0;
 `;
@@ -89,14 +88,12 @@ const TopUserGameEndModal: FC<TopUserGameEndModalProps> = (props) => {
   const { townName } = useSelector((state: RootState) => ({
     townName: state.userDataReducer.townName,
   }));
-
   const handleTopUserInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTopUserComment({
       comment: e.target.value.slice(0, 14),
       length: e.target.value.length,
     });
   };
-
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const accessToken = window.localStorage.getItem('ACCESS_TOKEN');
   const addComment = useCallback(
