@@ -3,7 +3,7 @@ import { css } from '@emotion/react';
 import DefaultGameEndModal from 'components/modals/DefaultGameEndModal';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { incrementClickCount } from 'reducers/counterReducer';
+import { incrementClickCount, reset } from 'reducers/counterReducer';
 import { RootState } from '../reducers/rootReducer';
 import background from 'assets/Seocho_background.png';
 import { ReactComponent as BigKarrot } from 'assets/Seocho_daangn.svg';
@@ -12,6 +12,7 @@ import GameDirectionPopupModal from 'components/modals/GameDirectionPopupModal';
 import { commafy } from 'functions/numberFunctions';
 import ClickAnimation from 'components/game/ClickAnimation';
 import BackendApi from 'services/backendApi/backendApi';
+import { useHistory } from 'react-router';
 
 // nav
 const customNav = css`
@@ -153,7 +154,7 @@ const Game = () => {
   const [shouldPopup, setShouldPopup] = useState<boolean>(false);
   const [shakeToggle, setShakeToggle] = useState(false);
   const [animationArr, setAnimationArr] = useState<animationArrProps[]>([]);
-
+  const history = useHistory();
   const dispatch = useDispatch();
 
   const { userScore, clickCount } = useSelector((state: RootState) => ({
@@ -227,14 +228,14 @@ const Game = () => {
     }
   }, [userScore]);
 
-  // useEffect(() => {
-  //   return () => {
-  //     if (history.action === 'POP') {
-  //       // history.replace('/game' /* the new state */);
-  //       dispatch(reset());
-  //     }
-  //   };
-  // }, [dispatch, history]);
+  useEffect(() => {
+    return () => {
+      if (history.action === 'POP') {
+        // history.replace('/game' /* the new state */);
+        dispatch(reset());
+      }
+    };
+  }, [dispatch, history]);
   return (
     <>
       <div css={customNav}>
