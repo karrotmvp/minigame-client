@@ -9,7 +9,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'reducers/rootReducer';
 import Modal from 'react-modal';
-import { commafy } from 'components/functions/commafy';
+import { commafy } from 'functions/numberFunctions';
 import BackendApi from 'services/backendApi/backendApi';
 
 const modalStyle = css`

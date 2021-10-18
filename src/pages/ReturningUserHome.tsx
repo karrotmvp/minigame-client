@@ -11,7 +11,7 @@ import Button from 'components/buttons/Button';
 import IndividualLeaderboard from 'components/leaderboard/IndividualLeaderboard';
 import { useCallback, useEffect, useState } from 'react';
 import { AppEjectionButton } from 'components/buttons/AppEjectionButton';
-import { commafy } from 'components/functions/commafy';
+import { commafy } from 'functions/numberFunctions';
 import { logEvent } from 'firebase/analytics';
 import { analytics } from 'services/firebase/firebaseConfig';
 import { useDispatch, useSelector } from 'react-redux';

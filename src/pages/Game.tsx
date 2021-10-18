@@ -9,7 +9,7 @@ import background from 'assets/Seocho_background.png';
 import { ReactComponent as BigKarrot } from 'assets/Seocho_daangn.svg';
 import Modal from 'react-modal';
 import GameDirectionPopupModal from 'components/modals/GameDirectionPopupModal';
-import { commafy } from 'components/functions/commafy';
+import { commafy } from 'functions/numberFunctions';
 import ClickAnimation from 'components/game/ClickAnimation';
 import BackendApi from 'services/backendApi/backendApi';
 
