@@ -166,7 +166,7 @@ const NonServiceArea: React.FC<NonServiceAreaProps> = (props) => {
           console.log(response);
           if (response.isFetched === true) {
             setIsClicked(true);
-            analytics.logEvent('non_service_area_demand');
+            analytics.logEvent('click_non_service_area_demand_button');
           }
         }
       },
@@ -176,7 +176,7 @@ const NonServiceArea: React.FC<NonServiceAreaProps> = (props) => {
     });
   };
   useEffect(() => {
-    analytics.logEvent('non_service_area');
+    analytics.logEvent('view_non_service_area_page');
     if (props.location.state.isNonServiceUserBack === true) {
       setIsClicked(true);
     }

@@ -91,14 +91,14 @@ const Leaderboard = () => {
   }));
 
   const handlePlayAgain = async () => {
-    analytics.logEvent('game_play_again');
+    analytics.logEvent('click_game_play_again_button');
     dispatch(reset());
     history.replace('/game');
   };
 
   // Share must be triggered by "user activation"
   const handleShare = async () => {
-    analytics.logEvent('share');
+    analytics.logEvent('click_share_button');
     const mini = getMini();
     mini.share({
       url: 'https://daangn.onelink.me/HhUa/3a219555',

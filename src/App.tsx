@@ -99,7 +99,7 @@ function App() {
     const userCode: string | null = searchParams.get('code');
     const userRegionId: any = searchParams.get('region_id');
 
-    analytics.logEvent('app_launched');
+    analytics.logEvent('launch_app');
 
     dispatch(saveRegionId(userRegionId));
     filterNonServiceTown(userCode, userRegionId);

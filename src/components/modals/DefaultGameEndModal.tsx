@@ -11,6 +11,7 @@ import { RootState } from 'reducers/rootReducer';
 import Modal from 'react-modal';
 import { commafy } from 'functions/numberFunctions';
 import BackendApi from 'services/backendApi/backendApi';
+import { useAnalytics } from 'services/analytics';
 
 const modalStyle = css`
   position: absolute;
@@ -69,6 +70,7 @@ interface DefaultGameEndModalProps {
 const DefaultGameEndModal = ({ closeModal }: DefaultGameEndModalProps) => {
   const [modalIsOpen, setIsOpen] = useState(false);
   const [userData, setUserData] = useState(initialState);
+  const analytics = useAnalytics();
 
   const { clickCount } = useSelector((state: RootState) => ({
     clickCount: state.counterReducer.clickCount,
@@ -76,6 +78,7 @@ const DefaultGameEndModal = ({ closeModal }: DefaultGameEndModalProps) => {
   let history = useHistory();
 
   const handleViewLeaderboard = () => {
+    analytics.logEvent('click_view_leaderboard_button');
     history.replace('/leaderboard');
   };
 
