@@ -96,6 +96,7 @@ const Leaderboard = () => {
 
   // Share must be triggered by "user activation"
   const handleShare = async () => {
+    logEvent(analytics, 'share');
     const mini = getMini();
     mini.share({
       url: 'https://daangn.onelink.me/HhUa/3a219555',

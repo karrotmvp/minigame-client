@@ -10,6 +10,7 @@ import { RootState } from 'reducers/rootReducer';
 import BackendApi from 'services/backendApi/backendApi';
 import { analytics } from 'services/firebase/firebaseConfig';
 import { getMini } from 'services/karrotmarket/mini';
+import { trackUser } from 'services/firebase/trackUser';
 
 const customNav = css`
   left: 0;
@@ -156,6 +157,7 @@ const NonServiceArea: React.FC<NonServiceAreaProps> = (props) => {
         if (result && result.code) {
           console.log();
           await getAccessToken(result.code, regionId);
+          await trackUser();
           const response = await BackendApi.postDemand({
             baseUrl: baseUrl,
             accessToken: accessToken,
@@ -174,10 +176,10 @@ const NonServiceArea: React.FC<NonServiceAreaProps> = (props) => {
   };
 
   useEffect(() => {
+    logEvent(analytics, 'non_service_area');
     if (props.location.state.isNonServiceUserBack === true) {
       setIsClicked(true);
     }
-    logEvent(analytics, 'non_service_area');
     console.log('non service area');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

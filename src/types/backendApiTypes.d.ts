@@ -51,6 +51,7 @@ export interface getUserInfoRequest {
 export interface getUserInfoResponse {
   data?: {
     data: {
+      id: string;
       comment: string;
       nickname: string;
       rank: number;

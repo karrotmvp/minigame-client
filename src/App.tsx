@@ -12,8 +12,9 @@ import {
   Redirect,
 } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-// import { logEvent } from 'firebase/analytics';
-// import { analytics } from 'services/firebase/firebaseConfig';
+import { logEvent } from 'firebase/analytics';
+import { analytics } from 'services/firebase/firebaseConfig';
+import LoadingScreen from 'pages/LoadingScreen';
 import ReturningUserHome from 'pages/ReturningUserHome';
 import NonServiceArea from 'pages/NonServiceArea';
 import {
@@ -22,6 +23,7 @@ import {
   saveTownName,
 } from 'reducers/userDataReducer';
 import BackendApi from 'services/backendApi/backendApi';
+import { trackUser } from 'services/firebase/trackUser';
 
 const appStyle = css`
   height: 100vh;
@@ -66,6 +68,7 @@ function App() {
           const { accessToken } = response.data.data;
           console.log('access-token', accessToken);
           window.localStorage.setItem('ACCESS_TOKEN', accessToken);
+          await trackUser();
           setPageRedirection('home');
         }
       } else {
@@ -79,6 +82,7 @@ function App() {
     const searchParams = new URLSearchParams(window.location.search);
     const userCode: string | null = searchParams.get('code');
     const userRegionId: any = searchParams.get('region_id');
+    logEvent(analytics, 'app_launched');
     dispatch(saveRegionId(userRegionId));
     filterNonServiceTown(userCode, userRegionId);
     getAccessToken(userCode, userRegionId);
@@ -108,7 +112,7 @@ function App() {
               ) : pageRedirection === 'new-user-home' ? (
                 <Redirect to="/new-user-home" />
               ) : (
-                <div>loading</div>
+                <LoadingScreen />
               );
             }}
           />

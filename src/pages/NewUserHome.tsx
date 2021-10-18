@@ -14,7 +14,7 @@ import { RootState } from 'reducers/rootReducer';
 import { getMini } from 'services/karrotmarket/mini';
 import BackendApi from 'services/backendApi/backendApi';
 import { useCallback } from 'react';
-
+import { trackUser } from 'services/firebase/trackUser';
 // nav
 const customNav = css`
   left: 0;
@@ -99,9 +99,9 @@ const NewUserHome = () => {
       },
       onSuccess: async function (result) {
         if (result && result.code) {
-          await getAccessToken(result.code, regionId).then(() => {
-            history.push('/game');
-          });
+          await getAccessToken(result.code, regionId);
+          await trackUser();
+          history.push('/game');
         }
       },
       onFailure() {
