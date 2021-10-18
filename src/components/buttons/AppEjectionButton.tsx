@@ -1,5 +1,5 @@
-import { getMini } from 'api/mini';
 import IconClose from 'assets/IconClose';
+import { getMini } from 'services/karrotmarket/mini';
 
 const AppEjectionButton = () => {
   const mini = getMini();

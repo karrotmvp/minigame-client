@@ -3,12 +3,11 @@ import { css } from '@emotion/react';
 import { emphasizedTextStyle, largeTextStyle } from 'styles/textStyle';
 import Button, { DisabledButton } from '../buttons/Button';
 import { ReactComponent as Karrot } from 'assets/karrot.svg';
-import { FC, useState } from 'react';
+import { FC, useCallback, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from 'reducers/rootReducer';
-const axios = require('axios').default;
-
+import BackendApi from 'services/backendApi/backendApi';
 const largeText = css`
   margin: 15px 0;
 `;
@@ -89,34 +88,25 @@ const TopUserGameEndModal: FC<TopUserGameEndModalProps> = (props) => {
   const { townName } = useSelector((state: RootState) => ({
     townName: state.userDataReducer.townName,
   }));
-
   const handleTopUserInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTopUserComment({
-      comment: e.target.value.slice(0, 14),
+      comment: e.target.value.slice(0, 21),
       length: e.target.value.length,
     });
   };
-
-  const handlePatchCommentAndViewLeaderboard = () => {
-    axios
-      .patch(
-        `${process.env.REACT_APP_BASE_URL}/user-rank/comment`,
-        {
-          comment: topUserComment.comment,
-        },
-        {
-          headers: {
-            Authorization: window.localStorage.getItem('ACCESS_TOKEN'),
-            'Content-Type': 'application/json',
-          },
-        }
-      )
-      .then((response: any) => {
-        history.replace('/leaderboard');
-        console.log('comment-modal, patchComment', response);
-      })
-      .catch((error: any) => console.error(error));
-  };
+  const baseUrl = process.env.REACT_APP_BASE_URL;
+  const accessToken = window.localStorage.getItem('ACCESS_TOKEN');
+  const addComment = useCallback(
+    async (baseUrl, accessToken, comment) => {
+      await BackendApi.patchComment({
+        baseUrl: baseUrl,
+        accessToken: accessToken,
+        comment: comment,
+      });
+      history.replace('/leaderboard');
+    },
+    [history]
+  );
 
   return (
     <>
@@ -144,9 +134,9 @@ const TopUserGameEndModal: FC<TopUserGameEndModalProps> = (props) => {
             onChange={handleTopUserInput}
             value={topUserComment.comment}
             placeholder={`예) 내가 ${townName}짱!`}
-            maxLength={15}
+            maxLength={20}
           />
-          <p css={commentLengthCount}>{topUserComment.length}/15</p>
+          <p css={commentLengthCount}>{topUserComment.length}/20</p>
         </div>
 
         {topUserComment.length > 0 ? (
@@ -154,7 +144,9 @@ const TopUserGameEndModal: FC<TopUserGameEndModalProps> = (props) => {
             size={`large`}
             color={`primary`}
             text={`등록하기`}
-            onClick={handlePatchCommentAndViewLeaderboard}
+            onClick={() => {
+              addComment(baseUrl, accessToken, topUserComment.comment);
+            }}
           />
         ) : (
           <DisabledButton size={`large`} text={`등록하기`} />

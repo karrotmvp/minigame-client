@@ -2,8 +2,19 @@
 import { css } from '@emotion/react';
 import { ReactComponent as WaitSvg } from 'assets/wait.svg';
 import { AppEjectionButton } from 'components/buttons/AppEjectionButton';
+
 import { useEffect } from 'react';
 import { useAnalytics } from 'services/analytics';
+
+import Button, { DisabledButton } from 'components/buttons/Button';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { RootState } from 'reducers/rootReducer';
+import BackendApi from 'services/backendApi/backendApi';
+
+import { getMini } from 'services/karrotmarket/mini';
+import { trackUser } from 'services/firebase/trackUser';
+
 
 const customNav = css`
   left: 0;
@@ -75,15 +86,111 @@ const subText = css`
 
   color: #7c7c7c;
 `;
-interface NonServiceAreaProps {
-  location: any;
+const actionItemWraper = css`
+  position: absolute;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 30px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  text-align: center;
+  width: 80%;
+`;
+const coloredText = css`
+  color: #eb5d0e;
+`;
+
+const presetUrl = `${process.env.REACT_APP_MINI_PRESET}`;
+const appId = `${process.env.REACT_APP_APP_ID}`;
+const baseUrl = `${process.env.REACT_APP_BASE_URL}`;
+const accessToken = `${window.localStorage.getItem('ACCESS_TOKEN')}`;
+interface handleDemandTypes {
+  preset: string;
+  appId: string;
+  baseUrl: string;
+  accessToken: string;
 }
+
+interface NonServiceAreaProps {
+  location: {
+    state: {
+      isNonServiceUserBack: boolean;
+      townName: string;
+    };
+  };
+}
+
 const NonServiceArea = (props: NonServiceAreaProps) => {
-  const analytics = useAnalytics();
+ 
+=======
+const NonServiceArea: React.FC<NonServiceAreaProps> = (props) => {
+  const [isClicked, setIsClicked] = useState<boolean>(false);
+  const { regionId } = useSelector((state: RootState) => ({
+    regionId: state.userDataReducer.regionId,
+  }));
+
+  const getAccessToken = useCallback(
+    async (code: string | null, regionId: string) => {
+      if (code !== null) {
+        const response = await BackendApi.postOauth2({
+          code: code,
+          regionId: regionId,
+        });
+        if (response.isFetched && response.data) {
+          const { accessToken } = response.data.data;
+          window.localStorage.setItem('ACCESS_TOKEN', accessToken);
+        }
+      } else {
+        throw new Error('Either code OR regionId is null');
+      }
+    },
+    []
+  );
+
+  const mini = getMini();
+  const handleDemand = async ({
+    preset,
+    appId,
+    baseUrl,
+    accessToken,
+  }: handleDemandTypes) => {
+    mini.startPreset({
+      preset: preset,
+      params: {
+        appId: appId,
+      },
+      onSuccess: async function (result) {
+        if (result && result.code) {
+          console.log();
+          await getAccessToken(result.code, regionId);
+          await trackUser();
+          const response = await BackendApi.postDemand({
+            baseUrl: baseUrl,
+            accessToken: accessToken,
+          });
+          console.log(response);
+          if (response.isFetched === true) {
+            setIsClicked(true);
+            logEvent(analytics, 'non_service_area_demand');
+          }
+        }
+      },
+      onFailure() {
+        throw new Error('mini-app preset failed');
+      },
+    });
+  };
+ const analytics = useAnalytics();
   useEffect(() => {
     analytics.logEvent('non_service_area');
     console.log('non service area');
+    if (props.location.state.isNonServiceUserBack === true) {
+      setIsClicked(true);
+    }
   }, [analytics]);
+
   return (
     <>
       <div css={customNav}>
@@ -94,11 +201,34 @@ const NonServiceArea = (props: NonServiceAreaProps) => {
       <div css={backgroundStyle}>
         <WaitSvg css={svgStyle} />
         <h1 css={mainText}>
-          {props.location.state.townName} 지역은
+          <span css={coloredText}>{props.location.state.townName}</span> 지역은
           <br />
           아직 준비 중이에요
         </h1>
-        <h2 css={subText}>조금만 기다려주세요!</h2>
+        <h2 css={subText}>
+          <span css={coloredText}>오픈 알림</span>을 신청하시면
+          <br />
+          대회에 빠르게 참여하실 수 있어요!
+        </h2>
+      </div>
+      <div css={actionItemWraper}>
+        {isClicked ? (
+          <DisabledButton size={`large`} text={`오픈 알림 신청 완료`} />
+        ) : (
+          <Button
+            size={`medium`}
+            color={`primary`}
+            text={`오픈 알림 받기`}
+            onClick={() => {
+              handleDemand({
+                preset: presetUrl,
+                appId: appId,
+                baseUrl: baseUrl,
+                accessToken: accessToken,
+              });
+            }}
+          />
+        )}
       </div>
     </>
   );

@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { commafy } from 'components/functions/commafy';
+import { commafy } from 'functions/numberFunctions';
 
 const row = css`
   display: flex;

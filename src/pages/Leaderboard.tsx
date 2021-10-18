@@ -8,15 +8,16 @@ import DefaultUserRow from 'components/leaderboard/DefaultUserRow';
 import { useDispatch, useSelector } from 'react-redux';
 import { reset } from 'reducers/counterReducer';
 import TopUserRow from 'components/leaderboard/TopUserRow';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 // import BackendService from 'services/backendService';
 import { useHistory } from 'react-router-dom';
+
 import { useAnalytics } from 'services/analytics';
-import { getMini } from 'api/mini';
+
 import { RootState } from 'reducers/rootReducer';
-const axios = require('axios').default;
-const baseUrl = process.env.REACT_APP_BASE_URL;
-const accessToken = window.localStorage.getItem('ACCESS_TOKEN');
+import { getMini } from 'services/karrotmarket/mini';
+import BackendApi from 'services/backendApi/backendApi';
+
 // nav
 const customNav = css`
   left: 0;
@@ -46,18 +47,19 @@ const divStyle = css`
   flex-flow: column;
   height: calc(100% - 2.75rem);
 `;
+// heading
 const headingWrapper = css`
   padding: 20px 26px 20px;
 `;
+// refresh
 
-// const divierDiv =css`
-
-// `
+// leaderboard
 const leaderboardWrapper = css`
   flex: 1;
   overflow: auto;
   padding: 0 26px;
 `;
+// action
 const actionItemWrapper = css`
   display: flex;
   gap: 15px;
@@ -96,6 +98,7 @@ const Leaderboard = () => {
 
   // Share must be triggered by "user activation"
   const handleShare = async () => {
+    logEvent(analytics, 'share');
     const mini = getMini();
     mini.share({
       url: 'https://daangn.onelink.me/HhUa/3a219555',
@@ -103,45 +106,27 @@ const Leaderboard = () => {
     });
   };
 
-  async function getUserInfo() {
-    await axios
-      .get(`${baseUrl}/users/me`, {
-        headers: {
-          Authorization: accessToken,
-        },
-      })
-      .then(
-        (response: {
-          data: {
-            data: { nickname: any; score: any; rank: any; comment: any };
-          };
-        }) => {
-          const { nickname, score, rank, comment } = response.data.data;
-          setUserData({
-            nickname: nickname,
-            score: score,
-            rank: rank,
-            comment: comment,
-          });
-        }
-        // (response: {
-        //   data: { nickname: any; score: any; rank: any; comment: any };
-        // }) => {
-        //   const { nickname, score, rank, comment } = response.data;
-        //   setUserData({
-        //     nickname: nickname,
-        //     score: score,
-        //     rank: rank,
-        //     comment: comment,
-        //   });
-        // }
-      )
-      .catch(console.error);
-  }
+  const baseUrl = process.env.REACT_APP_BASE_URL;
+  const accessToken = window.localStorage.getItem('ACCESS_TOKEN');
+  const getUserData = useCallback(async (baseUrl, accessToken) => {
+    const response = await BackendApi.getUserInfo({
+      baseUrl: baseUrl,
+      accessToken: accessToken,
+    });
+    if (response.isFetched && response.data) {
+      const { nickname, score, rank, comment } = response.data.data;
+      setUserData({
+        nickname: nickname,
+        score: score,
+        rank: rank,
+        comment: comment,
+      });
+    }
+  }, []);
 
   useEffect(() => {
-    getUserInfo();
-  }, []);
+    getUserData(baseUrl, accessToken);
+  }, [accessToken, baseUrl, getUserData]);
 
   useEffect(() => {
     return () => {
@@ -185,7 +170,7 @@ const Leaderboard = () => {
             )}
           </div>
         </div>
-        {/* <div css={dividerDiv}></div> */}
+
         <div css={leaderboardWrapper}>
           <IndividualLeaderboard />
         </div>

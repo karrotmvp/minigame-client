@@ -4,7 +4,7 @@ import '@karrotframe/navigator/index.css';
 import NewUserHome from './pages/NewUserHome';
 import Game from './pages/Game';
 import Leaderboard from './pages/Leaderboard';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   Route,
   BrowserRouter as Router,
@@ -14,6 +14,8 @@ import {
 import { useDispatch } from 'react-redux';
 import { AnalyticsContext, emptyAnalytics } from 'services/analytics';
 import { createFirebaseAnalytics, loadFromEnv as loadFirebaseAnalyticsConfig } from 'services/analytics/firebase';
+
+
 import ReturningUserHome from 'pages/ReturningUserHome';
 import NonServiceArea from 'pages/NonServiceArea';
 import {
@@ -21,18 +23,19 @@ import {
   saveTownId,
   saveTownName,
 } from 'reducers/userDataReducer';
-// import BackendService from 'services/backendService';
-
-const axios = require('axios').default;
+import BackendApi from 'services/backendApi/backendApi';
+import { trackUser } from 'services/firebase/trackUser';
 
 const appStyle = css`
   height: 100vh;
 `;
 
 function App() {
-  const [pageRedirection, setPageRedirection] = useState<number>();
+  const [pageRedirection, setPageRedirection] = useState<string>('loading');
   const [userTownData, setUserTownData] = useState<string[]>([]);
+  const [isNonServiceUserBack, setIsNonServiceUserBack] = useState(false);
   const dispatch = useDispatch();
+
 
   const [analytics, setAnalytics] = useState(emptyAnalytics);
   // Firebase Analytics가 설정되어 있으면 인스턴스를 초기화하고 교체합니다.
@@ -46,109 +49,64 @@ function App() {
     }
   }, []);
 
-  // async function getQueryParams(): Promise<{
-  //   userCode: any;
-  //   userRegionId: any;
-  // }> {
-  //   const searchParams = new URLSearchParams(window.location.search);
-  //   const userCode: any = searchParams.get('code');
-  //   const userRegionId: any = searchParams.get('region_id');
-  //   dispatch(saveRegionId(userRegionId));
-  //   return { userCode, userRegionId };
-  // }
+ 
+  const filterNonServiceTown = useCallback(
+    async (code: string | null, regionId: string) => {
+      const response = await BackendApi.getTownId({ regionId: regionId });
+      // example -> city=서울특별시(name1) district=서초구(name2)
+      if (response.isFetched && response.data) {
+        const { id: districtId, name2: districtName } = response.data.data;
+        dispatch(saveTownId(districtId));
+        dispatch(saveTownName(districtName));
+        setUserTownData([districtId, districtName]);
+        // Filter out if user is not in 서초구
+        // 서초구id = df5370052b3c
+        if (districtId !== 'df5370052b3c') {
+          if (code !== null || undefined) {
+            setIsNonServiceUserBack(true);
+          }
+          setPageRedirection('non-service-area');
+        }
+      }
+    },
+    [dispatch]
+  );
+  const getAccessToken = useCallback(
+    async (code: string | null, regionId: string) => {
+      // code !== null means user is a returning user
+      if (code !== null) {
+        const response = await BackendApi.postOauth2({
+          code: code,
+          regionId: regionId,
+        });
+        if (response.isFetched && response.data) {
+          const { accessToken } = response.data.data;
+          console.log('access-token', accessToken);
+          window.localStorage.setItem('ACCESS_TOKEN', accessToken);
+          await trackUser();
+          setPageRedirection('home');
+        }
+      } else {
+        setPageRedirection('new-user-home');
+      }
+    },
+    []
+  );
 
-  // async function handleNonServiceArea(regionId: any): Promise<void> {
-  //   const userTownData = await BackendService.getTownId(regionId);
-  //   const { townId, townName } = userTownData;
-  //   dispatch(saveTownId(townId));
-  //   dispatch(saveTownName(townName));
-  //   setUserTownData([townId, townName]);
-  // }
 
-  // useEffect(() => {
-  //   getQueryParams().then((response) => {
-  //     const { userCode, userRegionId } = response;
-  //     handleNonServiceArea(userRegionId);
-  //     if (userRegionId !== 'df5370052b3c') {
-  //       setPageRedirection(1);
-  //     } else {
-  //       if (userCode !== null && userRegionId !== null) {
-  //         BackendService.postOauth(userCode, userRegionId);
-  //         setPageRedirection(2);
-  //       }
-  //     }
-  //   });
-
-  //   // return () => {
-  //   //   cleanup;
-  //   // };
-  // }, []);
-  // BELOW WORKS
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
     const userCode: string | null = searchParams.get('code');
     const userRegionId: any = searchParams.get('region_id');
-    console.log(userCode, userRegionId);
-    dispatch(saveRegionId(userRegionId));
-    analytics.logEvent('app_launched');
-    // Check user's townId(지역구) using regionId
-    axios
-      .get(`${process.env.REACT_APP_BASE_URL}/town?regionId=${userRegionId}`)
-      .then((response: { data: { data: { id: string; name2: string } } }) => {
-        const townId: string = response.data.data.id;
-        const townName: string = response.data.data.name2;
-        dispatch(saveTownId(townId));
-        dispatch(saveTownName(townName));
-        setUserTownData([townId, townName]);
-        if (townId !== 'df5370052b3c') {
-          setPageRedirection(1);
-          // return (
-          //   <Redirect
-          //     to="non-service-area"
 
-          //   />
-          // );
-        } else {
-          if (userCode !== null && userRegionId !== null) {
-            axios
-              .post(
-                `${process.env.REACT_APP_BASE_URL}/oauth`,
-                {
-                  code: userCode,
-                  regionId: userRegionId,
-                },
-                {
-                  headers: {
-                    'Content-Type': 'application/json',
-                  },
-                }
-              )
-              .then((response: { data: { data: { accessToken: string } } }) => {
-                window.localStorage.setItem(
-                  'ACCESS_TOKEN',
-                  response.data.data.accessToken
-                );
-                setPageRedirection(2);
-                // return (
-                //   <Redirect
-                //     to="/home"
-                //     // }}
-                //   />
-                // );
-              });
-          } else {
-            setPageRedirection(3);
-            // return (
-            //   <Redirect
-            //     to="/new-user-home"
-            //     // }}
-            //   />
-            // );
-          }
-        }
-      })
-      .catch((error: any) => console.error(error));
-  }, [dispatch, analytics]);
+    analytics.logEvent('app_launched');
+  
+    logEvent(analytics, 'app_launched');
+    dispatch(saveRegionId(userRegionId));
+    filterNonServiceTown(userCode, userRegionId);
+    getAccessToken(userCode, userRegionId);
+  }, [dispatch, filterNonServiceTown, getAccessToken]);
+
 
   return (
     <div css={appStyle}>
@@ -158,30 +116,26 @@ function App() {
             exact
             path="/"
             render={() => {
-              console.log(pageRedirection);
-              return pageRedirection === 1 ? (
+              console.log(`Redirect page to ${pageRedirection}`);
+              return pageRedirection === 'non-service-area' ? (
                 <Redirect
                   to={{
                     pathname: '/non-service-area',
                     state: {
-                      townId: userTownData[0],
                       townName: userTownData[1],
+                      isNonServiceUserBack: isNonServiceUserBack,
                     },
                   }}
                 />
-              ) : pageRedirection === 2 ? (
+              ) : pageRedirection === 'home' ? (
                 <Redirect to="/home" />
-              ) : pageRedirection === 3 ? (
-                <Redirect
-                  to="/new-user-home"
-                  // }}
-                />
-              ) : null;
+              ) : pageRedirection === 'new-user-home' ? (
+                <Redirect to="/new-user-home" />
+              ) : (
+                <LoadingScreen />
+              );
             }}
           />
-          {/* <Route exact path="/">
-            <div>loading</div>
-          </Route> */}
           <Route exact path="/new-user-home">
             <NewUserHome />
           </Route>
@@ -197,7 +151,7 @@ function App() {
           <Route
             exact
             path="/non-service-area"
-            render={(props) => <NonServiceArea {...props} />}
+            render={(props: any) => <NonServiceArea {...props} />}
           />
         </Switch>
       </Router>
