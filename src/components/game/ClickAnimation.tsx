@@ -26,17 +26,18 @@ const karrotStyle = ({ posX, posY }: karrotStyleProps) => css`
 
   pointer-events: none;
 
-  // transform: translateX(0px) translateY(75px);
+  // transform: translateY(-500%);
+
   // transition: transform 500ms ease-in-out 25ms;
 `;
 interface ClickAnimationProps {
   posX: number;
   posY: number;
 }
-const ClickAnimation = ({ posX, posY }: ClickAnimationProps) => {
+const ClickAnimation: React.FC<ClickAnimationProps> = (props) => {
   return (
     <>
-      <Karrot css={karrotStyle({ posX, posY })} />
+      <Karrot css={karrotStyle({ posX: props.posX, posY: props.posY })} />
     </>
   );
 };
