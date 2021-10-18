@@ -12,9 +12,12 @@ import {
   Redirect,
 } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { AnalyticsContext, emptyAnalytics } from 'services/analytics';
-import { createFirebaseAnalytics, loadFromEnv as loadFirebaseAnalyticsConfig } from 'services/analytics/firebase';
-
+// import { AnalyticsContext } from 'services/analytics';
+import { emptyAnalytics } from 'services/analytics';
+import {
+  createFirebaseAnalytics,
+  loadFromEnv as loadFirebaseAnalyticsConfig,
+} from 'services/analytics/firebase';
 
 import ReturningUserHome from 'pages/ReturningUserHome';
 import NonServiceArea from 'pages/NonServiceArea';
@@ -97,13 +100,11 @@ function App() {
     const userRegionId: any = searchParams.get('region_id');
 
     analytics.logEvent('app_launched');
-  
-    logEvent(analytics, 'app_launched');
+
     dispatch(saveRegionId(userRegionId));
     filterNonServiceTown(userCode, userRegionId);
     getAccessToken(userCode, userRegionId);
-  }, [dispatch, filterNonServiceTown, getAccessToken]);
-
+  }, [analytics, dispatch, filterNonServiceTown, getAccessToken]);
 
   return (
     <div css={appStyle}>

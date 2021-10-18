@@ -2,8 +2,6 @@
 import { css } from '@emotion/react';
 import { ReactComponent as WaitSvg } from 'assets/wait.svg';
 import { AppEjectionButton } from 'components/buttons/AppEjectionButton';
-
-import { useEffect } from 'react';
 import { useAnalytics } from 'services/analytics';
 import Button, { DisabledButton } from 'components/buttons/Button';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -124,6 +122,7 @@ const NonServiceArea: React.FC<NonServiceAreaProps> = (props) => {
   const { regionId } = useSelector((state: RootState) => ({
     regionId: state.userDataReducer.regionId,
   }));
+  const analytics = useAnalytics();
 
   const getAccessToken = useCallback(
     async (code: string | null, regionId: string) => {
@@ -167,7 +166,7 @@ const NonServiceArea: React.FC<NonServiceAreaProps> = (props) => {
           console.log(response);
           if (response.isFetched === true) {
             setIsClicked(true);
-            logEvent(analytics, 'non_service_area_demand');
+            analytics.logEvent('non_service_area_demand');
           }
         }
       },
@@ -176,13 +175,13 @@ const NonServiceArea: React.FC<NonServiceAreaProps> = (props) => {
       },
     });
   };
- const analytics = useAnalytics();
   useEffect(() => {
     analytics.logEvent('non_service_area');
     if (props.location.state.isNonServiceUserBack === true) {
       setIsClicked(true);
     }
-  }, [analytics]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <>
