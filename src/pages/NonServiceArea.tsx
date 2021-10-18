@@ -5,16 +5,13 @@ import { AppEjectionButton } from 'components/buttons/AppEjectionButton';
 
 import { useEffect } from 'react';
 import { useAnalytics } from 'services/analytics';
-
 import Button, { DisabledButton } from 'components/buttons/Button';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'reducers/rootReducer';
 import BackendApi from 'services/backendApi/backendApi';
-
 import { getMini } from 'services/karrotmarket/mini';
 import { trackUser } from 'services/firebase/trackUser';
-
 
 const customNav = css`
   left: 0;
@@ -122,9 +119,6 @@ interface NonServiceAreaProps {
   };
 }
 
-const NonServiceArea = (props: NonServiceAreaProps) => {
- 
-=======
 const NonServiceArea: React.FC<NonServiceAreaProps> = (props) => {
   const [isClicked, setIsClicked] = useState<boolean>(false);
   const { regionId } = useSelector((state: RootState) => ({
@@ -185,7 +179,6 @@ const NonServiceArea: React.FC<NonServiceAreaProps> = (props) => {
  const analytics = useAnalytics();
   useEffect(() => {
     analytics.logEvent('non_service_area');
-    console.log('non service area');
     if (props.location.state.isNonServiceUserBack === true) {
       setIsClicked(true);
     }

@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import '@karrotframe/navigator/index.css';
+import LoadingScreen from 'components/LoadingScreen';
 import NewUserHome from './pages/NewUserHome';
 import Game from './pages/Game';
 import Leaderboard from './pages/Leaderboard';
@@ -36,7 +36,6 @@ function App() {
   const [isNonServiceUserBack, setIsNonServiceUserBack] = useState(false);
   const dispatch = useDispatch();
 
-
   const [analytics, setAnalytics] = useState(emptyAnalytics);
   // Firebase Analytics가 설정되어 있으면 인스턴스를 초기화하고 교체합니다.
   useEffect(() => {
@@ -49,7 +48,6 @@ function App() {
     }
   }, []);
 
- 
   const filterNonServiceTown = useCallback(
     async (code: string | null, regionId: string) => {
       const response = await BackendApi.getTownId({ regionId: regionId });
@@ -92,7 +90,6 @@ function App() {
     },
     []
   );
-
 
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);

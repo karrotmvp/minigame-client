@@ -12,9 +12,8 @@ import IndividualLeaderboard from 'components/leaderboard/IndividualLeaderboard'
 import { useCallback, useEffect, useState } from 'react';
 import { AppEjectionButton } from 'components/buttons/AppEjectionButton';
 
-import { commafy } from 'components/functions/commafy';
+import { commafy } from 'functions/numberFunctions';
 import { useAnalytics } from 'services/analytics';
-
 
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'reducers/rootReducer';
