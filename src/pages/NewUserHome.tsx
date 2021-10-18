@@ -15,6 +15,7 @@ import { getMini } from 'services/karrotmarket/mini';
 import BackendApi from 'services/backendApi/backendApi';
 import { useCallback } from 'react';
 import { trackUser } from 'services/firebase/trackUser';
+import { useAnalytics } from 'services/analytics';
 // nav
 const customNav = css`
   left: 0;
@@ -67,6 +68,7 @@ const appId: string = `${process.env.REACT_APP_APP_ID}`;
 
 const NewUserHome = () => {
   let history = useHistory();
+  const analytics = useAnalytics();
   const { townName, regionId } = useSelector((state: RootState) => ({
     townName: state.userDataReducer.townName,
     regionId: state.userDataReducer.regionId,
@@ -92,6 +94,7 @@ const NewUserHome = () => {
 
   const mini = getMini();
   const handleNewUserAgreement = async (preset: string, appId: string) => {
+    analytics.logEvent('click_mini_preset');
     mini.startPreset({
       preset: preset,
       params: {
@@ -101,6 +104,7 @@ const NewUserHome = () => {
         if (result && result.code) {
           await getAccessToken(result.code, regionId);
           await trackUser();
+          analytics.logEvent('click_game_start_button', { type: 'new_user' });
           history.push('/game');
         }
       },
