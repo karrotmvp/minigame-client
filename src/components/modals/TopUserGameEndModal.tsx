@@ -90,7 +90,7 @@ const TopUserGameEndModal: FC<TopUserGameEndModalProps> = (props) => {
   }));
   const handleTopUserInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTopUserComment({
-      comment: e.target.value.slice(0, 14),
+      comment: e.target.value.slice(0, 21),
       length: e.target.value.length,
     });
   };
@@ -134,9 +134,9 @@ const TopUserGameEndModal: FC<TopUserGameEndModalProps> = (props) => {
             onChange={handleTopUserInput}
             value={topUserComment.comment}
             placeholder={`예) 내가 ${townName}짱!`}
-            maxLength={15}
+            maxLength={20}
           />
-          <p css={commentLengthCount}>{topUserComment.length}/15</p>
+          <p css={commentLengthCount}>{topUserComment.length}/20</p>
         </div>
 
         {topUserComment.length > 0 ? (
