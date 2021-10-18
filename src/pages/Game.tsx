@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import DefaultGameEndModal from 'components/modals/DefaultGameEndModal';
-import { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { incrementClickCount } from 'reducers/counterReducer';
 import { RootState } from '../reducers/rootReducer';
@@ -115,13 +115,14 @@ const popupModalStyle = css`
   border-radius: 21px;
 `;
 // big karrot animation
-const fullScreenClickable = css`
-  // height: 100%;
-  position: absolute;
-  height: calc(100% - 2.75rem);
-  width: 100vw;
-  overflow: hidden;
-`;
+// const fullScreenClickable = css`
+//   // height: 100%;
+//   position: absolute;
+//   height: calc(100% - 2.75rem);
+//   width: 100vw;
+//   overflow: hidden;
+//   touch-action: none;
+// `;
 const shakeRight = css`
   transform: rotate(10deg);
 `;
@@ -155,19 +156,21 @@ const Game = () => {
 
   const dispatch = useDispatch();
 
-  const { userScore } = useSelector((state: RootState) => ({
+  const { userScore, clickCount } = useSelector((state: RootState) => ({
     userScore: state.userDataReducer.score,
-  }));
-
-  const { clickCount } = useSelector((state: RootState) => ({
     clickCount: state.counterReducer.clickCount,
   }));
-  const clickCountUp = async () => dispatch(incrementClickCount());
+  const clickCountUp = useCallback(
+    async () => dispatch(incrementClickCount()),
+    [dispatch]
+  );
 
-  const handleClickAnimation = async (e: { clientX: any; clientY: any }) => {
+  const activateAnimation = useCallback(async (e: React.TouchEvent) => {
+    let clientX = e.touches[0].clientX;
+    let clientY = e.touches[0].clientY;
     setAnimationArr((animationArr) => [
       ...animationArr,
-      { posX: e.clientX - 25, posY: e.clientY - 50 },
+      { posX: clientX - 25, posY: clientY - 50 },
     ]);
     setTimeout(() => {
       setAnimationArr((animationArr) => {
@@ -175,16 +178,46 @@ const Game = () => {
         return newArr;
       });
     }, 1000);
-  };
+  }, []);
+  // const handleClickAnimation = async (e: { clientX: any; clientY: any }) => {
+  //   setAnimationArr((animationArr) => [
+  //     ...animationArr,
+  //     { posX: e.clientX - 25, posY: e.clientY - 50 },
+  //   ]);
+  //   setTimeout(() => {
+  //     setAnimationArr((animationArr) => {
+  //       const newArr = animationArr.slice(1);
+  //       return newArr;
+  //     });
+  //   }, 1000);
+  // };
 
-  const handleScreenClick = async (e: { clientX: any; clientY: any }) => {
-    await handleClickAnimation(e);
-    await clickCountUp();
-  };
-  const handleBigKarrotClick = async (e: { clientX: any; clientY: any }) => {
-    await handleScreenClick(e);
-    setShakeToggle((prevState) => !prevState);
-  };
+  const handleScreenTouch = useCallback(
+    async (e: React.TouchEvent) => {
+      e.stopPropagation();
+      console.log(e.targetTouches);
+      console.log(e);
+      await activateAnimation(e);
+      await clickCountUp();
+    },
+    [activateAnimation, clickCountUp]
+  );
+  // const handleScreenClick = async (e: { clientX: any; clientY: any }) => {
+  //   await handleClickAnimation(e);
+  //   await clickCountUp();
+  // };
+
+  const activateBigKarrotAnimation = useCallback(
+    async (e: React.TouchEvent) => {
+      await handleScreenTouch(e);
+      setShakeToggle((prevState) => !prevState);
+    },
+    [handleScreenTouch]
+  );
+  // const handleBigKarrotClick = async (e: { clientX: any; clientY: any }) => {
+  // await handleScreenClick(e);
+  //   setShakeToggle((prevState) => !prevState);
+  // };
 
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const accessToken = window.localStorage.getItem('ACCESS_TOKEN');
@@ -225,15 +258,16 @@ const Game = () => {
           />
         </div>
       </div>
-      <div
+      {/* <div
         className="wrapper"
-        css={fullScreenClickable}
-        onClick={handleScreenClick}
+        // css={fullScreenClickable}
+        // onClick={handleScreenClick}
+        // onTouchStart={handleScreenTouch}
       >
         {animationArr.map((item, index) => (
           <ClickAnimation posX={item.posX} posY={item.posY} key={index} />
         ))}
-      </div>
+      </div> */}
       <div css={divStyle}>
         <div css={scoreWrapper}>
           <h1 css={clickCountStyle}>{commafy(clickCount)}</h1>
@@ -248,13 +282,17 @@ const Game = () => {
           }}
         >
           <BigKarrot
-            onClick={handleBigKarrotClick}
+            // onClick={handleBigKarrotClick}
+            onTouchStart={activateBigKarrotAnimation}
             css={shakeToggle ? shakeLeft : shakeRight}
             style={{
-              height: '25rem',
+              height: '30rem',
               width: 'auto',
             }}
           />
+          {animationArr.map((item, index) => (
+            <ClickAnimation posX={item.posX} posY={item.posY} key={index} />
+          ))}
         </div>
       </div>
       <Modal
