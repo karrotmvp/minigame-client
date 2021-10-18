@@ -1,16 +1,20 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { logEvent } from '@firebase/analytics';
 import { ReactComponent as WaitSvg } from 'assets/wait.svg';
 import { AppEjectionButton } from 'components/buttons/AppEjectionButton';
+
+import { useEffect } from 'react';
+import { useAnalytics } from 'services/analytics';
+
 import Button, { DisabledButton } from 'components/buttons/Button';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'reducers/rootReducer';
 import BackendApi from 'services/backendApi/backendApi';
-import { analytics } from 'services/firebase/firebaseConfig';
+
 import { getMini } from 'services/karrotmarket/mini';
 import { trackUser } from 'services/firebase/trackUser';
+
 
 const customNav = css`
   left: 0;
@@ -117,6 +121,10 @@ interface NonServiceAreaProps {
     };
   };
 }
+
+const NonServiceArea = (props: NonServiceAreaProps) => {
+ 
+=======
 const NonServiceArea: React.FC<NonServiceAreaProps> = (props) => {
   const [isClicked, setIsClicked] = useState<boolean>(false);
   const { regionId } = useSelector((state: RootState) => ({
@@ -174,15 +182,14 @@ const NonServiceArea: React.FC<NonServiceAreaProps> = (props) => {
       },
     });
   };
-
+ const analytics = useAnalytics();
   useEffect(() => {
-    logEvent(analytics, 'non_service_area');
+    analytics.logEvent('non_service_area');
+    console.log('non service area');
     if (props.location.state.isNonServiceUserBack === true) {
       setIsClicked(true);
     }
-    console.log('non service area');
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [analytics]);
 
   return (
     <>
