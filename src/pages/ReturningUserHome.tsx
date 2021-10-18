@@ -144,7 +144,7 @@ const ReturningUserHome = () => {
   const analytics = useAnalytics();
 
   const handleGameStart = () => {
-    analytics.logEvent('game_start');
+    analytics.logEvent('click_game_start_button');
     history.push('/game');
   };
   const baseUrl = process.env.REACT_APP_BASE_URL;

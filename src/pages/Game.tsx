@@ -13,6 +13,7 @@ import { commafy } from 'functions/numberFunctions';
 import ClickAnimation from 'components/game/ClickAnimation';
 import BackendApi from 'services/backendApi/backendApi';
 import { useHistory } from 'react-router';
+import { useAnalytics } from 'services/analytics';
 
 // nav
 const customNav = css`
@@ -156,7 +157,7 @@ const Game = () => {
   const [animationArr, setAnimationArr] = useState<animationArrProps[]>([]);
   const history = useHistory();
   const dispatch = useDispatch();
-
+  const analytics = useAnalytics();
   const { userScore, clickCount } = useSelector((state: RootState) => ({
     userScore: state.userDataReducer.score,
     clickCount: state.counterReducer.clickCount,
@@ -210,10 +211,11 @@ const Game = () => {
         accessToken: accessToken,
         score: karrotToPatch,
       });
+      analytics.logEvent('click_game_end_button', { score: karrotToPatch });
       setIsModalOpen(true);
       setAlreadyPatchedKarrot(clickCount);
     },
-    [alreadyPatchedKarrot, clickCount]
+    [alreadyPatchedKarrot, analytics, clickCount]
   );
 
   function closeModal() {
