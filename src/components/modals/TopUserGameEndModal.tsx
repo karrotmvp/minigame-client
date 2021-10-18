@@ -91,7 +91,7 @@ const TopUserGameEndModal: FC<TopUserGameEndModalProps> = (props) => {
   const handleTopUserInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTopUserComment({
       comment: e.target.value.slice(0, 20),
-      length: e.target.value.length,
+      length: e.target.value.length - 1,
     });
   };
   const baseUrl = process.env.REACT_APP_BASE_URL;
