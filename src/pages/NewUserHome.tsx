@@ -7,14 +7,14 @@ import {
 } from 'styles/textStyle';
 import Button from '../components/buttons/Button';
 import IndividualLeaderboard from '../components/leaderboard/IndividualLeaderboard';
-import { getMini } from 'api/mini';
 import { AppEjectionButton } from 'components/buttons/AppEjectionButton';
 import { useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from 'reducers/rootReducer';
-
-const axios = require('axios').default;
-
+import { getMini } from 'services/karrotmarket/mini';
+import BackendApi from 'services/backendApi/backendApi';
+import { useCallback } from 'react';
+import { trackUser } from 'services/firebase/trackUser';
 // nav
 const customNav = css`
   left: 0;
@@ -62,49 +62,54 @@ const actionItemWrapper = css`
   box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
 `;
 
+const presetUrl: string = `${process.env.REACT_APP_MINI_PRESET}`;
+const appId: string = `${process.env.REACT_APP_APP_ID}`;
+
 const NewUserHome = () => {
   let history = useHistory();
-
   const { townName, regionId } = useSelector((state: RootState) => ({
     townName: state.userDataReducer.townName,
     regionId: state.userDataReducer.regionId,
   }));
 
-  const mini = getMini();
-  const handleNewUserAgreement = () => {
-    console.log('preset open');
-    mini.startPreset({
-      preset: `${process.env.REACT_APP_MINI_PRESET}`,
-      params: {
-        appId: `${process.env.REACT_APP_APP_ID}`,
-      },
-      onSuccess: function (result) {
-        console.log(window.location.search);
-        if (result && result.code) {
-          axios
-            .post(
-              `${process.env.REACT_APP_BASE_URL}/oauth`,
-              {
-                code: result.code,
-                regionId: regionId,
-              },
-              {
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-              }
-            )
-            .then((response: any) => {
-              window.localStorage.setItem(
-                'ACCESS_TOKEN',
-                response.data.data.accessToken
-              );
-              history.push('/game');
-            });
+  const getAccessToken = useCallback(
+    async (code: string | null, regionId: string) => {
+      if (code !== null) {
+        const response = await BackendApi.postOauth2({
+          code: code,
+          regionId: regionId,
+        });
+        if (response.isFetched && response.data) {
+          const { accessToken } = response.data.data;
+          window.localStorage.setItem('ACCESS_TOKEN', accessToken);
         }
+      } else {
+        throw new Error('Either code OR regionId is null');
+      }
+    },
+    []
+  );
+
+  const mini = getMini();
+  const handleNewUserAgreement = async (preset: string, appId: string) => {
+    mini.startPreset({
+      preset: preset,
+      params: {
+        appId: appId,
+      },
+      onSuccess: async function (result) {
+        if (result && result.code) {
+          await getAccessToken(result.code, regionId);
+          await trackUser();
+          history.push('/game');
+        }
+      },
+      onFailure() {
+        throw new Error('mini-app preset failed');
       },
     });
   };
+
   return (
     <>
       <div css={customNav}>
@@ -130,7 +135,9 @@ const NewUserHome = () => {
             size={`large`}
             color={`primary`}
             text={`게임 시작`}
-            onClick={handleNewUserAgreement}
+            onClick={() => {
+              handleNewUserAgreement(presetUrl, appId);
+            }}
           />
         </div>
       </div>
