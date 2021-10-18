@@ -1,14 +1,13 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { logEvent } from '@firebase/analytics';
 import { ReactComponent as WaitSvg } from 'assets/wait.svg';
 import { AppEjectionButton } from 'components/buttons/AppEjectionButton';
+import { useAnalytics } from 'services/analytics';
 import Button, { DisabledButton } from 'components/buttons/Button';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'reducers/rootReducer';
 import BackendApi from 'services/backendApi/backendApi';
-import { analytics } from 'services/firebase/firebaseConfig';
 import { getMini } from 'services/karrotmarket/mini';
 import { trackUser } from 'services/firebase/trackUser';
 
@@ -117,11 +116,13 @@ interface NonServiceAreaProps {
     };
   };
 }
+
 const NonServiceArea: React.FC<NonServiceAreaProps> = (props) => {
   const [isClicked, setIsClicked] = useState<boolean>(false);
   const { regionId } = useSelector((state: RootState) => ({
     regionId: state.userDataReducer.regionId,
   }));
+  const analytics = useAnalytics();
 
   const getAccessToken = useCallback(
     async (code: string | null, regionId: string) => {
@@ -165,7 +166,7 @@ const NonServiceArea: React.FC<NonServiceAreaProps> = (props) => {
           console.log(response);
           if (response.isFetched === true) {
             setIsClicked(true);
-            logEvent(analytics, 'non_service_area_demand');
+            analytics.logEvent('non_service_area_demand');
           }
         }
       },
@@ -174,13 +175,11 @@ const NonServiceArea: React.FC<NonServiceAreaProps> = (props) => {
       },
     });
   };
-
   useEffect(() => {
-    logEvent(analytics, 'non_service_area');
+    analytics.logEvent('non_service_area');
     if (props.location.state.isNonServiceUserBack === true) {
       setIsClicked(true);
     }
-    console.log('non service area');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

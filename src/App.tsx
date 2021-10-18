@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import '@karrotframe/navigator/index.css';
+import LoadingScreen from 'components/LoadingScreen';
 import NewUserHome from './pages/NewUserHome';
 import Game from './pages/Game';
 import Leaderboard from './pages/Leaderboard';
@@ -12,9 +12,13 @@ import {
   Redirect,
 } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { logEvent } from 'firebase/analytics';
-import { analytics } from 'services/firebase/firebaseConfig';
-import LoadingScreen from 'components/LoadingScreen';
+// import { AnalyticsContext } from 'services/analytics';
+import { emptyAnalytics } from 'services/analytics';
+import {
+  createFirebaseAnalytics,
+  loadFromEnv as loadFirebaseAnalyticsConfig,
+} from 'services/analytics/firebase';
+
 import ReturningUserHome from 'pages/ReturningUserHome';
 import NonServiceArea from 'pages/NonServiceArea';
 import {
@@ -34,6 +38,18 @@ function App() {
   const [userTownData, setUserTownData] = useState<string[]>([]);
   const [isNonServiceUserBack, setIsNonServiceUserBack] = useState(false);
   const dispatch = useDispatch();
+
+  const [analytics, setAnalytics] = useState(emptyAnalytics);
+  // Firebase Analytics가 설정되어 있으면 인스턴스를 초기화하고 교체합니다.
+  useEffect(() => {
+    try {
+      const config = loadFirebaseAnalyticsConfig();
+      const analytics = createFirebaseAnalytics(config);
+      setAnalytics(analytics);
+    } catch {
+      // noop
+    }
+  }, []);
 
   const filterNonServiceTown = useCallback(
     async (code: string | null, regionId: string) => {
@@ -82,11 +98,13 @@ function App() {
     const searchParams = new URLSearchParams(window.location.search);
     const userCode: string | null = searchParams.get('code');
     const userRegionId: any = searchParams.get('region_id');
-    logEvent(analytics, 'app_launched');
+
+    analytics.logEvent('app_launched');
+
     dispatch(saveRegionId(userRegionId));
     filterNonServiceTown(userCode, userRegionId);
     getAccessToken(userCode, userRegionId);
-  }, [dispatch, filterNonServiceTown, getAccessToken]);
+  }, [analytics, dispatch, filterNonServiceTown, getAccessToken]);
 
   return (
     <div css={appStyle}>

@@ -3,15 +3,16 @@ import { css } from '@emotion/react';
 import DefaultGameEndModal from 'components/modals/DefaultGameEndModal';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { incrementClickCount } from 'reducers/counterReducer';
+import { incrementClickCount, reset } from 'reducers/counterReducer';
 import { RootState } from '../reducers/rootReducer';
 import background from 'assets/Seocho_background.png';
 import { ReactComponent as BigKarrot } from 'assets/Seocho_daangn.svg';
 import Modal from 'react-modal';
 import GameDirectionPopupModal from 'components/modals/GameDirectionPopupModal';
-import { commafy } from 'components/functions/commafy';
+import { commafy } from 'functions/numberFunctions';
 import ClickAnimation from 'components/game/ClickAnimation';
 import BackendApi from 'services/backendApi/backendApi';
+import { useHistory } from 'react-router';
 
 // nav
 const customNav = css`
@@ -153,7 +154,7 @@ const Game = () => {
   const [shouldPopup, setShouldPopup] = useState<boolean>(false);
   const [shakeToggle, setShakeToggle] = useState(false);
   const [animationArr, setAnimationArr] = useState<animationArrProps[]>([]);
-
+  const history = useHistory();
   const dispatch = useDispatch();
 
   const { userScore, clickCount } = useSelector((state: RootState) => ({
@@ -179,18 +180,6 @@ const Game = () => {
       });
     }, 1000);
   }, []);
-  // const handleClickAnimation = async (e: { clientX: any; clientY: any }) => {
-  //   setAnimationArr((animationArr) => [
-  //     ...animationArr,
-  //     { posX: e.clientX - 25, posY: e.clientY - 50 },
-  //   ]);
-  //   setTimeout(() => {
-  //     setAnimationArr((animationArr) => {
-  //       const newArr = animationArr.slice(1);
-  //       return newArr;
-  //     });
-  //   }, 1000);
-  // };
 
   const handleScreenTouch = useCallback(
     async (e: React.TouchEvent) => {
@@ -202,10 +191,6 @@ const Game = () => {
     },
     [activateAnimation, clickCountUp]
   );
-  // const handleScreenClick = async (e: { clientX: any; clientY: any }) => {
-  //   await handleClickAnimation(e);
-  //   await clickCountUp();
-  // };
 
   const activateBigKarrotAnimation = useCallback(
     async (e: React.TouchEvent) => {
@@ -214,10 +199,6 @@ const Game = () => {
     },
     [handleScreenTouch]
   );
-  // const handleBigKarrotClick = async (e: { clientX: any; clientY: any }) => {
-  // await handleScreenClick(e);
-  //   setShakeToggle((prevState) => !prevState);
-  // };
 
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const accessToken = window.localStorage.getItem('ACCESS_TOKEN');
@@ -247,6 +228,14 @@ const Game = () => {
     }
   }, [userScore]);
 
+  useEffect(() => {
+    return () => {
+      if (history.action === 'POP') {
+        // history.replace('/game' /* the new state */);
+        dispatch(reset());
+      }
+    };
+  }, [dispatch, history]);
   return (
     <>
       <div css={customNav}>
@@ -282,7 +271,6 @@ const Game = () => {
           }}
         >
           <BigKarrot
-            // onClick={handleBigKarrotClick}
             onTouchStart={activateBigKarrotAnimation}
             css={shakeToggle ? shakeLeft : shakeRight}
             style={{
