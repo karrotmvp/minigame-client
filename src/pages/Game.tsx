@@ -11,9 +11,10 @@ import Modal from 'react-modal';
 import GameDirectionPopupModal from 'components/modals/GameDirectionPopupModal';
 import { commafy } from 'functions/numberFunctions';
 import ClickAnimation from 'components/game/ClickAnimation';
-import BackendApi from 'services/backendApi/backendApi';
 import { useHistory } from 'react-router';
+import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
 import { useAnalytics } from 'services/analytics';
+
 
 // nav
 const customNav = css`
@@ -155,13 +156,15 @@ const Game = () => {
   const [shouldPopup, setShouldPopup] = useState<boolean>(false);
   const [shakeToggle, setShakeToggle] = useState(false);
   const [animationArr, setAnimationArr] = useState<animationArrProps[]>([]);
-  const history = useHistory();
-  const dispatch = useDispatch();
-  const analytics = useAnalytics();
   const { userScore, clickCount } = useSelector((state: RootState) => ({
     userScore: state.userDataReducer.score,
     clickCount: state.counterReducer.clickCount,
   }));
+  const history = useHistory();
+  const dispatch = useDispatch();
+  const analytics = useAnalytics();
+  const karrotRaiseApi = useKarrotRaiseApi();
+
   const clickCountUp = useCallback(
     async () => dispatch(incrementClickCount()),
     [dispatch]
@@ -185,8 +188,6 @@ const Game = () => {
   const handleScreenTouch = useCallback(
     async (e: React.TouchEvent) => {
       e.stopPropagation();
-      console.log(e.targetTouches);
-      console.log(e);
       await activateAnimation(e);
       await clickCountUp();
     },
@@ -201,19 +202,17 @@ const Game = () => {
     [handleScreenTouch]
   );
 
-  const baseUrl = process.env.REACT_APP_BASE_URL;
-  const accessToken = window.localStorage.getItem('ACCESS_TOKEN');
   const handleGameEnd = useCallback(
-    async (baseUrl, accessToken) => {
-      let karrotToPatch = clickCount - alreadyPatchedKarrot;
-      await BackendApi.patchUserScore({
-        baseUrl: baseUrl,
-        accessToken: accessToken,
-        score: karrotToPatch,
-      });
-      analytics.logEvent('click_game_end_button', { score: karrotToPatch });
-      setIsModalOpen(true);
-      setAlreadyPatchedKarrot(clickCount);
+    async function (karrotRaiseApi: KarrotRaiseApi) {
+      try {
+        let karrotToPatch = clickCount - alreadyPatchedKarrot;
+        await karrotRaiseApi.patchUserScore(karrotToPatch);
+        analytics.logEvent('click_game_end_button', { score: karrotToPatch });
+        setIsModalOpen(true);
+        setAlreadyPatchedKarrot(clickCount);
+      } catch (error) {
+        console.error(error);
+      }
     },
     [alreadyPatchedKarrot, analytics, clickCount]
   );
@@ -244,7 +243,7 @@ const Game = () => {
         <div css={customNavIcon}>
           <GameEndButton
             handleGameEnd={() => {
-              handleGameEnd(baseUrl, accessToken);
+              handleGameEnd(karrotRaiseApi);
             }}
           />
         </div>

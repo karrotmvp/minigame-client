@@ -1,9 +1,9 @@
 // oauth2 api types
-export interface oAuth2ApiRequest {
+export interface PostOauth2Request {
   code: string | null;
   regionId: string;
 }
-export interface oAuth2ApiResponse {
+export interface PostOauth2Response {
   data?: {
     data: {
       accessToken: string;
@@ -13,10 +13,10 @@ export interface oAuth2ApiResponse {
 }
 
 // town api types
-export interface getTownIdRequest {
+export interface GetTownIdRequest {
   regionId: string;
 }
-export interface getTownIdResponse {
+export interface GetTownIdResponse {
   data?: {
     data: {
       id: string;
@@ -27,11 +27,10 @@ export interface getTownIdResponse {
 
   isFetched: boolean;
 }
-export interface getTownUserRankRequest {
-  baseUrl: string;
+export interface GetTownUserRankRequest {
   townId: string;
 }
-export interface getTownUserRankResponse {
+export interface GetTownUserRankResponse {
   data?: {
     data: {
       comment: string;
@@ -43,10 +42,7 @@ export interface getTownUserRankResponse {
   isFetched: boolean;
 }
 // user api types
-export interface getUserInfoRequest {
-  baseUrl: string;
-  accessToken: string;
-}
+export interface getUserInfoRequest {}
 
 export interface getUserInfoResponse {
   data?: {
@@ -67,29 +63,22 @@ export interface getUserInfoResponse {
 }
 
 // user-rank api types
-export interface patchUserScoreRequest {
-  baseUrl: string;
-  accessToken: string;
+export interface PatchUserScoreRequest {
   score: number;
 }
-export interface patchUserScoreResponse {
+export interface PatchUserScoreResposne {
   isFetched: boolean;
 }
-export interface patchCommentRequest {
-  baseUrl: string;
-  accessToken: string;
+export interface PatchUserCommmentRequest {
   comment: string;
 }
-export interface patchCommentResponse {
+export interface PatchUserCommmentResponse {
   isFetched: boolean;
 }
 
 // demand-controller api types
-export interface demandApiRequest {
-  baseUrl: string;
-  accessToken: string;
-}
-export interface demandApiResponse {
+export interface PostDemandRequest {}
+export interface PostDemandResponse {
   isFetched: boolean;
   error?: {
     response: {

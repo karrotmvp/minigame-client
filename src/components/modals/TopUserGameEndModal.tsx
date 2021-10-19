@@ -7,7 +7,7 @@ import { FC, useCallback, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from 'reducers/rootReducer';
-import BackendApi from 'services/backendApi/backendApi';
+import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
 const largeText = css`
   margin: 15px 0;
 `;
@@ -82,27 +82,21 @@ const TopUserGameEndModal: FC<TopUserGameEndModalProps> = (props) => {
     comment: props.comment,
     length: props.comment.length,
   });
-
-  let history = useHistory();
-
   const { townName } = useSelector((state: RootState) => ({
     townName: state.userDataReducer.townName,
   }));
+  let history = useHistory();
+  const karrotRaiseApi = useKarrotRaiseApi();
+
   const handleTopUserInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTopUserComment({
       comment: e.target.value.slice(0, 21),
       length: e.target.value.length,
     });
   };
-  const baseUrl = process.env.REACT_APP_BASE_URL;
-  const accessToken = window.localStorage.getItem('ACCESS_TOKEN');
   const addComment = useCallback(
-    async (baseUrl, accessToken, comment) => {
-      await BackendApi.patchComment({
-        baseUrl: baseUrl,
-        accessToken: accessToken,
-        comment: comment,
-      });
+    async function (karrotRaiseApi: KarrotRaiseApi, comment: string) {
+      await karrotRaiseApi.patchUserComment(comment);
       history.replace('/leaderboard');
     },
     [history]
@@ -145,7 +139,7 @@ const TopUserGameEndModal: FC<TopUserGameEndModalProps> = (props) => {
             color={`primary`}
             text={`등록하기`}
             onClick={() => {
-              addComment(baseUrl, accessToken, topUserComment.comment);
+              addComment(karrotRaiseApi, topUserComment.comment);
             }}
           />
         ) : (
