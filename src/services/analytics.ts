@@ -3,7 +3,7 @@ import { createContext, useContext } from 'react';
 
 export interface Analytics {
   logEvent(eventName: string, params?: Record<string, unknown>): void;
-  setUserId(eventname: string, options?: AnalyticsCallOptions): void;
+  setUserId(id: string, options?: AnalyticsCallOptions): void;
 }
 
 // wow, such empty...

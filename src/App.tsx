@@ -36,7 +36,7 @@ import {
 import {
   createKarrotRaiseApi,
   loadFromEnv as loadKarrotRaiseApiConfig,
-} from 'services/backendService/karrotRaiseApi';
+} from 'services/api/karrotRaise';
 import {
   emptyKarrotMarketMini,
   KarrotMarketMiniContext,
@@ -99,6 +99,7 @@ function App() {
         const response = await karrotRaiseApi.getUserInfo();
         if (response.isFetched === true && response.data) {
           const { id } = response.data.data;
+          console.log('tracking user... id:', id);
           analytics.setUserId(id);
         }
       } catch (error) {
@@ -147,6 +148,7 @@ function App() {
       try {
         if (code !== null) {
           const response = await karrotRaiseApi.postOauth2(code, regionId);
+          console.log(response);
           if (response.isFetched && response.data) {
             const { accessToken } = response.data.data;
             window.localStorage.setItem('ACCESS_TOKEN', accessToken);
@@ -163,14 +165,14 @@ function App() {
     [trackUser]
   );
 
-  async function getQueryParams() {
-    const searchParams = new URLSearchParams(window.location.search);
+  async function getQueryParams(targetUrl: string) {
+    const searchParams = new URLSearchParams(targetUrl);
     const userCode: string | null = searchParams.get('code');
     const userRegionId: any = searchParams.get('region_id');
     return { userCode: userCode, userRegionId: userRegionId };
   }
   useEffect(() => {
-    getQueryParams().then((response) => {
+    getQueryParams(window.location.search).then((response) => {
       let { userCode: code, userRegionId: regionId } = response;
       // What to do if region_id is null? (meaning the mini-app is not opened from karrot market app)
       // if (code === null) {
@@ -191,8 +193,6 @@ function App() {
     getAccessToken,
     karrotRaiseApi,
   ]);
-
-
 
   return (
     <div css={appStyle}>
