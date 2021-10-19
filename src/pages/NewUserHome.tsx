@@ -12,9 +12,9 @@ import { useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from 'reducers/rootReducer';
 import { getMini } from 'services/karrotmarket/mini';
-import BackendApi from 'services/backendApi/backendApi';
 import { useCallback } from 'react';
 import { trackUser } from 'services/firebase/trackUser';
+import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
 // nav
 const customNav = css`
   left: 0;
@@ -71,6 +71,7 @@ const NewUserHome = () => {
     townName: state.userDataReducer.townName,
     regionId: state.userDataReducer.regionId,
   }));
+  const karrotRaiseApi = useKarrotRaiseApi();
 
   const getAccessToken = useCallback(
     async (code: string | null, regionId: string) => {

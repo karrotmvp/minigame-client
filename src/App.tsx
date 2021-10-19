@@ -26,8 +26,16 @@ import {
   saveTownId,
   saveTownName,
 } from 'reducers/userDataReducer';
-import BackendApi from 'services/backendApi/backendApi';
 import { trackUser } from 'services/firebase/trackUser';
+import {
+  emptyKarrotRaiseApi,
+  KarrotRaiseApi,
+  KarrotRaiseApiContext,
+} from 'services/karrotRaiseApi';
+import {
+  createKarrotRaiseApi,
+  loadFromEnv as loadKarrotRaiseApiConfig,
+} from 'services/backendService/karrotRaiseApi';
 
 const appStyle = css`
   height: 100vh;
@@ -50,45 +58,68 @@ function App() {
       // noop
     }
   }, []);
+  useEffect(() => {
+    try {
+      // check karrot-raise api
+      const karrotRaiseApiConfig = loadKarrotRaiseApiConfig();
+      const karrotRaiseApi = createKarrotRaiseApi(karrotRaiseApiConfig);
+      setKarrotRaiseApi(karrotRaiseApi);
+    } catch {
+      // no-op
+    }
+  }, []);
 
   const filterNonServiceTown = useCallback(
-    async (code: string | null, regionId: string) => {
-      const response = await BackendApi.getTownId({ regionId: regionId });
-      // example -> city=서울특별시(name1) district=서초구(name2)
-      if (response.isFetched && response.data) {
-        const { id: districtId, name2: districtName } = response.data.data;
-        dispatch(saveTownId(districtId));
-        dispatch(saveTownName(districtName));
-        setUserTownData([districtId, districtName]);
-        // Filter out if user is not in 서초구
-        // 서초구id = df5370052b3c
-        if (districtId !== 'df5370052b3c') {
-          if (code !== null || undefined) {
-            setIsNonServiceUserBack(true);
+    async function (
+      karrotRaiseApi: KarrotRaiseApi,
+      code: string | null,
+      regionId: string
+    ) {
+      try {
+        const response = await karrotRaiseApi.getTownId(regionId);
+        // example -> city=서울특별시(name1) district=서초구(name2)
+        if (response.isFetched && response.data) {
+          const { id: districtId, name2: districtName } = response.data.data;
+          dispatch(saveTownId(districtId));
+          dispatch(saveTownName(districtName));
+          setUserTownData([districtId, districtName]);
+          // Filter out if user is not in 서초구
+          // 서초구id = df5370052b3c
+          if (districtId !== 'df5370052b3c') {
+            if (code !== null || undefined) {
+              setIsNonServiceUserBack(true);
+            }
+            setPageRedirection('non-service-area');
           }
-          setPageRedirection('non-service-area');
         }
+      } catch (error) {
+        console.error(error);
       }
     },
     [dispatch]
   );
   const getAccessToken = useCallback(
-    async (code: string | null, regionId: string) => {
+    async function (
+      karrotRaiseApi: KarrotRaiseApi,
+      code: string | null,
+      regionId: string,
+      analytics: Analytics
+    ): Promise<void> {
       // code !== null means user is a returning user
-      if (code !== null) {
-        const response = await BackendApi.postOauth2({
-          code: code,
-          regionId: regionId,
-        });
-        if (response.isFetched && response.data) {
-          const { accessToken } = response.data.data;
-          console.log('access-token', accessToken);
-          window.localStorage.setItem('ACCESS_TOKEN', accessToken);
-          await trackUser();
-          setPageRedirection('home');
+      try {
+        if (code !== null) {
+          const response = await karrotRaiseApi.postOauth2(code, regionId);
+          if (response.isFetched && response.data) {
+            const { accessToken } = response.data.data;
+            window.localStorage.setItem('ACCESS_TOKEN', accessToken);
+            await trackUser(karrotRaiseApi, analytics);
+            setPageRedirection('home');
+          }
+        } else {
+          setPageRedirection('new-user-home');
         }
-      } else {
-        setPageRedirection('new-user-home');
+      } catch (error) {
+        console.error(error);
       }
     },
     []
@@ -108,51 +139,53 @@ function App() {
 
   return (
     <div css={appStyle}>
-      <Router>
-        <Switch>
-          <Route
-            exact
-            path="/"
-            render={() => {
-              console.log(`Redirect page to ${pageRedirection}`);
-              return pageRedirection === 'non-service-area' ? (
-                <Redirect
-                  to={{
-                    pathname: '/non-service-area',
-                    state: {
-                      townName: userTownData[1],
-                      isNonServiceUserBack: isNonServiceUserBack,
-                    },
+      {/* Create combined context provider */}
+      <KarrotRaiseApiContext.Provider value={karrotRaiseApi}>
+            <Router>
+              <Switch>
+                <Route
+                  exact
+                  path="/"
+                  render={() => {
+                    return pageRedirection === 'non-service-area' ? (
+                      <Redirect
+                        to={{
+                          pathname: '/non-service-area',
+                          state: {
+                            townName: userTownData[1],
+                            isNonServiceUserBack: isNonServiceUserBack,
+                          },
+                        }}
+                      />
+                    ) : pageRedirection === 'home' ? (
+                      <Redirect to="/home" />
+                    ) : pageRedirection === 'new-user-home' ? (
+                      <Redirect to="/new-user-home" />
+                    ) : (
+                      <LoadingScreen />
+                    );
                   }}
                 />
-              ) : pageRedirection === 'home' ? (
-                <Redirect to="/home" />
-              ) : pageRedirection === 'new-user-home' ? (
-                <Redirect to="/new-user-home" />
-              ) : (
-                <LoadingScreen />
-              );
-            }}
-          />
-          <Route exact path="/new-user-home">
-            <NewUserHome />
-          </Route>
-          <Route exact path="/home">
-            <ReturningUserHome />
-          </Route>
-          <Route exact path="/game">
-            <Game />
-          </Route>
-          <Route exact path="/leaderboard">
-            <Leaderboard />
-          </Route>
-          <Route
-            exact
-            path="/non-service-area"
-            render={(props: any) => <NonServiceArea {...props} />}
-          />
-        </Switch>
-      </Router>
+                <Route exact path="/new-user-home">
+                  <NewUserHome />
+                </Route>
+                <Route exact path="/home">
+                  <ReturningUserHome />
+                </Route>
+                <Route exact path="/game">
+                  <Game />
+                </Route>
+                <Route exact path="/leaderboard">
+                  <Leaderboard />
+                </Route>
+                <Route
+                  exact
+                  path="/non-service-area"
+                  render={(props: any) => <NonServiceArea {...props} />}
+                />
+              </Switch>
+            </Router>
+      </KarrotRaiseApiContext.Provider>
     </div>
   );
 }

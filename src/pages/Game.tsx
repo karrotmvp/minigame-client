@@ -11,8 +11,8 @@ import Modal from 'react-modal';
 import GameDirectionPopupModal from 'components/modals/GameDirectionPopupModal';
 import { commafy } from 'functions/numberFunctions';
 import ClickAnimation from 'components/game/ClickAnimation';
-import BackendApi from 'services/backendApi/backendApi';
 import { useHistory } from 'react-router';
+import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
 
 // nav
 const customNav = css`
@@ -161,6 +161,8 @@ const Game = () => {
     userScore: state.userDataReducer.score,
     clickCount: state.counterReducer.clickCount,
   }));
+  const karrotRaiseApi = useKarrotRaiseApi();
+
   const clickCountUp = useCallback(
     async () => dispatch(incrementClickCount()),
     [dispatch]
@@ -200,18 +202,16 @@ const Game = () => {
     [handleScreenTouch]
   );
 
-  const baseUrl = process.env.REACT_APP_BASE_URL;
-  const accessToken = window.localStorage.getItem('ACCESS_TOKEN');
   const handleGameEnd = useCallback(
-    async (baseUrl, accessToken) => {
-      let karrotToPatch = clickCount - alreadyPatchedKarrot;
-      await BackendApi.patchUserScore({
-        baseUrl: baseUrl,
-        accessToken: accessToken,
-        score: karrotToPatch,
-      });
-      setIsModalOpen(true);
-      setAlreadyPatchedKarrot(clickCount);
+    async function (karrotRaiseApi: KarrotRaiseApi) {
+      try {
+        let karrotToPatch = clickCount - alreadyPatchedKarrot;
+        await karrotRaiseApi.patchUserScore(karrotToPatch);
+        setIsModalOpen(true);
+        setAlreadyPatchedKarrot(clickCount);
+      } catch (error) {
+        console.error(error);
+      }
     },
     [alreadyPatchedKarrot, clickCount]
   );
@@ -242,7 +242,7 @@ const Game = () => {
         <div css={customNavIcon}>
           <GameEndButton
             handleGameEnd={() => {
-              handleGameEnd(baseUrl, accessToken);
+              handleGameEnd(karrotRaiseApi);
             }}
           />
         </div>

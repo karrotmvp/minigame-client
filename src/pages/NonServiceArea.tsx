@@ -7,9 +7,9 @@ import Button, { DisabledButton } from 'components/buttons/Button';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'reducers/rootReducer';
-import BackendApi from 'services/backendApi/backendApi';
 import { getMini } from 'services/karrotmarket/mini';
 import { trackUser } from 'services/firebase/trackUser';
+import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
 
 const customNav = css`
   left: 0;
@@ -97,17 +97,6 @@ const coloredText = css`
   color: #eb5d0e;
 `;
 
-const presetUrl = `${process.env.REACT_APP_MINI_PRESET}`;
-const appId = `${process.env.REACT_APP_APP_ID}`;
-const baseUrl = `${process.env.REACT_APP_BASE_URL}`;
-const accessToken = `${window.localStorage.getItem('ACCESS_TOKEN')}`;
-interface handleDemandTypes {
-  preset: string;
-  appId: string;
-  baseUrl: string;
-  accessToken: string;
-}
-
 interface NonServiceAreaProps {
   location: {
     state: {
@@ -123,14 +112,17 @@ const NonServiceArea: React.FC<NonServiceAreaProps> = (props) => {
     regionId: state.userDataReducer.regionId,
   }));
   const analytics = useAnalytics();
+  const karrotRaiseApi = useKarrotRaiseApi();
 
-  const getAccessToken = useCallback(
-    async (code: string | null, regionId: string) => {
+  const getAccessToken = useCallback(async function (
+    karrotRaiseApi: KarrotRaiseApi,
+    code: string | null,
+    regionId: string
+  ) {
+    try {
+      console.log('asdfasfda');
       if (code !== null) {
-        const response = await BackendApi.postOauth2({
-          code: code,
-          regionId: regionId,
-        });
+        const response = await karrotRaiseApi.postOauth2(code, regionId);
         if (response.isFetched && response.data) {
           const { accessToken } = response.data.data;
           window.localStorage.setItem('ACCESS_TOKEN', accessToken);
@@ -138,9 +130,11 @@ const NonServiceArea: React.FC<NonServiceAreaProps> = (props) => {
       } else {
         throw new Error('Either code OR regionId is null');
       }
-    },
-    []
-  );
+    } catch (error) {
+      console.error(error);
+    }
+  },
+  []);
 
   const mini = getMini();
   const handleDemand = async ({
@@ -157,15 +151,7 @@ const NonServiceArea: React.FC<NonServiceAreaProps> = (props) => {
       onSuccess: async function (result) {
         if (result && result.code) {
           console.log();
-          await getAccessToken(result.code, regionId);
           await trackUser();
-          const response = await BackendApi.postDemand({
-            baseUrl: baseUrl,
-            accessToken: accessToken,
-          });
-          console.log(response);
-          if (response.isFetched === true) {
-            setIsClicked(true);
             analytics.logEvent('non_service_area_demand');
           }
         }
@@ -174,6 +160,10 @@ const NonServiceArea: React.FC<NonServiceAreaProps> = (props) => {
         throw new Error('mini-app preset failed');
       },
     });
+    getAccessToken(karrotRaiseApi, code, regionId);
+    const response = await karrotRaiseApi.postDemand();
+    if (response.isFetched === true) {
+      setIsClicked(true);
   };
   useEffect(() => {
     analytics.logEvent('non_service_area');
@@ -215,8 +205,6 @@ const NonServiceArea: React.FC<NonServiceAreaProps> = (props) => {
               handleDemand({
                 preset: presetUrl,
                 appId: appId,
-                baseUrl: baseUrl,
-                accessToken: accessToken,
               });
             }}
           />

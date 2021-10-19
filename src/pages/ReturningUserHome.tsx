@@ -19,7 +19,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'reducers/rootReducer';
 import { useHistory } from 'react-router-dom';
 import { updateUserScore } from 'reducers/userDataReducer';
-import BackendApi from 'services/backendApi/backendApi';
+import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
 
 // nav
 const customNav = css`
@@ -137,6 +137,7 @@ const ReturningUserHome = () => {
   const [userData, setUserData] = useState(initialState);
   const history = useHistory();
   const dispatch = useDispatch();
+  const karrotRaiseApi = useKarrotRaiseApi();
   const { townName } = useSelector((state: RootState) => ({
     townName: state.userDataReducer.townName,
   }));
@@ -147,30 +148,32 @@ const ReturningUserHome = () => {
     analytics.logEvent('game_start');
     history.push('/game');
   };
-  const baseUrl = process.env.REACT_APP_BASE_URL;
-  const accessToken = window.localStorage.getItem('ACCESS_TOKEN');
+
   const getUserData = useCallback(
-    async (baseUrl, accessToken) => {
-      const response = await BackendApi.getUserInfo({
-        baseUrl: baseUrl,
-        accessToken: accessToken,
-      });
-      if (response.isFetched === true && response.data) {
-        const { nickname, score, rank, comment } = response.data.data;
-        setUserData({
-          nickname: nickname,
-          score: score,
-          rank: rank,
-          comment: comment,
-        });
-        dispatch(updateUserScore(score));
+    async (karrotRaiseApi: KarrotRaiseApi) => {
+      try {
+        const response = await karrotRaiseApi.getUserInfo();
+        if (response.isFetched === true && response.data) {
+          console.log('returningUserHome, getUserData', response.data);
+          const { nickname, score, rank, comment } = response.data.data;
+          setUserData({
+            nickname: nickname,
+            score: score,
+            rank: rank,
+            comment: comment,
+          });
+          dispatch(updateUserScore(score));
+        }
+      } catch (error) {
+        console.error(error);
       }
     },
     [dispatch]
   );
   useEffect(() => {
-    getUserData(baseUrl, accessToken);
-  }, [accessToken, baseUrl, getUserData]);
+    getUserData(karrotRaiseApi);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <>
