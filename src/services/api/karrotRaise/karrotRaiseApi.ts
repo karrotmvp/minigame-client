@@ -1,17 +1,18 @@
 import { KarrotRaiseApi } from 'services/karrotRaiseApi';
+// import { useAxios } from 'services/useAxios';
 import { KarrotRaiseApiConfig } from './config';
 const axios = require('axios').default;
-
 // REMOVE AXIOS DEPENDENCY!
 export function createKarrotRaiseApi(
   config: KarrotRaiseApiConfig
 ): KarrotRaiseApi {
   const baseUrl = config.baseUrl;
   const accessToken = config.accessToken;
+  // const axios = useAxios();
 
   async function postOauth2(code: string, regionId: string) {
     try {
-      const { data } = await axios.post(
+      const response = await axios.post(
         `${baseUrl}/oauth`,
         {
           code: code,
@@ -23,6 +24,7 @@ export function createKarrotRaiseApi(
           },
         }
       );
+      const data = response.data;
       return { isFetched: true, data: data };
     } catch (error) {
       console.error(error);
