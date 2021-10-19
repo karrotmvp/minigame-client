@@ -12,9 +12,9 @@ import { useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from 'reducers/rootReducer';
 import { useCallback } from 'react';
-import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
 import { Analytics, useAnalytics } from 'services/analytics';
 import { useKarrotMarketMini } from 'services/karrotMarketMini';
+import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
 
 // nav
 const customNav = css`
@@ -65,7 +65,6 @@ const actionItemWrapper = css`
 
 const NewUserHome = () => {
   let history = useHistory();
-  const analytics = useAnalytics();
   const { townName, regionId } = useSelector((state: RootState) => ({
     townName: state.userDataReducer.townName,
     regionId: state.userDataReducer.regionId,
