@@ -15,6 +15,7 @@ import { useCallback } from 'react';
 import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
 import { Analytics, useAnalytics } from 'services/analytics';
 import { useKarrotMarketMini } from 'services/karrotMarketMini';
+
 // nav
 const customNav = css`
   left: 0;
@@ -64,6 +65,7 @@ const actionItemWrapper = css`
 
 const NewUserHome = () => {
   let history = useHistory();
+  const analytics = useAnalytics();
   const { townName, regionId } = useSelector((state: RootState) => ({
     townName: state.userDataReducer.townName,
     regionId: state.userDataReducer.regionId,
@@ -112,6 +114,7 @@ const NewUserHome = () => {
   const runOnSuccess = async (code: string) => {
     await getAccessToken(karrotRaiseApi, code, regionId);
     await trackUser(karrotRaiseApi, analytics);
+    analytics.logEvent('click_game_start_button', { type: 'new_user' });
   };
   const handleNewUserAgreement = async function () {
     await karrotMarketMini.startPreset(runOnSuccess);

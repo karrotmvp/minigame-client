@@ -192,6 +192,8 @@ function App() {
     karrotRaiseApi,
   ]);
 
+
+
   return (
     <div css={appStyle}>
       {/* Create combined context provider */}

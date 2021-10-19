@@ -13,6 +13,8 @@ import { commafy } from 'functions/numberFunctions';
 import ClickAnimation from 'components/game/ClickAnimation';
 import { useHistory } from 'react-router';
 import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
+import { useAnalytics } from 'services/analytics';
+
 
 // nav
 const customNav = css`
@@ -160,6 +162,7 @@ const Game = () => {
   }));
   const history = useHistory();
   const dispatch = useDispatch();
+  const analytics = useAnalytics();
   const karrotRaiseApi = useKarrotRaiseApi();
 
   const clickCountUp = useCallback(
@@ -204,13 +207,14 @@ const Game = () => {
       try {
         let karrotToPatch = clickCount - alreadyPatchedKarrot;
         await karrotRaiseApi.patchUserScore(karrotToPatch);
+        analytics.logEvent('click_game_end_button', { score: karrotToPatch });
         setIsModalOpen(true);
         setAlreadyPatchedKarrot(clickCount);
       } catch (error) {
         console.error(error);
       }
     },
-    [alreadyPatchedKarrot, clickCount]
+    [alreadyPatchedKarrot, analytics, clickCount]
   );
 
   function closeModal() {
