@@ -7,9 +7,9 @@ import Button, { DisabledButton } from 'components/buttons/Button';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'reducers/rootReducer';
-import { getMini } from 'services/karrotmarket/mini';
 import { trackUser } from 'services/firebase/trackUser';
 import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
+import { useKarrotMarketMini } from 'services/karrotMarketMini';
 
 const customNav = css`
   left: 0;
@@ -113,6 +113,22 @@ const NonServiceArea: React.FC<NonServiceAreaProps> = (props) => {
   }));
   const analytics = useAnalytics();
   const karrotRaiseApi = useKarrotRaiseApi();
+  const karrotMarketMini = useKarrotMarketMini();
+
+  const trackUser = useCallback(
+    async (karrotRaiseApi: KarrotRaiseApi, analytics: Analytics) => {
+      try {
+        const response = await karrotRaiseApi.getUserInfo();
+        if (response.isFetched === true && response.data) {
+          const { id } = response.data.data;
+          analytics.setUserId(id);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    []
+  );
 
   const getAccessToken = useCallback(async function (
     karrotRaiseApi: KarrotRaiseApi,
@@ -136,35 +152,16 @@ const NonServiceArea: React.FC<NonServiceAreaProps> = (props) => {
   },
   []);
 
-  const mini = getMini();
-  const handleDemand = async ({
-    preset,
-    appId,
-    baseUrl,
-    accessToken,
-  }: handleDemandTypes) => {
-    mini.startPreset({
-      preset: preset,
-      params: {
-        appId: appId,
-      },
-      onSuccess: async function (result) {
-        if (result && result.code) {
-          console.log();
-          await trackUser();
-            analytics.logEvent('non_service_area_demand');
-          }
-        }
-      },
-      onFailure() {
-        throw new Error('mini-app preset failed');
-      },
-    });
+  const runOnSuccess = async (code: string) => {
     getAccessToken(karrotRaiseApi, code, regionId);
     const response = await karrotRaiseApi.postDemand();
     if (response.isFetched === true) {
       setIsClicked(true);
   };
+  const handleDemand = async function () {
+    karrotMarketMini.startPreset(runOnSuccess);
+  };
+
   useEffect(() => {
     analytics.logEvent('non_service_area');
     if (props.location.state.isNonServiceUserBack === true) {
@@ -201,12 +198,7 @@ const NonServiceArea: React.FC<NonServiceAreaProps> = (props) => {
             size={`medium`}
             color={`primary`}
             text={`오픈 알림 받기`}
-            onClick={() => {
-              handleDemand({
-                preset: presetUrl,
-                appId: appId,
-              });
-            }}
+            onClick={handleDemand}
           />
         )}
       </div>

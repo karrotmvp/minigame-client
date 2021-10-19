@@ -18,7 +18,6 @@ import {
   createFirebaseAnalytics,
   loadFromEnv as loadFirebaseAnalyticsConfig,
 } from 'services/analytics/firebase';
-
 import ReturningUserHome from 'pages/ReturningUserHome';
 import NonServiceArea from 'pages/NonServiceArea';
 import {
@@ -36,6 +35,14 @@ import {
   createKarrotRaiseApi,
   loadFromEnv as loadKarrotRaiseApiConfig,
 } from 'services/backendService/karrotRaiseApi';
+import {
+  emptyKarrotMarketMini,
+  KarrotMarketMiniContext,
+} from 'services/karrotMarketMini';
+import {
+  createKarrotMarketMini,
+  loadFromEnv as loadKarrotMarketMiniConfig,
+} from 'services/karrotMarket/mini';
 
 const appStyle = css`
   height: 100vh;
@@ -46,7 +53,10 @@ function App() {
   const [userTownData, setUserTownData] = useState<string[]>([]);
   const [isNonServiceUserBack, setIsNonServiceUserBack] = useState(false);
   const dispatch = useDispatch();
-
+  const [karrotMarketMini, setKarrotMarketMini] = useState(
+    emptyKarrotMarketMini
+  );
+  const [karrotRaiseApi, setKarrotRaiseApi] = useState(emptyKarrotRaiseApi);
   const [analytics, setAnalytics] = useState(emptyAnalytics);
   // Firebase Analytics가 설정되어 있으면 인스턴스를 초기화하고 교체합니다.
   useEffect(() => {
@@ -65,6 +75,17 @@ function App() {
       const karrotRaiseApi = createKarrotRaiseApi(karrotRaiseApiConfig);
       setKarrotRaiseApi(karrotRaiseApi);
     } catch {
+      // no-op
+    }
+  }, []);
+  useEffect(() => {
+    try {
+      // check karrot-mini
+      const karrotMarketMiniConfig = loadKarrotMarketMiniConfig();
+      const karrotMarketMini = createKarrotMarketMini(karrotMarketMiniConfig);
+      setKarrotMarketMini(karrotMarketMini);
+    } catch (error) {
+      console.error(error);
       // no-op
     }
   }, []);
@@ -141,6 +162,7 @@ function App() {
     <div css={appStyle}>
       {/* Create combined context provider */}
       <KarrotRaiseApiContext.Provider value={karrotRaiseApi}>
+          <KarrotMarketMiniContext.Provider value={karrotMarketMini}>
             <Router>
               <Switch>
                 <Route
@@ -185,6 +207,7 @@ function App() {
                 />
               </Switch>
             </Router>
+          </KarrotMarketMiniContext.Provider>
       </KarrotRaiseApiContext.Provider>
     </div>
   );

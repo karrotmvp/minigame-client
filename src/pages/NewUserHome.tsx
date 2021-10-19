@@ -11,10 +11,10 @@ import { AppEjectionButton } from 'components/buttons/AppEjectionButton';
 import { useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from 'reducers/rootReducer';
-import { getMini } from 'services/karrotmarket/mini';
 import { useCallback } from 'react';
 import { trackUser } from 'services/firebase/trackUser';
 import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
+import { useKarrotMarketMini } from 'services/karrotMarketMini';
 // nav
 const customNav = css`
   left: 0;
@@ -62,9 +62,6 @@ const actionItemWrapper = css`
   box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
 `;
 
-const presetUrl: string = `${process.env.REACT_APP_MINI_PRESET}`;
-const appId: string = `${process.env.REACT_APP_APP_ID}`;
-
 const NewUserHome = () => {
   let history = useHistory();
   const { townName, regionId } = useSelector((state: RootState) => ({
@@ -72,43 +69,52 @@ const NewUserHome = () => {
     regionId: state.userDataReducer.regionId,
   }));
   const karrotRaiseApi = useKarrotRaiseApi();
+  const karrotMarketMini = useKarrotMarketMini();
 
-  const getAccessToken = useCallback(
-    async (code: string | null, regionId: string) => {
-      if (code !== null) {
-        const response = await BackendApi.postOauth2({
-          code: code,
-          regionId: regionId,
-        });
-        if (response.isFetched && response.data) {
-          const { accessToken } = response.data.data;
-          window.localStorage.setItem('ACCESS_TOKEN', accessToken);
+  const trackUser = useCallback(
+    async (karrotRaiseApi: KarrotRaiseApi, analytics: Analytics) => {
+      try {
+        const response = await karrotRaiseApi.getUserInfo();
+        if (response.isFetched === true && response.data) {
+          const { id } = response.data.data;
+          analytics.setUserId(id);
         }
-      } else {
-        throw new Error('Either code OR regionId is null');
+      } catch (error) {
+        console.error(error);
       }
     },
     []
   );
 
-  const mini = getMini();
-  const handleNewUserAgreement = async (preset: string, appId: string) => {
-    mini.startPreset({
-      preset: preset,
-      params: {
-        appId: appId,
-      },
-      onSuccess: async function (result) {
-        if (result && result.code) {
-          await getAccessToken(result.code, regionId);
-          await trackUser();
-          history.push('/game');
+  const getAccessToken = useCallback(
+    async (karrotRaiseApi, code: string | null, regionId: string) => {
+      try {
+        if (code !== null) {
+          const response = await karrotRaiseApi.postOauth2({
+            code: code,
+            regionId: regionId,
+          });
+          if (response.isFetched && response.data) {
+            const { accessToken } = response.data.data;
+            window.localStorage.setItem('ACCESS_TOKEN', accessToken);
+          }
+        } else {
+          throw new Error('Either code OR regionId is null');
         }
-      },
-      onFailure() {
-        throw new Error('mini-app preset failed');
-      },
-    });
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    []
+  );
+
+  const runOnSuccess = async (code: string) => {
+    await getAccessToken(karrotRaiseApi, code, regionId);
+    await trackUser(karrotRaiseApi, analytics);
+  };
+  const handleNewUserAgreement = async function () {
+    await karrotMarketMini.startPreset(runOnSuccess);
+    await history.push('/game');
   };
 
   return (
@@ -136,9 +142,7 @@ const NewUserHome = () => {
             size={`large`}
             color={`primary`}
             text={`게임 시작`}
-            onClick={() => {
-              handleNewUserAgreement(presetUrl, appId);
-            }}
+            onClick={handleNewUserAgreement}
           />
         </div>
       </div>

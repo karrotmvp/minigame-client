@@ -14,9 +14,8 @@ import { useHistory } from 'react-router-dom';
 import { useAnalytics } from 'services/analytics';
 
 import { RootState } from 'reducers/rootReducer';
-import { getMini } from 'services/karrotmarket/mini';
-import BackendApi from 'services/backendApi/backendApi';
 import { useKarrotRaiseApi } from 'services/karrotRaiseApi';
+import { useKarrotMarketMini } from 'services/karrotMarketMini';
 
 // nav
 const customNav = css`
@@ -90,6 +89,7 @@ const Leaderboard = () => {
     townName: state.userDataReducer.townName,
   }));
   const karrotRaiseApi = useKarrotRaiseApi();
+  const karrotMarketMini = useKarrotMarketMini();
 
   const handlePlayAgain = async () => {
     analytics.logEvent('game_play_again');
@@ -99,12 +99,11 @@ const Leaderboard = () => {
 
   // Share must be triggered by "user activation"
   const handleShare = async () => {
-    analytics.logEvent('share');
-    const mini = getMini();
-    mini.share({
-      url: 'https://daangn.onelink.me/HhUa/3a219555',
-      text: '당근모아를 플레이 하고 동네 이웃들에게 한 마디를 남겨보세요!',
-    });
+    analytics.logEvent('click_share_button');
+    const url = 'https://daangn.onelink.me/HhUa/3a219555';
+    const text =
+      '우리동네에서 나는 몇 등? 당근모아를 플레이 하고 동네 이웃들에게 한 마디를 남겨보세요!';
+    karrotMarketMini.share(url, text);
   };
 
   const getUserData = useCallback(async function (karrotRaiseApi) {
