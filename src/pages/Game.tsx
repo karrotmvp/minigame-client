@@ -154,13 +154,12 @@ const Game = () => {
   const [shouldPopup, setShouldPopup] = useState<boolean>(false);
   const [shakeToggle, setShakeToggle] = useState(false);
   const [animationArr, setAnimationArr] = useState<animationArrProps[]>([]);
-  const history = useHistory();
-  const dispatch = useDispatch();
-
   const { userScore, clickCount } = useSelector((state: RootState) => ({
     userScore: state.userDataReducer.score,
     clickCount: state.counterReducer.clickCount,
   }));
+  const history = useHistory();
+  const dispatch = useDispatch();
   const karrotRaiseApi = useKarrotRaiseApi();
 
   const clickCountUp = useCallback(
@@ -186,8 +185,6 @@ const Game = () => {
   const handleScreenTouch = useCallback(
     async (e: React.TouchEvent) => {
       e.stopPropagation();
-      console.log(e.targetTouches);
-      console.log(e);
       await activateAnimation(e);
       await clickCountUp();
     },

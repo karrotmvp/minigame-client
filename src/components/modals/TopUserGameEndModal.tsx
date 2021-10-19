@@ -82,12 +82,10 @@ const TopUserGameEndModal: FC<TopUserGameEndModalProps> = (props) => {
     comment: props.comment,
     length: props.comment.length,
   });
-
-  let history = useHistory();
-
   const { townName } = useSelector((state: RootState) => ({
     townName: state.userDataReducer.townName,
   }));
+  let history = useHistory();
   const karrotRaiseApi = useKarrotRaiseApi();
 
   const handleTopUserInput = (e: React.ChangeEvent<HTMLInputElement>) => {
