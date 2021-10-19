@@ -137,15 +137,14 @@ const ReturningUserHome = () => {
   const [userData, setUserData] = useState(initialState);
   const history = useHistory();
   const dispatch = useDispatch();
+  const analytics = useAnalytics();
   const karrotRaiseApi = useKarrotRaiseApi();
   const { townName } = useSelector((state: RootState) => ({
     townName: state.userDataReducer.townName,
   }));
 
-  const analytics = useAnalytics();
-
   const handleGameStart = () => {
-    analytics.logEvent('game_start');
+    analytics.logEvent('click_game_start_button');
     history.push('/game');
   };
 

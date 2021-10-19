@@ -2,12 +2,11 @@
 import { css } from '@emotion/react';
 import { ReactComponent as WaitSvg } from 'assets/wait.svg';
 import { AppEjectionButton } from 'components/buttons/AppEjectionButton';
-import { useAnalytics } from 'services/analytics';
 import Button, { DisabledButton } from 'components/buttons/Button';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'reducers/rootReducer';
-import { trackUser } from 'services/firebase/trackUser';
+import { Analytics, useAnalytics } from 'services/analytics';
 import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
 import { useKarrotMarketMini } from 'services/karrotMarketMini';
 
@@ -34,7 +33,6 @@ const customNavIcon = css`
   outline: none;
   z-index: 10;
 `;
-
 const backgroundStyle = css`
   background: #ffffff;
   display: flex;
@@ -56,7 +54,6 @@ const backgroundStyle = css`
 const svgStyle = css`
   // align-items: stretch;
 `;
-
 const mainText = css`
   font-style: normal;
   font-weight: bold;
@@ -70,7 +67,6 @@ const mainText = css`
   color: #3f3f3f;
   margin-bottom: 18px;
 `;
-
 const subText = css`
   text-align: center;
   font-style: normal;
@@ -154,21 +150,23 @@ const NonServiceArea: React.FC<NonServiceAreaProps> = (props) => {
 
   const runOnSuccess = async (code: string) => {
     getAccessToken(karrotRaiseApi, code, regionId);
+    trackUser(karrotRaiseApi, analytics);
     const response = await karrotRaiseApi.postDemand();
     if (response.isFetched === true) {
       setIsClicked(true);
+      analytics.logEvent('click_non_service_area_demand_button');
+    }
   };
   const handleDemand = async function () {
     karrotMarketMini.startPreset(runOnSuccess);
   };
 
   useEffect(() => {
-    analytics.logEvent('non_service_area');
+    analytics.logEvent('view_non_service_area_page');
     if (props.location.state.isNonServiceUserBack === true) {
       setIsClicked(true);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [analytics, props.location.state.isNonServiceUserBack]);
 
   return (
     <>

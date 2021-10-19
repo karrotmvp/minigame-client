@@ -10,9 +10,7 @@ import { reset } from 'reducers/counterReducer';
 import TopUserRow from 'components/leaderboard/TopUserRow';
 import { useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-
 import { useAnalytics } from 'services/analytics';
-
 import { RootState } from 'reducers/rootReducer';
 import { useKarrotRaiseApi } from 'services/karrotRaiseApi';
 import { useKarrotMarketMini } from 'services/karrotMarketMini';
@@ -81,18 +79,17 @@ const initialState = {
 
 const Leaderboard = () => {
   const [userData, setUserData] = useState(initialState);
-  const history = useHistory();
-  const dispatch = useDispatch();
-  const analytics = useAnalytics();
-
   const { townName } = useSelector((state: RootState) => ({
     townName: state.userDataReducer.townName,
   }));
+  const history = useHistory();
+  const dispatch = useDispatch();
+  const analytics = useAnalytics();
   const karrotRaiseApi = useKarrotRaiseApi();
   const karrotMarketMini = useKarrotMarketMini();
 
   const handlePlayAgain = async () => {
-    analytics.logEvent('game_play_again');
+    analytics.logEvent('click_game_play_again_button');
     dispatch(reset());
     history.replace('/game');
   };

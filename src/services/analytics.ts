@@ -6,6 +6,7 @@ export interface Analytics {
   setUserId(eventname: string, options?: AnalyticsCallOptions): void;
 }
 
+// wow, such empty...
 export const emptyAnalytics: Analytics = {
   logEvent(...args) {
     console.log(...args);

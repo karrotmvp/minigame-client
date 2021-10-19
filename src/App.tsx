@@ -12,8 +12,11 @@ import {
   Redirect,
 } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-// import { AnalyticsContext } from 'services/analytics';
-import { emptyAnalytics } from 'services/analytics';
+import {
+  Analytics,
+  AnalyticsContext,
+  emptyAnalytics,
+} from 'services/analytics';
 import {
   createFirebaseAnalytics,
   loadFromEnv as loadFirebaseAnalyticsConfig,
@@ -25,7 +28,6 @@ import {
   saveTownId,
   saveTownName,
 } from 'reducers/userDataReducer';
-import { trackUser } from 'services/firebase/trackUser';
 import {
   emptyKarrotRaiseApi,
   KarrotRaiseApi,
@@ -61,6 +63,7 @@ function App() {
   // Firebase Analytics가 설정되어 있으면 인스턴스를 초기화하고 교체합니다.
   useEffect(() => {
     try {
+      // check analytics
       const config = loadFirebaseAnalyticsConfig();
       const analytics = createFirebaseAnalytics(config);
       setAnalytics(analytics);
@@ -90,6 +93,20 @@ function App() {
     }
   }, []);
 
+  const trackUser = useCallback(
+    async (karrotRaiseApi: KarrotRaiseApi, analytics: Analytics) => {
+      try {
+        const response = await karrotRaiseApi.getUserInfo();
+        if (response.isFetched === true && response.data) {
+          const { id } = response.data.data;
+          analytics.setUserId(id);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    []
+  );
   const filterNonServiceTown = useCallback(
     async function (
       karrotRaiseApi: KarrotRaiseApi,
@@ -143,7 +160,7 @@ function App() {
         console.error(error);
       }
     },
-    []
+    [trackUser]
   );
 
   useEffect(() => {
@@ -162,6 +179,7 @@ function App() {
     <div css={appStyle}>
       {/* Create combined context provider */}
       <KarrotRaiseApiContext.Provider value={karrotRaiseApi}>
+        <AnalyticsContext.Provider value={analytics}>
           <KarrotMarketMiniContext.Provider value={karrotMarketMini}>
             <Router>
               <Switch>
@@ -208,6 +226,7 @@ function App() {
               </Switch>
             </Router>
           </KarrotMarketMiniContext.Provider>
+        </AnalyticsContext.Provider>
       </KarrotRaiseApiContext.Provider>
     </div>
   );

@@ -12,8 +12,8 @@ import { useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from 'reducers/rootReducer';
 import { useCallback } from 'react';
-import { trackUser } from 'services/firebase/trackUser';
 import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
+import { Analytics, useAnalytics } from 'services/analytics';
 import { useKarrotMarketMini } from 'services/karrotMarketMini';
 // nav
 const customNav = css`
@@ -68,6 +68,7 @@ const NewUserHome = () => {
     townName: state.userDataReducer.townName,
     regionId: state.userDataReducer.regionId,
   }));
+  const analytics = useAnalytics();
   const karrotRaiseApi = useKarrotRaiseApi();
   const karrotMarketMini = useKarrotMarketMini();
 
