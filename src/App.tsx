@@ -12,8 +12,10 @@ import {
   Redirect,
 } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-// import { AnalyticsContext } from 'services/analytics';
-import { emptyAnalytics } from 'services/analytics';
+import {
+  AnalyticsContext,
+  emptyAnalytics,
+} from 'services/analytics';
 import {
   createFirebaseAnalytics,
   loadFromEnv as loadFirebaseAnalyticsConfig,
@@ -108,6 +110,8 @@ function App() {
 
   return (
     <div css={appStyle}>
+                    <AnalyticsContext.Provider value={analytics}>
+
       <Router>
         <Switch>
           <Route
@@ -153,6 +157,8 @@ function App() {
           />
         </Switch>
       </Router>
+              </AnalyticsContext.Provider>
+
     </div>
   );
 }
