@@ -163,17 +163,34 @@ function App() {
     [trackUser]
   );
 
-  useEffect(() => {
+  async function getQueryParams() {
     const searchParams = new URLSearchParams(window.location.search);
     const userCode: string | null = searchParams.get('code');
     const userRegionId: any = searchParams.get('region_id');
-
-    analytics.logEvent('app_launched');
-
-    dispatch(saveRegionId(userRegionId));
-    filterNonServiceTown(userCode, userRegionId);
-    getAccessToken(userCode, userRegionId);
-  }, [analytics, dispatch, filterNonServiceTown, getAccessToken]);
+    return { userCode: userCode, userRegionId: userRegionId };
+  }
+  useEffect(() => {
+    getQueryParams().then((response) => {
+      let { userCode: code, userRegionId: regionId } = response;
+      // What to do if region_id is null? (meaning the mini-app is not opened from karrot market app)
+      // if (code === null) {
+      //   code = 'testcode';
+      // }
+      // if (regionId === null) {
+      //   regionId = 'df5370052b3c';
+      // }
+      analytics.logEvent('app_launch');
+      dispatch(saveRegionId(regionId));
+      filterNonServiceTown(karrotRaiseApi, code, regionId);
+      getAccessToken(karrotRaiseApi, code, regionId, analytics);
+    });
+  }, [
+    analytics,
+    dispatch,
+    filterNonServiceTown,
+    getAccessToken,
+    karrotRaiseApi,
+  ]);
 
   return (
     <div css={appStyle}>
