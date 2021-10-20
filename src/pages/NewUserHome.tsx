@@ -119,7 +119,6 @@ const NewUserHome = () => {
     await karrotMarketMini.startPreset(runOnSuccess);
     await history.push('/game');
   };
-
   return (
     <>
       <div css={customNav}>
