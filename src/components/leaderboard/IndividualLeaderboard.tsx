@@ -110,9 +110,9 @@ const IndividualLeaderboard = () => {
   []);
 
   const refreshLeaderboard = useCallback(
-    (karrotRaiseApi: KarrotRaiseApi, townId: string) => {
-      getUserData(karrotRaiseApi);
-      getTownLeaderboard(karrotRaiseApi, townId);
+    async (karrotRaiseApi: KarrotRaiseApi, townId: string) => {
+      await getUserData(karrotRaiseApi);
+      await getTownLeaderboard(karrotRaiseApi, townId);
     },
     [getTownLeaderboard, getUserData]
   );
