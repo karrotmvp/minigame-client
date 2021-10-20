@@ -7,7 +7,7 @@ import DefaultUserRow from './DefaultUserRow';
 import TopUserRow from './TopUserRow';
 import { ReactComponent as RefreshIcon } from 'assets/refresh.svg';
 import { updateUserData } from 'reducers/userDataReducer';
-import BackendApi from 'services/backendApi/backendApi';
+import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
 
 const divStyle = css`
   padding-top: 10px;
@@ -68,57 +68,69 @@ const IndividualLeaderboard = () => {
     townName: state.userDataReducer.townName,
   }));
   const dispatch = useDispatch();
+  const karrotRaiseApi = useKarrotRaiseApi();
 
-  const baseUrl = process.env.REACT_APP_BASE_URL;
-  const accessToken = window.localStorage.getItem('ACCESS_TOKEN');
   const getUserData = useCallback(
-    async (baseUrl, accessToken) => {
-      const response = await BackendApi.getUserInfo({
-        baseUrl: baseUrl,
-        accessToken: accessToken,
-      });
-      if (response.isFetched === true && response.data) {
-        const { nickname, score, rank, comment } = response.data.data;
-        dispatch(updateUserData(nickname, score, rank, comment));
-        console.log('user data refreshed');
+    async function (karrotRaiseApi: KarrotRaiseApi) {
+      try {
+        const response = await karrotRaiseApi.getUserInfo();
+        if (response.isFetched === true && response.data) {
+          console.log('individualLeaderboard, getUserData', response.data);
+          const { nickname, score, rank, comment } = response.data.data;
+          dispatch(updateUserData(nickname, score, rank, comment));
+        }
+      } catch (error) {
+        console.error(error);
       }
     },
     [dispatch]
   );
 
-  const getTownLeaderboard = useCallback(async (baseUrl, townId) => {
-    const response = await BackendApi.getTownUserRank({
-      baseUrl: baseUrl,
-      townId: townId,
-    });
-    if (response.isFetched && response.data) {
-      const responseData = response.data.data;
-      const indexedTownRankData = responseData.map(
-        (item: any, index: number) => ({
-          rank: index + 1,
-          ...item,
-        })
-      );
-      setTownRankData(indexedTownRankData);
-      console.log('leaderboard data refreshed');
+  const getTownLeaderboard = useCallback(async function (
+    karrotRaiseApi: KarrotRaiseApi,
+    townId: string
+  ) {
+    try {
+      const response = await karrotRaiseApi.getTownUserRank(townId);
+      console.log('individualLeaderboard, getTownLeaderbarod', response.data);
+      if (response.isFetched && response.data) {
+        const responseData = response.data.data;
+        const indexedTownRankData = responseData.map(
+          (item: any, index: number) => ({
+            rank: index + 1,
+            ...item,
+          })
+        );
+        setTownRankData(indexedTownRankData);
+      }
+    } catch (error) {
+      console.error(error);
     }
-  }, []);
+  },
+  []);
 
-  const refreshLeaderboard = async () => {
-    await getUserData(baseUrl, accessToken);
-    await getTownLeaderboard(baseUrl, townId);
-  };
+  const refreshLeaderboard = useCallback(
+    async (karrotRaiseApi: KarrotRaiseApi, townId: string) => {
+      await getUserData(karrotRaiseApi);
+      await getTownLeaderboard(karrotRaiseApi, townId);
+    },
+    [getTownLeaderboard, getUserData]
+  );
 
   useEffect(() => {
-    refreshLeaderboard();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    refreshLeaderboard(karrotRaiseApi, townId);
+  }, [karrotRaiseApi, refreshLeaderboard, townId]);
 
   return (
     <div css={divStyle}>
       <div css={refreshDivStyle}>
         <p>이번 주 랭킹</p>
-        <button onClick={refreshLeaderboard} css={refreshIconStyle}>
+        <button
+          onClick={() => {
+            refreshLeaderboard(karrotRaiseApi, townId);
+          }}
+          css={refreshIconStyle}
+        >
           <RefreshIcon />
         </button>
       </div>

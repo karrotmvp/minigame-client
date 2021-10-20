@@ -13,6 +13,7 @@ import {
 } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import {
+  Analytics,
   AnalyticsContext,
   emptyAnalytics,
 } from 'services/analytics';
@@ -20,7 +21,6 @@ import {
   createFirebaseAnalytics,
   loadFromEnv as loadFirebaseAnalyticsConfig,
 } from 'services/analytics/firebase';
-
 import ReturningUserHome from 'pages/ReturningUserHome';
 import NonServiceArea from 'pages/NonServiceArea';
 import {
@@ -28,8 +28,23 @@ import {
   saveTownId,
   saveTownName,
 } from 'reducers/userDataReducer';
-import BackendApi from 'services/backendApi/backendApi';
-import { trackUser } from 'services/firebase/trackUser';
+import {
+  emptyKarrotRaiseApi,
+  KarrotRaiseApi,
+  KarrotRaiseApiContext,
+} from 'services/karrotRaiseApi';
+import {
+  createKarrotRaiseApi,
+  loadFromEnv as loadKarrotRaiseApiConfig,
+} from 'services/api/karrotRaise';
+import {
+  emptyKarrotMarketMini,
+  KarrotMarketMiniContext,
+} from 'services/karrotMarketMini';
+import {
+  createKarrotMarketMini,
+  loadFromEnv as loadKarrotMarketMiniConfig,
+} from 'services/karrotMarket/mini';
 
 const appStyle = css`
   height: 100vh;
@@ -40,11 +55,15 @@ function App() {
   const [userTownData, setUserTownData] = useState<string[]>([]);
   const [isNonServiceUserBack, setIsNonServiceUserBack] = useState(false);
   const dispatch = useDispatch();
-
+  const [karrotMarketMini, setKarrotMarketMini] = useState(
+    emptyKarrotMarketMini
+  );
+  const [karrotRaiseApi, setKarrotRaiseApi] = useState(emptyKarrotRaiseApi);
   const [analytics, setAnalytics] = useState(emptyAnalytics);
   // Firebase Analytics가 설정되어 있으면 인스턴스를 초기화하고 교체합니다.
   useEffect(() => {
     try {
+      // check analytics
       const config = loadFirebaseAnalyticsConfig();
       const analytics = createFirebaseAnalytics(config);
       setAnalytics(analytics);
@@ -52,113 +71,182 @@ function App() {
       // noop
     }
   }, []);
+  useEffect(() => {
+    try {
+      // check karrot-raise api
+      const karrotRaiseApiConfig = loadKarrotRaiseApiConfig();
+      const karrotRaiseApi = createKarrotRaiseApi(karrotRaiseApiConfig);
+      setKarrotRaiseApi(karrotRaiseApi);
+    } catch {
+      // no-op
+    }
+  }, []);
+  useEffect(() => {
+    try {
+      // check karrot-mini
+      const karrotMarketMiniConfig = loadKarrotMarketMiniConfig();
+      const karrotMarketMini = createKarrotMarketMini(karrotMarketMiniConfig);
+      setKarrotMarketMini(karrotMarketMini);
+    } catch (error) {
+      console.error(error);
+      // no-op
+    }
+  }, []);
 
-  const filterNonServiceTown = useCallback(
-    async (code: string | null, regionId: string) => {
-      const response = await BackendApi.getTownId({ regionId: regionId });
-      // example -> city=서울특별시(name1) district=서초구(name2)
-      if (response.isFetched && response.data) {
-        const { id: districtId, name2: districtName } = response.data.data;
-        dispatch(saveTownId(districtId));
-        dispatch(saveTownName(districtName));
-        setUserTownData([districtId, districtName]);
-        // Filter out if user is not in 서초구
-        // 서초구id = df5370052b3c
-        if (districtId !== 'df5370052b3c') {
-          if (code !== null || undefined) {
-            setIsNonServiceUserBack(true);
-          }
-          setPageRedirection('non-service-area');
+  const trackUser = useCallback(
+    async (karrotRaiseApi: KarrotRaiseApi, analytics: Analytics) => {
+      try {
+        const response = await karrotRaiseApi.getUserInfo();
+        if (response.isFetched === true && response.data) {
+          const { id } = response.data.data;
+          console.log('tracking user... id:', id);
+          analytics.setUserId(id);
         }
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    []
+  );
+  const filterNonServiceTown = useCallback(
+    async function (
+      karrotRaiseApi: KarrotRaiseApi,
+      code: string | null,
+      regionId: string
+    ) {
+      try {
+        const response = await karrotRaiseApi.getTownId(regionId);
+        // example -> city=서울특별시(name1) district=서초구(name2)
+        if (response.isFetched && response.data) {
+          const { id: districtId, name2: districtName } = response.data.data;
+          dispatch(saveTownId(districtId));
+          dispatch(saveTownName(districtName));
+          setUserTownData([districtId, districtName]);
+          // Filter out if user is not in 서초구
+          // 서초구id = df5370052b3c
+          if (districtId !== 'df5370052b3c') {
+            if (code !== null || undefined) {
+              setIsNonServiceUserBack(true);
+            }
+            setPageRedirection('non-service-area');
+          }
+        }
+      } catch (error) {
+        console.error(error);
       }
     },
     [dispatch]
   );
   const getAccessToken = useCallback(
-    async (code: string | null, regionId: string) => {
+    async function (
+      karrotRaiseApi: KarrotRaiseApi,
+      code: string | null,
+      regionId: string,
+      analytics: Analytics
+    ): Promise<void> {
       // code !== null means user is a returning user
-      if (code !== null) {
-        const response = await BackendApi.postOauth2({
-          code: code,
-          regionId: regionId,
-        });
-        if (response.isFetched && response.data) {
-          const { accessToken } = response.data.data;
-          console.log('access-token', accessToken);
-          window.localStorage.setItem('ACCESS_TOKEN', accessToken);
-          await trackUser();
-          setPageRedirection('home');
+      try {
+        if (code !== null) {
+          const response = await karrotRaiseApi.postOauth2(code, regionId);
+          console.log(response);
+          if (response.isFetched && response.data) {
+            const { accessToken } = response.data.data;
+            window.localStorage.setItem('ACCESS_TOKEN', accessToken);
+            await trackUser(karrotRaiseApi, analytics);
+            setPageRedirection('home');
+          }
+        } else {
+          setPageRedirection('new-user-home');
         }
-      } else {
-        setPageRedirection('new-user-home');
+      } catch (error) {
+        console.error(error);
       }
     },
-    []
+    [trackUser]
   );
 
-  useEffect(() => {
-    const searchParams = new URLSearchParams(window.location.search);
+  async function getQueryParams(targetUrl: string) {
+    const searchParams = new URLSearchParams(targetUrl);
     const userCode: string | null = searchParams.get('code');
     const userRegionId: any = searchParams.get('region_id');
-
-    analytics.logEvent('launch_app');
-
-    dispatch(saveRegionId(userRegionId));
-    filterNonServiceTown(userCode, userRegionId);
-    getAccessToken(userCode, userRegionId);
-  }, [analytics, dispatch, filterNonServiceTown, getAccessToken]);
+    return { userCode: userCode, userRegionId: userRegionId };
+  }
+  useEffect(() => {
+    getQueryParams(window.location.search).then((response) => {
+      let { userCode: code, userRegionId: regionId } = response;
+      // What to do if region_id is null? (meaning the mini-app is not opened from karrot market app)
+      // if (code === null) {
+      //   code = 'testcode';
+      // }
+      // if (regionId === null) {
+      //   regionId = 'df5370052b3c';
+      // }
+      analytics.logEvent('app_launch');
+      dispatch(saveRegionId(regionId));
+      filterNonServiceTown(karrotRaiseApi, code, regionId);
+      getAccessToken(karrotRaiseApi, code, regionId, analytics);
+    });
+  }, [
+    analytics,
+    dispatch,
+    filterNonServiceTown,
+    getAccessToken,
+    karrotRaiseApi,
+  ]);
 
   return (
     <div css={appStyle}>
-                    <AnalyticsContext.Provider value={analytics}>
-
-      <Router>
-        <Switch>
-          <Route
-            exact
-            path="/"
-            render={() => {
-              console.log(`Redirect page to ${pageRedirection}`);
-              return pageRedirection === 'non-service-area' ? (
-                <Redirect
-                  to={{
-                    pathname: '/non-service-area',
-                    state: {
-                      townName: userTownData[1],
-                      isNonServiceUserBack: isNonServiceUserBack,
-                    },
+      {/* Create combined context provider */}
+      <KarrotRaiseApiContext.Provider value={karrotRaiseApi}>
+        <AnalyticsContext.Provider value={analytics}>
+          <KarrotMarketMiniContext.Provider value={karrotMarketMini}>
+            <Router>
+              <Switch>
+                <Route
+                  exact
+                  path="/"
+                  render={() => {
+                    return pageRedirection === 'non-service-area' ? (
+                      <Redirect
+                        to={{
+                          pathname: '/non-service-area',
+                          state: {
+                            townName: userTownData[1],
+                            isNonServiceUserBack: isNonServiceUserBack,
+                          },
+                        }}
+                      />
+                    ) : pageRedirection === 'home' ? (
+                      <Redirect to="/home" />
+                    ) : pageRedirection === 'new-user-home' ? (
+                      <Redirect to="/new-user-home" />
+                    ) : (
+                      <LoadingScreen />
+                    );
                   }}
                 />
-              ) : pageRedirection === 'home' ? (
-                <Redirect to="/home" />
-              ) : pageRedirection === 'new-user-home' ? (
-                <Redirect to="/new-user-home" />
-              ) : (
-                <LoadingScreen />
-              );
-            }}
-          />
-          <Route exact path="/new-user-home">
-            <NewUserHome />
-          </Route>
-          <Route exact path="/home">
-            <ReturningUserHome />
-          </Route>
-          <Route exact path="/game">
-            <Game />
-          </Route>
-          <Route exact path="/leaderboard">
-            <Leaderboard />
-          </Route>
-          <Route
-            exact
-            path="/non-service-area"
-            render={(props: any) => <NonServiceArea {...props} />}
-          />
-        </Switch>
-      </Router>
-              </AnalyticsContext.Provider>
-
+                <Route exact path="/new-user-home">
+                  <NewUserHome />
+                </Route>
+                <Route exact path="/home">
+                  <ReturningUserHome />
+                </Route>
+                <Route exact path="/game">
+                  <Game />
+                </Route>
+                <Route exact path="/leaderboard">
+                  <Leaderboard />
+                </Route>
+                <Route
+                  exact
+                  path="/non-service-area"
+                  render={(props: any) => <NonServiceArea {...props} />}
+                />
+              </Switch>
+            </Router>
+          </KarrotMarketMiniContext.Provider>
+        </AnalyticsContext.Provider>
+      </KarrotRaiseApiContext.Provider>
     </div>
   );
 }

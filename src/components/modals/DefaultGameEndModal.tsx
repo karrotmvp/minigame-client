@@ -10,8 +10,9 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'reducers/rootReducer';
 import Modal from 'react-modal';
 import { commafy } from 'functions/numberFunctions';
-import BackendApi from 'services/backendApi/backendApi';
+import { useKarrotRaiseApi } from 'services/karrotRaiseApi';
 import { useAnalytics } from 'services/analytics';
+
 
 const modalStyle = css`
   position: absolute;
@@ -72,37 +73,38 @@ const DefaultGameEndModal = ({ closeModal }: DefaultGameEndModalProps) => {
   const [userData, setUserData] = useState(initialState);
   const analytics = useAnalytics();
 
+
   const { clickCount } = useSelector((state: RootState) => ({
     clickCount: state.counterReducer.clickCount,
   }));
   let history = useHistory();
+  const karrotRaiseApi = useKarrotRaiseApi();
 
   const handleViewLeaderboard = () => {
     analytics.logEvent('click_view_leaderboard_button');
     history.replace('/leaderboard');
   };
 
-  const baseUrl = process.env.REACT_APP_BASE_URL;
-  const accessToken = window.localStorage.getItem('ACCESS_TOKEN');
-  const getUserData = useCallback(async (baseUrl, accessToken) => {
-    const response = await BackendApi.getUserInfo({
-      baseUrl: baseUrl,
-      accessToken: accessToken,
-    });
-    if (response.isFetched === true && response.data) {
-      const { nickname, score, rank, comment } = response.data.data;
-      setUserData({
-        nickname: nickname,
-        score: score,
-        rank: rank,
-        comment: comment,
-      });
+  const getUserData = useCallback(async (karrotRaiseApi) => {
+    try {
+      const response = await karrotRaiseApi.getUserInfo();
+      if (response.isFetched === true && response.data) {
+        const { nickname, score, rank, comment } = response.data.data;
+        setUserData({
+          nickname: nickname,
+          score: score,
+          rank: rank,
+          comment: comment,
+        });
+      }
+    } catch (error) {
+      console.error(error);
     }
   }, []);
 
   useEffect(() => {
-    getUserData(baseUrl, accessToken);
-  }, [accessToken, baseUrl, getUserData]);
+    getUserData(karrotRaiseApi);
+  }, [getUserData, karrotRaiseApi]);
 
   return (
     <>

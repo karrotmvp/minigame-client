@@ -9,14 +9,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { reset } from 'reducers/counterReducer';
 import TopUserRow from 'components/leaderboard/TopUserRow';
 import { useCallback, useEffect, useState } from 'react';
-// import BackendService from 'services/backendService';
 import { useHistory } from 'react-router-dom';
-
 import { useAnalytics } from 'services/analytics';
-
 import { RootState } from 'reducers/rootReducer';
-import { getMini } from 'services/karrotmarket/mini';
-import BackendApi from 'services/backendApi/backendApi';
+import { useKarrotRaiseApi } from 'services/karrotRaiseApi';
+import { useKarrotMarketMini } from 'services/karrotMarketMini';
 
 // nav
 const customNav = css`
@@ -82,13 +79,14 @@ const initialState = {
 
 const Leaderboard = () => {
   const [userData, setUserData] = useState(initialState);
-  const history = useHistory();
-  const dispatch = useDispatch();
-  const analytics = useAnalytics();
-
   const { townName } = useSelector((state: RootState) => ({
     townName: state.userDataReducer.townName,
   }));
+  const history = useHistory();
+  const dispatch = useDispatch();
+  const analytics = useAnalytics();
+  const karrotRaiseApi = useKarrotRaiseApi();
+  const karrotMarketMini = useKarrotMarketMini();
 
   const handlePlayAgain = async () => {
     analytics.logEvent('click_game_play_again_button');
@@ -99,34 +97,32 @@ const Leaderboard = () => {
   // Share must be triggered by "user activation"
   const handleShare = async () => {
     analytics.logEvent('click_share_button');
-    const mini = getMini();
-    mini.share({
-      url: 'https://daangn.onelink.me/HhUa/3a219555',
-      text: '당근모아를 플레이 하고 동네 이웃들에게 한 마디를 남겨보세요!',
-    });
+    const url = 'https://daangn.onelink.me/HhUa/3a219555';
+    const text =
+      '우리동네에서 나는 몇 등? 당근모아를 플레이 하고 동네 이웃들에게 한 마디를 남겨보세요!';
+    karrotMarketMini.share(url, text);
   };
 
-  const baseUrl = process.env.REACT_APP_BASE_URL;
-  const accessToken = window.localStorage.getItem('ACCESS_TOKEN');
-  const getUserData = useCallback(async (baseUrl, accessToken) => {
-    const response = await BackendApi.getUserInfo({
-      baseUrl: baseUrl,
-      accessToken: accessToken,
-    });
-    if (response.isFetched && response.data) {
-      const { nickname, score, rank, comment } = response.data.data;
-      setUserData({
-        nickname: nickname,
-        score: score,
-        rank: rank,
-        comment: comment,
-      });
+  const getUserData = useCallback(async function (karrotRaiseApi) {
+    try {
+      const response = await karrotRaiseApi.getUserInfo();
+      if (response.isFetched && response.data) {
+        const { nickname, score, rank, comment } = response.data.data;
+        setUserData({
+          nickname: nickname,
+          score: score,
+          rank: rank,
+          comment: comment,
+        });
+      }
+    } catch (error) {
+      console.error(error);
     }
   }, []);
 
   useEffect(() => {
-    getUserData(baseUrl, accessToken);
-  }, [accessToken, baseUrl, getUserData]);
+    getUserData(karrotRaiseApi);
+  }, [getUserData, karrotRaiseApi]);
 
   useEffect(() => {
     return () => {

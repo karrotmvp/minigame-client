@@ -1,11 +1,10 @@
 import IconClose from 'assets/IconClose';
-import { getMini } from 'services/karrotmarket/mini';
+import { useKarrotMarketMini } from 'services/karrotMarketMini';
 
 const AppEjectionButton = () => {
-  const mini = getMini();
+  const karrotMarketMini = useKarrotMarketMini();
   const handleAppEjection = () => {
-    mini.close();
-    console.log('Ejected from the app. Now back to Karrot Market');
+    karrotMarketMini.close();
   };
   return (
     // eslint-disable-next-line jsx-a11y/anchor-is-valid
