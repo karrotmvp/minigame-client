@@ -171,6 +171,7 @@ const ReturningUserHome = () => {
   );
   useEffect(() => {
     getUserData(karrotRaiseApi);
+    analytics.logEvent('view_returning_user_home_page');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

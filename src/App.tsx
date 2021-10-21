@@ -172,6 +172,7 @@ function App() {
     return { userCode: userCode, userRegionId: userRegionId };
   }
   useEffect(() => {
+    analytics.logEvent('launch_app');
     getQueryParams(window.location.search).then((response) => {
       let { userCode: code, userRegionId: regionId } = response;
       // What to do if region_id is null? (meaning the mini-app is not opened from karrot market app)
@@ -181,7 +182,6 @@ function App() {
       // if (regionId === null) {
       //   regionId = 'df5370052b3c';
       // }
-      analytics.logEvent('app_launch');
       dispatch(saveRegionId(regionId));
       filterNonServiceTown(karrotRaiseApi, code, regionId);
       getAccessToken(karrotRaiseApi, code, regionId, analytics);

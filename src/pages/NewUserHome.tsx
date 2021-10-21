@@ -11,7 +11,7 @@ import { AppEjectionButton } from 'components/buttons/AppEjectionButton';
 import { useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from 'reducers/rootReducer';
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { Analytics, useAnalytics } from 'services/analytics';
 import { useKarrotMarketMini } from 'services/karrotMarketMini';
 import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
@@ -119,6 +119,10 @@ const NewUserHome = () => {
     await karrotMarketMini.startPreset(runOnSuccess);
     await history.push('/game');
   };
+
+  useEffect(() => {
+    analytics.logEvent('view_new_user_home_page');
+  }, [analytics]);
   return (
     <>
       <div css={customNav}>
