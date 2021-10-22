@@ -24,7 +24,6 @@ export interface GetTownIdResponse {
       name2: string;
     };
   };
-
   isFetched: boolean;
 }
 export interface GetTownUserRankRequest {
@@ -38,6 +37,16 @@ export interface GetTownUserRankResponse {
       score: number;
       userId: string;
     }[];
+  };
+  isFetched: boolean;
+}
+export interface GetDistrictRankResponse {
+  data?: {
+    data: {
+      name1: string;
+      name2: string;
+      score: number;
+    };
   };
   isFetched: boolean;
 }

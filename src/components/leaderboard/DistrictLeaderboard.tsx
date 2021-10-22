@@ -6,8 +6,8 @@ import { RootState } from 'reducers/rootReducer';
 import DefaultUserRow from './DefaultUserRow';
 import TopUserRow from './TopUserRow';
 import { ReactComponent as RefreshIcon } from 'assets/refresh.svg';
-import { updateUserData } from 'reducers/userDataReducer';
 import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
+import { updateUserData } from 'reducers/userDataReducer';
 
 const divStyle = css`
   padding-top: 10px;
@@ -47,21 +47,7 @@ const refreshIconStyle = css`
   outline: inherit;
 `;
 
-const infoText = css`
-  margin: 17px 0 17px;
-
-  font-style: normal;
-  font-weight: normal;
-  font-size: 16px;
-  line-height: 161.7%;
-  /* or 26px */
-
-  text-align: center;
-
-  color: #7c7c7c;
-`;
-
-const IndividualLeaderboard = () => {
+const DistrictLeaderboard = () => {
   const [townRankData, setTownRankData] = useState<any[]>([]);
   const { townId, townName } = useSelector((state: RootState) => ({
     townId: state.userDataReducer.townId,
@@ -70,51 +56,59 @@ const IndividualLeaderboard = () => {
   const dispatch = useDispatch();
   const karrotRaiseApi = useKarrotRaiseApi();
 
-  const getUserData = useCallback(
-    async function (karrotRaiseApi: KarrotRaiseApi) {
-      try {
-        const response = await karrotRaiseApi.getUserInfo();
-        if (response.isFetched === true && response.data) {
-          console.log('individualLeaderboard, getUserData', response.data);
-          const { nickname, score, rank, comment } = response.data.data;
-          dispatch(updateUserData(nickname, score, rank, comment));
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    },
-    [dispatch]
-  );
+  // const getUserData = useCallback(
+  //   async function (karrotRaiseApi: KarrotRaiseApi) {
+  //     try {
+  //       const response = await karrotRaiseApi.getUserInfo();
+  //       if (response.isFetched === true && response.data) {
+  //         console.log('individualLeaderboard, getUserData', response.data);
+  //         const { nickname, score, rank, comment } = response.data.data;
+  //         dispatch(updateUserData(nickname, score, rank, comment));
+  //       }
+  //     } catch (error) {
+  //       console.error(error);
+  //     }
+  //   },
+  //   [dispatch]
+  // );
 
-  const getTownLeaderboard = useCallback(async function (
-    karrotRaiseApi: KarrotRaiseApi,
-    townId: string
-  ) {
-    try {
-      const response = await karrotRaiseApi.getTownUserRank(townId);
-      console.log('individualLeaderboard, getTownLeaderbarod', response.data);
-      if (response.isFetched && response.data) {
-        const responseData = response.data.data;
-        const indexedTownRankData = responseData.map(
-          (item: any, index: number) => ({
-            rank: index + 1,
-            ...item,
-          })
-        );
-        setTownRankData(indexedTownRankData);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  },
-  []);
+  // const getTownLeaderboard = useCallback(async function (
+  //   karrotRaiseApi: KarrotRaiseApi,
+  //   townId: string
+  // ) {
+  //   try {
+  //     const response = await karrotRaiseApi.getTownUserRank(townId);
+  //     console.log('individualLeaderboard, getTownLeaderbarod', response.data);
+  //     if (response.isFetched && response.data) {
+  //       const responseData = response.data.data;
+  //       const indexedTownRankData = responseData.map(
+  //         (item: any, index: number) => ({
+  //           rank: index + 1,
+  //           ...item,
+  //         })
+  //       );
+  //       setTownRankData(indexedTownRankData);
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // },
+  // []);
+
+  // const getDistrictLeaderboardData = useCallback(
+  //   async () => {
+  //     callback
+  //   },
+  //   [input],
+  // )
 
   const refreshLeaderboard = useCallback(
     async (karrotRaiseApi: KarrotRaiseApi, townId: string) => {
-      await getUserData(karrotRaiseApi);
-      await getTownLeaderboard(karrotRaiseApi, townId);
+      // await getUserData(karrotRaiseApi);
+      // await getTownLeaderboard(karrotRaiseApi, townId);
     },
-    [getTownLeaderboard, getUserData]
+    // [getTownLeaderboard, getUserData]
+    []
   );
 
   useEffect(() => {
@@ -147,11 +141,7 @@ const IndividualLeaderboard = () => {
             />
           );
         })}
-        <p css={infoText}>
-          🎉 {townName} TOP 10 🎉 이 되어서
-          <br />
-          이웃들에게 한 마디를 남겨보세요!
-        </p>
+
         {townRankData.slice(10).map((user) => {
           return (
             <DefaultUserRow
@@ -167,4 +157,4 @@ const IndividualLeaderboard = () => {
   );
 };
 
-export default IndividualLeaderboard;
+export default DistrictLeaderboard;

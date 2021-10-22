@@ -10,6 +10,7 @@ export function createKarrotRaiseApi(
   const accessToken = config.accessToken;
   // const axios = useAxios();
 
+  // OAUTH2
   async function postOauth2(code: string, regionId: string) {
     try {
       const response = await axios.post(
@@ -31,6 +32,8 @@ export function createKarrotRaiseApi(
       return { isFetched: false };
     }
   }
+
+  // TOWN
   async function getTownId(regionId: string) {
     try {
       const { data } = await axios.get(`${baseUrl}/town?regionId=${regionId}`);
@@ -42,13 +45,24 @@ export function createKarrotRaiseApi(
   }
   async function getTownUserRank(townId: string) {
     try {
-      const { data } = await axios.get(`${baseUrl}/towns/${townId}/user-rank`);
+      const { data } = await axios.get(`${baseUrl}/towns/${townId}/users/rank`);
       return { isFetched: true, data: data };
     } catch (error) {
       console.error(error);
       return { isFetched: false };
     }
   }
+  async function getDistrictRank() {
+    try {
+      const { data } = await axios.get(`${baseUrl}/towns/rank`);
+      return { isFetched: true, data: data };
+    } catch (error) {
+      console.error(error);
+      return { isFetched: false };
+    }
+  }
+
+  // USER
   async function getUserInfo() {
     try {
       const { data } = await axios.get(`${baseUrl}/users/me`, {
@@ -62,6 +76,8 @@ export function createKarrotRaiseApi(
       return { isFetched: false };
     }
   }
+
+  // USER RANK
   async function patchUserScore(score: number) {
     try {
       await axios.patch(
@@ -102,6 +118,8 @@ export function createKarrotRaiseApi(
       return { isFetched: false };
     }
   }
+
+  // DEMAND CONTROLLER
   async function postDemand() {
     try {
       await axios.post(`${baseUrl}/demand`, null, {
@@ -125,6 +143,7 @@ export function createKarrotRaiseApi(
     postOauth2,
     getTownId,
     getTownUserRank,
+    getDistrictRank,
     getUserInfo,
     patchUserScore,
     patchUserComment,

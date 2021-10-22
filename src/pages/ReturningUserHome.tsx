@@ -8,7 +8,7 @@ import {
   mediumTextStyle,
 } from 'styles/textStyle';
 import Button from 'components/buttons/Button';
-import IndividualLeaderboard from 'components/leaderboard/IndividualLeaderboard';
+import LeaderboardTabs from 'components/leaderboard/LeaderboardTabs';
 import { useCallback, useEffect, useState } from 'react';
 import { AppEjectionButton } from 'components/buttons/AppEjectionButton';
 
@@ -198,7 +198,8 @@ const ReturningUserHome = () => {
         </div>
 
         <div css={leaderboardWrapper}>
-          <IndividualLeaderboard />
+          {/* <IndividualLeaderboard /> */}
+          <LeaderboardTabs />
         </div>
         <div
           // to="/game"

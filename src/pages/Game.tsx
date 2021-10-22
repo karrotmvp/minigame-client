@@ -146,19 +146,18 @@ const GameEndButton = ({ handleGameEnd }: GameEndButtonProps) => {
 };
 
 type Particle = {
-  id: string,
-  posX: number,
-  posY: number,
+  id: string;
+  posX: number;
+  posY: number;
 };
 
 type GameState = {
-  particles: Particle[],
+  particles: Particle[];
 };
 
-type GameAction = (
-  | { type: 'spawn', posX: number, posY: number }
-  | { type: 'remove', id: string }
-);
+type GameAction =
+  | { type: 'spawn'; posX: number; posY: number }
+  | { type: 'remove'; id: string };
 
 const reducer: React.Reducer<GameState, GameAction> = (state, action) => {
   switch (action.type) {
@@ -174,7 +173,9 @@ const reducer: React.Reducer<GameState, GameAction> = (state, action) => {
     case 'remove':
       return {
         ...state,
-        particles: state.particles.filter(particle => particle.id !== action.id),
+        particles: state.particles.filter(
+          (particle) => particle.id !== action.id
+        ),
       };
     default:
       return state;
@@ -196,15 +197,21 @@ const Game = () => {
   const analytics = useAnalytics();
   const karrotRaiseApi = useKarrotRaiseApi();
 
-  type ParticleDestroyHandler = React.ComponentProps<typeof ClickAnimation>['onDestroy'];
-  const handleParticleDestroy = React.useCallback<ParticleDestroyHandler>(id => {
-    gameDispatch({ type: 'remove', id });
-  }, []);
+  type ParticleDestroyHandler = React.ComponentProps<
+    typeof ClickAnimation
+  >['onDestroy'];
+  const handleParticleDestroy = React.useCallback<ParticleDestroyHandler>(
+    (id) => {
+      gameDispatch({ type: 'remove', id });
+    },
+    []
+  );
 
   const activateAnimation = (e: React.TouchEvent) => {
     const clientX = e.touches[0].clientX;
     const clientY = e.touches[0].clientY;
-    const posX =  clientX - 25, posY = clientY - 50;
+    const posX = clientX - 25,
+      posY = clientY - 50;
     gameDispatch({ type: 'spawn', posX, posY });
   };
 
@@ -212,7 +219,7 @@ const Game = () => {
     e.stopPropagation();
     activateAnimation(e);
     dispatch(incrementClickCount());
-  }
+  };
 
   const activateBigKarrotAnimation = (e: React.TouchEvent) => {
     handleScreenTouch(e);
@@ -293,8 +300,12 @@ const Game = () => {
               width: 'auto',
             }}
           />
-          {state.particles.map(item => (
-            <ClickAnimation key={item.id} {...item} onDestroy={handleParticleDestroy} />
+          {state.particles.map((item) => (
+            <ClickAnimation
+              key={item.id}
+              {...item}
+              onDestroy={handleParticleDestroy}
+            />
           ))}
         </div>
       </div>

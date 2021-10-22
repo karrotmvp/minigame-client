@@ -14,6 +14,8 @@ import { useAnalytics } from 'services/analytics';
 import { RootState } from 'reducers/rootReducer';
 import { useKarrotRaiseApi } from 'services/karrotRaiseApi';
 import { useKarrotMarketMini } from 'services/karrotMarketMini';
+import { Tabs } from '@karrotframe/tabs';
+import '@karrotframe/tabs/index.css';
 
 // nav
 const customNav = css`
@@ -82,6 +84,9 @@ const Leaderboard = () => {
   const { townName } = useSelector((state: RootState) => ({
     townName: state.userDataReducer.townName,
   }));
+
+  const [activeTabKey, setActiveTabKey] = useState<string>('individual');
+
   const history = useHistory();
   const dispatch = useDispatch();
   const analytics = useAnalytics();
@@ -167,9 +172,7 @@ const Leaderboard = () => {
           </div>
         </div>
 
-        <div css={leaderboardWrapper}>
-          <IndividualLeaderboard />
-        </div>
+        <div css={leaderboardWrapper}>{/* <IndividualLeaderboard /> */}</div>
         <div css={actionItemWrapper}>
           <Button
             size={`medium`}
