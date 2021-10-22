@@ -110,6 +110,10 @@ const NewUserHome = () => {
     },
     []
   );
+<<<<<<< HEAD
+=======
+
+>>>>>>> 66b69beee55dcc69b7ac8fd6094ccf65a141c942
   const runOnSuccess = (code: string) => {
     getAccessToken(karrotRaiseApi, code, regionId);
     trackUser(karrotRaiseApi, analytics);
