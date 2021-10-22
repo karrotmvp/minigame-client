@@ -110,16 +110,19 @@ const NewUserHome = () => {
     []
   );
 
-  const runOnSuccess = async (code: string) => {
-    await getAccessToken(karrotRaiseApi, code, regionId);
-    await trackUser(karrotRaiseApi, analytics);
+  const runOnSuccess = (code: string) => {
+    getAccessToken(karrotRaiseApi, code, regionId);
+    trackUser(karrotRaiseApi, analytics);
     analytics.logEvent('click_game_start_button', { type: 'new_user' });
+    history.push('/game');
   };
-  const handleNewUserAgreement = async function () {
-    await karrotMarketMini.startPreset(runOnSuccess);
-    await history.push('/game');
+  const handleNewUserAgreement = function () {
+    // bypass mini preset in Web environment
+    if (getMini().environment === 'Web') {
+      history.push('/game');
+    }
+    karrotMarketMini.startPreset(runOnSuccess);
   };
-
   useEffect(() => {
     analytics.logEvent('view_new_user_home_page');
   }, [analytics]);
