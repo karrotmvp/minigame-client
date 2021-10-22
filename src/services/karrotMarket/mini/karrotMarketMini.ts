@@ -6,7 +6,7 @@ import {
 import { KarrotMarketMiniConfig } from './config';
 
 let mini: Mini;
-const getMini = () => {
+export const getMini = () => {
   if (mini) {
     return mini;
   } else {
