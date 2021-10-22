@@ -123,7 +123,6 @@ const NewUserHome = () => {
     }
     karrotMarketMini.startPreset(runOnSuccess);
   };
-
   useEffect(() => {
     analytics.logEvent('view_new_user_home_page');
   }, [analytics]);
