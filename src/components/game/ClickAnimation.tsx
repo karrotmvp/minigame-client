@@ -1,11 +1,8 @@
 /** @jsxImportSource @emotion/react */
+import * as React from 'react';
 import { css, keyframes } from '@emotion/react';
-import { ReactComponent as Karrot } from 'assets/karrot.svg';
+import karrotImageUrl from 'assets/karrot.svg';
 
-interface karrotStyleProps {
-  posX: number;
-  posY: number;
-}
 const animation = keyframes`
   100% {
     transform: translateY(-500%);
@@ -13,9 +10,8 @@ const animation = keyframes`
   }
 }
 `;
-const karrotStyle = ({ posX, posY }: karrotStyleProps) => css`
-  left: ${posX}px;
-  top: ${posY}px;
+
+const karrotImageStyle = css`
   position: absolute;
   z-index: 10;
   animation-duration: 1s;
@@ -23,23 +19,33 @@ const karrotStyle = ({ posX, posY }: karrotStyleProps) => css`
   animation-delay: 0s;
   animation-iteration-count: 1;
   animation-name: ${animation};
+  animation-fill-mode: forwards;
 
   pointer-events: none;
-
-  // transform: translateY(-500%);
-
-  // transition: transform 500ms ease-in-out 25ms;
 `;
+
 interface ClickAnimationProps {
+  id: string;
   posX: number;
   posY: number;
+  onDestroy: (id: string) => void;
 }
-const ClickAnimation: React.FC<ClickAnimationProps> = (props) => {
+
+const ClickAnimation: React.FC<ClickAnimationProps> = ({ id, posX, posY, onDestroy }) => {
+  React.useEffect(() => {
+    setTimeout(() => {
+      onDestroy(id);
+    }, 1500);
+  }, [id, onDestroy]);
+
   return (
-    <>
-      <Karrot css={karrotStyle({ posX: props.posX, posY: props.posY })} />
-    </>
+    <img
+      css={karrotImageStyle}
+      src={karrotImageUrl}
+      style={{ left: `${posX}px`, top: `${posY}px` }}
+      alt=""
+    />
   );
 };
 
-export default ClickAnimation;
+export default React.memo(ClickAnimation);
