@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import DefaultGameEndModal from 'components/modals/DefaultGameEndModal';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { incrementClickCount, reset } from 'reducers/counterReducer';
 import { RootState } from '../reducers/rootReducer';
@@ -14,7 +14,6 @@ import ClickAnimation from 'components/game/ClickAnimation';
 import { useHistory } from 'react-router';
 import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
 import { useAnalytics } from 'services/analytics';
-
 
 // nav
 const customNav = css`
@@ -146,16 +145,48 @@ const GameEndButton = ({ handleGameEnd }: GameEndButtonProps) => {
   );
 };
 
-interface animationArrProps {
-  posX: number;
-  posY: number;
-}
+type Particle = {
+  id: string,
+  posX: number,
+  posY: number,
+};
+
+type GameState = {
+  particles: Particle[],
+};
+
+type GameAction = (
+  | { type: 'spawn', posX: number, posY: number }
+  | { type: 'remove', id: string }
+);
+
+const reducer: React.Reducer<GameState, GameAction> = (state, action) => {
+  switch (action.type) {
+    case 'spawn':
+      return {
+        ...state,
+        particles: state.particles.concat({
+          id: Math.random().toString(),
+          posX: action.posX,
+          posY: action.posY,
+        }),
+      };
+    case 'remove':
+      return {
+        ...state,
+        particles: state.particles.filter(particle => particle.id !== action.id),
+      };
+    default:
+      return state;
+  }
+};
+
 const Game = () => {
   const [alreadyPatchedKarrot, setAlreadyPatchedKarrot] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [shouldPopup, setShouldPopup] = useState<boolean>(false);
   const [shakeToggle, setShakeToggle] = useState(false);
-  const [animationArr, setAnimationArr] = useState<animationArrProps[]>([]);
+  const [state, gameDispatch] = React.useReducer(reducer, { particles: [] });
   const { userScore, clickCount } = useSelector((state: RootState) => ({
     userScore: state.userDataReducer.score,
     clickCount: state.counterReducer.clickCount,
@@ -165,57 +196,40 @@ const Game = () => {
   const analytics = useAnalytics();
   const karrotRaiseApi = useKarrotRaiseApi();
 
-  const clickCountUp = useCallback(
-    async () => dispatch(incrementClickCount()),
-    [dispatch]
-  );
-
-  const activateAnimation = useCallback(async (e: React.TouchEvent) => {
-    let clientX = e.touches[0].clientX;
-    let clientY = e.touches[0].clientY;
-    setAnimationArr((animationArr) => [
-      ...animationArr,
-      { posX: clientX - 25, posY: clientY - 50 },
-    ]);
-    setTimeout(() => {
-      setAnimationArr((animationArr) => {
-        const newArr = animationArr.slice(1);
-        return newArr;
-      });
-    }, 1000);
+  type ParticleDestroyHandler = React.ComponentProps<typeof ClickAnimation>['onDestroy'];
+  const handleParticleDestroy = React.useCallback<ParticleDestroyHandler>(id => {
+    gameDispatch({ type: 'remove', id });
   }, []);
 
-  const handleScreenTouch = useCallback(
-    async (e: React.TouchEvent) => {
-      e.stopPropagation();
-      await activateAnimation(e);
-      await clickCountUp();
-    },
-    [activateAnimation, clickCountUp]
-  );
+  const activateAnimation = (e: React.TouchEvent) => {
+    const clientX = e.touches[0].clientX;
+    const clientY = e.touches[0].clientY;
+    const posX =  clientX - 25, posY = clientY - 50;
+    gameDispatch({ type: 'spawn', posX, posY });
+  };
 
-  const activateBigKarrotAnimation = useCallback(
-    async (e: React.TouchEvent) => {
-      await handleScreenTouch(e);
-      setShakeToggle((prevState) => !prevState);
-    },
-    [handleScreenTouch]
-  );
+  const handleScreenTouch = (e: React.TouchEvent) => {
+    e.stopPropagation();
+    activateAnimation(e);
+    dispatch(incrementClickCount());
+  }
 
-  const handleGameEnd = useCallback(
-    async function (karrotRaiseApi: KarrotRaiseApi) {
-      try {
-        let karrotToPatch = clickCount - alreadyPatchedKarrot;
-        await karrotRaiseApi.patchUserScore(karrotToPatch);
-        analytics.logEvent('click_game_end_button', { score: karrotToPatch });
-        setIsModalOpen(true);
-        setAlreadyPatchedKarrot(clickCount);
-      } catch (error) {
-        console.error(error);
-      }
-    },
-    [alreadyPatchedKarrot, analytics, clickCount]
-  );
+  const activateBigKarrotAnimation = (e: React.TouchEvent) => {
+    handleScreenTouch(e);
+    setShakeToggle((prevState) => !prevState);
+  };
+
+  const handleGameEnd = async function (karrotRaiseApi: KarrotRaiseApi) {
+    try {
+      let karrotToPatch = clickCount - alreadyPatchedKarrot;
+      await karrotRaiseApi.patchUserScore(karrotToPatch);
+      analytics.logEvent('click_game_end_button', { score: karrotToPatch });
+      setIsModalOpen(true);
+      setAlreadyPatchedKarrot(clickCount);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   function closeModal() {
     setIsModalOpen(false);
@@ -279,8 +293,8 @@ const Game = () => {
               width: 'auto',
             }}
           />
-          {animationArr.map((item, index) => (
-            <ClickAnimation posX={item.posX} posY={item.posY} key={index} />
+          {state.particles.map(item => (
+            <ClickAnimation key={item.id} {...item} onDestroy={handleParticleDestroy} />
           ))}
         </div>
       </div>
