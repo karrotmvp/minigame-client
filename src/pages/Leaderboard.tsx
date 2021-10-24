@@ -91,7 +91,6 @@ const Leaderboard = () => {
     history.replace('/game');
   };
 
-  // Share must be triggered by "user activation"
   const handleShare = async () => {
     analytics.logEvent('click_share_button');
     const url = 'https://daangn.onelink.me/HhUa/3a219555';
@@ -116,6 +115,7 @@ const Leaderboard = () => {
   );
 
   useEffect(() => {
+    analytics.logEvent('view_leaderboard_page');
     getUserData(karrotRaiseApi, accessToken);
   }, [accessToken, analytics, getUserData, karrotRaiseApi]);
 

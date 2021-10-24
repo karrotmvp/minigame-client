@@ -245,6 +245,7 @@ const Game = () => {
   }, [userScore]);
 
   useEffect(() => {
+    analytics.logEvent('view_game_page');
     return () => {
       if (history.action === 'POP') {
         onResetCount();
