@@ -6,6 +6,7 @@ import { ReactComponent as Karrot } from 'assets/karrot.svg';
 import { useCallback, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
+import useUserData from 'hooks/useUserData';
 const largeText = css`
   margin: 15px 0;
 `;
@@ -82,6 +83,15 @@ const TopUserGameEndModal: React.FC<TopUserGameEndModalProps> = (props) => {
   });
   let history = useHistory();
   const karrotRaiseApi = useKarrotRaiseApi();
+  const {
+    accessToken,
+    userId,
+    userNickname,
+    userScore,
+    userRank,
+    userDistrictName,
+    onUpdateUserData,
+  } = useUserData();
   const handleTopUserInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTopUserComment({
       comment: e.target.value.slice(0, 19),
@@ -94,9 +104,12 @@ const TopUserGameEndModal: React.FC<TopUserGameEndModalProps> = (props) => {
       accessToken: string,
       comment: string
     ) {
+      karrotRaiseApi.patchUserComment(accessToken, comment);
+      onUpdateUserData(userId, userNickname, userScore, userRank, comment);
       console.log('patched');
       history.replace('/leaderboard');
     },
+    [history, onUpdateUserData, userId, userNickname, userRank, userScore]
   );
 
   return (
@@ -136,6 +149,7 @@ const TopUserGameEndModal: React.FC<TopUserGameEndModalProps> = (props) => {
             color={`primary`}
             text={`등록하기`}
             onClick={() => {
+              addComment(karrotRaiseApi, accessToken, topUserComment.comment);
             }}
           />
         ) : (

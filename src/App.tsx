@@ -11,7 +11,6 @@ import {
   Switch,
   Redirect,
 } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
 import {
   Analytics,
   AnalyticsContext,
@@ -23,11 +22,6 @@ import {
 } from 'services/analytics/firebase';
 import ReturningUserHome from 'pages/ReturningUserHome';
 import NonServiceArea from 'pages/NonServiceArea';
-import {
-  saveRegionId,
-  saveTownId,
-  saveTownName,
-} from 'reducers/userDataReducer';
 import {
   emptyKarrotRaiseApi,
   KarrotRaiseApi,
@@ -45,6 +39,7 @@ import {
   createKarrotMarketMini,
   loadFromEnv as loadKarrotMarketMiniConfig,
 } from 'services/karrotMarket/mini';
+import useUserData from 'hooks/useUserData';
 
 const appStyle = css`
   height: 100vh;
@@ -52,14 +47,21 @@ const appStyle = css`
 
 function App() {
   const [pageRedirection, setPageRedirection] = useState<string>('loading');
-  const [userTownData, setUserTownData] = useState<string[]>([]);
   const [isNonServiceUserBack, setIsNonServiceUserBack] = useState(false);
-  const dispatch = useDispatch();
   const [karrotMarketMini, setKarrotMarketMini] = useState(
     emptyKarrotMarketMini
   );
   const [karrotRaiseApi, setKarrotRaiseApi] = useState(emptyKarrotRaiseApi);
   const [analytics, setAnalytics] = useState(emptyAnalytics);
+  const {
+    userRegionId,
+    userDistrictId,
+    userDistrictName,
+    onUpdateAccessToken,
+    onUpdateRegionData,
+    onUpdateUserData,
+  } = useUserData();
+
   // Firebase Analytics가 설정되어 있으면 인스턴스를 초기화하고 교체합니다.
   useEffect(() => {
     try {
@@ -98,15 +100,16 @@ function App() {
       try {
         const response = await karrotRaiseApi.getUserInfo();
         if (response.isFetched === true && response.data) {
-          const { id } = response.data.data;
+          const { id, nickname, score, rank, comment } = response.data.data;
           console.log('tracking user... id:', id);
           analytics.setUserId(id);
+          onUpdateUserData(id, nickname, score, rank, comment);
         }
       } catch (error) {
         console.error(error);
       }
     },
-    []
+    [onUpdateUserData]
   );
   const filterNonServiceTown = useCallback(
     async function (
@@ -119,9 +122,7 @@ function App() {
         // example -> city=서울특별시(name1) district=서초구(name2)
         if (response.isFetched && response.data) {
           const { id: districtId, name2: districtName } = response.data.data;
-          dispatch(saveTownId(districtId));
-          dispatch(saveTownName(districtName));
-          setUserTownData([districtId, districtName]);
+          onUpdateRegionData(userRegionId, districtId, districtName);
           // Filter out if user is not in 서초구
           // 서초구id = df5370052b3c
           if (districtId !== 'df5370052b3c') {
@@ -135,7 +136,7 @@ function App() {
         console.error(error);
       }
     },
-    [dispatch]
+    [onUpdateRegionData, userRegionId]
   );
   const getAccessToken = useCallback(
     async function (
@@ -153,6 +154,7 @@ function App() {
             const { accessToken } = response.data.data;
             window.localStorage.setItem('ACCESS_TOKEN', accessToken);
             await trackUser(karrotRaiseApi, analytics);
+            onUpdateAccessToken(accessToken);
             setPageRedirection('home');
           }
         } else {
@@ -162,7 +164,7 @@ function App() {
         console.error(error);
       }
     },
-    [trackUser]
+    [onUpdateAccessToken, trackUser]
   );
 
   async function getQueryParams(targetUrl: string) {
@@ -182,16 +184,18 @@ function App() {
       // if (regionId === null) {
       //   regionId = 'df5370052b3c';
       // }
-      dispatch(saveRegionId(regionId));
+      onUpdateRegionData(regionId, userDistrictId, userDistrictName);
       filterNonServiceTown(karrotRaiseApi, code, regionId);
       getAccessToken(karrotRaiseApi, code, regionId, analytics);
     });
   }, [
     analytics,
-    dispatch,
     filterNonServiceTown,
     getAccessToken,
     karrotRaiseApi,
+    onUpdateRegionData,
+    userDistrictId,
+    userDistrictName,
   ]);
 
   return (
@@ -211,7 +215,7 @@ function App() {
                         to={{
                           pathname: '/non-service-area',
                           state: {
-                            townName: userTownData[1],
+                            districtName: userDistrictName,
                             isNonServiceUserBack: isNonServiceUserBack,
                           },
                         }}

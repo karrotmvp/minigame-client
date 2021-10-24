@@ -1,13 +1,11 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from 'reducers/rootReducer';
 import DefaultUserRow from './DefaultUserRow';
 import TopUserRow from './TopUserRow';
 import { ReactComponent as RefreshIcon } from 'assets/refresh.svg';
-import { updateUserData } from 'reducers/userDataReducer';
 import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
+import useUserData from 'hooks/useUserData';
 
 const divStyle = css`
   padding-top: 10px;
@@ -69,7 +67,13 @@ const IndividualLeaderboard = () => {
   }));
   const dispatch = useDispatch();
   const karrotRaiseApi = useKarrotRaiseApi();
-
+  const {
+    accessToken,
+    userId,
+    userDistrictId,
+    userDistrictName,
+    onUpdateUserData,
+  } = useUserData();
   const getUserData = useCallback(
     async function (karrotRaiseApi: KarrotRaiseApi) {
       try {
@@ -77,7 +81,7 @@ const IndividualLeaderboard = () => {
         if (response.isFetched === true && response.data) {
           console.log('individualLeaderboard, getUserData', response.data);
           const { nickname, score, rank, comment } = response.data.data;
-          dispatch(updateUserData(nickname, score, rank, comment));
+          onUpdateUserData(userId, nickname, score, rank, comment);
         }
       } catch (error) {
         console.error(error);
@@ -148,7 +152,7 @@ const IndividualLeaderboard = () => {
           );
         })}
         <p css={infoText}>
-          🎉 {townName} TOP 10 🎉 이 되어서
+          🎉 {userDistrictName} TOP 10 🎉 이 되어서
           <br />
           이웃들에게 한 마디를 남겨보세요!
         </p>

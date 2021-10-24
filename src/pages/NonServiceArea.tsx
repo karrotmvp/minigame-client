@@ -4,11 +4,10 @@ import { ReactComponent as WaitSvg } from 'assets/wait.svg';
 import { AppEjectionButton } from 'components/buttons/AppEjectionButton';
 import Button, { DisabledButton } from 'components/buttons/Button';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { RootState } from 'reducers/rootReducer';
 import { Analytics, useAnalytics } from 'services/analytics';
 import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
 import { useKarrotMarketMini } from 'services/karrotMarketMini';
+import useUserData from 'hooks/useUserData';
 
 const customNav = css`
   left: 0;
@@ -97,19 +96,17 @@ interface NonServiceAreaProps {
   location: {
     state: {
       isNonServiceUserBack: boolean;
-      townName: string;
+      districtName: string;
     };
   };
 }
 
 const NonServiceArea: React.FC<NonServiceAreaProps> = (props) => {
   const [isClicked, setIsClicked] = useState<boolean>(false);
-  const { regionId } = useSelector((state: RootState) => ({
-    regionId: state.userDataReducer.regionId,
-  }));
   const analytics = useAnalytics();
   const karrotRaiseApi = useKarrotRaiseApi();
   const karrotMarketMini = useKarrotMarketMini();
+  const { userRegionId, onUpdateAccessToken } = useUserData();
 
   const trackUser = useCallback(
     async (karrotRaiseApi: KarrotRaiseApi, analytics: Analytics) => {
@@ -138,6 +135,7 @@ const NonServiceArea: React.FC<NonServiceAreaProps> = (props) => {
         if (response.isFetched && response.data) {
           const { accessToken } = response.data.data;
           window.localStorage.setItem('ACCESS_TOKEN', accessToken);
+            onUpdateAccessToken(accessToken);
         }
       } else {
         throw new Error('Either code OR regionId is null');
@@ -178,7 +176,8 @@ const NonServiceArea: React.FC<NonServiceAreaProps> = (props) => {
       <div css={backgroundStyle}>
         <WaitSvg css={svgStyle} />
         <h1 css={mainText}>
-          <span css={coloredText}>{props.location.state.townName}</span> 지역은
+          <span css={coloredText}>{props.location.state.districtName}</span>
+          지역은
           <br />
           아직 준비 중이에요
         </h1>

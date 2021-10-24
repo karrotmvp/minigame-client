@@ -1,13 +1,10 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from 'reducers/rootReducer';
 import DefaultUserRow from './DefaultUserRow';
 import TopUserRow from './TopUserRow';
 import { ReactComponent as RefreshIcon } from 'assets/refresh.svg';
 import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
-import { updateUserData } from 'reducers/userDataReducer';
 
 const divStyle = css`
   padding-top: 10px;

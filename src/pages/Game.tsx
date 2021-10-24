@@ -2,9 +2,6 @@
 import { css } from '@emotion/react';
 import DefaultGameEndModal from 'components/modals/DefaultGameEndModal';
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { incrementClickCount, reset } from 'reducers/counterReducer';
-import { RootState } from '../reducers/rootReducer';
 import background from 'assets/Seocho_background.png';
 import { ReactComponent as BigKarrot } from 'assets/Seocho_daangn.svg';
 import Modal from 'react-modal';
@@ -14,6 +11,8 @@ import ClickAnimation from 'components/game/ClickAnimation';
 import { useHistory } from 'react-router';
 import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
 import { useAnalytics } from 'services/analytics';
+import useClickCounter from 'hooks/useClickCounter';
+import useUserData from 'hooks/useUserData';
 
 // nav
 const customNav = css`
@@ -183,19 +182,15 @@ const reducer: React.Reducer<GameState, GameAction> = (state, action) => {
 };
 
 const Game = () => {
-  const [alreadyPatchedKarrot, setAlreadyPatchedKarrot] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [shouldPopup, setShouldPopup] = useState<boolean>(false);
   const [shakeToggle, setShakeToggle] = useState(false);
   const [state, gameDispatch] = React.useReducer(reducer, { particles: [] });
-  const { userScore, clickCount } = useSelector((state: RootState) => ({
-    userScore: state.userDataReducer.score,
-    clickCount: state.counterReducer.clickCount,
-  }));
   const history = useHistory();
-  const dispatch = useDispatch();
   const analytics = useAnalytics();
   const karrotRaiseApi = useKarrotRaiseApi();
+  const { userScore } = useUserData();
+  const { clickCount, onResetCount, onIncrementClickCount } = useClickCounter();
 
   type ParticleDestroyHandler = React.ComponentProps<
     typeof ClickAnimation
@@ -218,7 +213,7 @@ const Game = () => {
   const handleScreenTouch = (e: React.TouchEvent) => {
     e.stopPropagation();
     activateAnimation(e);
-    dispatch(incrementClickCount());
+    onIncrementClickCount();
   };
 
   const activateBigKarrotAnimation = (e: React.TouchEvent) => {
@@ -253,11 +248,12 @@ const Game = () => {
   useEffect(() => {
     return () => {
       if (history.action === 'POP') {
+        onResetCount();
         // history.replace('/game' /* the new state */);
         dispatch(reset());
       }
     };
-  }, [dispatch, history]);
+  }, [analytics, history, onResetCount]);
   return (
     <>
       <div css={customNav}>

@@ -10,6 +10,8 @@ import Modal from 'react-modal';
 import { commafy } from 'functions/numberFunctions';
 import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
 import { Analytics, useAnalytics } from 'services/analytics';
+import useUserData from 'hooks/useUserData';
+import useClickCounter from 'hooks/useClickCounter';
 
 const modalStyle = css`
   position: absolute;
@@ -71,7 +73,21 @@ interface GamePauseModalProps {
   closeModal: () => void;
 }
 const GamePauseModal = ({ closeModal }: GamePauseModalProps) => {
+  const { clickCount } = useClickCounter();
+  const {
+    accessToken,
+    userId,
+    userNickname,
+    userScore,
+    userRank,
+    userComment,
+    onUpdateUserData,
+  } = useUserData();
   const [userData, setUserData] = useState<UserData>({
+    nickname: userNickname,
+    score: userScore,
+    rank: userRank,
+    comment: userComment,
   });
   const [modalIsOpen, setIsOpen] = useState(false);
   const analytics = useAnalytics();
@@ -80,16 +96,22 @@ const GamePauseModal = ({ closeModal }: GamePauseModalProps) => {
 
   const handleGameEnd = async (
     karrotRaiseApi: KarrotRaiseApi,
+    accessToken: string,
+    clickCount: number,
     analytics: Analytics
   ) => {
     try {
       console.log(clickCount);
       analytics.logEvent('click_game_end_button', { score: clickCount });
       const patchResponse = await karrotRaiseApi.patchUserScore(
+        accessToken,
+        clickCount
       );
       if (patchResponse.isFetched === true) {
+        const response = await karrotRaiseApi.getUserInfo(accessToken);
         if (response.isFetched === true && response.data) {
           const { nickname, score, rank, comment } = response.data.data;
+          onUpdateUserData(userId, nickname, score, rank, comment);
           setUserData({
             nickname: nickname,
             score: score,
@@ -143,6 +165,7 @@ const GamePauseModal = ({ closeModal }: GamePauseModalProps) => {
           color={`primary`}
           text={`게임종료`}
           onClick={() =>
+            handleGameEnd(karrotRaiseApi, accessToken, clickCount, analytics)
           }
         />
       </div>

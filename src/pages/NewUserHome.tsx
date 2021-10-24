@@ -9,13 +9,12 @@ import Button from '../components/buttons/Button';
 import IndividualLeaderboard from '../components/leaderboard/IndividualLeaderboard';
 import { AppEjectionButton } from 'components/buttons/AppEjectionButton';
 import { useHistory } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { RootState } from 'reducers/rootReducer';
 import { useCallback, useEffect } from 'react';
 import { Analytics, useAnalytics } from 'services/analytics';
 import { useKarrotMarketMini } from 'services/karrotMarketMini';
 import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
 import { getMini } from 'services/karrotMarket/mini';
+import useUserData from 'hooks/useUserData';
 
 // nav
 const customNav = css`
@@ -66,13 +65,11 @@ const actionItemWrapper = css`
 
 const NewUserHome = () => {
   let history = useHistory();
-  const { townName, regionId } = useSelector((state: RootState) => ({
-    townName: state.userDataReducer.townName,
-    regionId: state.userDataReducer.regionId,
-  }));
   const analytics = useAnalytics();
   const karrotRaiseApi = useKarrotRaiseApi();
   const karrotMarketMini = useKarrotMarketMini();
+  const { accessToken, userRegionId, userDistrictName, onUpdateAccessToken } =
+    useUserData();
 
   const trackUser = useCallback(
     async (karrotRaiseApi: KarrotRaiseApi, analytics: Analytics) => {
@@ -137,8 +134,8 @@ const NewUserHome = () => {
       <div css={divStyle}>
         <div css={headingWrapper}>
           <h1 css={largeTextStyle}>
-            <span css={emphasizedTextStyle}>{townName} 이웃</span>님, 아직
-            기록이 없어요
+            <span css={emphasizedTextStyle}>{userDistrictName} 이웃</span>님,
+            아직 기록이 없어요
           </h1>
           <h2 css={mediumTextStyle}>
             당근을 수확하고 이웃들에게 한 마디 남겨봐요!
