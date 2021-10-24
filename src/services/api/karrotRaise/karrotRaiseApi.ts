@@ -7,7 +7,7 @@ export function createKarrotRaiseApi(
   config: KarrotRaiseApiConfig
 ): KarrotRaiseApi {
   const baseUrl = config.baseUrl;
-  const accessToken = config.accessToken;
+  // const accessToken = ;
   // const axios = useAxios();
 
   // OAUTH2
@@ -63,7 +63,7 @@ export function createKarrotRaiseApi(
   }
 
   // USER
-  async function getUserInfo() {
+  async function getUserInfo(accessToken: string) {
     try {
       const { data } = await axios.get(`${baseUrl}/users/me`, {
         headers: {
@@ -78,7 +78,7 @@ export function createKarrotRaiseApi(
   }
 
   // USER RANK
-  async function patchUserScore(score: number) {
+  async function patchUserScore(accessToken: string, score: number) {
     try {
       await axios.patch(
         `${baseUrl}/user-rank`,
@@ -98,7 +98,7 @@ export function createKarrotRaiseApi(
       return { isFetched: false };
     }
   }
-  async function patchUserComment(comment: string) {
+  async function patchUserComment(accessToken: string, comment: string) {
     try {
       await axios.patch(
         `${baseUrl}/user-rank/comment`,
@@ -120,7 +120,7 @@ export function createKarrotRaiseApi(
   }
 
   // DEMAND CONTROLLER
-  async function postDemand() {
+  async function postDemand(accessToken: string) {
     try {
       await axios.post(`${baseUrl}/demand`, null, {
         headers: {

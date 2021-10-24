@@ -109,9 +109,13 @@ const NonServiceArea: React.FC<NonServiceAreaProps> = (props) => {
   const { userRegionId, onUpdateAccessToken } = useUserData();
 
   const trackUser = useCallback(
-    async (karrotRaiseApi: KarrotRaiseApi, analytics: Analytics) => {
+    async (
+      karrotRaiseApi: KarrotRaiseApi,
+      accessToken: string,
+      analytics: Analytics
+    ) => {
       try {
-        const response = await karrotRaiseApi.getUserInfo();
+        const response = await karrotRaiseApi.getUserInfo(accessToken);
         if (response.isFetched === true && response.data) {
           const { id } = response.data.data;
           analytics.setUserId(id);
@@ -123,33 +127,41 @@ const NonServiceArea: React.FC<NonServiceAreaProps> = (props) => {
     []
   );
 
-  const getAccessToken = useCallback(async function (
-    karrotRaiseApi: KarrotRaiseApi,
-    code: string | null,
-    regionId: string
-  ) {
-    try {
-      console.log('asdfasfda');
-      if (code !== null) {
-        const response = await karrotRaiseApi.postOauth2(code, regionId);
-        if (response.isFetched && response.data) {
-          const { accessToken } = response.data.data;
-          window.localStorage.setItem('ACCESS_TOKEN', accessToken);
+  const getAccessToken = useCallback(
+    async function (
+      karrotRaiseApi: KarrotRaiseApi,
+      code: string | null,
+      regionId: string
+    ) {
+      try {
+        console.log('asdfasfda');
+        if (code !== null) {
+          const response = await karrotRaiseApi.postOauth2(code, regionId);
+          if (response.isFetched && response.data) {
+            const { accessToken } = response.data.data;
+            window.localStorage.setItem('ACCESS_TOKEN', accessToken);
             onUpdateAccessToken(accessToken);
+            return accessToken;
+          }
+        } else {
+          throw new Error('Either code OR regionId is null');
         }
-      } else {
-        throw new Error('Either code OR regionId is null');
+      } catch (error) {
+        console.error(error);
       }
-    } catch (error) {
-      console.error(error);
-    }
-  },
-  []);
+    },
+    [onUpdateAccessToken]
+  );
 
   const runOnSuccess = async (code: string) => {
-    getAccessToken(karrotRaiseApi, code, regionId);
-    trackUser(karrotRaiseApi, analytics);
-    const response = await karrotRaiseApi.postDemand();
+    console.log('run-on-success', code);
+    const accessToken = (await getAccessToken(
+      karrotRaiseApi,
+      code,
+      userRegionId
+    ))!;
+    await trackUser(karrotRaiseApi, accessToken, analytics);
+    const response = await karrotRaiseApi.postDemand(accessToken);
     if (response.isFetched === true) {
       setIsClicked(true);
       analytics.logEvent('click_non_service_area_demand_button');

@@ -9,7 +9,7 @@ import TopUserRow from 'components/leaderboard/TopUserRow';
 import { useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useAnalytics } from 'services/analytics';
-import { useKarrotRaiseApi } from 'services/karrotRaiseApi';
+import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
 import { useKarrotMarketMini } from 'services/karrotMarketMini';
 import { Tabs } from '@karrotframe/tabs';
 import '@karrotframe/tabs/index.css';

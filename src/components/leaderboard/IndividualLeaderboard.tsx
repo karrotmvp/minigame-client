@@ -75,9 +75,9 @@ const IndividualLeaderboard = () => {
     onUpdateUserData,
   } = useUserData();
   const getUserData = useCallback(
-    async function (karrotRaiseApi: KarrotRaiseApi) {
+    async function (karrotRaiseApi: KarrotRaiseApi, accessToken: string) {
       try {
-        const response = await karrotRaiseApi.getUserInfo();
+        const response = await karrotRaiseApi.getUserInfo(accessToken);
         if (response.isFetched === true && response.data) {
           console.log('individualLeaderboard, getUserData', response.data);
           const { nickname, score, rank, comment } = response.data.data;
@@ -87,7 +87,7 @@ const IndividualLeaderboard = () => {
         console.error(error);
       }
     },
-    [dispatch]
+    [onUpdateUserData, userId]
   );
 
   const getTownLeaderboard = useCallback(async function (
@@ -114,16 +114,20 @@ const IndividualLeaderboard = () => {
   []);
 
   const refreshLeaderboard = useCallback(
-    async (karrotRaiseApi: KarrotRaiseApi, townId: string) => {
-      await getUserData(karrotRaiseApi);
+    async (
+      karrotRaiseApi: KarrotRaiseApi,
+      accessToken: string,
+      townId: string
+    ) => {
+      await getUserData(karrotRaiseApi, accessToken);
       await getTownLeaderboard(karrotRaiseApi, townId);
     },
     [getTownLeaderboard, getUserData]
   );
 
   useEffect(() => {
-    refreshLeaderboard(karrotRaiseApi, townId);
-  }, [karrotRaiseApi, refreshLeaderboard, townId]);
+    refreshLeaderboard(karrotRaiseApi, accessToken, userDistrictId);
+  }, [accessToken, karrotRaiseApi, refreshLeaderboard, userDistrictId]);
 
   return (
     <div css={divStyle}>
@@ -131,7 +135,7 @@ const IndividualLeaderboard = () => {
         <p>이번 주 랭킹</p>
         <button
           onClick={() => {
-            refreshLeaderboard(karrotRaiseApi, townId);
+            refreshLeaderboard(karrotRaiseApi, accessToken, userDistrictId);
           }}
           css={refreshIconStyle}
         >

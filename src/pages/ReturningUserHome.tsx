@@ -145,9 +145,9 @@ const ReturningUserHome = () => {
   };
 
   const getUserData = useCallback(
-    async (karrotRaiseApi: KarrotRaiseApi) => {
+    async (karrotRaiseApi: KarrotRaiseApi, accessToken: string) => {
       try {
-        const response = await karrotRaiseApi.getUserInfo();
+        const response = await karrotRaiseApi.getUserInfo(accessToken);
         if (response.isFetched === true && response.data) {
           console.log('returningUserHome, getUserData', response.data);
           const { nickname, score, rank, comment } = response.data.data;
@@ -159,11 +159,11 @@ const ReturningUserHome = () => {
     },
     [onUpdateUserData, userId]
   );
+
   useEffect(() => {
-    getUserData(karrotRaiseApi);
+    getUserData(karrotRaiseApi, accessToken);
     analytics.logEvent('view_returning_user_home_page');
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [accessToken, analytics, getUserData, karrotRaiseApi]);
 
   return (
     <>

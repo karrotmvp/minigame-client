@@ -96,9 +96,13 @@ function App() {
   }, []);
 
   const trackUser = useCallback(
-    async (karrotRaiseApi: KarrotRaiseApi, analytics: Analytics) => {
+    async (
+      karrotRaiseApi: KarrotRaiseApi,
+      accessToken: string,
+      analytics: Analytics
+    ) => {
       try {
-        const response = await karrotRaiseApi.getUserInfo();
+        const response = await karrotRaiseApi.getUserInfo(accessToken);
         if (response.isFetched === true && response.data) {
           const { id, nickname, score, rank, comment } = response.data.data;
           console.log('tracking user... id:', id);
@@ -149,12 +153,11 @@ function App() {
       try {
         if (code !== null) {
           const response = await karrotRaiseApi.postOauth2(code, regionId);
-          console.log(response);
           if (response.isFetched && response.data) {
             const { accessToken } = response.data.data;
             window.localStorage.setItem('ACCESS_TOKEN', accessToken);
-            await trackUser(karrotRaiseApi, analytics);
             onUpdateAccessToken(accessToken);
+            await trackUser(karrotRaiseApi, accessToken, analytics);
             setPageRedirection('home');
           }
         } else {

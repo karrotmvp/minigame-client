@@ -18,10 +18,16 @@ export interface KarrotRaiseApi {
   getTownId(regionId: string): Promise<GetTownIdResponse>;
   getTownUserRank(townId: string): Promise<GetTownUserRankResponse>;
   getDistrictRank(): Promise<GetDistrictRankResponse>;
-  getUserInfo(): Promise<getUserInfoResponse>;
-  patchUserScore(score: number): Promise<PatchUserScoreResposne>;
-  patchUserComment(comment: string): Promise<PatchUserCommmentResponse>;
-  postDemand(): Promise<PostDemandResponse>;
+  getUserInfo(accessToken: string): Promise<getUserInfoResponse>;
+  patchUserScore(
+    accessToken: string,
+    score: number
+  ): Promise<PatchUserScoreResposne>;
+  patchUserComment(
+    accessToken: string,
+    comment: string
+  ): Promise<PatchUserCommmentResponse>;
+  postDemand(accessToken: string): Promise<PostDemandResponse>;
 }
 
 // wow, such empty...

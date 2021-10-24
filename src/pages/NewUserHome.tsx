@@ -72,9 +72,13 @@ const NewUserHome = () => {
     useUserData();
 
   const trackUser = useCallback(
-    async (karrotRaiseApi: KarrotRaiseApi, analytics: Analytics) => {
+    async (
+      karrotRaiseApi: KarrotRaiseApi,
+      accessToken: string,
+      analytics: Analytics
+    ) => {
       try {
-        const response = await karrotRaiseApi.getUserInfo();
+        const response = await karrotRaiseApi.getUserInfo(accessToken);
         if (response.isFetched === true && response.data) {
           const { id } = response.data.data;
           analytics.setUserId(id);
@@ -97,6 +101,7 @@ const NewUserHome = () => {
           if (response.isFetched && response.data) {
             const { accessToken } = response.data.data;
             window.localStorage.setItem('ACCESS_TOKEN', accessToken);
+            onUpdateAccessToken(accessToken);
           }
         } else {
           throw new Error('Either code OR regionId is null');
@@ -105,12 +110,12 @@ const NewUserHome = () => {
         console.error(error);
       }
     },
-    []
+    [onUpdateAccessToken]
   );
 
   const runOnSuccess = (code: string) => {
-    getAccessToken(karrotRaiseApi, code, regionId);
-    trackUser(karrotRaiseApi, analytics);
+    getAccessToken(karrotRaiseApi, code, userRegionId);
+    trackUser(karrotRaiseApi, accessToken, analytics);
     analytics.logEvent('click_game_start_button', { type: 'new_user' });
     history.push('/game');
   };
