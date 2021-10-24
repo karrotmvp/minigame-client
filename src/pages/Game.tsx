@@ -1,11 +1,11 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import DefaultGameEndModal from 'components/modals/DefaultGameEndModal';
+import GamePauseModal from 'components/game/GamePauseModal';
 import React, { useEffect, useState } from 'react';
 import background from 'assets/Seocho_background.png';
 import { ReactComponent as BigKarrot } from 'assets/Seocho_daangn.svg';
 import Modal from 'react-modal';
-import GameDirectionPopupModal from 'components/modals/GameDirectionPopupModal';
+import GameDirectionPopupModal from 'components/game/GameDirectionPopupModal';
 import { commafy } from 'functions/numberFunctions';
 import ClickAnimation from 'components/game/ClickAnimation';
 import { useHistory } from 'react-router';
@@ -133,12 +133,12 @@ const shakeLeft = css`
 Modal.setAppElement(document.createElement('div'));
 
 interface GameEndButtonProps {
-  handleGameEnd: () => void;
+  handlePause: () => void;
 }
-const GameEndButton = ({ handleGameEnd }: GameEndButtonProps) => {
+const GameEndButton = ({ handlePause }: GameEndButtonProps) => {
   return (
-    <button css={gameEndButtonStyle} onClick={handleGameEnd}>
-      그만하기
+    <button css={gameEndButtonStyle} onClick={handlePause}>
+      Pause
     </button>
   );
 };
@@ -187,7 +187,6 @@ const Game = () => {
   const [state, gameDispatch] = React.useReducer(reducer, { particles: [] });
   const history = useHistory();
   const analytics = useAnalytics();
-  const karrotRaiseApi = useKarrotRaiseApi();
   const { userScore } = useUserData();
   const { clickCount, onResetCount, onIncrementClickCount } = useClickCounter();
 
@@ -220,13 +219,9 @@ const Game = () => {
     setShakeToggle((prevState) => !prevState);
   };
 
-  const handleGameEnd = async function (karrotRaiseApi: KarrotRaiseApi) {
+  const handlePause = function () {
     try {
-      let karrotToPatch = clickCount - alreadyPatchedKarrot;
-      await karrotRaiseApi.patchUserScore(karrotToPatch);
-      analytics.logEvent('click_game_end_button', { score: karrotToPatch });
       setIsModalOpen(true);
-      setAlreadyPatchedKarrot(clickCount);
     } catch (error) {
       console.error(error);
     }
@@ -250,7 +245,6 @@ const Game = () => {
       if (history.action === 'POP') {
         onResetCount();
         // history.replace('/game' /* the new state */);
-        dispatch(reset());
       }
     };
   }, [analytics, history, onResetCount]);
@@ -259,22 +253,13 @@ const Game = () => {
       <div css={customNav}>
         <div css={customNavIcon}>
           <GameEndButton
-            handleGameEnd={() => {
-              handleGameEnd(karrotRaiseApi);
+            handlePause={() => {
+              // handlePause(karrotRaiseApi, accessToken);
+              handlePause();
             }}
           />
         </div>
       </div>
-      {/* <div
-        className="wrapper"
-        // css={fullScreenClickable}
-        // onClick={handleScreenClick}
-        // onTouchStart={handleScreenTouch}
-      >
-        {animationArr.map((item, index) => (
-          <ClickAnimation posX={item.posX} posY={item.posY} key={index} />
-        ))}
-      </div> */}
       <div css={divStyle}>
         <div css={scoreWrapper}>
           <h1 css={clickCountStyle}>{commafy(clickCount)}</h1>
@@ -318,7 +303,7 @@ const Game = () => {
           },
         }}
       >
-        <DefaultGameEndModal closeModal={closeModal} />
+        <GamePauseModal closeModal={closeModal} />
       </Modal>
       <Modal
         isOpen={shouldPopup}
