@@ -1,13 +1,11 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { useCallback, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from 'reducers/rootReducer';
-import DefaultUserRow from './DefaultUserRow';
-import TopUserRow from './TopUserRow';
+import { TopUserRow } from './TopRow';
 import { ReactComponent as RefreshIcon } from 'assets/refresh.svg';
-import { updateUserData } from 'reducers/userDataReducer';
 import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
+import { DefaultUserRow } from './DefaultRow';
+import useUserData from 'hooks/useUserData';
 
 const divStyle = css`
   padding-top: 10px;
@@ -62,28 +60,28 @@ const infoText = css`
 `;
 
 const IndividualLeaderboard = () => {
-  const [townRankData, setTownRankData] = useState<any[]>([]);
-  const { townId, townName } = useSelector((state: RootState) => ({
-    townId: state.userDataReducer.townId,
-    townName: state.userDataReducer.townName,
-  }));
-  const dispatch = useDispatch();
+  const [individualRankData, setIndividualRankData] = useState<any[]>([]);
   const karrotRaiseApi = useKarrotRaiseApi();
-
+  const {
+    accessToken,
+    userId,
+    userDistrictId,
+    userDistrictName,
+    onUpdateUserData,
+  } = useUserData();
   const getUserData = useCallback(
-    async function (karrotRaiseApi: KarrotRaiseApi) {
+    async function (karrotRaiseApi: KarrotRaiseApi, accessToken: string) {
       try {
-        const response = await karrotRaiseApi.getUserInfo();
+        const response = await karrotRaiseApi.getUserInfo(accessToken);
         if (response.isFetched === true && response.data) {
-          console.log('individualLeaderboard, getUserData', response.data);
           const { nickname, score, rank, comment } = response.data.data;
-          dispatch(updateUserData(nickname, score, rank, comment));
+          onUpdateUserData(userId, nickname, score, rank, comment);
         }
       } catch (error) {
         console.error(error);
       }
     },
-    [dispatch]
+    [onUpdateUserData, userId]
   );
 
   const getTownLeaderboard = useCallback(async function (
@@ -92,16 +90,16 @@ const IndividualLeaderboard = () => {
   ) {
     try {
       const response = await karrotRaiseApi.getTownUserRank(townId);
-      console.log('individualLeaderboard, getTownLeaderbarod', response.data);
       if (response.isFetched && response.data) {
+        console.log(response.data);
         const responseData = response.data.data;
-        const indexedTownRankData = responseData.map(
+        const indexedindividualRankData = responseData.map(
           (item: any, index: number) => ({
             rank: index + 1,
             ...item,
           })
         );
-        setTownRankData(indexedTownRankData);
+        setIndividualRankData(indexedindividualRankData);
       }
     } catch (error) {
       console.error(error);
@@ -110,16 +108,20 @@ const IndividualLeaderboard = () => {
   []);
 
   const refreshLeaderboard = useCallback(
-    async (karrotRaiseApi: KarrotRaiseApi, townId: string) => {
-      await getUserData(karrotRaiseApi);
+    async (
+      karrotRaiseApi: KarrotRaiseApi,
+      accessToken: string,
+      townId: string
+    ) => {
+      await getUserData(karrotRaiseApi, accessToken);
       await getTownLeaderboard(karrotRaiseApi, townId);
     },
     [getTownLeaderboard, getUserData]
   );
 
   useEffect(() => {
-    refreshLeaderboard(karrotRaiseApi, townId);
-  }, [karrotRaiseApi, refreshLeaderboard, townId]);
+    refreshLeaderboard(karrotRaiseApi, accessToken, userDistrictId);
+  }, [accessToken, karrotRaiseApi, refreshLeaderboard, userDistrictId]);
 
   return (
     <div css={divStyle}>
@@ -127,7 +129,7 @@ const IndividualLeaderboard = () => {
         <p>이번 주 랭킹</p>
         <button
           onClick={() => {
-            refreshLeaderboard(karrotRaiseApi, townId);
+            refreshLeaderboard(karrotRaiseApi, accessToken, userDistrictId);
           }}
           css={refreshIconStyle}
         >
@@ -136,7 +138,7 @@ const IndividualLeaderboard = () => {
       </div>
 
       <div css={leaderboardWrapperStyle}>
-        {townRankData.slice(0, 10).map((user) => {
+        {individualRankData.slice(0, 10).map((user) => {
           return (
             <TopUserRow
               key={user.userId}
@@ -148,11 +150,11 @@ const IndividualLeaderboard = () => {
           );
         })}
         <p css={infoText}>
-          🎉 {townName} TOP 10 🎉 이 되어서
+          🎉 {userDistrictName} TOP 10 🎉 이 되어서
           <br />
           이웃들에게 한 마디를 남겨보세요!
         </p>
-        {townRankData.slice(10).map((user) => {
+        {individualRankData.slice(10).map((user) => {
           return (
             <DefaultUserRow
               key={user.userId}

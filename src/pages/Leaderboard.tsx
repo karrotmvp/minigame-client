@@ -1,19 +1,18 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import IndividualLeaderboard from '../components/leaderboard/IndividualLeaderboard';
 import { AppEjectionButton } from 'components/buttons/AppEjectionButton';
 import { largeTextStyle, emphasizedTextStyle } from 'styles/textStyle';
 import Button from 'components/buttons/Button';
-import DefaultUserRow from 'components/leaderboard/DefaultUserRow';
-import { useDispatch, useSelector } from 'react-redux';
-import { reset } from 'reducers/counterReducer';
-import TopUserRow from 'components/leaderboard/TopUserRow';
-import { useCallback, useEffect, useState } from 'react';
+import { DefaultUserRow } from 'components/leaderboard/DefaultRow';
+import { TopUserRow } from 'components/leaderboard/TopRow';
+import { useCallback, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useAnalytics } from 'services/analytics';
-import { RootState } from 'reducers/rootReducer';
-import { useKarrotRaiseApi } from 'services/karrotRaiseApi';
+import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
 import { useKarrotMarketMini } from 'services/karrotMarketMini';
+import LeaderboardTabs from 'components/leaderboard/LeaderboardTabs';
+import useUserData from 'hooks/useUserData';
+import useClickCounter from 'hooks/useClickCounter';
 
 // nav
 const customNav = css`
@@ -70,31 +69,28 @@ const currentUserInfoRow = css`
   margin: 20px 0 10px;
 `;
 
-const initialState = {
-  nickname: '서초구 이웃',
-  score: 0,
-  rank: 99999,
-  comment: '',
-};
-
 const Leaderboard = () => {
-  const [userData, setUserData] = useState(initialState);
-  const { townName } = useSelector((state: RootState) => ({
-    townName: state.userDataReducer.townName,
-  }));
   const history = useHistory();
-  const dispatch = useDispatch();
   const analytics = useAnalytics();
   const karrotRaiseApi = useKarrotRaiseApi();
   const karrotMarketMini = useKarrotMarketMini();
-
+  const {
+    accessToken,
+    userId,
+    userDistrictName,
+    userNickname,
+    userScore,
+    userRank,
+    userComment,
+    onUpdateUserData,
+  } = useUserData();
+  const { onResetCount } = useClickCounter();
   const handlePlayAgain = async () => {
     analytics.logEvent('click_game_play_again_button');
-    dispatch(reset());
+    onResetCount();
     history.replace('/game');
   };
 
-  // Share must be triggered by "user activation"
   const handleShare = async () => {
     analytics.logEvent('click_share_button');
     const url = 'https://daangn.onelink.me/HhUa/3a219555';
@@ -103,35 +99,34 @@ const Leaderboard = () => {
     karrotMarketMini.share(url, text);
   };
 
-  const getUserData = useCallback(async function (karrotRaiseApi) {
-    try {
-      const response = await karrotRaiseApi.getUserInfo();
-      if (response.isFetched && response.data) {
-        const { nickname, score, rank, comment } = response.data.data;
-        setUserData({
-          nickname: nickname,
-          score: score,
-          rank: rank,
-          comment: comment,
-        });
+  const getUserData = useCallback(
+    async (karrotRaiseApi: KarrotRaiseApi, accessToken: string) => {
+      try {
+        const response = await karrotRaiseApi.getUserInfo(accessToken);
+        if (response.isFetched && response.data) {
+          const { nickname, score, rank, comment } = response.data.data;
+          onUpdateUserData(userId, nickname, score, rank, comment);
+        }
+      } catch (error) {
+        console.error(error);
       }
-    } catch (error) {
-      console.error(error);
-    }
-  }, []);
+    },
+    [onUpdateUserData, userId]
+  );
 
   useEffect(() => {
-    getUserData(karrotRaiseApi);
-  }, [getUserData, karrotRaiseApi]);
+    analytics.logEvent('view_leaderboard_page');
+    getUserData(karrotRaiseApi, accessToken);
+  }, [accessToken, analytics, getUserData, karrotRaiseApi]);
 
   useEffect(() => {
     return () => {
       if (history.action === 'POP') {
-        history.replace('/game' /* the new state */);
-        dispatch(reset());
+        onResetCount();
+        history.replace('/game' /* the "new" state */);
       }
     };
-  }, [dispatch, history]);
+  }, [history, onResetCount]);
   return (
     <>
       <div css={customNav}>
@@ -139,36 +134,35 @@ const Leaderboard = () => {
           <AppEjectionButton />
         </div>
       </div>
-
       <div css={divStyle}>
         <div css={headingWrapper}>
           <h1 css={largeTextStyle}>
-            <span css={emphasizedTextStyle}>{userData.nickname}</span>님은
+            <span css={emphasizedTextStyle}>{userNickname}</span>님은
             <br />
-            {townName}에서
-            <span css={emphasizedTextStyle}> {userData.rank}위</span>
+            {userDistrictName}에서
+            <span css={emphasizedTextStyle}> {userRank}위</span>
             에요!
           </h1>
           <div css={currentUserInfoRow}>
-            {userData.rank <= 10 ? (
+            {userRank <= 10 ? (
               <TopUserRow
-                rank={userData.rank}
-                nickname={userData.nickname}
-                score={userData.score}
-                comment={userData.comment}
+                rank={userRank}
+                nickname={userNickname}
+                score={userScore}
+                comment={userComment}
               />
             ) : (
               <DefaultUserRow
-                rank={userData.rank}
-                nickname={userData.nickname}
-                score={userData.score}
+                rank={userRank}
+                nickname={userNickname}
+                score={userScore}
               />
             )}
           </div>
         </div>
 
         <div css={leaderboardWrapper}>
-          <IndividualLeaderboard />
+          <LeaderboardTabs />
         </div>
         <div css={actionItemWrapper}>
           <Button

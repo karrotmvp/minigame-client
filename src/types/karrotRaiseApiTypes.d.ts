@@ -1,8 +1,4 @@
 // oauth2 api types
-export interface PostOauth2Request {
-  code: string | null;
-  regionId: string;
-}
 export interface PostOauth2Response {
   data?: {
     data: {
@@ -13,9 +9,6 @@ export interface PostOauth2Response {
 }
 
 // town api types
-export interface GetTownIdRequest {
-  regionId: string;
-}
 export interface GetTownIdResponse {
   data?: {
     data: {
@@ -24,11 +17,7 @@ export interface GetTownIdResponse {
       name2: string;
     };
   };
-
   isFetched: boolean;
-}
-export interface GetTownUserRankRequest {
-  townId: string;
 }
 export interface GetTownUserRankResponse {
   data?: {
@@ -41,9 +30,17 @@ export interface GetTownUserRankResponse {
   };
   isFetched: boolean;
 }
+export interface GetDistrictRankResponse {
+  data?: {
+    data: {
+      name1: string;
+      name2: string;
+      score: number;
+    }[];
+  };
+  isFetched: boolean;
+}
 // user api types
-export interface getUserInfoRequest {}
-
 export interface getUserInfoResponse {
   data?: {
     data: {
@@ -63,21 +60,15 @@ export interface getUserInfoResponse {
 }
 
 // user-rank api types
-export interface PatchUserScoreRequest {
-  score: number;
-}
+
 export interface PatchUserScoreResposne {
   isFetched: boolean;
-}
-export interface PatchUserCommmentRequest {
-  comment: string;
 }
 export interface PatchUserCommmentResponse {
   isFetched: boolean;
 }
 
 // demand-controller api types
-export interface PostDemandRequest {}
 export interface PostDemandResponse {
   isFetched: boolean;
   error?: {

@@ -6,16 +6,15 @@ import {
   mediumTextStyle,
 } from 'styles/textStyle';
 import Button from '../components/buttons/Button';
-import IndividualLeaderboard from '../components/leaderboard/IndividualLeaderboard';
 import { AppEjectionButton } from 'components/buttons/AppEjectionButton';
 import { useHistory } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { RootState } from 'reducers/rootReducer';
 import { useCallback, useEffect } from 'react';
 import { Analytics, useAnalytics } from 'services/analytics';
 import { useKarrotMarketMini } from 'services/karrotMarketMini';
 import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
 import { getMini } from 'services/karrotMarket/mini';
+import LeaderboardTabs from 'components/leaderboard/LeaderboardTabs';
+import useUserData from 'hooks/useUserData';
 
 // nav
 const customNav = css`
@@ -66,18 +65,20 @@ const actionItemWrapper = css`
 
 const NewUserHome = () => {
   let history = useHistory();
-  const { townName, regionId } = useSelector((state: RootState) => ({
-    townName: state.userDataReducer.townName,
-    regionId: state.userDataReducer.regionId,
-  }));
   const analytics = useAnalytics();
   const karrotRaiseApi = useKarrotRaiseApi();
   const karrotMarketMini = useKarrotMarketMini();
+  const { accessToken, userRegionId, userDistrictName, onUpdateAccessToken } =
+    useUserData();
 
   const trackUser = useCallback(
-    async (karrotRaiseApi: KarrotRaiseApi, analytics: Analytics) => {
+    async (
+      karrotRaiseApi: KarrotRaiseApi,
+      accessToken: string,
+      analytics: Analytics
+    ) => {
       try {
-        const response = await karrotRaiseApi.getUserInfo();
+        const response = await karrotRaiseApi.getUserInfo(accessToken);
         if (response.isFetched === true && response.data) {
           const { id } = response.data.data;
           analytics.setUserId(id);
@@ -100,6 +101,7 @@ const NewUserHome = () => {
           if (response.isFetched && response.data) {
             const { accessToken } = response.data.data;
             window.localStorage.setItem('ACCESS_TOKEN', accessToken);
+            onUpdateAccessToken(accessToken);
           }
         } else {
           throw new Error('Either code OR regionId is null');
@@ -108,12 +110,12 @@ const NewUserHome = () => {
         console.error(error);
       }
     },
-    []
+    [onUpdateAccessToken]
   );
 
   const runOnSuccess = (code: string) => {
-    getAccessToken(karrotRaiseApi, code, regionId);
-    trackUser(karrotRaiseApi, analytics);
+    getAccessToken(karrotRaiseApi, code, userRegionId);
+    trackUser(karrotRaiseApi, accessToken, analytics);
     analytics.logEvent('click_game_start_button', { type: 'new_user' });
     history.push('/game');
   };
@@ -124,7 +126,6 @@ const NewUserHome = () => {
     }
     karrotMarketMini.startPreset(runOnSuccess);
   };
-
   useEffect(() => {
     analytics.logEvent('view_new_user_home_page');
   }, [analytics]);
@@ -138,15 +139,15 @@ const NewUserHome = () => {
       <div css={divStyle}>
         <div css={headingWrapper}>
           <h1 css={largeTextStyle}>
-            <span css={emphasizedTextStyle}>{townName} 이웃</span>님, 아직
-            기록이 없어요
+            <span css={emphasizedTextStyle}>{userDistrictName} 이웃</span>님,
+            아직 기록이 없어요
           </h1>
           <h2 css={mediumTextStyle}>
             당근을 수확하고 이웃들에게 한 마디 남겨봐요!
           </h2>
         </div>
         <div css={leaderboardWrapper}>
-          <IndividualLeaderboard />
+          <LeaderboardTabs />
         </div>
         <div css={actionItemWrapper}>
           <Button

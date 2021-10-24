@@ -4,11 +4,10 @@ import { ReactComponent as WaitSvg } from 'assets/wait.svg';
 import { AppEjectionButton } from 'components/buttons/AppEjectionButton';
 import Button, { DisabledButton } from 'components/buttons/Button';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { RootState } from 'reducers/rootReducer';
 import { Analytics, useAnalytics } from 'services/analytics';
 import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
 import { useKarrotMarketMini } from 'services/karrotMarketMini';
+import useUserData from 'hooks/useUserData';
 
 const customNav = css`
   left: 0;
@@ -97,24 +96,26 @@ interface NonServiceAreaProps {
   location: {
     state: {
       isNonServiceUserBack: boolean;
-      townName: string;
+      districtName: string;
     };
   };
 }
 
 const NonServiceArea: React.FC<NonServiceAreaProps> = (props) => {
   const [isClicked, setIsClicked] = useState<boolean>(false);
-  const { regionId } = useSelector((state: RootState) => ({
-    regionId: state.userDataReducer.regionId,
-  }));
   const analytics = useAnalytics();
   const karrotRaiseApi = useKarrotRaiseApi();
   const karrotMarketMini = useKarrotMarketMini();
+  const { userRegionId, onUpdateAccessToken } = useUserData();
 
   const trackUser = useCallback(
-    async (karrotRaiseApi: KarrotRaiseApi, analytics: Analytics) => {
+    async (
+      karrotRaiseApi: KarrotRaiseApi,
+      accessToken: string,
+      analytics: Analytics
+    ) => {
       try {
-        const response = await karrotRaiseApi.getUserInfo();
+        const response = await karrotRaiseApi.getUserInfo(accessToken);
         if (response.isFetched === true && response.data) {
           const { id } = response.data.data;
           analytics.setUserId(id);
@@ -126,32 +127,41 @@ const NonServiceArea: React.FC<NonServiceAreaProps> = (props) => {
     []
   );
 
-  const getAccessToken = useCallback(async function (
-    karrotRaiseApi: KarrotRaiseApi,
-    code: string | null,
-    regionId: string
-  ) {
-    try {
-      console.log('asdfasfda');
-      if (code !== null) {
-        const response = await karrotRaiseApi.postOauth2(code, regionId);
-        if (response.isFetched && response.data) {
-          const { accessToken } = response.data.data;
-          window.localStorage.setItem('ACCESS_TOKEN', accessToken);
+  const getAccessToken = useCallback(
+    async function (
+      karrotRaiseApi: KarrotRaiseApi,
+      code: string | null,
+      regionId: string
+    ) {
+      try {
+        console.log('asdfasfda');
+        if (code !== null) {
+          const response = await karrotRaiseApi.postOauth2(code, regionId);
+          if (response.isFetched && response.data) {
+            const { accessToken } = response.data.data;
+            window.localStorage.setItem('ACCESS_TOKEN', accessToken);
+            onUpdateAccessToken(accessToken);
+            return accessToken;
+          }
+        } else {
+          throw new Error('Either code OR regionId is null');
         }
-      } else {
-        throw new Error('Either code OR regionId is null');
+      } catch (error) {
+        console.error(error);
       }
-    } catch (error) {
-      console.error(error);
-    }
-  },
-  []);
+    },
+    [onUpdateAccessToken]
+  );
 
   const runOnSuccess = async (code: string) => {
-    getAccessToken(karrotRaiseApi, code, regionId);
-    trackUser(karrotRaiseApi, analytics);
-    const response = await karrotRaiseApi.postDemand();
+    console.log('run-on-success', code);
+    const accessToken = (await getAccessToken(
+      karrotRaiseApi,
+      code,
+      userRegionId
+    ))!;
+    await trackUser(karrotRaiseApi, accessToken, analytics);
+    const response = await karrotRaiseApi.postDemand(accessToken);
     if (response.isFetched === true) {
       setIsClicked(true);
       analytics.logEvent('click_non_service_area_demand_button');
@@ -178,7 +188,8 @@ const NonServiceArea: React.FC<NonServiceAreaProps> = (props) => {
       <div css={backgroundStyle}>
         <WaitSvg css={svgStyle} />
         <h1 css={mainText}>
-          <span css={coloredText}>{props.location.state.townName}</span> 지역은
+          <span css={coloredText}>{props.location.state.districtName}</span>
+          지역은
           <br />
           아직 준비 중이에요
         </h1>

@@ -1,19 +1,17 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import DefaultGameEndModal from 'components/modals/DefaultGameEndModal';
+import GamePauseModal from 'components/game/GamePauseModal';
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { incrementClickCount, reset } from 'reducers/counterReducer';
-import { RootState } from '../reducers/rootReducer';
 import background from 'assets/Seocho_background.png';
 import { ReactComponent as BigKarrot } from 'assets/Seocho_daangn.svg';
 import Modal from 'react-modal';
-import GameDirectionPopupModal from 'components/modals/GameDirectionPopupModal';
+import GameDirectionPopupModal from 'components/game/GameDirectionPopupModal';
 import { commafy } from 'functions/numberFunctions';
 import ClickAnimation from 'components/game/ClickAnimation';
 import { useHistory } from 'react-router';
-import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
 import { useAnalytics } from 'services/analytics';
+import useClickCounter from 'hooks/useClickCounter';
+import useUserData from 'hooks/useUserData';
 
 // nav
 const customNav = css`
@@ -135,30 +133,29 @@ const shakeLeft = css`
 Modal.setAppElement(document.createElement('div'));
 
 interface GameEndButtonProps {
-  handleGameEnd: () => void;
+  handlePause: () => void;
 }
-const GameEndButton = ({ handleGameEnd }: GameEndButtonProps) => {
+const GameEndButton = ({ handlePause }: GameEndButtonProps) => {
   return (
-    <button css={gameEndButtonStyle} onClick={handleGameEnd}>
-      그만하기
+    <button css={gameEndButtonStyle} onClick={handlePause}>
+      Pause
     </button>
   );
 };
 
 type Particle = {
-  id: string,
-  posX: number,
-  posY: number,
+  id: string;
+  posX: number;
+  posY: number;
 };
 
 type GameState = {
-  particles: Particle[],
+  particles: Particle[];
 };
 
-type GameAction = (
-  | { type: 'spawn', posX: number, posY: number }
-  | { type: 'remove', id: string }
-);
+type GameAction =
+  | { type: 'spawn'; posX: number; posY: number }
+  | { type: 'remove'; id: string };
 
 const reducer: React.Reducer<GameState, GameAction> = (state, action) => {
   switch (action.type) {
@@ -174,7 +171,9 @@ const reducer: React.Reducer<GameState, GameAction> = (state, action) => {
     case 'remove':
       return {
         ...state,
-        particles: state.particles.filter(particle => particle.id !== action.id),
+        particles: state.particles.filter(
+          (particle) => particle.id !== action.id
+        ),
       };
     default:
       return state;
@@ -182,50 +181,47 @@ const reducer: React.Reducer<GameState, GameAction> = (state, action) => {
 };
 
 const Game = () => {
-  const [alreadyPatchedKarrot, setAlreadyPatchedKarrot] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [shouldPopup, setShouldPopup] = useState<boolean>(false);
   const [shakeToggle, setShakeToggle] = useState(false);
   const [state, gameDispatch] = React.useReducer(reducer, { particles: [] });
-  const { userScore, clickCount } = useSelector((state: RootState) => ({
-    userScore: state.userDataReducer.score,
-    clickCount: state.counterReducer.clickCount,
-  }));
   const history = useHistory();
-  const dispatch = useDispatch();
   const analytics = useAnalytics();
-  const karrotRaiseApi = useKarrotRaiseApi();
+  const { userScore } = useUserData();
+  const { clickCount, onResetCount, onIncrementClickCount } = useClickCounter();
 
-  type ParticleDestroyHandler = React.ComponentProps<typeof ClickAnimation>['onDestroy'];
-  const handleParticleDestroy = React.useCallback<ParticleDestroyHandler>(id => {
-    gameDispatch({ type: 'remove', id });
-  }, []);
+  type ParticleDestroyHandler = React.ComponentProps<
+    typeof ClickAnimation
+  >['onDestroy'];
+  const handleParticleDestroy = React.useCallback<ParticleDestroyHandler>(
+    (id) => {
+      gameDispatch({ type: 'remove', id });
+    },
+    []
+  );
 
   const activateAnimation = (e: React.TouchEvent) => {
     const clientX = e.touches[0].clientX;
     const clientY = e.touches[0].clientY;
-    const posX =  clientX - 25, posY = clientY - 50;
+    const posX = clientX - 25,
+      posY = clientY - 50;
     gameDispatch({ type: 'spawn', posX, posY });
   };
 
   const handleScreenTouch = (e: React.TouchEvent) => {
     e.stopPropagation();
     activateAnimation(e);
-    dispatch(incrementClickCount());
-  }
+    onIncrementClickCount();
+  };
 
   const activateBigKarrotAnimation = (e: React.TouchEvent) => {
     handleScreenTouch(e);
     setShakeToggle((prevState) => !prevState);
   };
 
-  const handleGameEnd = async function (karrotRaiseApi: KarrotRaiseApi) {
+  const handlePause = function () {
     try {
-      let karrotToPatch = clickCount - alreadyPatchedKarrot;
-      await karrotRaiseApi.patchUserScore(karrotToPatch);
-      analytics.logEvent('click_game_end_button', { score: karrotToPatch });
       setIsModalOpen(true);
-      setAlreadyPatchedKarrot(clickCount);
     } catch (error) {
       console.error(error);
     }
@@ -244,34 +240,26 @@ const Game = () => {
   }, [userScore]);
 
   useEffect(() => {
+    analytics.logEvent('view_game_page');
     return () => {
       if (history.action === 'POP') {
+        onResetCount();
         // history.replace('/game' /* the new state */);
-        dispatch(reset());
       }
     };
-  }, [dispatch, history]);
+  }, [analytics, history, onResetCount]);
   return (
     <>
       <div css={customNav}>
         <div css={customNavIcon}>
           <GameEndButton
-            handleGameEnd={() => {
-              handleGameEnd(karrotRaiseApi);
+            handlePause={() => {
+              // handlePause(karrotRaiseApi, accessToken);
+              handlePause();
             }}
           />
         </div>
       </div>
-      {/* <div
-        className="wrapper"
-        // css={fullScreenClickable}
-        // onClick={handleScreenClick}
-        // onTouchStart={handleScreenTouch}
-      >
-        {animationArr.map((item, index) => (
-          <ClickAnimation posX={item.posX} posY={item.posY} key={index} />
-        ))}
-      </div> */}
       <div css={divStyle}>
         <div css={scoreWrapper}>
           <h1 css={clickCountStyle}>{commafy(clickCount)}</h1>
@@ -293,8 +281,12 @@ const Game = () => {
               width: 'auto',
             }}
           />
-          {state.particles.map(item => (
-            <ClickAnimation key={item.id} {...item} onDestroy={handleParticleDestroy} />
+          {state.particles.map((item) => (
+            <ClickAnimation
+              key={item.id}
+              {...item}
+              onDestroy={handleParticleDestroy}
+            />
           ))}
         </div>
       </div>
@@ -311,7 +303,7 @@ const Game = () => {
           },
         }}
       >
-        <DefaultGameEndModal closeModal={closeModal} />
+        <GamePauseModal closeModal={closeModal} />
       </Modal>
       <Modal
         isOpen={shouldPopup}

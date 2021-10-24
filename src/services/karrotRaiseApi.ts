@@ -1,5 +1,6 @@
 import { createContext, useContext } from 'react';
 import {
+  GetDistrictRankResponse,
   GetTownIdResponse,
   GetTownUserRankResponse,
   getUserInfoResponse,
@@ -16,10 +17,17 @@ export interface KarrotRaiseApi {
   ): Promise<PostOauth2Response>;
   getTownId(regionId: string): Promise<GetTownIdResponse>;
   getTownUserRank(townId: string): Promise<GetTownUserRankResponse>;
-  getUserInfo(): Promise<getUserInfoResponse>;
-  patchUserScore(score: number): Promise<PatchUserScoreResposne>;
-  patchUserComment(comment: string): Promise<PatchUserCommmentResponse>;
-  postDemand(): Promise<PostDemandResponse>;
+  getDistrictRank(): Promise<GetDistrictRankResponse>;
+  getUserInfo(accessToken: string): Promise<getUserInfoResponse>;
+  patchUserScore(
+    accessToken: string,
+    score: number
+  ): Promise<PatchUserScoreResposne>;
+  patchUserComment(
+    accessToken: string,
+    comment: string
+  ): Promise<PatchUserCommmentResponse>;
+  postDemand(accessToken: string): Promise<PostDemandResponse>;
 }
 
 // wow, such empty...
@@ -34,6 +42,10 @@ export const emptyKarrotRaiseApi: KarrotRaiseApi = {
     });
   },
   getTownUserRank(...args) {
+    console.log(...args);
+    return new Promise(() => {});
+  },
+  getDistrictRank(...args) {
     console.log(...args);
     return new Promise(() => {});
   },

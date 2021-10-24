@@ -1,25 +1,21 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import DefaultUserRow from 'components/leaderboard/DefaultUserRow';
-import TopUserRow from 'components/leaderboard/TopUserRow';
 import {
   emphasizedTextStyle,
   largeTextStyle,
   mediumTextStyle,
 } from 'styles/textStyle';
 import Button from 'components/buttons/Button';
-import IndividualLeaderboard from 'components/leaderboard/IndividualLeaderboard';
-import { useCallback, useEffect, useState } from 'react';
+import LeaderboardTabs from 'components/leaderboard/LeaderboardTabs';
+import { useCallback, useEffect } from 'react';
 import { AppEjectionButton } from 'components/buttons/AppEjectionButton';
-
 import { commafy } from 'functions/numberFunctions';
 import { useAnalytics } from 'services/analytics';
-
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from 'reducers/rootReducer';
 import { useHistory } from 'react-router-dom';
-import { updateUserScore } from 'reducers/userDataReducer';
 import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
+import { DefaultUserRow } from 'components/leaderboard/DefaultRow';
+import { TopUserRow } from 'components/leaderboard/TopRow';
+import useUserData from 'hooks/useUserData';
 
 // nav
 const customNav = css`
@@ -95,7 +91,7 @@ interface UserScoreExistsProps {
   rank: number;
   score: number;
   comment: string;
-  townName: string;
+  districtName: string;
 }
 const UserScoreExists: React.FC<UserScoreExistsProps> = (props) => {
   return (
@@ -103,7 +99,7 @@ const UserScoreExists: React.FC<UserScoreExistsProps> = (props) => {
       <h1 css={largeTextStyle}>
         <span css={emphasizedTextStyle}>{props.nickname}</span>님은
         <br />
-        {props.townName}에서
+        {props.districtName}에서
         <span css={emphasizedTextStyle}> {commafy(props.rank)}위</span>
         에요!
       </h1>
@@ -126,22 +122,21 @@ const UserScoreExists: React.FC<UserScoreExistsProps> = (props) => {
     </>
   );
 };
-const initialState = {
-  nickname: '이웃',
-  score: 0,
-  rank: 999999,
-  comment: '',
-};
 
 const ReturningUserHome = () => {
-  const [userData, setUserData] = useState(initialState);
   const history = useHistory();
-  const dispatch = useDispatch();
   const analytics = useAnalytics();
   const karrotRaiseApi = useKarrotRaiseApi();
-  const { townName } = useSelector((state: RootState) => ({
-    townName: state.userDataReducer.townName,
-  }));
+  const {
+    accessToken,
+    userId,
+    userDistrictName,
+    userNickname,
+    userScore,
+    userRank,
+    userComment,
+    onUpdateUserData,
+  } = useUserData();
 
   const handleGameStart = () => {
     analytics.logEvent('click_game_start_button');
@@ -149,31 +144,25 @@ const ReturningUserHome = () => {
   };
 
   const getUserData = useCallback(
-    async (karrotRaiseApi: KarrotRaiseApi) => {
+    async (karrotRaiseApi: KarrotRaiseApi, accessToken: string) => {
       try {
-        const response = await karrotRaiseApi.getUserInfo();
+        const response = await karrotRaiseApi.getUserInfo(accessToken);
         if (response.isFetched === true && response.data) {
           console.log('returningUserHome, getUserData', response.data);
           const { nickname, score, rank, comment } = response.data.data;
-          setUserData({
-            nickname: nickname,
-            score: score,
-            rank: rank,
-            comment: comment,
-          });
-          dispatch(updateUserScore(score));
+          onUpdateUserData(userId, nickname, score, rank, comment);
         }
       } catch (error) {
         console.error(error);
       }
     },
-    [dispatch]
+    [onUpdateUserData, userId]
   );
+
   useEffect(() => {
-    getUserData(karrotRaiseApi);
+    getUserData(karrotRaiseApi, accessToken);
     analytics.logEvent('view_returning_user_home_page');
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [accessToken, analytics, getUserData, karrotRaiseApi]);
 
   return (
     <>
@@ -184,21 +173,21 @@ const ReturningUserHome = () => {
       </div>
       <div css={divStyle}>
         <div css={headingWrapper}>
-          {userData.rank !== null ? (
+          {userRank !== null ? (
             <UserScoreExists
-              nickname={userData.nickname}
-              rank={userData.rank}
-              score={userData.score}
-              comment={userData.comment}
-              townName={townName}
+              nickname={userNickname}
+              rank={userRank}
+              score={userScore}
+              comment={userComment}
+              districtName={userDistrictName}
             />
           ) : (
-            <UserScoreNull nickname={userData.nickname} />
+            <UserScoreNull nickname={userNickname} />
           )}
         </div>
 
         <div css={leaderboardWrapper}>
-          <IndividualLeaderboard />
+          <LeaderboardTabs />
         </div>
         <div
           // to="/game"
