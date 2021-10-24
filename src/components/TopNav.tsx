@@ -38,10 +38,9 @@ const TopNav = ({ action, handleNavBackAction }: TopNavprops) => {
         {action === `eject` ? (
           <AppEjectionButton />
         ) : action === `back` ? (
-          // eslint-disable-next-line jsx-a11y/anchor-is-valid
-          <a onClick={handleNavBackAction}>
+          <div onClick={handleNavBackAction}>
             <IconBack />
-          </a>
+          </div>
         ) : null}
       </div>
     </div>

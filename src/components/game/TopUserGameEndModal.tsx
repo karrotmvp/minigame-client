@@ -3,10 +3,8 @@ import { css } from '@emotion/react';
 import { emphasizedTextStyle, largeTextStyle } from 'styles/textStyle';
 import Button, { DisabledButton } from '../buttons/Button';
 import { ReactComponent as Karrot } from 'assets/karrot.svg';
-import { FC, useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { RootState } from 'reducers/rootReducer';
 import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
 const largeText = css`
   margin: 15px 0;
@@ -77,17 +75,13 @@ interface TopUserGameEndModalProps {
   rank: number;
   comment: string;
 }
-const TopUserGameEndModal: FC<TopUserGameEndModalProps> = (props) => {
+const TopUserGameEndModal: React.FC<TopUserGameEndModalProps> = (props) => {
   const [topUserComment, setTopUserComment] = useState({
     comment: props.comment,
     length: props.comment.length,
   });
-  const { townName } = useSelector((state: RootState) => ({
-    townName: state.userDataReducer.townName,
-  }));
   let history = useHistory();
   const karrotRaiseApi = useKarrotRaiseApi();
-
   const handleTopUserInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTopUserComment({
       comment: e.target.value.slice(0, 19),
@@ -95,11 +89,14 @@ const TopUserGameEndModal: FC<TopUserGameEndModalProps> = (props) => {
     });
   };
   const addComment = useCallback(
-    async function (karrotRaiseApi: KarrotRaiseApi, comment: string) {
-      await karrotRaiseApi.patchUserComment(comment);
+    function (
+      karrotRaiseApi: KarrotRaiseApi,
+      accessToken: string,
+      comment: string
+    ) {
+      console.log('patched');
       history.replace('/leaderboard');
     },
-    [history]
   );
 
   return (
@@ -116,7 +113,7 @@ const TopUserGameEndModal: FC<TopUserGameEndModalProps> = (props) => {
       </h1>
       <hr css={horizontalLine} />
       <p css={infoText}>
-        {townName} 이웃들에게
+        {userDistrictName} 이웃들에게
         <br />
         하고 싶은 말을 남겨보세요
       </p>
@@ -127,7 +124,7 @@ const TopUserGameEndModal: FC<TopUserGameEndModalProps> = (props) => {
             type="text"
             onChange={handleTopUserInput}
             value={topUserComment.comment}
-            placeholder={`예) 내가 ${townName}짱!`}
+            placeholder={`예) 내가 ${userDistrictName}짱!`}
             maxLength={20}
           />
           <p css={commentLengthCount}>{topUserComment.length}/20</p>
@@ -139,7 +136,6 @@ const TopUserGameEndModal: FC<TopUserGameEndModalProps> = (props) => {
             color={`primary`}
             text={`등록하기`}
             onClick={() => {
-              addComment(karrotRaiseApi, topUserComment.comment);
             }}
           />
         ) : (

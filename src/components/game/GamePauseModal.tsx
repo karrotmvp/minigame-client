@@ -5,14 +5,11 @@ import Button from '../buttons/Button';
 import { ReactComponent as Karrot } from 'assets/karrot.svg';
 import TopUserGameEndModal from './TopUserGameEndModal';
 import { useHistory } from 'react-router';
-import { useCallback, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { RootState } from 'reducers/rootReducer';
+import { useState } from 'react';
 import Modal from 'react-modal';
 import { commafy } from 'functions/numberFunctions';
-import { useKarrotRaiseApi } from 'services/karrotRaiseApi';
-import { useAnalytics } from 'services/analytics';
-
+import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
+import { Analytics, useAnalytics } from 'services/analytics';
 
 const modalStyle = css`
   position: absolute;
@@ -43,7 +40,6 @@ const horizontalLine = css`
   border: 0.1px solid #e7e7e7;
   // padding: 0;
 `;
-
 const totalKarrotText = css`
   font-style: normal;
   font-weight: normal;
@@ -56,55 +52,61 @@ const totalKarrotText = css`
   margin: 15px 0 23px;
 `;
 
-const initialState = {
-  nickname: '',
-  score: 0,
-  rank: 100,
-  comment: '',
-};
+// const initialState = {
+//   nickname: '',
+//   score: 0,
+//   rank: 100,
+//   comment: '',
+// };
 
+type UserData = {
+  nickname: string;
+  score: number;
+  rank: number;
+  comment: string;
+};
 Modal.setAppElement(document.createElement('div'));
 
-interface DefaultGameEndModalProps {
+interface GamePauseModalProps {
   closeModal: () => void;
 }
-const DefaultGameEndModal = ({ closeModal }: DefaultGameEndModalProps) => {
+const GamePauseModal = ({ closeModal }: GamePauseModalProps) => {
+  const [userData, setUserData] = useState<UserData>({
+  });
   const [modalIsOpen, setIsOpen] = useState(false);
-  const [userData, setUserData] = useState(initialState);
   const analytics = useAnalytics();
-
-
-  const { clickCount } = useSelector((state: RootState) => ({
-    clickCount: state.counterReducer.clickCount,
-  }));
   let history = useHistory();
   const karrotRaiseApi = useKarrotRaiseApi();
 
-  const handleViewLeaderboard = () => {
-    analytics.logEvent('click_view_leaderboard_button');
-    history.replace('/leaderboard');
-  };
-
-  const getUserData = useCallback(async (karrotRaiseApi) => {
+  const handleGameEnd = async (
+    karrotRaiseApi: KarrotRaiseApi,
+    analytics: Analytics
+  ) => {
     try {
-      const response = await karrotRaiseApi.getUserInfo();
-      if (response.isFetched === true && response.data) {
-        const { nickname, score, rank, comment } = response.data.data;
-        setUserData({
-          nickname: nickname,
-          score: score,
-          rank: rank,
-          comment: comment,
-        });
+      console.log(clickCount);
+      analytics.logEvent('click_game_end_button', { score: clickCount });
+      const patchResponse = await karrotRaiseApi.patchUserScore(
+      );
+      if (patchResponse.isFetched === true) {
+        if (response.isFetched === true && response.data) {
+          const { nickname, score, rank, comment } = response.data.data;
+          setUserData({
+            nickname: nickname,
+            score: score,
+            rank: rank,
+            comment: comment,
+          });
+          if (userRank <= 10) {
+            setIsOpen(true);
+          } else {
+            history.replace('/leaderboard');
+          }
+        }
       }
     } catch (error) {
       console.error(error);
     }
-  }, []);
-
-  useEffect(() => {
-    getUserData(karrotRaiseApi);
-  }, [getUserData, karrotRaiseApi]);
+  };
 
   return (
     <>
@@ -119,7 +121,7 @@ const DefaultGameEndModal = ({ closeModal }: DefaultGameEndModalProps) => {
         수확했어요!
       </h1>
       <hr css={horizontalLine} />
-      <p css={totalKarrotText}>총 당근 {commafy(userData.score)}개</p>
+      <p css={totalKarrotText}>총 당근 {commafy(userScore + clickCount)}개</p>
       <div
         style={{
           width: `100%`,
@@ -140,13 +142,8 @@ const DefaultGameEndModal = ({ closeModal }: DefaultGameEndModalProps) => {
           size={`medium`}
           color={`primary`}
           text={`게임종료`}
-          onClick={() => {
-            if (userData.rank <= 10) {
-              setIsOpen(true);
-            } else {
-              handleViewLeaderboard();
-            }
-          }}
+          onClick={() =>
+          }
         />
       </div>
       <Modal
@@ -167,4 +164,4 @@ const DefaultGameEndModal = ({ closeModal }: DefaultGameEndModalProps) => {
   );
 };
 
-export default DefaultGameEndModal;
+export default GamePauseModal;
