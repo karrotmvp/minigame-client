@@ -6,7 +6,6 @@ import {
   mediumTextStyle,
 } from 'styles/textStyle';
 import Button from '../components/buttons/Button';
-import IndividualLeaderboard from '../components/leaderboard/IndividualLeaderboard';
 import { AppEjectionButton } from 'components/buttons/AppEjectionButton';
 import { useHistory } from 'react-router-dom';
 import { useCallback, useEffect } from 'react';
@@ -14,6 +13,7 @@ import { Analytics, useAnalytics } from 'services/analytics';
 import { useKarrotMarketMini } from 'services/karrotMarketMini';
 import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
 import { getMini } from 'services/karrotMarket/mini';
+import LeaderboardTabs from 'components/leaderboard/LeaderboardTabs';
 import useUserData from 'hooks/useUserData';
 
 // nav
@@ -147,7 +147,7 @@ const NewUserHome = () => {
           </h2>
         </div>
         <div css={leaderboardWrapper}>
-          <IndividualLeaderboard />
+          <LeaderboardTabs />
         </div>
         <div css={actionItemWrapper}>
           <Button

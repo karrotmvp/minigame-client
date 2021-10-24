@@ -1,25 +1,25 @@
 import { Tabs } from '@karrotframe/tabs';
 import '@karrotframe/tabs/index.css';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import DistrictLeaderboard from './DistrictLeaderboard';
 import IndividualLeaderboard from './IndividualLeaderboard';
 
 const LeaderboardTabs = () => {
-  const [activeTabKey, setActiveTabKey] = useState<string>('individual');
-
+  const [activeTabKey, setActiveTabKey] = useState<string>('district');
+  console.log('leaderboard tabs');
   return (
     <Tabs
       activeTabKey={activeTabKey}
       tabs={[
         {
-          key: 'individual',
+          key: 'district',
           buttonLabel: '동네별',
-          component: () => <DistrictLeaderboard />,
+          component: useCallback(() => <DistrictLeaderboard />, []),
         },
         {
-          key: 'district',
+          key: 'individual',
           buttonLabel: '주민별',
-          component: () => <IndividualLeaderboard />,
+          component: useCallback(() => <IndividualLeaderboard />, []),
         },
       ]}
       onTabChange={(key) => {

@@ -1,18 +1,16 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import IndividualLeaderboard from '../components/leaderboard/IndividualLeaderboard';
 import { AppEjectionButton } from 'components/buttons/AppEjectionButton';
 import { largeTextStyle, emphasizedTextStyle } from 'styles/textStyle';
 import Button from 'components/buttons/Button';
-import DefaultUserRow from 'components/leaderboard/DefaultUserRow';
-import TopUserRow from 'components/leaderboard/TopUserRow';
-import { useCallback, useEffect, useState } from 'react';
+import { DefaultUserRow } from 'components/leaderboard/DefaultRow';
+import { TopUserRow } from 'components/leaderboard/TopRow';
+import { useCallback, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useAnalytics } from 'services/analytics';
 import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
 import { useKarrotMarketMini } from 'services/karrotMarketMini';
-import { Tabs } from '@karrotframe/tabs';
-import '@karrotframe/tabs/index.css';
+import LeaderboardTabs from 'components/leaderboard/LeaderboardTabs';
 import useUserData from 'hooks/useUserData';
 import useClickCounter from 'hooks/useClickCounter';
 
@@ -72,9 +70,6 @@ const currentUserInfoRow = css`
 `;
 
 const Leaderboard = () => {
-
-  const [activeTabKey, setActiveTabKey] = useState<string>('individual');
-
   const history = useHistory();
   const analytics = useAnalytics();
   const karrotRaiseApi = useKarrotRaiseApi();
@@ -166,7 +161,9 @@ const Leaderboard = () => {
           </div>
         </div>
 
-        <div css={leaderboardWrapper}>{/* <IndividualLeaderboard /> */}</div>
+        <div css={leaderboardWrapper}>
+          <LeaderboardTabs />
+        </div>
         <div css={actionItemWrapper}>
           <Button
             size={`medium`}

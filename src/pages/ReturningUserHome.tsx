@@ -1,7 +1,5 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import DefaultUserRow from 'components/leaderboard/DefaultUserRow';
-import TopUserRow from 'components/leaderboard/TopUserRow';
 import {
   emphasizedTextStyle,
   largeTextStyle,
@@ -9,13 +7,14 @@ import {
 } from 'styles/textStyle';
 import Button from 'components/buttons/Button';
 import LeaderboardTabs from 'components/leaderboard/LeaderboardTabs';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 import { AppEjectionButton } from 'components/buttons/AppEjectionButton';
-
 import { commafy } from 'functions/numberFunctions';
 import { useAnalytics } from 'services/analytics';
 import { useHistory } from 'react-router-dom';
 import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
+import { DefaultUserRow } from 'components/leaderboard/DefaultRow';
+import { TopUserRow } from 'components/leaderboard/TopRow';
 import useUserData from 'hooks/useUserData';
 
 // nav
@@ -188,7 +187,6 @@ const ReturningUserHome = () => {
         </div>
 
         <div css={leaderboardWrapper}>
-          {/* <IndividualLeaderboard /> */}
           <LeaderboardTabs />
         </div>
         <div

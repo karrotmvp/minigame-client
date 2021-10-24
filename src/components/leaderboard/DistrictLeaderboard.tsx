@@ -1,8 +1,8 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import React, { useCallback, useEffect, useState } from 'react';
-import DefaultUserRow from './DefaultUserRow';
-import TopUserRow from './TopUserRow';
+import { DefaultDistrictRow } from './DefaultRow';
+import { TopDistrictRow } from './TopRow';
 import { ReactComponent as RefreshIcon } from 'assets/refresh.svg';
 import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
 
@@ -44,73 +44,44 @@ const refreshIconStyle = css`
   outline: inherit;
 `;
 
+// interface DistrictRankData {}
 const DistrictLeaderboard = () => {
-  const [townRankData, setTownRankData] = useState<any[]>([]);
-  const { townId, townName } = useSelector((state: RootState) => ({
-    townId: state.userDataReducer.townId,
-    townName: state.userDataReducer.townName,
-  }));
-  const dispatch = useDispatch();
+  const [districtRankData, setDistrictRankData] = useState<any[]>([]);
   const karrotRaiseApi = useKarrotRaiseApi();
 
-  // const getUserData = useCallback(
-  //   async function (karrotRaiseApi: KarrotRaiseApi) {
-  //     try {
-  //       const response = await karrotRaiseApi.getUserInfo();
-  //       if (response.isFetched === true && response.data) {
-  //         console.log('individualLeaderboard, getUserData', response.data);
-  //         const { nickname, score, rank, comment } = response.data.data;
-  //         dispatch(updateUserData(nickname, score, rank, comment));
-  //       }
-  //     } catch (error) {
-  //       console.error(error);
-  //     }
-  //   },
-  //   [dispatch]
-  // );
+  const getDistrictLeaderboardData = useCallback(
+    async (karrotRaiseApi: KarrotRaiseApi) => {
+      try {
+        const response = await karrotRaiseApi.getDistrictRank();
+        if (response.isFetched && response.data) {
+          console.log(response.data);
+          const responseData = response.data.data;
+          const indexedDistrictRankData = responseData.map(
+            (item: any, index: number) => ({
+              rank: index + 1,
+              ...item,
+            })
+          );
 
-  // const getTownLeaderboard = useCallback(async function (
-  //   karrotRaiseApi: KarrotRaiseApi,
-  //   townId: string
-  // ) {
-  //   try {
-  //     const response = await karrotRaiseApi.getTownUserRank(townId);
-  //     console.log('individualLeaderboard, getTownLeaderbarod', response.data);
-  //     if (response.isFetched && response.data) {
-  //       const responseData = response.data.data;
-  //       const indexedTownRankData = responseData.map(
-  //         (item: any, index: number) => ({
-  //           rank: index + 1,
-  //           ...item,
-  //         })
-  //       );
-  //       setTownRankData(indexedTownRankData);
-  //     }
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // },
-  // []);
-
-  // const getDistrictLeaderboardData = useCallback(
-  //   async () => {
-  //     callback
-  //   },
-  //   [input],
-  // )
-
-  const refreshLeaderboard = useCallback(
-    async (karrotRaiseApi: KarrotRaiseApi, townId: string) => {
-      // await getUserData(karrotRaiseApi);
-      // await getTownLeaderboard(karrotRaiseApi, townId);
+          setDistrictRankData(indexedDistrictRankData);
+        }
+      } catch (error) {
+        console.error(error);
+      }
     },
-    // [getTownLeaderboard, getUserData]
     []
   );
 
+  const refreshLeaderboard = useCallback(
+    async (karrotRaiseApi: KarrotRaiseApi) => {
+      await getDistrictLeaderboardData(karrotRaiseApi);
+    },
+    [getDistrictLeaderboardData]
+  );
+
   useEffect(() => {
-    refreshLeaderboard(karrotRaiseApi, townId);
-  }, [karrotRaiseApi, refreshLeaderboard, townId]);
+    refreshLeaderboard(karrotRaiseApi);
+  }, [karrotRaiseApi, refreshLeaderboard]);
 
   return (
     <div css={divStyle}>
@@ -118,7 +89,7 @@ const DistrictLeaderboard = () => {
         <p>이번 주 랭킹</p>
         <button
           onClick={() => {
-            refreshLeaderboard(karrotRaiseApi, townId);
+            getDistrictLeaderboardData(karrotRaiseApi);
           }}
           css={refreshIconStyle}
         >
@@ -127,25 +98,25 @@ const DistrictLeaderboard = () => {
       </div>
 
       <div css={leaderboardWrapperStyle}>
-        {townRankData.slice(0, 10).map((user) => {
+        {districtRankData.slice(0, 10).map((district) => {
           return (
-            <TopUserRow
-              key={user.userId}
-              rank={user.rank}
-              nickname={user.nickname}
-              comment={user.comment}
-              score={user.score}
+            <TopDistrictRow
+              key={district.name2}
+              rank={district.rank}
+              districtName={district.name2}
+              // participant={district.participant}
+              score={district.score}
             />
           );
         })}
 
-        {townRankData.slice(10).map((user) => {
+        {districtRankData.slice(10).map((district) => {
           return (
-            <DefaultUserRow
-              key={user.userId}
-              rank={user.rank}
-              nickname={user.nickname}
-              score={user.score}
+            <DefaultDistrictRow
+              key={district.name2}
+              rank={district.rank}
+              districtName={district.name2}
+              score={district.score}
             />
           );
         })}

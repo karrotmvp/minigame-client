@@ -1,10 +1,10 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import React, { useCallback, useEffect, useState } from 'react';
-import DefaultUserRow from './DefaultUserRow';
-import TopUserRow from './TopUserRow';
+import { useCallback, useEffect, useState } from 'react';
+import { TopUserRow } from './TopRow';
 import { ReactComponent as RefreshIcon } from 'assets/refresh.svg';
 import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
+import { DefaultUserRow } from './DefaultRow';
 import useUserData from 'hooks/useUserData';
 
 const divStyle = css`
@@ -60,12 +60,7 @@ const infoText = css`
 `;
 
 const IndividualLeaderboard = () => {
-  const [townRankData, setTownRankData] = useState<any[]>([]);
-  const { townId, townName } = useSelector((state: RootState) => ({
-    townId: state.userDataReducer.townId,
-    townName: state.userDataReducer.townName,
-  }));
-  const dispatch = useDispatch();
+  const [individualRankData, setIndividualRankData] = useState<any[]>([]);
   const karrotRaiseApi = useKarrotRaiseApi();
   const {
     accessToken,
@@ -79,7 +74,6 @@ const IndividualLeaderboard = () => {
       try {
         const response = await karrotRaiseApi.getUserInfo(accessToken);
         if (response.isFetched === true && response.data) {
-          console.log('individualLeaderboard, getUserData', response.data);
           const { nickname, score, rank, comment } = response.data.data;
           onUpdateUserData(userId, nickname, score, rank, comment);
         }
@@ -96,16 +90,16 @@ const IndividualLeaderboard = () => {
   ) {
     try {
       const response = await karrotRaiseApi.getTownUserRank(townId);
-      console.log('individualLeaderboard, getTownLeaderbarod', response.data);
       if (response.isFetched && response.data) {
+        console.log(response.data);
         const responseData = response.data.data;
-        const indexedTownRankData = responseData.map(
+        const indexedindividualRankData = responseData.map(
           (item: any, index: number) => ({
             rank: index + 1,
             ...item,
           })
         );
-        setTownRankData(indexedTownRankData);
+        setIndividualRankData(indexedindividualRankData);
       }
     } catch (error) {
       console.error(error);
@@ -144,7 +138,7 @@ const IndividualLeaderboard = () => {
       </div>
 
       <div css={leaderboardWrapperStyle}>
-        {townRankData.slice(0, 10).map((user) => {
+        {individualRankData.slice(0, 10).map((user) => {
           return (
             <TopUserRow
               key={user.userId}
@@ -160,7 +154,7 @@ const IndividualLeaderboard = () => {
           <br />
           이웃들에게 한 마디를 남겨보세요!
         </p>
-        {townRankData.slice(10).map((user) => {
+        {individualRankData.slice(10).map((user) => {
           return (
             <DefaultUserRow
               key={user.userId}
