@@ -129,7 +129,7 @@ const IndividualLeaderboard = () => {
         />
       </div>
 
-      <div css={leaderboardWrapperStyle}>
+      <LeaderboardWrapper>
         {individualRankData.slice(0, 10).map((user) => {
           return (
             <TopUserRow
@@ -156,7 +156,7 @@ const IndividualLeaderboard = () => {
             />
           );
         })}
-      </div>
+      </LeaderboardWrapper>
     </div>
   );
 };

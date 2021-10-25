@@ -22,8 +22,6 @@ const UserRank = styled.div`
   font-size: 12px;
   line-height: 161.7%;
   /* or 19px */
-
-  color: #5b5b5b;
 `;
 const UserInfo = styled.div`
   display: flex;
@@ -37,8 +35,6 @@ const UserInfo = styled.div`
   font-size: 16px;
   line-height: 161.7%;
   /* identical to box height, or 26px */
-
-  color: #7c7c7c;
 `;
 const UserScore = styled.div`
   display: flex;
@@ -52,8 +48,6 @@ const UserScore = styled.div`
   /* or 19px */
 
   text-align: right;
-
-  color: #7c7c7c;
 `;
 interface DefaultUserRowProps {
   rank: number;
@@ -116,6 +110,7 @@ export const DefaultUserRow: React.FC<DefaultUserRowProps> = (props) => {
 
 interface DefaultDistrictRowProps {
   rank: number;
+  cityName: string;
   districtName: string;
   score: number;
 }
@@ -126,7 +121,9 @@ export const DefaultDistrictRow: React.FC<DefaultDistrictRowProps> = (
     <Container>
       <DistrictRank>{commafy(props.rank)}</DistrictRank>
       <ContentsWrapper>
-        <DistrictName>{props.districtName}</DistrictName>
+        <DistrictName>
+          {props.cityName} {props.districtName}
+        </DistrictName>
         <Contents>
           {/* <p>000명 참여</p> */}
           <DistrictScore>{commafy(props.score)}</DistrictScore>

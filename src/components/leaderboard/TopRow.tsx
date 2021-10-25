@@ -92,8 +92,6 @@ const Contents = styled.div`
   font-size: 12px;
   line-height: 161.7%;
   /* or 19px */
-
-  color: #7c7c7c;
 `;
 const DistrictScore = styled.div`
   display: flex;
@@ -130,6 +128,7 @@ export const TopUserRow: React.FC<TopUserRowProps> = (props) => {
 
 interface TopDistrictTowProps {
   rank: number;
+  cityName: string;
   districtName: string;
   score: number;
   // comment: string;
@@ -139,7 +138,9 @@ export const TopDistrictRow: React.FC<TopDistrictTowProps> = (props) => {
     <Container rank={props.rank}>
       <DistrictRank>{commafy(props.rank)}</DistrictRank>
       <ContentsWrapper>
-        <DistrictName>{props.districtName}</DistrictName>
+        <DistrictName>
+          {props.cityName} {props.districtName}
+        </DistrictName>
         <Contents>
           {/* <p>000명 참여</p> */}
           <DistrictScore>{commafy(props.score)}</DistrictScore>

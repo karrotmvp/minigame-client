@@ -10,7 +10,7 @@ const divStyle = css`
   padding-top: 10px;
   padding-bottom: 10px;
   max-height: inherit;
-  height: inherit'
+  height: inherit;
   box-sizing: border-box;
 `;
 const leaderboardWrapperStyle = css`
@@ -88,6 +88,7 @@ const DistrictLeaderboard = () => {
             <TopDistrictRow
               key={district.name2}
               rank={district.rank}
+              cityName={district.name1}
               districtName={district.name2}
               // participant={district.participant}
               score={district.score}
@@ -100,6 +101,7 @@ const DistrictLeaderboard = () => {
             <DefaultDistrictRow
               key={district.name2}
               rank={district.rank}
+              cityName={district.name1}
               districtName={district.name2}
               score={district.score}
             />
