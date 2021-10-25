@@ -11,6 +11,7 @@ export function createKarrotRaiseApi(
   // const axios = useAxios();
 
   // OAUTH2
+  // 당근 Oauth2
   async function postOauth2(code: string, regionId: string) {
     try {
       const response = await axios.post(
@@ -33,55 +34,34 @@ export function createKarrotRaiseApi(
     }
   }
 
-  // TOWN
-  async function getTownId(regionId: string) {
+  // RANK
+  // 한마디 추가
+  async function patchUserComment(accessToken: string, comment: string) {
     try {
-      const { data } = await axios.get(`${baseUrl}/town?regionId=${regionId}`);
-      return { isFetched: true, data: data };
-    } catch (error) {
-      console.error(error);
-      return { isFetched: false };
-    }
-  }
-  async function getTownUserRank(townId: string) {
-    try {
-      const { data } = await axios.get(`${baseUrl}/towns/${townId}/users/rank`);
-      return { isFetched: true, data: data };
-    } catch (error) {
-      console.error(error);
-      return { isFetched: false };
-    }
-  }
-  async function getDistrictRank() {
-    try {
-      const { data } = await axios.get(`${baseUrl}/towns/rank`);
-      return { isFetched: true, data: data };
-    } catch (error) {
-      console.error(error);
-      return { isFetched: false };
-    }
-  }
-
-  // USER
-  async function getUserInfo(accessToken: string) {
-    try {
-      const { data } = await axios.get(`${baseUrl}/users/me`, {
-        headers: {
-          Authorization: accessToken,
+      console.log(comment);
+      const { data } = await axios.patch(
+        `${baseUrl}/rank/comment`,
+        {
+          comment: comment,
         },
-      });
-      return { isFetched: true, data: data };
+        {
+          headers: {
+            Authorization: accessToken,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      return { data: data };
     } catch (error) {
       console.error(error);
-      return { isFetched: false };
+      return {};
     }
   }
-
-  // USER RANK
+  // 스코어 갱신
   async function patchUserScore(accessToken: string, score: number) {
     try {
       await axios.patch(
-        `${baseUrl}/user-rank`,
+        `${baseUrl}/rank/score`,
         {
           score: score,
         },
@@ -98,28 +78,67 @@ export function createKarrotRaiseApi(
       return { isFetched: false };
     }
   }
-  async function patchUserComment(accessToken: string, comment: string) {
+  // 동네 랭킹 조회
+  async function getDistrictRank() {
     try {
-      await axios.patch(
-        `${baseUrl}/user-rank/comment`,
-        {
-          comment: comment,
-        },
-        {
-          headers: {
-            Authorization: accessToken,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-      return { isFetched: true };
+      const { data } = await axios.get(`${baseUrl}/rank/towns`);
+      return { isFetched: true, data: data };
+    } catch (error) {
+      console.error(error);
+      return { isFetched: false };
+    }
+  }
+  // 유저 랭킹 조회
+  async function getUserRank() {
+    try {
+      const { data } = await axios.get(`${baseUrl}/rank/users`);
+      return { isFetched: true, data: data };
     } catch (error) {
       console.error(error);
       return { isFetched: false };
     }
   }
 
-  // DEMAND CONTROLLER
+  // TOWN
+  // RegionId로 Town 정보 조회
+  async function getTownId(regionId: string) {
+    try {
+      const { data } = await axios.get(`${baseUrl}/town?regionId=${regionId}`);
+      return { isFetched: true, data: data };
+    } catch (error) {
+      console.error(error);
+      return { isFetched: false };
+    }
+  }
+
+  // USER
+  // 24시간 내에 플레이한 유저 수
+  async function getDailyUserCount() {
+    try {
+      const { data } = await axios.get(`${baseUrl}/users/daily-count`);
+      return { isFetched: true, data: data };
+    } catch (error) {
+      console.error(error);
+      return { isFetched: false };
+    }
+  }
+  // 내 정보 조회
+  async function getUserInfo(accessToken: string) {
+    try {
+      const { data } = await axios.get(`${baseUrl}/users/me`, {
+        headers: {
+          Authorization: accessToken,
+        },
+      });
+      return { isFetched: true, data: data };
+    } catch (error) {
+      console.error(error);
+      return { isFetched: false };
+    }
+  }
+
+  // 사전 신청
+  // demandP
   async function postDemand(accessToken: string) {
     try {
       await axios.post(`${baseUrl}/demand`, null, {
@@ -142,9 +161,10 @@ export function createKarrotRaiseApi(
   return {
     postOauth2,
     getTownId,
-    getTownUserRank,
+    getUserRank,
     getDistrictRank,
     getUserInfo,
+    getDailyUserCount,
     patchUserScore,
     patchUserComment,
     postDemand,

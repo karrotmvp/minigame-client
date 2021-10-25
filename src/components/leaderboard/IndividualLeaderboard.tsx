@@ -62,13 +62,8 @@ const infoText = css`
 const IndividualLeaderboard = () => {
   const [individualRankData, setIndividualRankData] = useState<any[]>([]);
   const karrotRaiseApi = useKarrotRaiseApi();
-  const {
-    accessToken,
-    userId,
-    userDistrictId,
-    userDistrictName,
-    onUpdateUserData,
-  } = useUserData();
+  const { accessToken, userId, userDistrictName, onUpdateUserData } =
+    useUserData();
   const getUserData = useCallback(
     async function (karrotRaiseApi: KarrotRaiseApi, accessToken: string) {
       try {
@@ -84,12 +79,11 @@ const IndividualLeaderboard = () => {
     [onUpdateUserData, userId]
   );
 
-  const getTownLeaderboard = useCallback(async function (
-    karrotRaiseApi: KarrotRaiseApi,
-    townId: string
+  const getUserLeaderboardData = useCallback(async function (
+    karrotRaiseApi: KarrotRaiseApi
   ) {
     try {
-      const response = await karrotRaiseApi.getTownUserRank(townId);
+      const response = await karrotRaiseApi.getUserRank();
       if (response.isFetched && response.data) {
         console.log(response.data);
         const responseData = response.data.data;
@@ -100,6 +94,7 @@ const IndividualLeaderboard = () => {
           })
         );
         setIndividualRankData(indexedindividualRankData);
+        console.log(indexedindividualRankData);
       }
     } catch (error) {
       console.error(error);
@@ -108,20 +103,16 @@ const IndividualLeaderboard = () => {
   []);
 
   const refreshLeaderboard = useCallback(
-    async (
-      karrotRaiseApi: KarrotRaiseApi,
-      accessToken: string,
-      townId: string
-    ) => {
+    async (karrotRaiseApi: KarrotRaiseApi, accessToken: string) => {
       await getUserData(karrotRaiseApi, accessToken);
-      await getTownLeaderboard(karrotRaiseApi, townId);
+      await getUserLeaderboardData(karrotRaiseApi);
     },
-    [getTownLeaderboard, getUserData]
+    [getUserLeaderboardData, getUserData]
   );
 
   useEffect(() => {
-    refreshLeaderboard(karrotRaiseApi, accessToken, userDistrictId);
-  }, [accessToken, karrotRaiseApi, refreshLeaderboard, userDistrictId]);
+    refreshLeaderboard(karrotRaiseApi, accessToken);
+  }, [accessToken, karrotRaiseApi, refreshLeaderboard]);
 
   return (
     <div css={divStyle}>
