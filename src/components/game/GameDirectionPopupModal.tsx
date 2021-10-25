@@ -16,7 +16,7 @@ const directionText = css`
 `;
 
 interface PopupModalProps {
-  setShouldPopup: any;
+  setIsUserNew: any;
 }
 const GameDirectionPopupModal: React.FC<PopupModalProps> = (props) => {
   return (
@@ -32,7 +32,7 @@ const GameDirectionPopupModal: React.FC<PopupModalProps> = (props) => {
         color={`secondary`}
         text={`게임 시작하기`}
         onClick={() => {
-          props.setShouldPopup(false);
+          props.setIsUserNew(false);
         }}
       />
     </>

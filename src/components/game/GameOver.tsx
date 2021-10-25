@@ -69,10 +69,10 @@ type UserData = {
 };
 Modal.setAppElement(document.createElement('div'));
 
-interface GamePauseModalProps {
+interface GameOverProps {
   closeModal: () => void;
 }
-const GamePauseModal = ({ closeModal }: GamePauseModalProps) => {
+const GameOver = ({ closeModal }: GameOverProps) => {
   const { clickCount } = useClickCounter();
   const {
     accessToken,
@@ -154,16 +154,16 @@ const GamePauseModal = ({ closeModal }: GamePauseModalProps) => {
           gap: '10px',
         }}
       >
-        <Button
+        {/* <Button
           size={`medium`}
           color={`secondary`}
           text={`계속하기`}
           onClick={closeModal}
-        />
+        /> */}
         <Button
           size={`medium`}
           color={`primary`}
-          text={`게임종료`}
+          text={`랭킹보기`}
           onClick={() =>
             handleGameEnd(karrotRaiseApi, accessToken, clickCount, analytics)
           }
@@ -187,4 +187,4 @@ const GamePauseModal = ({ closeModal }: GamePauseModalProps) => {
   );
 };
 
-export default GamePauseModal;
+export default GameOver;
