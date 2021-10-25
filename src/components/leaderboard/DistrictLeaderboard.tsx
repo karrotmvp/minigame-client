@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { DefaultDistrictRow } from './DefaultRow';
 import { TopDistrictRow } from './TopRow';
 import { ReactComponent as RefreshIcon } from 'assets/refresh.svg';

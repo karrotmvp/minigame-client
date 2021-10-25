@@ -1,11 +1,11 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { useCallback, useEffect, useState } from 'react';
-import { TopUserRow } from './TopRow';
 import { ReactComponent as RefreshIcon } from 'assets/refresh.svg';
 import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
 import { DefaultUserRow } from './DefaultRow';
 import useUserData from 'hooks/useUserData';
+import { TopUserRow } from './TopRow';
 
 const divStyle = css`
   padding-top: 10px;
