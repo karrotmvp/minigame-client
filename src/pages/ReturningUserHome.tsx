@@ -16,6 +16,7 @@ import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
 import { DefaultUserRow } from 'components/leaderboard/DefaultRow';
 import { TopUserRow } from 'components/leaderboard/TopRow';
 import useUserData from 'hooks/useUserData';
+import DailyUserCount from 'components/DailyUserCount';
 
 // nav
 const customNav = css`
@@ -187,6 +188,7 @@ const ReturningUserHome = () => {
         </div>
 
         <div css={leaderboardWrapper}>
+        <DailyUserCount />
           <LeaderboardTabs />
         </div>
         <div

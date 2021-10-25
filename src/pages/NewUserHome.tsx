@@ -15,6 +15,7 @@ import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
 import { getMini } from 'services/karrotMarket/mini';
 import LeaderboardTabs from 'components/leaderboard/LeaderboardTabs';
 import useUserData from 'hooks/useUserData';
+import DailyUserCount from 'components/DailyUserCount';
 
 // nav
 const customNav = css`
@@ -147,6 +148,7 @@ const NewUserHome = () => {
           </h2>
         </div>
         <div css={leaderboardWrapper}>
+        <DailyUserCount />
           <LeaderboardTabs />
         </div>
         <div css={actionItemWrapper}>
