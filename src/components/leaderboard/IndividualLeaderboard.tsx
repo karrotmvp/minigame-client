@@ -1,11 +1,13 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
+import styled from '@emotion/styled';
+
 import { useCallback, useEffect, useState } from 'react';
-import { ReactComponent as RefreshIcon } from 'assets/refresh.svg';
 import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
 import { DefaultUserRow } from './DefaultRow';
 import useUserData from 'hooks/useUserData';
 import { TopUserRow } from './TopRow';
+import RefreshButton from '../buttons/RefreshButton';
 
 const divStyle = css`
   padding-top: 10px;
@@ -14,11 +16,13 @@ const divStyle = css`
   height: inherit'
   box-sizing: border-box;
 `;
-const leaderboardWrapperStyle = css`
+
+const LeaderboardWrapper = styled.div`
   display: flex;
   flex-flow: column;
   align-items: center;
 `;
+
 const refreshDivStyle = css`
   display: flex;
   flex-flow: row;
@@ -34,16 +38,16 @@ const refreshDivStyle = css`
     color: #5b5b5b;
   }
 `;
-const refreshIconStyle = css`
-  border: none;
-  background: none;
-  color: inherit;
-  border: none;
-  padding: 0;
-  font: inherit;
-  cursor: pointer;
-  outline: inherit;
-`;
+// const refreshIconStyle = css`
+//   border: none;
+//   background: none;
+//   color: inherit;
+//   border: none;
+//   padding: 0;
+//   font: inherit;
+//   cursor: pointer;
+//   outline: inherit;
+// `;
 
 const infoText = css`
   margin: 17px 0 17px;
@@ -118,14 +122,11 @@ const IndividualLeaderboard = () => {
     <div css={divStyle}>
       <div css={refreshDivStyle}>
         <p>이번 주 랭킹</p>
-        <button
-          onClick={() => {
-            refreshLeaderboard(karrotRaiseApi, accessToken, userDistrictId);
-          }}
-          css={refreshIconStyle}
-        >
-          <RefreshIcon />
-        </button>
+        <RefreshButton
+          refreshLeaderboard={() =>
+            refreshLeaderboard(karrotRaiseApi, accessToken)
+          }
+        />
       </div>
 
       <div css={leaderboardWrapperStyle}>
