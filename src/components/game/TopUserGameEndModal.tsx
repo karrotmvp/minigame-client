@@ -99,15 +99,19 @@ const TopUserGameEndModal: React.FC<TopUserGameEndModalProps> = (props) => {
     });
   };
   const addComment = useCallback(
-    function (
+    async function (
       karrotRaiseApi: KarrotRaiseApi,
       accessToken: string,
       comment: string
     ) {
-      karrotRaiseApi.patchUserComment(accessToken, comment);
-      onUpdateUserData(userId, userNickname, userScore, userRank, comment);
-      console.log('patched');
-      history.replace('/leaderboard');
+      const { data } = await karrotRaiseApi.patchUserComment(
+        accessToken,
+        comment
+      );
+      if (data?.status === 200) {
+        onUpdateUserData(userId, userNickname, userScore, userRank, comment);
+        history.replace('/leaderboard');
+      }
     },
     [history, onUpdateUserData, userId, userNickname, userRank, userScore]
   );

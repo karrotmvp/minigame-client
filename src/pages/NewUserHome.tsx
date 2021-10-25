@@ -1,5 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
+import styled from '@emotion/styled';
 import {
   emphasizedTextStyle,
   largeTextStyle,
@@ -15,6 +16,7 @@ import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
 import { getMini } from 'services/karrotMarket/mini';
 import LeaderboardTabs from 'components/leaderboard/LeaderboardTabs';
 import useUserData from 'hooks/useUserData';
+import DailyUserCount from 'components/DailyUserCount';
 
 // nav
 const customNav = css`
@@ -48,17 +50,28 @@ const divStyle = css`
 const headingWrapper = css`
   padding: 20px 26px 20px; ;
 `;
-const leaderboardWrapper = css`
+const LeaderboardContainer = styled.div`
   flex: 1;
 
-  overflow: auto;
-  padding: 0 26px;
+  // overflow: auto;
+  padding: 18px;
+  margin: 0 18px;
+
+  background: #ffffff;
+  border: 1px solid #ebe0db;
+  box-sizing: border-box;
+  border-radius: 10px;
 `;
-const actionItemWrapper = css`
+const ActionItem = styled.div`
+  position: absolute;
+  z-index: 100;
+  bottom: 0;
   display: flex;
   justify-content: center;
+  width: 100%;
   padding: 16px 24px 34px;
   border-top: 1px solid #ebebeb;
+  background: #ffffff;
   box-sizing: border-box;
   box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
 `;
@@ -146,18 +159,19 @@ const NewUserHome = () => {
             당근을 수확하고 이웃들에게 한 마디 남겨봐요!
           </h2>
         </div>
-        <div css={leaderboardWrapper}>
+        <DailyUserCount />
+        <LeaderboardContainer>
           <LeaderboardTabs />
-        </div>
-        <div css={actionItemWrapper}>
-          <Button
-            size={`large`}
-            color={`primary`}
-            text={`게임 시작`}
-            onClick={handleNewUserAgreement}
-          />
-        </div>
+        </LeaderboardContainer>
       </div>
+      <ActionItem>
+        <Button
+          size={`large`}
+          color={`primary`}
+          text={`게임 시작`}
+          onClick={handleNewUserAgreement}
+        />
+      </ActionItem>
     </>
   );
 };

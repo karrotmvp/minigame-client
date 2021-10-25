@@ -1,4 +1,4 @@
-// oauth2 api types
+// Oauth2
 export interface PostOauth2Response {
   data?: {
     data: {
@@ -8,23 +8,29 @@ export interface PostOauth2Response {
   isFetched: boolean;
 }
 
-// town api types
-export interface GetTownIdResponse {
-  data?: {
-    data: {
-      id: string;
-      name1: string;
-      name2: string;
-    };
-  };
+// Rank
+export interface PatchUserScoreResposne {
   isFetched: boolean;
 }
-export interface GetTownUserRankResponse {
+export interface PatchUserCommmentResponse {
+  data?: {
+    data: object;
+    message: string;
+    status: number;
+    timestamp: string;
+  };
+}
+export interface GetUserRankResponse {
   data?: {
     data: {
       comment: string;
       nickname: string;
       score: number;
+      town: {
+        id: string;
+        name1: string;
+        name2: string;
+      };
       userId: string;
     }[];
   };
@@ -40,8 +46,27 @@ export interface GetDistrictRankResponse {
   };
   isFetched: boolean;
 }
-// user api types
-export interface getUserInfoResponse {
+
+// Town
+export interface GetTownIdResponse {
+  data?: {
+    data: {
+      id: string;
+      name1: string;
+      name2: string;
+    };
+  };
+  isFetched: boolean;
+}
+
+// User
+export interface GetDailyUserCountResponse {
+  data?: {
+    data: number;
+  };
+  isFetched: boolean;
+}
+export interface GetUserInfoResponse {
   data?: {
     data: {
       id: string;
@@ -59,16 +84,7 @@ export interface getUserInfoResponse {
   isFetched: boolean;
 }
 
-// user-rank api types
-
-export interface PatchUserScoreResposne {
-  isFetched: boolean;
-}
-export interface PatchUserCommmentResponse {
-  isFetched: boolean;
-}
-
-// demand-controller api types
+// 사전 신청
 export interface PostDemandResponse {
   isFetched: boolean;
   error?: {

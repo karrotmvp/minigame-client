@@ -2,8 +2,9 @@ import { createContext, useContext } from 'react';
 import {
   GetDistrictRankResponse,
   GetTownIdResponse,
-  GetTownUserRankResponse,
-  getUserInfoResponse,
+  GetUserRankResponse,
+  GetDailyUserCountResponse,
+  GetUserInfoResponse,
   PatchUserCommmentResponse,
   PatchUserScoreResposne,
   PostDemandResponse,
@@ -16,9 +17,10 @@ export interface KarrotRaiseApi {
     regionId: string
   ): Promise<PostOauth2Response>;
   getTownId(regionId: string): Promise<GetTownIdResponse>;
-  getTownUserRank(townId: string): Promise<GetTownUserRankResponse>;
+  getUserRank(): Promise<GetUserRankResponse>;
   getDistrictRank(): Promise<GetDistrictRankResponse>;
-  getUserInfo(accessToken: string): Promise<getUserInfoResponse>;
+  getDailyUserCount(): Promise<GetDailyUserCountResponse>;
+  getUserInfo(accessToken: string): Promise<GetUserInfoResponse>;
   patchUserScore(
     accessToken: string,
     score: number
@@ -41,11 +43,15 @@ export const emptyKarrotRaiseApi: KarrotRaiseApi = {
       console.log(...args);
     });
   },
-  getTownUserRank(...args) {
+  getUserRank(...args) {
     console.log(...args);
     return new Promise(() => {});
   },
   getDistrictRank(...args) {
+    console.log(...args);
+    return new Promise(() => {});
+  },
+  getDailyUserCount(...args) {
     console.log(...args);
     return new Promise(() => {});
   },

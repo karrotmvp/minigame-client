@@ -3,14 +3,14 @@ import { css } from '@emotion/react';
 import { useCallback, useEffect, useState } from 'react';
 import { DefaultDistrictRow } from './DefaultRow';
 import { TopDistrictRow } from './TopRow';
-import { ReactComponent as RefreshIcon } from 'assets/refresh.svg';
 import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
+import RefreshButton from 'components/buttons/RefreshButton';
 
 const divStyle = css`
   padding-top: 10px;
   padding-bottom: 10px;
   max-height: inherit;
-  height: inherit'
+  height: inherit;
   box-sizing: border-box;
 `;
 const leaderboardWrapperStyle = css`
@@ -32,16 +32,6 @@ const refreshDivStyle = css`
 
     color: #5b5b5b;
   }
-`;
-const refreshIconStyle = css`
-  border: none;
-  background: none;
-  color: inherit;
-  border: none;
-  padding: 0;
-  font: inherit;
-  cursor: pointer;
-  outline: inherit;
 `;
 
 // interface DistrictRankData {}
@@ -87,14 +77,9 @@ const DistrictLeaderboard = () => {
     <div css={divStyle}>
       <div css={refreshDivStyle}>
         <p>이번 주 랭킹</p>
-        <button
-          onClick={() => {
-            getDistrictLeaderboardData(karrotRaiseApi);
-          }}
-          css={refreshIconStyle}
-        >
-          <RefreshIcon />
-        </button>
+        <RefreshButton
+          refreshLeaderboard={() => refreshLeaderboard(karrotRaiseApi)}
+        />
       </div>
 
       <div css={leaderboardWrapperStyle}>
@@ -103,6 +88,7 @@ const DistrictLeaderboard = () => {
             <TopDistrictRow
               key={district.name2}
               rank={district.rank}
+              cityName={district.name1}
               districtName={district.name2}
               // participant={district.participant}
               score={district.score}
@@ -115,6 +101,7 @@ const DistrictLeaderboard = () => {
             <DefaultDistrictRow
               key={district.name2}
               rank={district.rank}
+              cityName={district.name1}
               districtName={district.name2}
               score={district.score}
             />
