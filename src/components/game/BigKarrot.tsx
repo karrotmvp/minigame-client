@@ -6,13 +6,14 @@ import BigKarrotImageUrl from 'assets/Seocho_daangn.svg';
 
 const animationKeyframes = keyframes`
   100% {
-    transform: scale(0.01)
+    transform: scale(0.01);
+    // transform: rotate(45deg);
   }
 }
 `;
 
 const animation = (animationPlayState: string) => css`
-  animation-duration: 5s;
+  animation-duration: 50s;
   animation-timing-function: ease;
   animation-delay: 0s;
   animation-iteration-count: 1;
@@ -38,8 +39,9 @@ const BigKarrot: FC<BigKarrotProps> = (props) => {
       onAnimationEnd={props.handleGameOver}
       css={animation(props.animationPlayState)}
       style={{
-        height: '30rem',
+        height: '20rem',
         width: 'auto',
+        transform: 'rotate(45deg)',
       }}
     />
   );

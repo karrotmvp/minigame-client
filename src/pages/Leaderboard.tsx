@@ -1,5 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
+import styled from '@emotion/styled';
+
 import { AppEjectionButton } from 'components/buttons/AppEjectionButton';
 import { largeTextStyle, emphasizedTextStyle } from 'styles/textStyle';
 import Button from 'components/buttons/Button';
@@ -15,14 +17,20 @@ import useUserData from 'hooks/useUserData';
 import useClickCounter from 'hooks/useClickCounter';
 
 // nav
+
 const customNav = css`
+  // position: fixed;
   left: 0;
   width: 100%;
-  top: 0;
+  // top: 0;
   display: flex;
+  flex-flow: row;
+  align-items: center;
+  justify-content: space-between;
   width: 100%;
-  height: 44px;
-  padding: 0 0.5rem;
+  height: 80px;
+  padding: 0 30px;
+  background: transparent;
 `;
 const customNavIcon = css`
   display: flex;
@@ -37,36 +45,34 @@ const customNavIcon = css`
   outline: none;
   z-index: 10;
 `;
-// main div
 const divStyle = css`
   display: flex;
   flex-flow: column;
-  height: calc(100% - 2.75rem);
+  height: 100%;
+  // overflow: hidden;
+  background: #faf5f4;
 `;
-// heading
-const headingWrapper = css`
-  padding: 20px 26px 20px;
-`;
-// refresh
 
-// leaderboard
-const leaderboardWrapper = css`
-  flex: 1;
-  overflow: auto;
-  padding: 0 26px;
+const Heading = styled.div`
+  margin: 0 26px 20px;
 `;
-// action
-const actionItemWrapper = css`
+const MyRow = styled.div`
+  margin: 0 18px 12px;
+`;
+
+const ActionItem = styled.div`
+  position: absolute;
+  z-index: 100;
+  bottom: 0;
   display: flex;
   gap: 15px;
   justify-content: space-between;
+  width: 100%;
   padding: 16px 24px 34px;
   border-top: 1px solid #ebebeb;
+  background: #ffffff;
   box-sizing: border-box;
   box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
-`;
-const currentUserInfoRow = css`
-  margin: 20px 0 10px;
 `;
 
 const Leaderboard = () => {
@@ -129,13 +135,13 @@ const Leaderboard = () => {
   }, [history, onResetCount]);
   return (
     <>
-      <div css={customNav}>
-        <div css={customNavIcon}>
-          <AppEjectionButton />
-        </div>
-      </div>
       <div css={divStyle}>
-        <div css={headingWrapper}>
+        <div css={customNav}>
+          <div css={customNavIcon}>
+            <AppEjectionButton />
+          </div>
+        </div>
+        <Heading>
           <h1 css={largeTextStyle}>
             <span css={emphasizedTextStyle}>{userNickname}</span>님은
             <br />
@@ -143,28 +149,30 @@ const Leaderboard = () => {
             <span css={emphasizedTextStyle}> {userRank}위</span>
             에요!
           </h1>
-          <div css={currentUserInfoRow}>
-            {userRank <= 10 ? (
-              <TopUserRow
-                rank={userRank}
-                nickname={userNickname}
-                score={userScore}
-                comment={userComment}
-              />
-            ) : (
-              <DefaultUserRow
-                rank={userRank}
-                nickname={userNickname}
-                score={userScore}
-              />
-            )}
-          </div>
-        </div>
+        </Heading>
 
-        <div css={leaderboardWrapper}>
-          <LeaderboardTabs />
-        </div>
-        <div css={actionItemWrapper}>
+        <MyRow>
+          {userRank <= 10 ? (
+            <TopUserRow
+              me={true}
+              rank={userRank}
+              nickname={userNickname}
+              score={userScore}
+              comment={userComment}
+            />
+          ) : (
+            <DefaultUserRow
+              me={true}
+              rank={userRank}
+              nickname={userNickname}
+              score={userScore}
+            />
+          )}
+        </MyRow>
+
+        <LeaderboardTabs />
+
+        <ActionItem>
           <Button
             size={`medium`}
             color={`secondary`}
@@ -177,7 +185,7 @@ const Leaderboard = () => {
             text={`다시하기`}
             onClick={handlePlayAgain}
           />
-        </div>
+        </ActionItem>
       </div>
     </>
   );

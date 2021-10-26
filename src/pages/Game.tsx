@@ -30,7 +30,7 @@ const customNav = css`
   width: 100%;
   height: 80px;
   padding: 0 30px;
-  background: rgb(249, 244, 245);
+  background: transparent;
 `;
 const TotalKarrotCount = styled.div`
   display: flex;
@@ -84,7 +84,7 @@ const TotalKarrotCount = styled.div`
 const divStyle = css`
   background-image: url(${background});
   background-size: cover;
-  height: calc(100% - 80px);
+  height: 100%;
   display: flex;
   flex-flow: column;
 `;
@@ -203,6 +203,7 @@ const Game = () => {
   const { resume, pause, getRemainingTime } = useIdleTimer({
     timeout: 1000,
     onIdle: handleOnIdle,
+    startManually: isUserNew,
     debounce: 100,
     // element: BigKarrotRef.current,
   });
@@ -277,26 +278,26 @@ const Game = () => {
   }, [analytics, history, onResetCount]);
   return (
     <>
-      <div css={customNav}>
-        <TotalKarrotCount>
-          <p
-            style={{
-              color: '#F39E6E',
-            }}
-          >
-            총 당근
-          </p>
-          <p
-            style={{
-              color: '#EB5D0E',
-            }}
-          >
-            {userScore + clickCount}
-          </p>
-        </TotalKarrotCount>
-        <PauseButton onClick={handlePause} />
-      </div>
       <div css={divStyle}>
+        <div css={customNav}>
+          <TotalKarrotCount>
+            <p
+              style={{
+                color: '#F39E6E',
+              }}
+            >
+              총 당근
+            </p>
+            <p
+              style={{
+                color: '#EB5D0E',
+              }}
+            >
+              {commafy(userScore + clickCount)}
+            </p>
+          </TotalKarrotCount>
+          <PauseButton onClick={handlePause} />
+        </div>
         <ScoreWrapper>
           <h2
             style={{

@@ -47,7 +47,8 @@ const appStyle = css`
 
 function App() {
   const [pageRedirection, setPageRedirection] = useState<string>('loading');
-  const [isNonServiceUserBack, setIsNonServiceUserBack] = useState(false);
+  const [isNonServiceUserBack, setIsNonServiceUserBack] =
+    useState<boolean>(false);
   const [karrotMarketMini, setKarrotMarketMini] = useState(
     emptyKarrotMarketMini
   );

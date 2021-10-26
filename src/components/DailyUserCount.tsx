@@ -2,7 +2,7 @@ import styled from '@emotion/styled';
 import { useCallback, useEffect, useState } from 'react';
 import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
 
-const SpeechBallon = styled.div`
+const SpeechBalloon = styled.div`
   position: relative;
   background: #f39e6e;
   border-radius: 5px;
@@ -11,12 +11,12 @@ const SpeechBallon = styled.div`
   line-height: 161.7%;
   /* or 16px */
   width: fit-content;
-  padding: 9px 10px;
+  padding: 4px 8px;
   color: #ffffff;
 
   &:after {
     z-index: 1000;
-    content: ' ';
+    content: '';
     position: absolute;
     bottom: 0;
     left: 50%;
@@ -26,13 +26,14 @@ const SpeechBallon = styled.div`
     border-top-color: #f39e6e;
     border-bottom: 0;
     margin-left: -10px;
-    margin-bottom: -10px;
+    margin-bottom: -8px;
   }
 
   span {
     font-weight: 700;
   }
 `;
+
 const DailyUserCount = () => {
   const [dailyUserCount, setDailyUserCount] = useState<number>(0);
   const karrotRaiseApi = useKarrotRaiseApi();
@@ -56,9 +57,9 @@ const DailyUserCount = () => {
   }, [getDailyUserCount, karrotRaiseApi]);
 
   return (
-    <SpeechBallon>
+    <SpeechBalloon>
       <span>{dailyUserCount}</span>명이 플레이 중!
-    </SpeechBallon>
+    </SpeechBalloon>
   );
 };
 

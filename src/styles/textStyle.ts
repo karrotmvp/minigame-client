@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { css } from "@emotion/react";
+import { css } from '@emotion/react';
 
 const largeTextStyle = css`
   font-family: Pretendard;
@@ -12,7 +12,7 @@ const largeTextStyle = css`
 
   letter-spacing: -0.02em;
 
-  color: #3F3F3F;
+  color: #3f3f3f;
 `;
 
 const mediumTextStyle = css`
@@ -25,10 +25,10 @@ const mediumTextStyle = css`
   letter-spacing: -0.02em;
 
   color: #414141;
-`
+`;
 const emphasizedTextStyle = css`
   font-weight: bold;
-
+  color: #eb5d0e;
 `;
 
-export {largeTextStyle, mediumTextStyle, emphasizedTextStyle}
+export { largeTextStyle, mediumTextStyle, emphasizedTextStyle };

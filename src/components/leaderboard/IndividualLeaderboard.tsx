@@ -12,17 +12,23 @@ import RefreshButton from '../buttons/RefreshButton';
 const divStyle = css`
   padding-top: 10px;
   padding-bottom: 10px;
-  max-height: inherit;
-  height: inherit'
+  // max-height: inherit;
   box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 `;
 
 const LeaderboardWrapper = styled.div`
   display: flex;
   flex-flow: column;
   align-items: center;
+  width: 100%;
+  height: 100%;
+  overflow-y: scroll;
+  padding-right: 17px; /* Increase/decrease this value for cross-browser compatibility */
+  box-sizing: content-box; /* So the width will be 100% + 17px */
 `;
-
 const refreshDivStyle = css`
   display: flex;
   flex-flow: row;
@@ -38,16 +44,6 @@ const refreshDivStyle = css`
     color: #5b5b5b;
   }
 `;
-// const refreshIconStyle = css`
-//   border: none;
-//   background: none;
-//   color: inherit;
-//   border: none;
-//   padding: 0;
-//   font: inherit;
-//   cursor: pointer;
-//   outline: inherit;
-// `;
 
 const infoText = css`
   margin: 17px 0 17px;

@@ -3,10 +3,17 @@ import { css } from '@emotion/react';
 
 const buttonStyle = ({ size, color }: any) => css`
   background: ${color === `primary`
-    ? `#eb5d0e`
+    ? `#EB5D0E`
     : `secondary`
     ? `#F39E6E`
     : `#F39E6E`};
+
+  box-shadow: ${color === `primary`
+    ? `0px 6px 0px 0px #C64F0C`
+    : `secondary`
+    ? `0px 6px 0px 0px #DF814B`
+    : `0px 6px 0px 0px #DF814B`};
+
   text-align: center;
   border: none;
   border-radius: 10px;
@@ -49,8 +56,6 @@ const buttonStyle = ({ size, color }: any) => css`
 
         `
     : null}
-
-  box-shadow: 0px 8px 0px 0px #000000;
 `;
 
 interface ButtonProps {

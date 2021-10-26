@@ -1,11 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
-import {
-  emphasizedTextStyle,
-  largeTextStyle,
-  mediumTextStyle,
-} from 'styles/textStyle';
 import Button from '../components/buttons/Button';
 import { AppEjectionButton } from 'components/buttons/AppEjectionButton';
 import { useHistory } from 'react-router-dom';
@@ -17,17 +12,30 @@ import { getMini } from 'services/karrotMarket/mini';
 import LeaderboardTabs from 'components/leaderboard/LeaderboardTabs';
 import useUserData from 'hooks/useUserData';
 import DailyUserCount from 'components/DailyUserCount';
-
+import TopImageUrl from 'assets/background.png';
 // nav
+const Nav = styled.div`
+  background-image: url(${TopImageUrl});
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  width: 100%;
+  height: 220px;
+  margin-bottom: -5px;
+`;
 const customNav = css`
+  // position: fixed;
   left: 0;
   width: 100%;
-  // height: 100%;
-  top: 0;
+  // top: 0;
   display: flex;
+  flex-flow: row;
+  align-items: center;
+  justify-content: space-between;
   width: 100%;
-  height: 44px;
-  padding: 0 0.5rem;
+  height: 80px;
+  padding: 0 30px;
+  background: transparent;
 `;
 const customNavIcon = css`
   display: flex;
@@ -45,27 +53,13 @@ const customNavIcon = css`
 const divStyle = css`
   display: flex;
   flex-flow: column;
-  height: calc(100% - 2.75rem);
+  height: 100%;
+  background: #faf5f4;
 `;
-const headingWrapper = css`
-  padding: 20px 26px 20px; ;
-`;
-const LeaderboardContainer = styled.div`
-  flex: 1;
 
-  // overflow: auto;
-  padding: 18px;
-  margin: 0 18px;
-
-  background: #ffffff;
-  border: 1px solid #ebe0db;
-  box-sizing: border-box;
-  border-radius: 10px;
-`;
 const ActionItem = styled.div`
-  position: absolute;
-  z-index: 100;
-  bottom: 0;
+  // position: fixed;
+  // bottom: 0;
   display: flex;
   justify-content: center;
   width: 100%;
@@ -81,8 +75,7 @@ const NewUserHome = () => {
   const analytics = useAnalytics();
   const karrotRaiseApi = useKarrotRaiseApi();
   const karrotMarketMini = useKarrotMarketMini();
-  const { accessToken, userRegionId, userDistrictName, onUpdateAccessToken } =
-    useUserData();
+  const { accessToken, userRegionId, onUpdateAccessToken } = useUserData();
 
   const trackUser = useCallback(
     async (
@@ -144,34 +137,35 @@ const NewUserHome = () => {
   }, [analytics]);
   return (
     <>
-      <div css={customNav}>
-        <div css={customNavIcon}>
-          <AppEjectionButton />
-        </div>
-      </div>
       <div css={divStyle}>
-        <div css={headingWrapper}>
-          <h1 css={largeTextStyle}>
-            <span css={emphasizedTextStyle}>{userDistrictName} 이웃</span>님,
-            아직 기록이 없어요
-          </h1>
-          <h2 css={mediumTextStyle}>
-            당근을 수확하고 이웃들에게 한 마디 남겨봐요!
-          </h2>
+        <Nav>
+          <div css={customNav}>
+            <div css={customNavIcon}>
+              <AppEjectionButton />
+            </div>
+          </div>
+        </Nav>
+
+        <LeaderboardTabs />
+        <div
+          style={{
+            position: 'absolute',
+            bottom: '90px',
+            right: '24px',
+            zIndex: 101,
+          }}
+        >
+          <DailyUserCount />
         </div>
-        <DailyUserCount />
-        <LeaderboardContainer>
-          <LeaderboardTabs />
-        </LeaderboardContainer>
+        <ActionItem>
+          <Button
+            size={`large`}
+            color={`primary`}
+            text={`게임 시작`}
+            onClick={handleNewUserAgreement}
+          />
+        </ActionItem>
       </div>
-      <ActionItem>
-        <Button
-          size={`large`}
-          color={`primary`}
-          text={`게임 시작`}
-          onClick={handleNewUserAgreement}
-        />
-      </ActionItem>
     </>
   );
 };

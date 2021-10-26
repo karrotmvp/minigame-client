@@ -2,7 +2,7 @@ import styled from '@emotion/styled';
 import { commafy } from 'functions/numberFunctions';
 import React from 'react';
 
-const Container = styled.div`
+const Container = styled.div<{ me?: boolean }>`
   display: flex;
   flex-flow: row;
   align-items: center;
@@ -10,52 +10,15 @@ const Container = styled.div`
   padding: 12px 14px;
   margin: 4px 0;
   width: 100%;
-  border-radius: 5px;
+  border-radius: ${(props) => (props.me === true ? '10px' : '5px')};
   border: 1px solid #ececec;
+  background-color: #fff;
+`;
 
-  color: #5b5b5b;
-`;
-// DEFAULT USER ROW
-const UserRank = styled.div`
-  font-style: normal;
-  font-weight: 600;
-  font-size: 12px;
-  line-height: 161.7%;
-  /* or 19px */
-`;
-const UserInfo = styled.div`
-  display: flex;
-  flex-flow: row;
-  align-items: center;
-  font-size: 16px;
-  gap: 12px;
-
-  font-style: normal;
-  font-weight: normal;
-  font-size: 16px;
-  line-height: 161.7%;
-  /* identical to box height, or 26px */
-`;
-const UserScore = styled.div`
-  display: flex;
-  justify-content: flex-end;
+const ContentsWrapper = styled.div`
   flex: 1;
-
-  font-style: normal;
-  font-weight: normal;
-  font-size: 12px;
-  line-height: 161.7%;
-  /* or 19px */
-
-  text-align: right;
 `;
-interface DefaultUserRowProps {
-  rank: number;
-  nickname: string;
-  score: number;
-}
-// DEFAULT DISTRICT ROW
-const DistrictRank = styled.div`
+const Rank = styled.div`
   display: flex;
   align-self: flex-start;
   margin-right: 15px;
@@ -65,45 +28,65 @@ const DistrictRank = styled.div`
   font-size: 12px;
   line-height: 161.7%;
   /* or 19px */
+
+  color: #5b5b5b;
 `;
-const ContentsWrapper = styled.div`
-  flex: 1;
+const Info = styled.div`
+  display: flex;
+  flex-flow: row;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 4px;
 `;
-const DistrictName = styled.div`
+const Name = styled.div`
   font-style: normal;
   font-weight: 600;
   font-size: 16px;
   line-height: 161.7%;
   /* identical to box height, or 26px */
+
+  color: #5b5b5b;
 `;
-const Contents = styled.div`
+const Score = styled.div`
   display: flex;
-  flex-flow: row;
-  align-items: center;
-  gap: 12px;
+  justify-content: flex-end;
+  flex: 1;
 
   font-style: normal;
   font-weight: normal;
   font-size: 12px;
   line-height: 161.7%;
   /* or 19px */
+  color: #5b5b5b;
+`;
+
+const PlayerCount = styled.div`
+  width: fit-content;
+
+  font-style: normal;
+  font-weight: noraml;
+  font-size: 10px;
+  line-height: 161.7%;
+  /* or 19px */
 
   color: #7c7c7c;
 `;
-const DistrictScore = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  flex: 1;
-`;
-
+interface DefaultUserRowProps {
+  me?: boolean;
+  rank: number;
+  nickname: string;
+  score: number;
+}
 export const DefaultUserRow: React.FC<DefaultUserRowProps> = (props) => {
   return (
-    <Container>
-      <UserInfo>
-        <UserRank>{commafy(props.rank)}</UserRank>
-        <div>{props.nickname}</div>
-      </UserInfo>
-      <UserScore>{commafy(props.score)}</UserScore>
+    <Container me={props.me}>
+      <Rank>{commafy(props.rank)}</Rank>
+      <ContentsWrapper>
+        <Info>
+          <Name>{props.nickname}</Name>
+          <Score>{commafy(props.score)}</Score>
+        </Info>
+      </ContentsWrapper>
     </Container>
   );
 };
@@ -112,6 +95,7 @@ interface DefaultDistrictRowProps {
   rank: number;
   cityName: string;
   districtName: string;
+  playerCount: number;
   score: number;
 }
 export const DefaultDistrictRow: React.FC<DefaultDistrictRowProps> = (
@@ -119,15 +103,15 @@ export const DefaultDistrictRow: React.FC<DefaultDistrictRowProps> = (
 ) => {
   return (
     <Container>
-      <DistrictRank>{commafy(props.rank)}</DistrictRank>
+      <Rank>{commafy(props.rank)}</Rank>
       <ContentsWrapper>
-        <DistrictName>
-          {props.cityName} {props.districtName}
-        </DistrictName>
-        <Contents>
-          {/* <p>000명 참여</p> */}
-          <DistrictScore>{commafy(props.score)}</DistrictScore>
-        </Contents>
+        <Info>
+          <Name>
+            {props.cityName} {props.districtName}
+          </Name>
+          <Score>{commafy(props.score)}</Score>
+        </Info>
+        <PlayerCount>{commafy(props.playerCount)}명 참여</PlayerCount>
       </ContentsWrapper>
     </Container>
   );
