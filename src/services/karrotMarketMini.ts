@@ -4,6 +4,9 @@ export interface KarrotMarketMini {
   startPreset(runOnSuccess: (code: string) => void): void;
   close(): void;
   share(url: string, text: string): void;
+  // configuration(): { presetUrl: string; appId: string };
+  // appId: string;
+  // presetUrl: string;
 }
 
 // wow, such empty...

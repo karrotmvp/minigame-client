@@ -6,14 +6,14 @@ import { AppEjectionButton } from 'components/buttons/AppEjectionButton';
 import { useHistory } from 'react-router-dom';
 import { useCallback, useEffect } from 'react';
 import { Analytics, useAnalytics } from 'services/analytics';
-import { useKarrotMarketMini } from 'services/karrotMarketMini';
+// import { useKarrotMarketMini } from 'services/karrotMarketMini';
 import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
 import { getMini } from 'services/karrotMarket/mini';
 import LeaderboardTabs from 'components/leaderboard/LeaderboardTabs';
 import useUserData from 'hooks/useUserData';
 import DailyUserCount from 'components/DailyUserCount';
 import TopImageUrl from 'assets/background.png';
-
+import { loadFromEnv } from 'services/karrotMarket/mini';
 const PageContainer = styled.div`
   display: flex;
   flex-flow: column;
@@ -74,8 +74,10 @@ const NewUserHome = () => {
   let history = useHistory();
   const analytics = useAnalytics();
   const karrotRaiseApi = useKarrotRaiseApi();
-  const karrotMarketMini = useKarrotMarketMini();
+  // const karrotMarketMini = useKarrotMarketMini();
   const { accessToken, userRegionId, onUpdateAccessToken } = useUserData();
+
+  const mini = getMini();
 
   const trackUser = useCallback(
     async (
@@ -119,19 +121,45 @@ const NewUserHome = () => {
     [onUpdateAccessToken]
   );
 
-  const runOnSuccess = async (code: string) => {
-    await getAccessToken(karrotRaiseApi, code, userRegionId);
-    await trackUser(karrotRaiseApi, accessToken, analytics);
-    analytics.logEvent('click_game_start_button', { type: 'new_user' });
-    history.push('/game');
-  };
-  const handleNewUserAgreement = function () {
+  // const runOnSuccess = async (code: string) => {
+  //   await getAccessToken(karrotRaiseApi, code, userRegionId);
+  //   await trackUser(karrotRaiseApi, accessToken, analytics);
+  //   analytics.logEvent('click_game_start_button', { type: 'new_user' });
+  //   history.push('/game');
+  // };
+
+  const handleNewUserAgreement = async function () {
     // bypass mini preset in Web environment
     if (getMini().environment === 'Web') {
       history.push('/game');
     }
-    karrotMarketMini.startPreset(runOnSuccess);
+    // karrotMarketMini.startPreset(runOnSuccess);
+    else {
+      const presetUrl = loadFromEnv().presetUrl;
+      const appId = loadFromEnv().appId;
+      mini.startPreset({
+        preset: presetUrl!,
+        params: {
+          appId: appId!,
+        },
+        onSuccess: async function (result: any) {
+          if (result && result.code) {
+            try {
+              await getAccessToken(karrotRaiseApi, result.code, userRegionId);
+              await trackUser(karrotRaiseApi, accessToken, analytics);
+              analytics.logEvent('click_game_start_button', {
+                type: 'new_user',
+              });
+              history.push('/game');
+            } catch (error) {
+              console.error(error);
+            }
+          }
+        },
+      });
+    }
   };
+
   useEffect(() => {
     analytics.logEvent('view_new_user_home_page');
   }, [analytics]);
