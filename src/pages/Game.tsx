@@ -9,7 +9,7 @@ import Modal from 'react-modal';
 import GameDirectionPopupModal from 'components/game/GameDirectionPopupModal';
 import { commafy } from 'functions/numberFunctions';
 import ClickAnimation from 'components/game/ClickAnimation';
-import { useHistory } from 'react-router';
+// import { useHistory } from 'react-router';
 import { useAnalytics } from 'services/analytics';
 import useClickCounter from 'hooks/useClickCounter';
 import useUserData from 'hooks/useUserData';
@@ -61,35 +61,6 @@ const TotalKarrotCount = styled.div`
   line-height: 161.7%;
   /* identical to box height, or 23px */
 `;
-// const customNavIcon = css`
-//   display: flex;
-//   align-items: center;
-//   justify-content: center;
-//   cursor: pointer;
-//   opacity: 1;
-//   transition: opacity 300ms;
-//   width: auto;
-//   height: 2.75rem;
-//   text-decoration: none;
-//   outline: none;
-//   z-index: 10;
-// `;
-// const gameEndButtonStyle = css`
-//   padding: 6px 13px;
-
-//   background: #ffffff;
-//   border-radius: 10px;
-//   border: none;
-//   font-style: normal;
-//   font-weight: bold;
-//   font-size: 14px;
-//   line-height: 161.7%;
-//   /* identical to box height, or 23px */
-
-//   color: #cc6023;
-// `;
-// main div
-
 const ScoreWrapper = styled.div`
   // margin-top: 30px;
   display: flex;
@@ -97,7 +68,6 @@ const ScoreWrapper = styled.div`
   align-items: center;
   justify-content: center;
 `;
-
 const ClickCount = styled.h1`
   font-style: normal;
   font-weight: bold;
@@ -198,14 +168,14 @@ const Game = () => {
   const [state, gameDispatch] = React.useReducer(reducer, { particles: [] });
   const [animationPlayState, setAnimationPlayState] =
     useState<string>('paused');
-  const history = useHistory();
+  // const history = useHistory();
   const analytics = useAnalytics();
   const { userScore } = useUserData();
-  const { clickCount, onResetCount, onIncrementClickCount } = useClickCounter();
-  const { resume, pause, getRemainingTime } = useIdleTimer({
-    timeout: 1000,
+  const { clickCount, onIncrementClickCount } = useClickCounter();
+  const { start, resume, pause, getRemainingTime } = useIdleTimer({
+    timeout: 100,
     onIdle: handleOnIdle,
-    startManually: isUserNew,
+    startManually: true,
     debounce: 100,
     // element: BigKarrotRef.current,
   });
@@ -246,7 +216,18 @@ const Game = () => {
     resume();
     setAnimationPlayState('running');
   }
-  // const timeout = 1000;
+
+  // Popup modal if user is new
+  useEffect(() => {
+    analytics.logEvent('view_game_page');
+    if (userScore === 0) {
+      setIsUserNew(true);
+    } else {
+      setIsUserNew(false);
+      start();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userScore]);
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -254,30 +235,31 @@ const Game = () => {
         pause();
       } else {
         resume();
+        console.log('tick', getRemainingTime());
       }
     }, 100);
     return () => clearInterval(intervalId);
-  }, [getRemainingTime, isPaused, pause, resume]);
+  }, [getRemainingTime, isPaused, isUserNew, pause, resume]);
 
-  // function closeGameOverModal();
-  // Popup modal if user is new
-  useEffect(() => {
-    if (userScore === 0) {
-      setIsUserNew(true);
-    } else {
-      setIsUserNew(false);
-    }
-  }, [userScore]);
+  // useEffect(() => {
+  //   // history.block((location, action) => {
+  //   //   console.log('#### history block', isBlock, action);
+  //   //   if (isBlock && action === 'POP') {
+  //   //     console.log('#### blocked ####');
+  //   //     return false;
+  //   //   }
+  //   // });
 
-  useEffect(() => {
-    analytics.logEvent('view_game_page');
-    return () => {
-      if (history.action === 'POP') {
-        onResetCount();
-        // history.replace('/game' /* the new state */);
-      }
-    };
-  }, [analytics, history, onResetCount]);
+  //   // const unblock = history.block('정말 떠나실건가요?');
+  //   // return () => {
+  //   //   unblock();
+  //   // };
+  // useEffect(() => {
+  //   if (history.action === 'POP') {
+  //     onResetCount();
+  //   }
+  // }, []);
+
   return (
     <>
       <PageContainer>
