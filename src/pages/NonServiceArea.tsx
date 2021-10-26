@@ -137,7 +137,7 @@ const NonServiceArea: React.FC<NonServiceAreaProps> = (props) => {
       try {
         console.log('asdfasfda');
         if (code !== null) {
-          const response = await karrotRaiseApi.postOauth2(code, regionId);
+          const response = await karrotRaiseApi.postOauth2({ code, regionId });
           if (response.isFetched && response.data) {
             const { accessToken } = response.data.data;
             window.localStorage.setItem('ACCESS_TOKEN', accessToken);

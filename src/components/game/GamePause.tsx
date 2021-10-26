@@ -118,7 +118,7 @@ const GamePause = ({ closeModal }: GamePauseProps) => {
             rank: rank,
             comment: comment,
           });
-          if (userRank <= 10) {
+          if (rank <= 10) {
             setIsOpen(true);
           } else {
             history.replace('/leaderboard');

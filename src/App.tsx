@@ -153,7 +153,7 @@ function App() {
       // code !== null means user is a returning user
       try {
         if (code !== null) {
-          const response = await karrotRaiseApi.postOauth2(code, regionId);
+          const response = await karrotRaiseApi.postOauth2({ code, regionId });
           if (response.isFetched && response.data) {
             const { accessToken } = response.data.data;
             window.localStorage.setItem('ACCESS_TOKEN', accessToken);
@@ -191,15 +191,8 @@ function App() {
     } catch (error) {
       console.error(error);
     }
-  }, [
-    analytics,
-    filterNonServiceTown,
-    getAccessToken,
-    karrotRaiseApi,
-    onUpdateRegionData,
-    userDistrictId,
-    userDistrictName,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div css={appStyle}>

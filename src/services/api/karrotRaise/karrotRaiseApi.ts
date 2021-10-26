@@ -12,13 +12,14 @@ export function createKarrotRaiseApi(
 
   // OAUTH2
   // 당근 Oauth2
-  async function postOauth2(code: string, regionId: string) {
+  async function postOauth2(param: { code: string; regionId: string }) {
+    console.log(param.code, param.regionId);
     try {
       const response = await axios.post(
         `${baseUrl}/oauth`,
         {
-          code: code,
-          regionId: regionId,
+          code: param.code,
+          regionId: param.regionId,
         },
         {
           headers: {

@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'reducers/rootReducer';
 import {
-  udpateRegionData,
+  updateRegionData,
   updateAccessToken,
   updateUserData,
 } from 'reducers/userDataReducer';
@@ -37,8 +37,10 @@ export default function useUserData() {
   );
 
   const onUpdateRegionData = useCallback(
-    (regionId: string, townId: string, townName: string) =>
-      dispatch(udpateRegionData(regionId, townId, townName)),
+    (regionId: string, townId: string, townName: string) => {
+      console.log(regionId);
+      return dispatch(updateRegionData(regionId, townId, townName));
+    },
     [dispatch]
   );
   const onUpdateUserData = useCallback(

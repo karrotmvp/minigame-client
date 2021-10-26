@@ -75,7 +75,7 @@ const NewUserHome = () => {
   const analytics = useAnalytics();
   const karrotRaiseApi = useKarrotRaiseApi();
   // const karrotMarketMini = useKarrotMarketMini();
-  const { accessToken, userRegionId, onUpdateAccessToken } = useUserData();
+  const { userRegionId, onUpdateAccessToken } = useUserData();
 
   const mini = getMini();
 
@@ -100,17 +100,18 @@ const NewUserHome = () => {
 
   const getAccessToken = useCallback(
     async (karrotRaiseApi, code: string, regionId: string) => {
+      console.log('getAccessToken', code);
       try {
-        if (code !== null) {
-          const response = await karrotRaiseApi.postOauth2({
-            code: code,
-            regionId: regionId,
-          });
-          if (response.isFetched && response.data) {
-            const { accessToken } = response.data.data;
-            window.localStorage.setItem('ACCESS_TOKEN', accessToken);
-            onUpdateAccessToken(accessToken);
-          }
+        const response = await karrotRaiseApi.postOauth2({
+          code,
+          regionId,
+        });
+        console.log('from postOauth2', response);
+        if (response.isFetched && response.data) {
+          const { accessToken } = response.data.data;
+          // window.localStorage.setItem('ACCESS_TOKEN', accessToken);
+          onUpdateAccessToken(accessToken);
+          return accessToken;
         } else {
           throw new Error('Either code OR regionId is null');
         }
@@ -144,8 +145,14 @@ const NewUserHome = () => {
         },
         onSuccess: async function (result: any) {
           if (result && result.code) {
+            console.log(result.code, typeof result.code);
             try {
-              await getAccessToken(karrotRaiseApi, result.code, userRegionId);
+              // await getAccessToken(karrotRaiseApi, result.code, userRegionId);
+              const accessToken = await getAccessToken(
+                karrotRaiseApi,
+                result.code,
+                userRegionId
+              );
               await trackUser(karrotRaiseApi, accessToken, analytics);
               analytics.logEvent('click_game_start_button', {
                 type: 'new_user',

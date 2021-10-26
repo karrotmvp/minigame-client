@@ -12,9 +12,10 @@ export const updateAccessToken = (accessToken: string) => ({
 });
 // export const updateUserScore = (score: number) => ({
 //   type: UPDATE_USER_SCORE,
+
 //   score,
 // });
-export const udpateRegionData = (
+export const updateRegionData = (
   regionId: string,
   townId: string,
   townName: string
@@ -53,7 +54,7 @@ export const updateUserData = (
 
 type UserDataAction =
   | ReturnType<typeof updateAccessToken>
-  | ReturnType<typeof udpateRegionData>
+  | ReturnType<typeof updateRegionData>
   | ReturnType<typeof updateUserData>;
 
 // initial state
@@ -92,6 +93,7 @@ const userDataReducer = (
         accessToken: action.payload.accessToken,
       };
     case UPDATE_REGION_DATA:
+      console.log('in redux reducer', action.payload.regionId);
       return {
         ...state,
         regionId: action.payload.regionId,
