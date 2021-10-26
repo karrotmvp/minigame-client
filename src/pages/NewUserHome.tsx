@@ -97,7 +97,7 @@ const NewUserHome = () => {
   );
 
   const getAccessToken = useCallback(
-    async (karrotRaiseApi, code: string | null, regionId: string) => {
+    async (karrotRaiseApi, code: string, regionId: string) => {
       try {
         if (code !== null) {
           const response = await karrotRaiseApi.postOauth2({
@@ -119,9 +119,9 @@ const NewUserHome = () => {
     [onUpdateAccessToken]
   );
 
-  const runOnSuccess = (code: string) => {
-    getAccessToken(karrotRaiseApi, code, userRegionId);
-    trackUser(karrotRaiseApi, accessToken, analytics);
+  const runOnSuccess = async (code: string) => {
+    await getAccessToken(karrotRaiseApi, code, userRegionId);
+    await trackUser(karrotRaiseApi, accessToken, analytics);
     analytics.logEvent('click_game_start_button', { type: 'new_user' });
     history.push('/game');
   };
