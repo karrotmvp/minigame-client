@@ -104,11 +104,11 @@ const TopUserGameEndModal: React.FC<TopUserGameEndModalProps> = (props) => {
       accessToken: string,
       comment: string
     ) {
-      const { data } = await karrotRaiseApi.patchUserComment(
+      const { status } = await karrotRaiseApi.patchUserComment(
         accessToken,
         comment
       );
-      if (data?.status === 200) {
+      if (status === 200) {
         onUpdateUserData(userId, userNickname, userScore, userRank, comment);
         history.replace('/leaderboard');
       }

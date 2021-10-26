@@ -2,18 +2,13 @@
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 
-import {
-  emphasizedTextStyle,
-  largeTextStyle,
-  mediumTextStyle,
-} from 'styles/textStyle';
 import Button from 'components/buttons/Button';
 import LeaderboardTabs from 'components/leaderboard/LeaderboardTabs';
-import { useCallback, useEffect } from 'react';
+import { useEffect } from 'react';
 import { AppEjectionButton } from 'components/buttons/AppEjectionButton';
 import { useAnalytics } from 'services/analytics';
 import { useHistory } from 'react-router-dom';
-import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
+// import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
 import { DefaultUserRow } from 'components/leaderboard/DefaultRow';
 import { TopUserRow } from 'components/leaderboard/TopRow';
 import useUserData from 'hooks/useUserData';
@@ -77,20 +72,59 @@ const ActionItem = styled.div`
   box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
 `;
 
+const Container = styled.div`
+  display: flex;
+  flex-flow: column;
+
+  padding: 12px 14px;
+  margin: 4px 0;
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid #ebe0db;
+  background-color: #fff;
+
+  color: #3f3f3f;
+  h1 {
+    font-style: normal;
+    font-weight: normal;
+    font-size: 20px;
+    line-height: 161.7%;
+    /* or 32px */
+
+    letter-spacing: -0.02em;
+  }
+  h2 {
+    font-style: normal;
+    font-weight: normal;
+    font-size: 16px;
+    line-height: 161.7%;
+    /* identical to box height, or 26px */
+
+    letter-spacing: -0.02em;
+  }
+`;
+
 interface UserScoreNullProps {
   nickname: string;
 }
 const UserScoreNull: React.FC<UserScoreNullProps> = (props) => {
   return (
-    <>
-      <h1 css={largeTextStyle}>
-        <span css={emphasizedTextStyle}>{props.nickname}</span>님, 아직 기록이
-        없어요
+    <Container>
+      <h1>
+        <span
+          style={{
+            fontWeight: 'bold',
+            color: '#EB5D0E',
+          }}
+        >
+          {props.nickname}
+        </span>
+        님,
+        <br />
+        아직 기록이 없어요
       </h1>
-      <h2 css={mediumTextStyle}>
-        당근을 수확하고 이웃들에게 한 마디 남겨봐요!
-      </h2>
-    </>
+      <h2>당근을 수확하고 이웃들에게 한 마디 남겨봐요!</h2>
+    </Container>
   );
 };
 interface UserScoreExistsProps {
@@ -128,16 +162,16 @@ const UserScoreExists: React.FC<UserScoreExistsProps> = (props) => {
 const ReturningUserHome = () => {
   const history = useHistory();
   const analytics = useAnalytics();
-  const karrotRaiseApi = useKarrotRaiseApi();
+  // const karrotRaiseApi = useKarrotRaiseApi();
   const {
     accessToken,
-    userId,
+    // userId,
     userDistrictName,
     userNickname,
     userScore,
     userRank,
     userComment,
-    onUpdateUserData,
+    // onUpdateUserData,
   } = useUserData();
 
   const handleGameStart = () => {
@@ -145,26 +179,26 @@ const ReturningUserHome = () => {
     history.push('/game');
   };
 
-  const getUserData = useCallback(
-    async (karrotRaiseApi: KarrotRaiseApi, accessToken: string) => {
-      try {
-        const response = await karrotRaiseApi.getUserInfo(accessToken);
-        if (response.isFetched === true && response.data) {
-          console.log('returningUserHome, getUserData', response.data);
-          const { nickname, score, rank, comment } = response.data.data;
-          onUpdateUserData(userId, nickname, score, rank, comment);
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    },
-    [onUpdateUserData, userId]
-  );
+  // const getUserData = useCallback(
+  //   async (karrotRaiseApi: KarrotRaiseApi, accessToken: string) => {
+  //     try {
+  //       const {data} = await karrotRaiseApi.getUserInfo(accessToken);
+  //       if (data) {
+  //         const { nickname, score, rank, comment } = response.data.data;
+  //         onUpdateUserData(userId, nickname, score, rank, comment);
+  //       }
+  //     } catch (error) {
+  //       console.error(error);
+  //     }
+  //   },
+  //   [onUpdateUserData, userId]
+  // );
 
   useEffect(() => {
-    getUserData(karrotRaiseApi, accessToken);
+    // getUserData(karrotRaiseApi, accessToken);
     analytics.logEvent('view_returning_user_home_page');
-  }, [accessToken, analytics, getUserData, karrotRaiseApi]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [accessToken]);
 
   return (
     <PageContainer>

@@ -12,10 +12,7 @@ import {
 } from 'types/karrotRaiseApiTypes';
 
 export interface KarrotRaiseApi {
-  postOauth2(param: {
-    code: string;
-    regionId: string;
-  }): Promise<PostOauth2Response>;
+  postOauth2(code: string, regionId: string): Promise<PostOauth2Response>;
   getTownId(regionId: string): Promise<GetTownIdResponse>;
   getUserRank(): Promise<GetUserRankResponse>;
   getDistrictRank(): Promise<GetDistrictRankResponse>;

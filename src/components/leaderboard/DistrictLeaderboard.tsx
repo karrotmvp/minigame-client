@@ -55,11 +55,9 @@ const DistrictLeaderboard = () => {
   const getDistrictLeaderboardData = useCallback(
     async (karrotRaiseApi: KarrotRaiseApi) => {
       try {
-        const response = await karrotRaiseApi.getDistrictRank();
-        if (response.isFetched && response.data) {
-          console.log(response.data);
-          const responseData = response.data.data;
-          const indexedDistrictRankData = responseData.map(
+        const { data, status } = await karrotRaiseApi.getDistrictRank();
+        if (status === 200) {
+          const indexedDistrictRankData = data.map(
             (item: any, index: number) => ({
               rank: index + 1,
               ...item,

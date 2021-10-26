@@ -70,9 +70,9 @@ const IndividualLeaderboard = () => {
   const getUserData = useCallback(
     async function (karrotRaiseApi: KarrotRaiseApi, accessToken: string) {
       try {
-        const response = await karrotRaiseApi.getUserInfo(accessToken);
-        if (response.isFetched === true && response.data) {
-          const { nickname, score, rank, comment } = response.data.data;
+        const { data, status } = await karrotRaiseApi.getUserInfo(accessToken);
+        if (status === 200) {
+          const { nickname, score, rank, comment } = data;
           onUpdateUserData(userId, nickname, score, rank, comment);
         }
       } catch (error) {
@@ -86,11 +86,10 @@ const IndividualLeaderboard = () => {
     karrotRaiseApi: KarrotRaiseApi
   ) {
     try {
-      const response = await karrotRaiseApi.getUserRank();
-      if (response.isFetched && response.data) {
-        console.log(response.data);
-        const responseData = response.data.data;
-        const indexedindividualRankData = responseData.map(
+      const { data, status } = await karrotRaiseApi.getUserRank();
+      if (status === 200) {
+        // console.log(response.data);
+        const indexedindividualRankData = data.map(
           (item: any, index: number) => ({
             rank: index + 1,
             ...item,

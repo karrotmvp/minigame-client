@@ -104,9 +104,9 @@ const Leaderboard = () => {
   const getUserData = useCallback(
     async (karrotRaiseApi: KarrotRaiseApi, accessToken: string) => {
       try {
-        const response = await karrotRaiseApi.getUserInfo(accessToken);
-        if (response.isFetched && response.data) {
-          const { nickname, score, rank, comment } = response.data.data;
+        const { data } = await karrotRaiseApi.getUserInfo(accessToken);
+        if (data) {
+          const { nickname, score, rank, comment } = data;
           onUpdateUserData(userId, nickname, score, rank, comment);
         }
       } catch (error) {

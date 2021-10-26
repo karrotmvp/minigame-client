@@ -40,9 +40,8 @@ const DailyUserCount = () => {
   const getDailyUserCount = useCallback(
     async (karrotRaiseApi: KarrotRaiseApi) => {
       try {
-        const response = await karrotRaiseApi.getDailyUserCount();
-        if (response.isFetched === true && response.data) {
-          const { data } = response.data;
+        const { data, status } = await karrotRaiseApi.getDailyUserCount();
+        if (status === 200) {
           setDailyUserCount(data);
         }
       } catch (error) {

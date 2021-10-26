@@ -103,14 +103,14 @@ const GamePause = ({ closeModal }: GamePauseProps) => {
     try {
       console.log(clickCount);
       analytics.logEvent('click_game_end_button', { score: clickCount });
-      const patchResponse = await karrotRaiseApi.patchUserScore(
+      const { status } = await karrotRaiseApi.patchUserScore(
         accessToken,
         clickCount
       );
-      if (patchResponse.isFetched === true) {
-        const response = await karrotRaiseApi.getUserInfo(accessToken);
-        if (response.isFetched === true && response.data) {
-          const { nickname, score, rank, comment } = response.data.data;
+      if (status === 200) {
+        const { data } = await karrotRaiseApi.getUserInfo(accessToken);
+        if (data) {
+          const { nickname, score, rank, comment } = data;
           onUpdateUserData(userId, nickname, score, rank, comment);
           setUserData({
             nickname: nickname,

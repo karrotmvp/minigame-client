@@ -6,8 +6,12 @@ import Button, { DisabledButton } from 'components/buttons/Button';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Analytics, useAnalytics } from 'services/analytics';
 import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
-import { useKarrotMarketMini } from 'services/karrotMarketMini';
+// import { useKarrotMarketMini } from 'services/karrotMarketMini';
 import useUserData from 'hooks/useUserData';
+import {
+  getMini,
+  loadFromEnv as KarrotMiniPreset,
+} from 'services/karrotMarket/mini';
 
 const customNav = css`
   left: 0;
@@ -102,11 +106,10 @@ interface NonServiceAreaProps {
 }
 
 const NonServiceArea: React.FC<NonServiceAreaProps> = (props) => {
-  console.log(props.location.state.isNonServiceUserBack);
   const [isClicked, setIsClicked] = useState<boolean>(false);
   const analytics = useAnalytics();
   const karrotRaiseApi = useKarrotRaiseApi();
-  const karrotMarketMini = useKarrotMarketMini();
+  // const karrotMarketMini = useKarrotMarketMini();
   const { userRegionId, onUpdateAccessToken } = useUserData();
 
   const trackUser = useCallback(
@@ -116,10 +119,13 @@ const NonServiceArea: React.FC<NonServiceAreaProps> = (props) => {
       analytics: Analytics
     ) => {
       try {
-        const response = await karrotRaiseApi.getUserInfo(accessToken);
-        if (response.isFetched === true && response.data) {
-          const { id } = response.data.data;
+        const { data } = await karrotRaiseApi.getUserInfo(accessToken);
+        if (data) {
+          const { id } = data;
           analytics.setUserId(id);
+          console.log('tracking non-service-area-user... id:', id);
+        } else {
+          throw new Error('response data from getUserInfo api is undefined');
         }
       } catch (error) {
         console.error(error);
@@ -128,19 +134,41 @@ const NonServiceArea: React.FC<NonServiceAreaProps> = (props) => {
     []
   );
 
+  // const getAccessToken = useCallback(
+  //   async function (
+  //     karrotRaiseApi: KarrotRaiseApi,
+  //     code: string,
+  //     regionId: string
+  //   ) {
+  //     try {
+  //       if (code !== null) {
+  //         const { data } = await karrotRaiseApi.postOauth2(code, regionId);
+  //         if (data) {
+  //           const {
+  //             data: { accessToken },
+  //           } = data;
+  //           // window.localStorage.setItem('ACCESS_TOKEN', accessToken);
+  //           onUpdateAccessToken(accessToken);
+  //           return accessToken;
+  //         }
+  //       } else {
+  //         throw new Error('Either code OR regionId is null');
+  //       }
+  //     } catch (error) {
+  //       console.error(error);
+  //     }
+  //   },
+  //   [onUpdateAccessToken]
+  // );
+
   const getAccessToken = useCallback(
-    async function (
-      karrotRaiseApi: KarrotRaiseApi,
-      code: string | null,
-      regionId: string
-    ) {
+    async (karrotRaiseApi: KarrotRaiseApi, code: string, regionId: string) => {
       try {
-        console.log('asdfasfda');
         if (code !== null) {
-          const response = await karrotRaiseApi.postOauth2({ code, regionId });
-          if (response.isFetched && response.data) {
-            const { accessToken } = response.data.data;
-            window.localStorage.setItem('ACCESS_TOKEN', accessToken);
+          const { data } = await karrotRaiseApi.postOauth2(code, regionId);
+          if (data) {
+            const { accessToken } = data;
+            // window.localStorage.setItem('ACCESS_TOKEN', accessToken);
             onUpdateAccessToken(accessToken);
             return accessToken;
           }
@@ -154,22 +182,59 @@ const NonServiceArea: React.FC<NonServiceAreaProps> = (props) => {
     [onUpdateAccessToken]
   );
 
-  const runOnSuccess = async (code: string) => {
-    console.log('run-on-success', code);
-    const accessToken = (await getAccessToken(
-      karrotRaiseApi,
-      code,
-      userRegionId
-    ))!;
-    await trackUser(karrotRaiseApi, accessToken, analytics);
-    const response = await karrotRaiseApi.postDemand(accessToken);
-    if (response.isFetched === true) {
-      setIsClicked(true);
-      analytics.logEvent('click_non_service_area_demand_button');
-    }
-  };
-  const handleDemand = async function () {
-    karrotMarketMini.startPreset(runOnSuccess);
+  // const runOnSuccess = async (code: string) => {
+  //   console.log('run-on-success', code);
+  //   const accessToken = (await getAccessToken(
+  //     karrotRaiseApi,
+  //     code,
+  //     userRegionId
+  //   ))!;
+  //   await trackUser(karrotRaiseApi, accessToken, analytics);
+  //   const response = await karrotRaiseApi.postDemand(accessToken);
+  //   if (response.isFetched === true) {
+  //     setIsClicked(true);
+  //     analytics.logEvent('click_non_service_area_demand_button');
+  //   }
+  // };
+  // const handleDemand = async function () {
+  //   karrotMarketMini.startPreset(runOnSuccess);
+  // };
+  const mini = getMini();
+  const handleDemand = async function (
+    karrotRaiseApi: KarrotRaiseApi,
+    userRegionId: string,
+    analytics: Analytics
+  ) {
+    analytics.logEvent('click_preset', { type: 'non_service_area_user' });
+    const presetUrl = KarrotMiniPreset().presetUrl;
+    const appId = KarrotMiniPreset().appId;
+    mini.startPreset({
+      preset: presetUrl!,
+      params: {
+        appId: appId!,
+      },
+      onSuccess: async function (result: any) {
+        if (result && result.code) {
+          try {
+            const accessToken = await getAccessToken(
+              karrotRaiseApi,
+              result.code,
+              userRegionId
+            );
+            if (accessToken) {
+              await trackUser(karrotRaiseApi, accessToken, analytics);
+              const data = await karrotRaiseApi.postDemand(accessToken);
+              if (data.success === true) {
+                setIsClicked(true);
+                analytics.logEvent('click_non_service_area_demand_button');
+              }
+            }
+          } catch (error) {
+            console.error(error);
+          }
+        }
+      },
+    });
   };
 
   useEffect(() => {
@@ -208,7 +273,9 @@ const NonServiceArea: React.FC<NonServiceAreaProps> = (props) => {
             size={`medium`}
             color={`primary`}
             text={`오픈 알림 받기`}
-            onClick={handleDemand}
+            onClick={() =>
+              handleDemand(karrotRaiseApi, userRegionId, analytics)
+            }
           />
         )}
       </div>

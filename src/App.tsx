@@ -45,19 +45,26 @@ const appStyle = css`
   height: 100vh;
 `;
 
+interface NonServiceUserState {
+  isBack: boolean;
+  districtName: string;
+}
 function App() {
   const [pageRedirection, setPageRedirection] = useState<string>('loading');
-  const [isNonServiceUserBack, setIsNonServiceUserBack] =
-    useState<boolean>(false);
+  const [nonServiceUser, setNonServiceUser] = useState<NonServiceUserState>({
+    isBack: false,
+    districtName: '',
+  });
+
   const [karrotMarketMini, setKarrotMarketMini] = useState(
     emptyKarrotMarketMini
   );
   const [karrotRaiseApi, setKarrotRaiseApi] = useState(emptyKarrotRaiseApi);
   const [analytics, setAnalytics] = useState(emptyAnalytics);
   const {
-    userRegionId,
-    userDistrictId,
-    userDistrictName,
+    // userRegionId,
+    // userDistrictId,
+    // userDistrictName,
     onUpdateAccessToken,
     onUpdateRegionData,
     onUpdateUserData,
@@ -103,18 +110,19 @@ function App() {
       analytics: Analytics
     ) => {
       try {
-        const response = await karrotRaiseApi.getUserInfo(accessToken);
-        if (response.isFetched === true && response.data) {
-          const { id, nickname, score, rank, comment } = response.data.data;
-          console.log('tracking user... id:', id);
-          analytics.setUserId(id);
+        const { data, status } = await karrotRaiseApi.getUserInfo(accessToken);
+        if (status === 200) {
+          const { id, nickname, score, rank, comment } = data;
           onUpdateUserData(id, nickname, score, rank, comment);
+          analytics.setUserId(id);
+          console.log('tracking user... id:', id);
         }
       } catch (error) {
         console.error(error);
       }
     },
-    [onUpdateUserData]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
   );
   const filterNonServiceTown = useCallback(
     async function (
@@ -123,16 +131,29 @@ function App() {
       regionId: string
     ) {
       try {
-        const response = await karrotRaiseApi.getTownId(regionId);
+        console.log('workd?', regionId);
+        const { data, status } = await karrotRaiseApi.getTownId(regionId);
+        // console.log(data);
         // example -> city=서울특별시(name1) district=서초구(name2)
-        if (response.isFetched && response.data) {
-          const { id: districtId, name2: districtName } = response.data.data;
-          onUpdateRegionData(userRegionId, districtId, districtName);
-          // Filter out if user is not in 서초구
-          // 서초구id = df5370052b3c
-          if (districtId !== 'df5370052b3c') {
-            if (code !== null || undefined) {
-              setIsNonServiceUserBack(true);
+        if (status === 200) {
+          const { id: districtId, name2: districtName } = data;
+          console.log(districtId, districtName);
+          onUpdateRegionData(regionId, districtId, districtName);
+          // Filter out if user is not in our service area
+          const openedDistricts = [
+            '서초구',
+            '송파구',
+            '강남구',
+            '강동구',
+            '광진구',
+          ];
+          const isMyDistrictOpen = openedDistricts.indexOf(districtName + '');
+          console.log(openedDistricts.indexOf(districtName), isMyDistrictOpen);
+          if (isMyDistrictOpen === -1) {
+            if (typeof code === 'string') {
+              setNonServiceUser({ isBack: true, districtName: districtName });
+            } else {
+              setNonServiceUser({ isBack: false, districtName: districtName });
             }
             setPageRedirection('non-service-area');
           }
@@ -141,7 +162,8 @@ function App() {
         console.error(error);
       }
     },
-    [onUpdateRegionData, userRegionId]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [onUpdateRegionData]
   );
   const getAccessToken = useCallback(
     async function (
@@ -151,14 +173,18 @@ function App() {
       analytics: Analytics
     ): Promise<void> {
       // code !== null means user is a returning user
+      console.log(regionId, 'accessstooken?');
       try {
         if (code !== null) {
-          const response = await karrotRaiseApi.postOauth2({ code, regionId });
-          if (response.isFetched && response.data) {
-            const { accessToken } = response.data.data;
-            window.localStorage.setItem('ACCESS_TOKEN', accessToken);
+          const { data, status } = await karrotRaiseApi.postOauth2(
+            code,
+            regionId
+          );
+          if (status === 200) {
+            const { accessToken } = data;
+            // window.localStorage.setItem('ACCESS_TOKEN', accessToken);
             onUpdateAccessToken(accessToken);
-            await trackUser(karrotRaiseApi, accessToken, analytics);
+            trackUser(karrotRaiseApi, accessToken, analytics);
             setPageRedirection('home');
           }
         } else {
@@ -177,7 +203,6 @@ function App() {
       const searchParams = new URLSearchParams(window.location.search);
       const code: string | null = searchParams.get('code');
       const regionId: any = searchParams.get('region_id');
-      console.log('app', code, regionId);
       // What to do if region_id is null? (meaning the mini-app is not opened from karrot market app)
       // if (code === null) {
       //   code = 'testcode';
@@ -185,14 +210,14 @@ function App() {
       // if (regionId === null) {
       //   regionId = 'df5370052b3c';
       // }
-      onUpdateRegionData(regionId, userDistrictId, userDistrictName);
+      // onUpdateRegionData(regionId, userDistrictId, userDistrictName);
+      console.log(regionId);
       filterNonServiceTown(karrotRaiseApi, code, regionId);
       getAccessToken(karrotRaiseApi, code, regionId, analytics);
     } catch (error) {
       console.error(error);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [analytics, filterNonServiceTown, getAccessToken, karrotRaiseApi]);
 
   return (
     <div css={appStyle}>
@@ -211,8 +236,8 @@ function App() {
                         to={{
                           pathname: '/non-service-area',
                           state: {
-                            districtName: userDistrictName,
-                            isNonServiceUserBack: isNonServiceUserBack,
+                            districtName: nonServiceUser.districtName,
+                            isNonServiceUserBack: nonServiceUser.isBack,
                           },
                         }}
                       />

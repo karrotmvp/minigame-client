@@ -13,7 +13,7 @@ import LeaderboardTabs from 'components/leaderboard/LeaderboardTabs';
 import useUserData from 'hooks/useUserData';
 import DailyUserCount from 'components/DailyUserCount';
 import TopImageUrl from 'assets/background.png';
-import { loadFromEnv } from 'services/karrotMarket/mini';
+import { loadFromEnv as KarrotMiniPreset } from 'services/karrotMarket/mini';
 const PageContainer = styled.div`
   display: flex;
   flex-flow: column;
@@ -78,7 +78,7 @@ const NewUserHome = () => {
   const { userRegionId, onUpdateAccessToken } = useUserData();
 
   const mini = getMini();
-
+  console.log(userRegionId);
   const trackUser = useCallback(
     async (
       karrotRaiseApi: KarrotRaiseApi,
@@ -86,10 +86,13 @@ const NewUserHome = () => {
       analytics: Analytics
     ) => {
       try {
-        const response = await karrotRaiseApi.getUserInfo(accessToken);
-        if (response.isFetched === true && response.data) {
-          const { id } = response.data.data;
+        const { data, status } = await karrotRaiseApi.getUserInfo(accessToken);
+        if (status === 200) {
+          const { id } = data;
           analytics.setUserId(id);
+          console.log('tracking new-user... id:', id);
+        } else {
+          throw new Error('response data from getUserInfo api is undefined');
         }
       } catch (error) {
         console.error(error);
@@ -99,16 +102,16 @@ const NewUserHome = () => {
   );
 
   const getAccessToken = useCallback(
-    async (karrotRaiseApi, code: string, regionId: string) => {
-      console.log('getAccessToken', code);
+    async (karrotRaiseApi: KarrotRaiseApi, code: string, regionId: string) => {
       try {
-        const response = await karrotRaiseApi.postOauth2({
+        console.log(code, regionId, 'beforeapi');
+        const { data, status } = await karrotRaiseApi.postOauth2(
           code,
-          regionId,
-        });
-        console.log('from postOauth2', response);
-        if (response.isFetched && response.data) {
-          const { accessToken } = response.data.data;
+          regionId
+        );
+        if (status === 200) {
+          const { accessToken } = data;
+          console.log(accessToken);
           // window.localStorage.setItem('ACCESS_TOKEN', accessToken);
           onUpdateAccessToken(accessToken);
           return accessToken;
@@ -122,22 +125,17 @@ const NewUserHome = () => {
     [onUpdateAccessToken]
   );
 
-  // const runOnSuccess = async (code: string) => {
-  //   await getAccessToken(karrotRaiseApi, code, userRegionId);
-  //   await trackUser(karrotRaiseApi, accessToken, analytics);
-  //   analytics.logEvent('click_game_start_button', { type: 'new_user' });
-  //   history.push('/game');
-  // };
-
-  const handleNewUserAgreement = async function () {
+  const handleNewUserAgreement = async function (
+    karrotRaiseApi: KarrotRaiseApi,
+    userRegionId: string,
+    analytics: Analytics
+  ) {
     // bypass mini preset in Web environment
     if (getMini().environment === 'Web') {
       history.push('/game');
-    }
-    // karrotMarketMini.startPreset(runOnSuccess);
-    else {
-      const presetUrl = loadFromEnv().presetUrl;
-      const appId = loadFromEnv().appId;
+    } else {
+      const presetUrl = KarrotMiniPreset().presetUrl;
+      const appId = KarrotMiniPreset().appId;
       mini.startPreset({
         preset: presetUrl!,
         params: {
@@ -145,19 +143,20 @@ const NewUserHome = () => {
         },
         onSuccess: async function (result: any) {
           if (result && result.code) {
-            console.log(result.code, typeof result.code);
             try {
-              // await getAccessToken(karrotRaiseApi, result.code, userRegionId);
+              console.log(userRegionId, 'regoinIDSS>');
               const accessToken = await getAccessToken(
                 karrotRaiseApi,
                 result.code,
                 userRegionId
               );
-              await trackUser(karrotRaiseApi, accessToken, analytics);
-              analytics.logEvent('click_game_start_button', {
-                type: 'new_user',
-              });
-              history.push('/game');
+              if (accessToken) {
+                await trackUser(karrotRaiseApi, accessToken, analytics);
+                analytics.logEvent('click_game_start_button', {
+                  type: 'new_user',
+                });
+                history.push('/game');
+              }
             } catch (error) {
               console.error(error);
             }
@@ -196,7 +195,9 @@ const NewUserHome = () => {
           size={`large`}
           color={`primary`}
           text={`게임 시작`}
-          onClick={handleNewUserAgreement}
+          onClick={() =>
+            handleNewUserAgreement(karrotRaiseApi, userRegionId, analytics)
+          }
         />
       </ActionItem>
     </PageContainer>
