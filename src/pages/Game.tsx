@@ -3,7 +3,7 @@ import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 import GamePause from 'components/game/GamePause';
 import React, { useEffect, useState } from 'react';
-import background from 'assets/Seocho_background.png';
+import gameBackgroundUrl from 'assets/game_background.png';
 // import { ReactComponent as BigKarrot } from 'assets/Seocho_daangn.svg';
 import Modal from 'react-modal';
 import GameDirectionPopupModal from 'components/game/GameDirectionPopupModal';
@@ -18,7 +18,15 @@ import { ReactComponent as PauseButton } from 'assets/Pause.svg';
 import { useIdleTimer } from 'react-idle-timer';
 import GameOver from 'components/game/GameOver';
 
-// nav
+const PageContainer = styled.div`
+  background-image: url(${gameBackgroundUrl});
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  height: 100%;
+  display: flex;
+  flex-flow: column;
+`;
 const customNav = css`
   left: 0;
   width: 100%;
@@ -81,13 +89,7 @@ const TotalKarrotCount = styled.div`
 //   color: #cc6023;
 // `;
 // main div
-const divStyle = css`
-  background-image: url(${background});
-  background-size: cover;
-  height: 100%;
-  display: flex;
-  flex-flow: column;
-`;
+
 const ScoreWrapper = styled.div`
   // margin-top: 30px;
   display: flex;
@@ -278,7 +280,7 @@ const Game = () => {
   }, [analytics, history, onResetCount]);
   return (
     <>
-      <div css={divStyle}>
+      <PageContainer>
         <div css={customNav}>
           <TotalKarrotCount>
             <p
@@ -326,7 +328,7 @@ const Game = () => {
             onDestroy={handleParticleDestroy}
           />
         ))}
-      </div>
+      </PageContainer>
       {/* GAME PAUSE */}
       <Modal
         isOpen={isPaused}

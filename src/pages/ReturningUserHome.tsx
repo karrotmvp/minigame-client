@@ -11,7 +11,6 @@ import Button from 'components/buttons/Button';
 import LeaderboardTabs from 'components/leaderboard/LeaderboardTabs';
 import { useCallback, useEffect } from 'react';
 import { AppEjectionButton } from 'components/buttons/AppEjectionButton';
-import { commafy } from 'functions/numberFunctions';
 import { useAnalytics } from 'services/analytics';
 import { useHistory } from 'react-router-dom';
 import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
@@ -21,7 +20,12 @@ import useUserData from 'hooks/useUserData';
 import DailyUserCount from 'components/DailyUserCount';
 import TopImageUrl from 'assets/background.png';
 
-// nav
+const PageContainer = styled.div`
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+  background: #faf5f4;
+`;
 const Nav = styled.div`
   background-image: url(${TopImageUrl});
   background-size: cover;
@@ -58,20 +62,11 @@ const customNavIcon = css`
   outline: none;
   z-index: 10;
 `;
-const divStyle = css`
-  display: flex;
-  flex-flow: column;
-  height: 100%;
-  // overflow: hidden;
-  background: #faf5f4;
-`;
+
 const MyRow = styled.div`
   margin: 0 18px 12px;
 `;
 const ActionItem = styled.div`
-  position: absolute;
-  z-index: 100;
-  bottom: 0;
   display: flex;
   justify-content: center;
   width: 100%;
@@ -170,31 +165,29 @@ const ReturningUserHome = () => {
   }, [accessToken, analytics, getUserData, karrotRaiseApi]);
 
   return (
-    <>
-      <div css={divStyle}>
-        <Nav>
-          <div css={customNav}>
-            <div css={customNavIcon}>
-              <AppEjectionButton />
-            </div>
+    <PageContainer>
+      <Nav>
+        <div css={customNav}>
+          <div css={customNavIcon}>
+            <AppEjectionButton />
           </div>
-        </Nav>
+        </div>
+      </Nav>
 
-        <MyRow>
-          {userRank !== null ? (
-            <UserScoreExists
-              nickname={userNickname}
-              rank={userRank}
-              score={userScore}
-              comment={userComment}
-              districtName={userDistrictName}
-            />
-          ) : (
-            <UserScoreNull nickname={userNickname} />
-          )}
-        </MyRow>
-        <LeaderboardTabs />
-      </div>
+      <MyRow>
+        {userRank !== null ? (
+          <UserScoreExists
+            nickname={userNickname}
+            rank={userRank}
+            score={userScore}
+            comment={userComment}
+            districtName={userDistrictName}
+          />
+        ) : (
+          <UserScoreNull nickname={userNickname} />
+        )}
+      </MyRow>
+      <LeaderboardTabs />
       <div
         style={{
           position: 'absolute',
@@ -213,7 +206,7 @@ const ReturningUserHome = () => {
           onClick={handleGameStart}
         />
       </ActionItem>
-    </>
+    </PageContainer>
   );
 };
 

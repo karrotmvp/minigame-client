@@ -13,7 +13,13 @@ import LeaderboardTabs from 'components/leaderboard/LeaderboardTabs';
 import useUserData from 'hooks/useUserData';
 import DailyUserCount from 'components/DailyUserCount';
 import TopImageUrl from 'assets/background.png';
-// nav
+
+const PageContainer = styled.div`
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+  background: #faf5f4;
+`;
 const Nav = styled.div`
   background-image: url(${TopImageUrl});
   background-size: cover;
@@ -49,12 +55,6 @@ const customNavIcon = css`
   text-decoration: none;
   outline: none;
   z-index: 10;
-`;
-const divStyle = css`
-  display: flex;
-  flex-flow: column;
-  height: 100%;
-  background: #faf5f4;
 `;
 
 const ActionItem = styled.div`
@@ -136,37 +136,35 @@ const NewUserHome = () => {
     analytics.logEvent('view_new_user_home_page');
   }, [analytics]);
   return (
-    <>
-      <div css={divStyle}>
-        <Nav>
-          <div css={customNav}>
-            <div css={customNavIcon}>
-              <AppEjectionButton />
-            </div>
+    <PageContainer>
+      <Nav>
+        <div css={customNav}>
+          <div css={customNavIcon}>
+            <AppEjectionButton />
           </div>
-        </Nav>
-
-        <LeaderboardTabs />
-        <div
-          style={{
-            position: 'absolute',
-            bottom: '90px',
-            right: '24px',
-            zIndex: 101,
-          }}
-        >
-          <DailyUserCount />
         </div>
-        <ActionItem>
-          <Button
-            size={`large`}
-            color={`primary`}
-            text={`게임 시작`}
-            onClick={handleNewUserAgreement}
-          />
-        </ActionItem>
+      </Nav>
+
+      <LeaderboardTabs />
+      <div
+        style={{
+          position: 'absolute',
+          bottom: '90px',
+          right: '24px',
+          zIndex: 101,
+        }}
+      >
+        <DailyUserCount />
       </div>
-    </>
+      <ActionItem>
+        <Button
+          size={`large`}
+          color={`primary`}
+          text={`게임 시작`}
+          onClick={handleNewUserAgreement}
+        />
+      </ActionItem>
+    </PageContainer>
   );
 };
 

@@ -17,7 +17,12 @@ import useUserData from 'hooks/useUserData';
 import useClickCounter from 'hooks/useClickCounter';
 
 // nav
-
+const PageContainer = styled.div`
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+  background: #faf5f4;
+`;
 const customNav = css`
   // position: fixed;
   left: 0;
@@ -45,13 +50,6 @@ const customNavIcon = css`
   outline: none;
   z-index: 10;
 `;
-const divStyle = css`
-  display: flex;
-  flex-flow: column;
-  height: 100%;
-  // overflow: hidden;
-  background: #faf5f4;
-`;
 
 const Heading = styled.div`
   margin: 0 26px 20px;
@@ -61,18 +59,16 @@ const MyRow = styled.div`
 `;
 
 const ActionItem = styled.div`
-  position: absolute;
-  z-index: 100;
-  bottom: 0;
   display: flex;
-  gap: 15px;
-  justify-content: space-between;
+  justify-content: center;
   width: 100%;
   padding: 16px 24px 34px;
   border-top: 1px solid #ebebeb;
   background: #ffffff;
   box-sizing: border-box;
   box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+  gap: 15px;
+  justify-content: space-between;
 `;
 
 const Leaderboard = () => {
@@ -134,60 +130,58 @@ const Leaderboard = () => {
     };
   }, [history, onResetCount]);
   return (
-    <>
-      <div css={divStyle}>
-        <div css={customNav}>
-          <div css={customNavIcon}>
-            <AppEjectionButton />
-          </div>
+    <PageContainer>
+      <div css={customNav}>
+        <div css={customNavIcon}>
+          <AppEjectionButton />
         </div>
-        <Heading>
-          <h1 css={largeTextStyle}>
-            <span css={emphasizedTextStyle}>{userNickname}</span>님은
-            <br />
-            {userDistrictName}에서
-            <span css={emphasizedTextStyle}> {userRank}위</span>
-            에요!
-          </h1>
-        </Heading>
-
-        <MyRow>
-          {userRank <= 10 ? (
-            <TopUserRow
-              me={true}
-              rank={userRank}
-              nickname={userNickname}
-              score={userScore}
-              comment={userComment}
-            />
-          ) : (
-            <DefaultUserRow
-              me={true}
-              rank={userRank}
-              nickname={userNickname}
-              score={userScore}
-            />
-          )}
-        </MyRow>
-
-        <LeaderboardTabs />
-
-        <ActionItem>
-          <Button
-            size={`medium`}
-            color={`secondary`}
-            text={`자랑하기`}
-            onClick={handleShare}
-          />
-          <Button
-            size={`medium`}
-            color={`primary`}
-            text={`다시하기`}
-            onClick={handlePlayAgain}
-          />
-        </ActionItem>
       </div>
-    </>
+      <Heading>
+        <h1 css={largeTextStyle}>
+          <span css={emphasizedTextStyle}>{userNickname}</span>님은
+          <br />
+          {userDistrictName}에서
+          <span css={emphasizedTextStyle}> {userRank}위</span>
+          에요!
+        </h1>
+      </Heading>
+
+      <MyRow>
+        {userRank <= 10 ? (
+          <TopUserRow
+            me={true}
+            rank={userRank}
+            nickname={userNickname}
+            score={userScore}
+            comment={userComment}
+          />
+        ) : (
+          <DefaultUserRow
+            me={true}
+            rank={userRank}
+            nickname={userNickname}
+            score={userScore}
+          />
+        )}
+      </MyRow>
+
+      <LeaderboardTabs />
+
+      <ActionItem>
+        <Button
+          size={`medium`}
+          color={`secondary`}
+          text={`자랑하기`}
+          onClick={handleShare}
+        />
+        <Button
+          size={`medium`}
+          color={`primary`}
+          text={`다시하기`}
+          onClick={handlePlayAgain}
+        />
+      </ActionItem>
+    </PageContainer>
   );
 };
 
