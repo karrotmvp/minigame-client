@@ -46,7 +46,7 @@ const customNav = css`
   justify-content: space-between;
   width: 100%;
   height: 80px;
-  padding: 0 30px;
+  padding: 0 15px;
   background: transparent;
 `;
 const customNavIcon = css`
@@ -110,6 +110,7 @@ const UserScoreExists: React.FC<UserScoreExistsProps> = (props) => {
           nickname={props.nickname}
           score={props.score}
           comment={props.comment}
+          districtName={props.districtName}
         />
       ) : (
         <DefaultUserRow
@@ -117,6 +118,7 @@ const UserScoreExists: React.FC<UserScoreExistsProps> = (props) => {
           rank={props.rank}
           nickname={props.nickname}
           score={props.score}
+          districtName={props.districtName}
         />
       )}
     </>

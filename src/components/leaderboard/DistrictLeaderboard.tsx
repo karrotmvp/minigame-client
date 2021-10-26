@@ -1,5 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
+import styled from '@emotion/styled';
 import { useCallback, useEffect, useState } from 'react';
 import { DefaultDistrictRow } from './DefaultRow';
 import { TopDistrictRow } from './TopRow';
@@ -7,35 +8,18 @@ import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
 import RefreshButton from 'components/buttons/RefreshButton';
 
 const divStyle = css`
-  padding-top: 10px;
-  padding-bottom: 10px;
   max-height: inherit;
   box-sizing: border-box;
   width: 100%;
   height: 100%;
   overflow: hidden;
 `;
-const leaderboardWrapperStyle = css`
-  display: flex;
-  flex-flow: column;
-  align-items: center;
-  width: 100%;
-  height: 100%;
-  overflow-y: scroll;
-  padding-bottom: 30px;
-
-  // Hide scrollbar but keep functionality
-  &::-webkit-scrollbar {
-    display: none;
-  }
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
-`;
-const refreshDivStyle = css`
+const Refresh = styled.div`
   display: flex;
   flex-flow: row;
   justify-content: space-between;
-  margin-bottom: 12px;
+
+  margin: 19px 2px 12px 0;
   p {
     font-style: normal;
     font-weight: 600;
@@ -45,6 +29,22 @@ const refreshDivStyle = css`
 
     color: #5b5b5b;
   }
+`;
+const leaderboardWrapperStyle = css`
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  overflow-y: scroll;
+  padding-bottom: 60px;
+
+  // Hide scrollbar but keep functionality
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 `;
 
 // interface DistrictRankData {}
@@ -88,12 +88,12 @@ const DistrictLeaderboard = () => {
 
   return (
     <div css={divStyle}>
-      <div css={refreshDivStyle}>
+      <Refresh>
         <p>이번 주 랭킹</p>
         <RefreshButton
           refreshLeaderboard={() => refreshLeaderboard(karrotRaiseApi)}
         />
-      </div>
+      </Refresh>
 
       <div css={leaderboardWrapperStyle}>
         {districtRankData.slice(0, 10).map((district) => {

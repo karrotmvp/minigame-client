@@ -39,6 +39,11 @@ const Info = styled.div`
   margin-bottom: 4px;
 `;
 const Name = styled.div`
+  display: flex;
+  flex-flow: row;
+  gap: 4px;
+  align-items: center;
+
   font-style: normal;
   font-weight: 600;
   font-size: 16px;
@@ -60,6 +65,46 @@ const Score = styled.div`
   color: #5b5b5b;
 `;
 
+const DistrictName = styled.div<{ districtName: string }>`
+  border: 0.5px solid;
+  box-sizing: border-box;
+  border-radius: 7px;
+  height: fit-content;
+  width: fit-content;
+  padding: 1px 5px;
+
+  font-style: normal;
+  font-weight: 600;
+  font-size: 8px;
+  line-height: 161.7%;
+
+  color: ${(props) =>
+    props.districtName === `서초구`
+      ? '#6BA577'
+      : props.districtName === `송파구`
+      ? '#E17373'
+      : props.districtName === `강동구`
+      ? '#AE93C3'
+      : props.districtName === `강남구`
+      ? `#9398C3`
+      : props.districtName === `광진구`
+      ? `#DD8758`
+      : '#5B5B5B'};
+
+  border-color: ${(props) =>
+    props.districtName === `서초구`
+      ? '#6BA577'
+      : props.districtName === `송파구`
+      ? '#E17373'
+      : props.districtName === `강동구`
+      ? '#AE93C3'
+      : props.districtName === `강남구`
+      ? `#9398C3`
+      : props.districtName === `광진구`
+      ? `#DD8758`
+      : '#5B5B5B'};
+`;
+
 const PlayerCount = styled.div`
   width: fit-content;
 
@@ -71,19 +116,27 @@ const PlayerCount = styled.div`
 
   color: #7c7c7c;
 `;
+
 interface DefaultUserRowProps {
   me?: boolean;
   rank: number;
   nickname: string;
   score: number;
+  districtName: string;
 }
+
 export const DefaultUserRow: React.FC<DefaultUserRowProps> = (props) => {
   return (
     <Container me={props.me}>
       <Rank>{commafy(props.rank)}</Rank>
       <ContentsWrapper>
         <Info>
-          <Name>{props.nickname}</Name>
+          <Name>
+            <DistrictName districtName={props.districtName}>
+              {props.districtName.slice(0, -1)}
+            </DistrictName>
+            {props.nickname}
+          </Name>
           <Score>{commafy(props.score)}</Score>
         </Info>
       </ContentsWrapper>
@@ -107,7 +160,7 @@ export const DefaultDistrictRow: React.FC<DefaultDistrictRowProps> = (
       <ContentsWrapper>
         <Info>
           <Name>
-            {props.cityName} {props.districtName}
+            {props.cityName.slice(0, -3)} {props.districtName}
           </Name>
           <Score>{commafy(props.score)}</Score>
         </Info>

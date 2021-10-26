@@ -2,7 +2,7 @@
 import { css, keyframes } from '@emotion/react';
 // import { ReactComponent as BigKarrot } from 'assets/Seocho_daangn.svg';
 import { memo, FC } from 'react';
-import BigKarrotImageUrl from 'assets/Seocho_daangn.svg';
+import BigKarrotImageUrl from 'assets/big_karrot.png';
 
 const animationKeyframes = keyframes`
   100% {
@@ -13,7 +13,7 @@ const animationKeyframes = keyframes`
 `;
 
 const animation = (animationPlayState: string) => css`
-  animation-duration: 50s;
+  animation-duration: 5s;
   animation-timing-function: ease;
   animation-delay: 0s;
   animation-iteration-count: 1;

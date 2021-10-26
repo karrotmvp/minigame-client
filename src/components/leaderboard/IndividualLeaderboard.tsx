@@ -9,8 +9,6 @@ import { TopUserRow } from './TopRow';
 import RefreshButton from '../buttons/RefreshButton';
 
 const divStyle = css`
-  padding-top: 10px;
-  padding-bottom: 10px;
   // max-height: inherit;
   box-sizing: border-box;
   width: 100%;
@@ -18,27 +16,12 @@ const divStyle = css`
   overflow: hidden;
 `;
 
-const LeaderboardWrapper = styled.div`
-  display: flex;
-  flex-flow: column;
-  align-items: center;
-  width: 100%;
-  height: 100%;
-  overflow-y: scroll;
-  padding-bottom: 30px;
-
-  // Hide scrollbar but keep functionality
-  &::-webkit-scrollbar {
-    display: none;
-  }
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
-`;
-const refreshDivStyle = css`
+const Refresh = styled.div`
   display: flex;
   flex-flow: row;
   justify-content: space-between;
-  margin-bottom: 12px;
+
+  margin: 19px 2px 12px 0;
   p {
     font-style: normal;
     font-weight: 600;
@@ -48,6 +31,22 @@ const refreshDivStyle = css`
 
     color: #5b5b5b;
   }
+`;
+const LeaderboardWrapper = styled.div`
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  overflow-y: scroll;
+  padding-bottom: 60px;
+
+  // Hide scrollbar but keep functionality
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 `;
 
 const infoText = css`
@@ -67,8 +66,7 @@ const infoText = css`
 const IndividualLeaderboard = () => {
   const [individualRankData, setIndividualRankData] = useState<any[]>([]);
   const karrotRaiseApi = useKarrotRaiseApi();
-  const { accessToken, userId, userDistrictName, onUpdateUserData } =
-    useUserData();
+  const { accessToken, userId, onUpdateUserData } = useUserData();
   const getUserData = useCallback(
     async function (karrotRaiseApi: KarrotRaiseApi, accessToken: string) {
       try {
@@ -121,14 +119,14 @@ const IndividualLeaderboard = () => {
 
   return (
     <div css={divStyle}>
-      <div css={refreshDivStyle}>
+      <Refresh>
         <p>이번 주 랭킹</p>
         <RefreshButton
           refreshLeaderboard={() =>
             refreshLeaderboard(karrotRaiseApi, accessToken)
           }
         />
-      </div>
+      </Refresh>
 
       <LeaderboardWrapper>
         {individualRankData.slice(0, 10).map((user) => {
@@ -139,11 +137,12 @@ const IndividualLeaderboard = () => {
               nickname={user.nickname}
               comment={user.comment}
               score={user.score}
+              districtName={user.town.name2}
             />
           );
         })}
         <p css={infoText}>
-          🎉 {userDistrictName} TOP 10 🎉 이 되어서
+          🎉 TOP 10 🎉 이 되어서
           <br />
           이웃들에게 한 마디를 남겨보세요!
         </p>
@@ -154,6 +153,7 @@ const IndividualLeaderboard = () => {
               rank={user.rank}
               nickname={user.nickname}
               score={user.score}
+              districtName={user.town.name2}
             />
           );
         })}

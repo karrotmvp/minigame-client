@@ -25,6 +25,11 @@ const Info = styled.div`
   margin-bottom: 4px;
 `;
 const Name = styled.div<{ rank: number }>`
+  display: flex;
+  flex-flow: row;
+  gap: 4px;
+  align-items: center;
+
   color: ${(props) =>
     props.rank === 1
       ? '#EB5D0E'
@@ -97,6 +102,46 @@ const SpeechBalloon = styled.div`
   color: #616161;
 `;
 
+const DistrictName = styled.div<{ districtName: string }>`
+  border: 0.5px solid;
+  box-sizing: border-box;
+  border-radius: 7px;
+  height: fit-content;
+  width: fit-content;
+  padding: 1px 5px;
+
+  font-style: normal;
+  font-weight: 600;
+  font-size: 8px;
+  line-height: 161.7%;
+
+  color: ${(props) =>
+    props.districtName === `서초구`
+      ? '#6BA577'
+      : props.districtName === `송파구`
+      ? '#E17373'
+      : props.districtName === `강동구`
+      ? '#AE93C3'
+      : props.districtName === `강남구`
+      ? `#9398C3`
+      : props.districtName === `광진구`
+      ? `#DD8758`
+      : '#5B5B5B'};
+
+  border-color: ${(props) =>
+    props.districtName === `서초구`
+      ? '#6BA577'
+      : props.districtName === `송파구`
+      ? '#E17373'
+      : props.districtName === `강동구`
+      ? '#AE93C3'
+      : props.districtName === `강남구`
+      ? `#9398C3`
+      : props.districtName === `광진구`
+      ? `#DD8758`
+      : '#5B5B5B'};
+`;
+
 const PlayerCount = styled.div`
   width: fit-content;
 
@@ -114,11 +159,12 @@ interface TopUserRowProps {
   nickname: string;
   score: number;
   comment: string;
+  districtName: string;
 }
 export const TopUserRow: React.FC<TopUserRowProps> = (props) => {
   let userComment;
   if (props.comment.length <= 0) {
-    userComment = `한마디 작성중...`;
+    userComment = `한마디 작성 중...`;
   } else {
     userComment = `${props.comment}`;
   }
@@ -127,7 +173,12 @@ export const TopUserRow: React.FC<TopUserRowProps> = (props) => {
       <Rank>{commafy(props.rank)}</Rank>
       <ContentsWrapper>
         <Info>
-          <Name rank={props.rank}>{props.nickname}</Name>
+          <Name rank={props.rank}>
+            <DistrictName districtName={props.districtName}>
+              {props.districtName.slice(0, -1)}
+            </DistrictName>
+            {props.nickname}
+          </Name>
           <Score>{commafy(props.score)}</Score>
         </Info>
         <SpeechBalloon>{userComment}</SpeechBalloon>
@@ -151,7 +202,7 @@ export const TopDistrictRow: React.FC<TopDistrictTowProps> = (props) => {
       <ContentsWrapper>
         <Info>
           <Name rank={props.rank}>
-            {props.cityName} {props.districtName}
+            {props.cityName.slice(0, -3)} {props.districtName}
           </Name>
           <Score>{commafy(props.score)}</Score>
         </Info>

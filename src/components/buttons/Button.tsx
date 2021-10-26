@@ -70,7 +70,8 @@ export const DisabledButton = ({ size, text }: ButtonProps) => {
     <button
       css={buttonStyle({ size })}
       style={{
-        background: '#D7D7D7',
+        backgroundColor: 'rgba(235, 93, 14, 0.4)',
+        boxShadow: `0px 6px 0px 0px #E89261`,
       }}
       disabled
     >

@@ -40,7 +40,7 @@ const customNav = css`
   justify-content: space-between;
   width: 100%;
   height: 80px;
-  padding: 0 30px;
+  padding: 0 15px;
   background: transparent;
 `;
 const customNavIcon = css`
