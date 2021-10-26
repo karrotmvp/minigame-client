@@ -19,17 +19,31 @@ import { DefaultUserRow } from 'components/leaderboard/DefaultRow';
 import { TopUserRow } from 'components/leaderboard/TopRow';
 import useUserData from 'hooks/useUserData';
 import DailyUserCount from 'components/DailyUserCount';
+import TopImageUrl from 'assets/background.png';
 
 // nav
+const Nav = styled.div`
+  background-image: url(${TopImageUrl});
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  width: 100%;
+  height: 220px;
+  margin-bottom: -10px;
+`;
 const customNav = css`
+  // position: fixed;
   left: 0;
   width: 100%;
-  // height: 100%;
-  top: 0;
+  // top: 0;
   display: flex;
+  flex-flow: row;
+  align-items: center;
+  justify-content: space-between;
   width: 100%;
-  height: 44px;
-  padding: 0 0.5rem;
+  height: 80px;
+  padding: 0 30px;
+  background: transparent;
 `;
 const customNavIcon = css`
   display: flex;
@@ -44,26 +58,15 @@ const customNavIcon = css`
   outline: none;
   z-index: 10;
 `;
-// main div`
 const divStyle = css`
   display: flex;
   flex-flow: column;
-  height: calc(100% - 2.75rem);
+  height: 100%;
+  // overflow: hidden;
+  background: #faf5f4;
 `;
-const headingWrapper = css`
-  padding: 20px 26px 20px; ;
-`;
-const LeaderboardContainer = styled.div`
-  flex: 1;
-
-  // overflow: auto;
-  padding: 18px;
-  margin: 0 18px;
-
-  background: #ffffff;
-  border: 1px solid #ebe0db;
-  box-sizing: border-box;
-  border-radius: 10px;
+const MyRow = styled.div`
+  margin: 0 18px 12px;
 `;
 const ActionItem = styled.div`
   position: absolute;
@@ -77,9 +80,6 @@ const ActionItem = styled.div`
   background: #ffffff;
   box-sizing: border-box;
   box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
-`;
-const currentuserDataInfoRow = css`
-  margin: 20px 0 10px;
 `;
 
 interface UserScoreNullProps {
@@ -108,29 +108,22 @@ interface UserScoreExistsProps {
 const UserScoreExists: React.FC<UserScoreExistsProps> = (props) => {
   return (
     <>
-      <h1 css={largeTextStyle}>
-        <span css={emphasizedTextStyle}>{props.nickname}</span>님은
-        <br />
-        {props.districtName}에서
-        <span css={emphasizedTextStyle}> {commafy(props.rank)}위</span>
-        에요!
-      </h1>
-      <div css={currentuserDataInfoRow}>
-        {props.rank <= 10 ? (
-          <TopUserRow
-            rank={props.rank}
-            nickname={props.nickname}
-            score={props.score}
-            comment={props.comment}
-          />
-        ) : (
-          <DefaultUserRow
-            rank={props.rank}
-            nickname={props.nickname}
-            score={props.score}
-          />
-        )}
-      </div>
+      {props.rank <= 10 ? (
+        <TopUserRow
+          me={true}
+          rank={props.rank}
+          nickname={props.nickname}
+          score={props.score}
+          comment={props.comment}
+        />
+      ) : (
+        <DefaultUserRow
+          me={true}
+          rank={props.rank}
+          nickname={props.nickname}
+          score={props.score}
+        />
+      )}
     </>
   );
 };
@@ -178,13 +171,16 @@ const ReturningUserHome = () => {
 
   return (
     <>
-      <div css={customNav}>
-        <div css={customNavIcon}>
-          <AppEjectionButton />
-        </div>
-      </div>
       <div css={divStyle}>
-        <div css={headingWrapper}>
+        <Nav>
+          <div css={customNav}>
+            <div css={customNavIcon}>
+              <AppEjectionButton />
+            </div>
+          </div>
+        </Nav>
+
+        <MyRow>
           {userRank !== null ? (
             <UserScoreExists
               nickname={userNickname}
@@ -196,12 +192,18 @@ const ReturningUserHome = () => {
           ) : (
             <UserScoreNull nickname={userNickname} />
           )}
-        </div>
-
+        </MyRow>
+        <LeaderboardTabs />
+      </div>
+      <div
+        style={{
+          position: 'absolute',
+          bottom: '90px',
+          right: '24px',
+          zIndex: 101,
+        }}
+      >
         <DailyUserCount />
-        <LeaderboardContainer>
-          <LeaderboardTabs />
-        </LeaderboardContainer>
       </div>
       <ActionItem>
         <Button

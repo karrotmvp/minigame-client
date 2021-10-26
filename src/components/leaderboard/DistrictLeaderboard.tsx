@@ -10,13 +10,20 @@ const divStyle = css`
   padding-top: 10px;
   padding-bottom: 10px;
   max-height: inherit;
-  height: inherit;
   box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 `;
 const leaderboardWrapperStyle = css`
   display: flex;
   flex-flow: column;
   align-items: center;
+  width: 100%;
+  height: 100%;
+  overflow-y: scroll;
+  padding-right: 17px; /* Increase/decrease this value for cross-browser compatibility */
+  box-sizing: content-box; /* So the width will be 100% + 17px */
 `;
 const refreshDivStyle = css`
   display: flex;
@@ -90,6 +97,7 @@ const DistrictLeaderboard = () => {
               rank={district.rank}
               cityName={district.name1}
               districtName={district.name2}
+              playerCount={district.playerCount}
               // participant={district.participant}
               score={district.score}
             />
@@ -103,6 +111,7 @@ const DistrictLeaderboard = () => {
               rank={district.rank}
               cityName={district.name1}
               districtName={district.name2}
+              playerCount={district.playerCount}
               score={district.score}
             />
           );

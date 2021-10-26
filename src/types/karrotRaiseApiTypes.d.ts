@@ -41,6 +41,7 @@ export interface GetDistrictRankResponse {
     data: {
       name1: string;
       name2: string;
+      playerCount: number;
       score: number;
     }[];
   };

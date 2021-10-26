@@ -102,6 +102,7 @@ interface NonServiceAreaProps {
 }
 
 const NonServiceArea: React.FC<NonServiceAreaProps> = (props) => {
+  console.log(props.location.state.isNonServiceUserBack);
   const [isClicked, setIsClicked] = useState<boolean>(false);
   const analytics = useAnalytics();
   const karrotRaiseApi = useKarrotRaiseApi();
