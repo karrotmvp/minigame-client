@@ -72,41 +72,41 @@ const ActionItem = styled.div`
   box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
 `;
 
-const Container = styled.div`
-  display: flex;
-  flex-flow: column;
+// const Container = styled.div`
+//   display: flex;
+//   flex-flow: column;
 
-  padding: 12px 14px;
-  margin: 4px 0;
-  width: 100%;
-  border-radius: 10px;
-  border: 1px solid #ebe0db;
-  background-color: #fff;
+//   padding: 12px 14px;
+//   margin: 4px 0;
+//   width: 100%;
+//   border-radius: 10px;
+//   border: 1px solid #ebe0db;
+//   background-color: #fff;
 
-  color: #3f3f3f;
-  h1 {
-    font-style: normal;
-    font-weight: normal;
-    font-size: 20px;
-    line-height: 161.7%;
-    /* or 32px */
+//   color: #3f3f3f;
+//   h1 {
+//     font-style: normal;
+//     font-weight: normal;
+//     font-size: 20px;
+//     line-height: 161.7%;
+//     /* or 32px */
 
-    letter-spacing: -0.02em;
-  }
-  h2 {
-    font-style: normal;
-    font-weight: normal;
-    font-size: 16px;
-    line-height: 161.7%;
-    /* identical to box height, or 26px */
+//     letter-spacing: -0.02em;
+//   }
+//   h2 {
+//     font-style: normal;
+//     font-weight: normal;
+//     font-size: 16px;
+//     line-height: 161.7%;
+//     /* identical to box height, or 26px */
 
-    letter-spacing: -0.02em;
-  }
-`;
+//     letter-spacing: -0.02em;
+//   }
+// `;
 
-interface UserScoreNullProps {
-  nickname: string;
-}
+// interface UserScoreNullProps {
+//   nickname: string;
+// }
 // const UserScoreNull: React.FC<UserScoreNullProps> = (props) => {
 //   return (
 //     <Container>
