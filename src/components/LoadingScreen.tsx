@@ -43,7 +43,7 @@ const LoadingScreen = () => {
     <>
       <div css={backgroundStyle}>
         <WaitSvg css={svgStyle} />
-        <h1 css={mainText}>로딩중...</h1>
+        <h1 css={mainText}>로딩 중...</h1>
       </div>
     </>
   );

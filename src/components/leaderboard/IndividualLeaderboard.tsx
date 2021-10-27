@@ -1,31 +1,27 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
+import styled from '@emotion/styled';
 import { useCallback, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from 'reducers/rootReducer';
-import DefaultUserRow from './DefaultUserRow';
-import TopUserRow from './TopUserRow';
-import { ReactComponent as RefreshIcon } from 'assets/refresh.svg';
-import { updateUserData } from 'reducers/userDataReducer';
 import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
+import { DefaultUserRow } from './DefaultRow';
+import useUserData from 'hooks/useUserData';
+import { TopUserRow } from './TopRow';
+import RefreshButton from '../buttons/RefreshButton';
 
 const divStyle = css`
-  padding-top: 10px;
-  padding-bottom: 10px;
-  max-height: inherit;
-  height: inherit'
+  // max-height: inherit;
   box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 `;
-const leaderboardWrapperStyle = css`
-  display: flex;
-  flex-flow: column;
-  align-items: center;
-`;
-const refreshDivStyle = css`
+
+const Refresh = styled.div`
   display: flex;
   flex-flow: row;
   justify-content: space-between;
-  margin-bottom: 12px;
+
+  margin: 19px 2px 12px 0;
   p {
     font-style: normal;
     font-weight: 600;
@@ -36,15 +32,21 @@ const refreshDivStyle = css`
     color: #5b5b5b;
   }
 `;
-const refreshIconStyle = css`
-  border: none;
-  background: none;
-  color: inherit;
-  border: none;
-  padding: 0;
-  font: inherit;
-  cursor: pointer;
-  outline: inherit;
+const LeaderboardWrapper = styled.div`
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  overflow-y: scroll;
+  padding-bottom: 60px;
+
+  // Hide scrollbar but keep functionality
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 `;
 
 const infoText = css`
@@ -62,46 +64,39 @@ const infoText = css`
 `;
 
 const IndividualLeaderboard = () => {
-  const [townRankData, setTownRankData] = useState<any[]>([]);
-  const { townId, townName } = useSelector((state: RootState) => ({
-    townId: state.userDataReducer.townId,
-    townName: state.userDataReducer.townName,
-  }));
-  const dispatch = useDispatch();
+  const [individualRankData, setIndividualRankData] = useState<any[]>([]);
   const karrotRaiseApi = useKarrotRaiseApi();
-
+  const { accessToken, userId, onUpdateUserData } = useUserData();
   const getUserData = useCallback(
-    async function (karrotRaiseApi: KarrotRaiseApi) {
+    async function (karrotRaiseApi: KarrotRaiseApi, accessToken: string) {
       try {
-        const response = await karrotRaiseApi.getUserInfo();
-        if (response.isFetched === true && response.data) {
-          console.log('individualLeaderboard, getUserData', response.data);
-          const { nickname, score, rank, comment } = response.data.data;
-          dispatch(updateUserData(nickname, score, rank, comment));
+        const { data, status } = await karrotRaiseApi.getUserInfo(accessToken);
+        if (status === 200) {
+          const { nickname, score, rank, comment } = data;
+          onUpdateUserData(userId, nickname, score, rank, comment);
         }
       } catch (error) {
         console.error(error);
       }
     },
-    [dispatch]
+    [onUpdateUserData, userId]
   );
 
-  const getTownLeaderboard = useCallback(async function (
-    karrotRaiseApi: KarrotRaiseApi,
-    townId: string
+  const getUserLeaderboardData = useCallback(async function (
+    karrotRaiseApi: KarrotRaiseApi
   ) {
     try {
-      const response = await karrotRaiseApi.getTownUserRank(townId);
-      console.log('individualLeaderboard, getTownLeaderbarod', response.data);
-      if (response.isFetched && response.data) {
-        const responseData = response.data.data;
-        const indexedTownRankData = responseData.map(
+      const { data, status } = await karrotRaiseApi.getUserRank();
+      if (status === 200) {
+        // console.log(response.data);
+        const indexedindividualRankData = data.map(
           (item: any, index: number) => ({
             rank: index + 1,
             ...item,
           })
         );
-        setTownRankData(indexedTownRankData);
+        setIndividualRankData(indexedindividualRankData);
+        console.log(indexedindividualRankData);
       }
     } catch (error) {
       console.error(error);
@@ -110,33 +105,30 @@ const IndividualLeaderboard = () => {
   []);
 
   const refreshLeaderboard = useCallback(
-    async (karrotRaiseApi: KarrotRaiseApi, townId: string) => {
-      await getUserData(karrotRaiseApi);
-      await getTownLeaderboard(karrotRaiseApi, townId);
+    async (karrotRaiseApi: KarrotRaiseApi, accessToken: string) => {
+      await getUserData(karrotRaiseApi, accessToken);
+      await getUserLeaderboardData(karrotRaiseApi);
     },
-    [getTownLeaderboard, getUserData]
+    [getUserLeaderboardData, getUserData]
   );
 
   useEffect(() => {
-    refreshLeaderboard(karrotRaiseApi, townId);
-  }, [karrotRaiseApi, refreshLeaderboard, townId]);
+    refreshLeaderboard(karrotRaiseApi, accessToken);
+  }, [accessToken, karrotRaiseApi, refreshLeaderboard]);
 
   return (
     <div css={divStyle}>
-      <div css={refreshDivStyle}>
+      <Refresh>
         <p>이번 주 랭킹</p>
-        <button
-          onClick={() => {
-            refreshLeaderboard(karrotRaiseApi, townId);
-          }}
-          css={refreshIconStyle}
-        >
-          <RefreshIcon />
-        </button>
-      </div>
+        <RefreshButton
+          refreshLeaderboard={() =>
+            refreshLeaderboard(karrotRaiseApi, accessToken)
+          }
+        />
+      </Refresh>
 
-      <div css={leaderboardWrapperStyle}>
-        {townRankData.slice(0, 10).map((user) => {
+      <LeaderboardWrapper>
+        {individualRankData.slice(0, 10).map((user) => {
           return (
             <TopUserRow
               key={user.userId}
@@ -144,25 +136,27 @@ const IndividualLeaderboard = () => {
               nickname={user.nickname}
               comment={user.comment}
               score={user.score}
+              districtName={user.town.name2}
             />
           );
         })}
         <p css={infoText}>
-          🎉 {townName} TOP 10 🎉 이 되어서
+          🎉 TOP 10 🎉 이 되어서
           <br />
           이웃들에게 한 마디를 남겨보세요!
         </p>
-        {townRankData.slice(10).map((user) => {
+        {individualRankData.slice(10).map((user) => {
           return (
             <DefaultUserRow
               key={user.userId}
               rank={user.rank}
               nickname={user.nickname}
               score={user.score}
+              districtName={user.town.name2}
             />
           );
         })}
-      </div>
+      </LeaderboardWrapper>
     </div>
   );
 };

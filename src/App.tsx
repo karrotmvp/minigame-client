@@ -11,7 +11,6 @@ import {
   Switch,
   Redirect,
 } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
 import {
   Analytics,
   AnalyticsContext,
@@ -23,11 +22,6 @@ import {
 } from 'services/analytics/firebase';
 import ReturningUserHome from 'pages/ReturningUserHome';
 import NonServiceArea from 'pages/NonServiceArea';
-import {
-  saveRegionId,
-  saveTownId,
-  saveTownName,
-} from 'reducers/userDataReducer';
 import {
   emptyKarrotRaiseApi,
   KarrotRaiseApi,
@@ -45,21 +39,37 @@ import {
   createKarrotMarketMini,
   loadFromEnv as loadKarrotMarketMiniConfig,
 } from 'services/karrotMarket/mini';
+import useUserData from 'hooks/useUserData';
 
 const appStyle = css`
   height: 100vh;
 `;
 
+interface NonServiceUserState {
+  isBack: boolean;
+  districtName: string;
+}
 function App() {
   const [pageRedirection, setPageRedirection] = useState<string>('loading');
-  const [userTownData, setUserTownData] = useState<string[]>([]);
-  const [isNonServiceUserBack, setIsNonServiceUserBack] = useState(false);
-  const dispatch = useDispatch();
+  const [nonServiceUser, setNonServiceUser] = useState<NonServiceUserState>({
+    isBack: false,
+    districtName: '',
+  });
+
   const [karrotMarketMini, setKarrotMarketMini] = useState(
     emptyKarrotMarketMini
   );
   const [karrotRaiseApi, setKarrotRaiseApi] = useState(emptyKarrotRaiseApi);
   const [analytics, setAnalytics] = useState(emptyAnalytics);
+  const {
+    // userRegionId,
+    // userDistrictId,
+    // userDistrictName,
+    onUpdateAccessToken,
+    onUpdateRegionData,
+    onUpdateUserData,
+  } = useUserData();
+
   // Firebase Analytics가 설정되어 있으면 인스턴스를 초기화하고 교체합니다.
   useEffect(() => {
     try {
@@ -94,18 +104,24 @@ function App() {
   }, []);
 
   const trackUser = useCallback(
-    async (karrotRaiseApi: KarrotRaiseApi, analytics: Analytics) => {
+    async (
+      karrotRaiseApi: KarrotRaiseApi,
+      accessToken: string,
+      analytics: Analytics
+    ) => {
       try {
-        const response = await karrotRaiseApi.getUserInfo();
-        if (response.isFetched === true && response.data) {
-          const { id } = response.data.data;
-          console.log('tracking user... id:', id);
+        const { data, status } = await karrotRaiseApi.getUserInfo(accessToken);
+        if (status === 200) {
+          const { id, nickname, score, rank, comment } = data;
+          onUpdateUserData(id, nickname, score, rank, comment);
           analytics.setUserId(id);
+          console.log('tracking returning-user... id:', id);
         }
       } catch (error) {
         console.error(error);
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
   const filterNonServiceTown = useCallback(
@@ -115,27 +131,40 @@ function App() {
       regionId: string
     ) {
       try {
-        const response = await karrotRaiseApi.getTownId(regionId);
+        const { data, status } = await karrotRaiseApi.getTownId(regionId);
         // example -> city=서울특별시(name1) district=서초구(name2)
-        if (response.isFetched && response.data) {
-          const { id: districtId, name2: districtName } = response.data.data;
-          dispatch(saveTownId(districtId));
-          dispatch(saveTownName(districtName));
-          setUserTownData([districtId, districtName]);
-          // Filter out if user is not in 서초구
-          // 서초구id = df5370052b3c
-          if (districtId !== 'df5370052b3c') {
-            if (code !== null || undefined) {
-              setIsNonServiceUserBack(true);
+        if (status === 200) {
+          const { id: districtId, name2: districtName } = data;
+          console.log(districtId, districtName);
+          onUpdateRegionData(regionId, districtId, districtName);
+          // Filter out if user is not in our service area
+          // 서초, 송파, 광진, 강남, 강동 in order
+          const openedDistricts = [
+            'df5370052b3c',
+            'edc00a5031fe',
+            '264e8b88eaa1',
+            '9bdfe83b68f3',
+            '072985998dd4',
+          ];
+          const isMyDistrictOpen = openedDistricts.indexOf(districtId);
+          console.log(isMyDistrictOpen, districtName);
+          if (isMyDistrictOpen === -1) {
+            if (typeof code === 'string') {
+              setNonServiceUser({ isBack: true, districtName: districtName });
+            } else {
+              setNonServiceUser({ isBack: false, districtName: districtName });
             }
             setPageRedirection('non-service-area');
+          } else {
+            getAccessToken(karrotRaiseApi, code, regionId, analytics);
           }
         }
       } catch (error) {
         console.error(error);
       }
     },
-    [dispatch]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [onUpdateRegionData]
   );
   const getAccessToken = useCallback(
     async function (
@@ -147,12 +176,16 @@ function App() {
       // code !== null means user is a returning user
       try {
         if (code !== null) {
-          const response = await karrotRaiseApi.postOauth2(code, regionId);
-          console.log(response);
-          if (response.isFetched && response.data) {
-            const { accessToken } = response.data.data;
-            window.localStorage.setItem('ACCESS_TOKEN', accessToken);
-            await trackUser(karrotRaiseApi, analytics);
+          const { data, status } = await karrotRaiseApi.postOauth2(
+            code,
+            regionId
+          );
+          if (status === 200) {
+            const { accessToken } = data;
+            console.log(accessToken, 'accessst   ooken');
+            // window.localStorage.setItem('ACCESS_TOKEN', accessToken);
+            onUpdateAccessToken(accessToken);
+            trackUser(karrotRaiseApi, accessToken, analytics);
             setPageRedirection('home');
           }
         } else {
@@ -162,19 +195,15 @@ function App() {
         console.error(error);
       }
     },
-    [trackUser]
+    [onUpdateAccessToken, trackUser]
   );
 
-  async function getQueryParams(targetUrl: string) {
-    const searchParams = new URLSearchParams(targetUrl);
-    const userCode: string | null = searchParams.get('code');
-    const userRegionId: any = searchParams.get('region_id');
-    return { userCode: userCode, userRegionId: userRegionId };
-  }
   useEffect(() => {
-    analytics.logEvent('launch_app');
-    getQueryParams(window.location.search).then((response) => {
-      let { userCode: code, userRegionId: regionId } = response;
+    try {
+      analytics.logEvent('launch_app');
+      const searchParams = new URLSearchParams(window.location.search);
+      const code: string | null = searchParams.get('code');
+      const regionId: any = searchParams.get('region_id');
       // What to do if region_id is null? (meaning the mini-app is not opened from karrot market app)
       // if (code === null) {
       //   code = 'testcode';
@@ -182,17 +211,12 @@ function App() {
       // if (regionId === null) {
       //   regionId = 'df5370052b3c';
       // }
-      dispatch(saveRegionId(regionId));
+
       filterNonServiceTown(karrotRaiseApi, code, regionId);
-      getAccessToken(karrotRaiseApi, code, regionId, analytics);
-    });
-  }, [
-    analytics,
-    dispatch,
-    filterNonServiceTown,
-    getAccessToken,
-    karrotRaiseApi,
-  ]);
+    } catch (error) {
+      console.error(error);
+    }
+  }, [analytics, filterNonServiceTown, karrotRaiseApi]);
 
   return (
     <div css={appStyle}>
@@ -211,8 +235,8 @@ function App() {
                         to={{
                           pathname: '/non-service-area',
                           state: {
-                            townName: userTownData[1],
-                            isNonServiceUserBack: isNonServiceUserBack,
+                            districtName: nonServiceUser.districtName,
+                            isNonServiceUserBack: nonServiceUser.isBack,
                           },
                         }}
                       />

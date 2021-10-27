@@ -1,16 +1,20 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
+import styled from '@emotion/styled';
 import IconBack from '../assets/IconBack';
 import { AppEjectionButton } from './buttons/AppEjectionButton';
-const customNav = css`
+const Nav = styled.div`
   left: 0;
   width: 100%;
-  // height: 100%;
   top: 0;
   display: flex;
+  flex-flow: row;
+  align-items: center;
+  justify-content: space-between;
   width: 100%;
-  height: 2.75rem;
-  padding: 0 0.5rem;
+  height: 80px;
+  padding: 0 30px;
+  background: transparent;
 `;
 
 const customNavIcon = css`
@@ -33,18 +37,17 @@ interface TopNavprops {
 }
 const TopNav = ({ action, handleNavBackAction }: TopNavprops) => {
   return (
-    <div css={customNav}>
+    <Nav>
       <div css={customNavIcon}>
         {action === `eject` ? (
           <AppEjectionButton />
         ) : action === `back` ? (
-          // eslint-disable-next-line jsx-a11y/anchor-is-valid
-          <a onClick={handleNavBackAction}>
+          <div onClick={handleNavBackAction}>
             <IconBack />
-          </a>
+          </div>
         ) : null}
       </div>
-    </div>
+    </Nav>
   );
 };
 

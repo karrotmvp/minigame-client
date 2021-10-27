@@ -1,29 +1,41 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import IndividualLeaderboard from '../components/leaderboard/IndividualLeaderboard';
+import styled from '@emotion/styled';
+
 import { AppEjectionButton } from 'components/buttons/AppEjectionButton';
 import { largeTextStyle, emphasizedTextStyle } from 'styles/textStyle';
 import Button from 'components/buttons/Button';
-import DefaultUserRow from 'components/leaderboard/DefaultUserRow';
-import { useDispatch, useSelector } from 'react-redux';
-import { reset } from 'reducers/counterReducer';
-import TopUserRow from 'components/leaderboard/TopUserRow';
-import { useCallback, useEffect, useState } from 'react';
+import { DefaultUserRow } from 'components/leaderboard/DefaultRow';
+import { TopUserRow } from 'components/leaderboard/TopRow';
+import { useCallback, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useAnalytics } from 'services/analytics';
-import { RootState } from 'reducers/rootReducer';
-import { useKarrotRaiseApi } from 'services/karrotRaiseApi';
+import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
 import { useKarrotMarketMini } from 'services/karrotMarketMini';
+import LeaderboardTabs from 'components/leaderboard/LeaderboardTabs';
+import useUserData from 'hooks/useUserData';
+import useClickCounter from 'hooks/useClickCounter';
 
 // nav
+const PageContainer = styled.div`
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+  background: #faf5f4;
+`;
 const customNav = css`
+  // position: fixed;
   left: 0;
   width: 100%;
-  top: 0;
+  // top: 0;
   display: flex;
+  flex-flow: row;
+  align-items: center;
+  justify-content: space-between;
   width: 100%;
-  height: 44px;
-  padding: 0 0.5rem;
+  height: 80px;
+  padding: 0 15px;
+  background: transparent;
 `;
 const customNavIcon = css`
   display: flex;
@@ -38,63 +50,49 @@ const customNavIcon = css`
   outline: none;
   z-index: 10;
 `;
-// main div
-const divStyle = css`
-  display: flex;
-  flex-flow: column;
-  height: calc(100% - 2.75rem);
-`;
-// heading
-const headingWrapper = css`
-  padding: 20px 26px 20px;
-`;
-// refresh
 
-// leaderboard
-const leaderboardWrapper = css`
-  flex: 1;
-  overflow: auto;
-  padding: 0 26px;
+const Heading = styled.div`
+  margin: 0 26px 20px;
 `;
-// action
-const actionItemWrapper = css`
+const MyRow = styled.div`
+  margin: 0 18px 12px;
+`;
+
+const ActionItem = styled.div`
   display: flex;
-  gap: 15px;
-  justify-content: space-between;
+  justify-content: center;
+  width: 100%;
   padding: 16px 24px 34px;
   border-top: 1px solid #ebebeb;
+  background: #ffffff;
   box-sizing: border-box;
   box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+  gap: 15px;
+  justify-content: space-between;
 `;
-const currentUserInfoRow = css`
-  margin: 20px 0 10px;
-`;
-
-const initialState = {
-  nickname: '서초구 이웃',
-  score: 0,
-  rank: 99999,
-  comment: '',
-};
 
 const Leaderboard = () => {
-  const [userData, setUserData] = useState(initialState);
-  const { townName } = useSelector((state: RootState) => ({
-    townName: state.userDataReducer.townName,
-  }));
   const history = useHistory();
-  const dispatch = useDispatch();
   const analytics = useAnalytics();
   const karrotRaiseApi = useKarrotRaiseApi();
   const karrotMarketMini = useKarrotMarketMini();
-
+  const {
+    accessToken,
+    userId,
+    userDistrictName,
+    userNickname,
+    userScore,
+    userRank,
+    userComment,
+    onUpdateUserData,
+  } = useUserData();
+  const { onResetCount } = useClickCounter();
   const handlePlayAgain = async () => {
     analytics.logEvent('click_game_play_again_button');
-    dispatch(reset());
+    onResetCount();
     history.replace('/game');
   };
 
-  // Share must be triggered by "user activation"
   const handleShare = async () => {
     analytics.logEvent('click_share_button');
     const url = 'https://daangn.onelink.me/HhUa/3a219555';
@@ -103,89 +101,89 @@ const Leaderboard = () => {
     karrotMarketMini.share(url, text);
   };
 
-  const getUserData = useCallback(async function (karrotRaiseApi) {
-    try {
-      const response = await karrotRaiseApi.getUserInfo();
-      if (response.isFetched && response.data) {
-        const { nickname, score, rank, comment } = response.data.data;
-        setUserData({
-          nickname: nickname,
-          score: score,
-          rank: rank,
-          comment: comment,
-        });
+  const getUserData = useCallback(
+    async (karrotRaiseApi: KarrotRaiseApi, accessToken: string) => {
+      try {
+        const { data } = await karrotRaiseApi.getUserInfo(accessToken);
+        if (data) {
+          const { nickname, score, rank, comment } = data;
+          onUpdateUserData(userId, nickname, score, rank, comment);
+        }
+      } catch (error) {
+        console.error(error);
       }
-    } catch (error) {
-      console.error(error);
-    }
-  }, []);
+    },
+    [onUpdateUserData, userId]
+  );
 
   useEffect(() => {
-    getUserData(karrotRaiseApi);
-  }, [getUserData, karrotRaiseApi]);
+    analytics.logEvent('view_leaderboard_page');
+    getUserData(karrotRaiseApi, accessToken);
+  }, [accessToken, analytics, getUserData, karrotRaiseApi]);
 
   useEffect(() => {
     return () => {
       if (history.action === 'POP') {
-        history.replace('/game' /* the new state */);
-        dispatch(reset());
+        onResetCount();
+        history.replace('/game' /* the "new" state */);
       }
     };
-  }, [dispatch, history]);
+  }, [history, onResetCount]);
   return (
-    <>
+    <PageContainer>
       <div css={customNav}>
         <div css={customNavIcon}>
           <AppEjectionButton />
         </div>
       </div>
+      <Heading>
+        <h1 css={largeTextStyle}>
+          <span css={emphasizedTextStyle}>{userNickname}</span>님은
+          <br />
+          {userDistrictName}에서
+          <span css={emphasizedTextStyle}> {userRank}위</span>
+          에요!
+        </h1>
+      </Heading>
 
-      <div css={divStyle}>
-        <div css={headingWrapper}>
-          <h1 css={largeTextStyle}>
-            <span css={emphasizedTextStyle}>{userData.nickname}</span>님은
-            <br />
-            {townName}에서
-            <span css={emphasizedTextStyle}> {userData.rank}위</span>
-            에요!
-          </h1>
-          <div css={currentUserInfoRow}>
-            {userData.rank <= 10 ? (
-              <TopUserRow
-                rank={userData.rank}
-                nickname={userData.nickname}
-                score={userData.score}
-                comment={userData.comment}
-              />
-            ) : (
-              <DefaultUserRow
-                rank={userData.rank}
-                nickname={userData.nickname}
-                score={userData.score}
-              />
-            )}
-          </div>
-        </div>
+      <MyRow>
+        {userRank <= 10 ? (
+          <TopUserRow
+            me={true}
+            rank={userRank}
+            nickname={userNickname}
+            score={userScore}
+            comment={userComment}
+            districtName={userDistrictName}
+          />
+        ) : (
+          <DefaultUserRow
+            me={true}
+            rank={userRank}
+            nickname={userNickname}
+            score={userScore}
+            districtName={userDistrictName}
+          />
+        )}
+      </MyRow>
 
-        <div css={leaderboardWrapper}>
-          <IndividualLeaderboard />
-        </div>
-        <div css={actionItemWrapper}>
-          <Button
-            size={`medium`}
-            color={`secondary`}
-            text={`자랑하기`}
-            onClick={handleShare}
-          />
-          <Button
-            size={`medium`}
-            color={`primary`}
-            text={`다시하기`}
-            onClick={handlePlayAgain}
-          />
-        </div>
-      </div>
-    </>
+      <LeaderboardTabs />
+
+      <ActionItem>
+        <Button
+          size={`medium`}
+          color={`secondary`}
+          text={`자랑하기`}
+          onClick={handleShare}
+        />
+        <Button
+          size={`medium`}
+          color={`primary`}
+          text={`다시하기`}
+          onClick={handlePlayAgain}
+        />
+      </ActionItem>
+    </PageContainer>
   );
 };
 

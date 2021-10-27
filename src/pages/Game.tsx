@@ -1,81 +1,86 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import DefaultGameEndModal from 'components/modals/DefaultGameEndModal';
+import styled from '@emotion/styled';
+import GamePause from 'components/game/GamePause';
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { incrementClickCount, reset } from 'reducers/counterReducer';
-import { RootState } from '../reducers/rootReducer';
-import background from 'assets/Seocho_background.png';
-import { ReactComponent as BigKarrot } from 'assets/Seocho_daangn.svg';
+import gameBackgroundUrl from 'assets/game_background.png';
+// import { ReactComponent as BigKarrot } from 'assets/Seocho_daangn.svg';
 import Modal from 'react-modal';
-import GameDirectionPopupModal from 'components/modals/GameDirectionPopupModal';
+import GameDirectionPopupModal from 'components/game/GameDirectionPopupModal';
 import { commafy } from 'functions/numberFunctions';
 import ClickAnimation from 'components/game/ClickAnimation';
-import { useHistory } from 'react-router';
-import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
+// import { useHistory } from 'react-router';
 import { useAnalytics } from 'services/analytics';
+import useClickCounter from 'hooks/useClickCounter';
+import useUserData from 'hooks/useUserData';
+import BigKarrot from 'components/game/BigKarrot';
+import { ReactComponent as PauseButton } from 'assets/Pause.svg';
+import { useIdleTimer } from 'react-idle-timer';
+import GameOver from 'components/game/GameOver';
 
-// nav
+const PageContainer = styled.div`
+  background-image: url(${gameBackgroundUrl});
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  height: 100%;
+  display: flex;
+  flex-flow: column;
+`;
 const customNav = css`
   left: 0;
   width: 100%;
   top: 0;
   display: flex;
   flex-flow: row;
-  justify-content: flex-end;
-  width: 100%;
-  height: 44px;
-  padding: 0 0.5rem;
-  background: rgb(249, 244, 245);
-`;
-const customNavIcon = css`
-  display: flex;
   align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  opacity: 1;
-  transition: opacity 300ms;
+  justify-content: space-between;
+  width: 100%;
+  height: 80px;
+  padding: 0 30px;
+  background: transparent;
+`;
+const TotalKarrotCount = styled.div`
+  display: flex;
+  justify-content: space-between;
+  gap: 30px;
+  align-items: center;
+  min-width: 150px;
   width: auto;
   height: 2.75rem;
+  padding: 6px 12px;
   text-decoration: none;
-  outline: none;
-  z-index: 10;
-`;
-const gameEndButtonStyle = css`
-  padding: 6px 13px;
 
   background: #ffffff;
+  // border: 1px solid #f39es6e;
+  box-sizing: border-box;
   border-radius: 10px;
-  border: none;
-  font-style: normal;
+
   font-weight: bold;
   font-size: 14px;
   line-height: 161.7%;
   /* identical to box height, or 23px */
-
-  color: #cc6023;
 `;
-// main div
-const divStyle = css`
-  background-image: url(${background});
-  background-size: cover;
-  height: calc(100% - 2.75rem);
-  display: flex;
-  flex-flow: column;
-`;
-const scoreWrapper = css`
+const ScoreWrapper = styled.div`
+  // margin-top: 30px;
   display: flex;
   flex-flow: column;
   align-items: center;
   justify-content: center;
 `;
-const clickCountStyle = css`
-  margin-top: 10%;
+const ClickCount = styled.h1`
   font-style: normal;
   font-weight: bold;
   font-size: 50px;
-
-  color: #85370c;
+  // line-height: 161.7%;
+  /* identical to box height, or 81px */
+  color: #eb5d0e;
+`;
+const BigKarrotContainer = styled.div`
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 // game end modal
 const modalStyle = css`
@@ -116,49 +121,22 @@ const popupModalStyle = css`
   padding: 55px 20px 25px;
   border-radius: 21px;
 `;
-// big karrot animation
-// const fullScreenClickable = css`
-//   // height: 100%;
-//   position: absolute;
-//   height: calc(100% - 2.75rem);
-//   width: 100vw;
-//   overflow: hidden;
-//   touch-action: none;
-// `;
-const shakeRight = css`
-  transform: rotate(10deg);
-`;
-const shakeLeft = css`
-  transform: rotate(-10deg);
-`;
 
 Modal.setAppElement(document.createElement('div'));
 
-interface GameEndButtonProps {
-  handleGameEnd: () => void;
-}
-const GameEndButton = ({ handleGameEnd }: GameEndButtonProps) => {
-  return (
-    <button css={gameEndButtonStyle} onClick={handleGameEnd}>
-      그만하기
-    </button>
-  );
-};
-
 type Particle = {
-  id: string,
-  posX: number,
-  posY: number,
+  id: string;
+  posX: number;
+  posY: number;
 };
 
 type GameState = {
-  particles: Particle[],
+  particles: Particle[];
 };
 
-type GameAction = (
-  | { type: 'spawn', posX: number, posY: number }
-  | { type: 'remove', id: string }
-);
+type GameAction =
+  | { type: 'spawn'; posX: number; posY: number }
+  | { type: 'remove'; id: string };
 
 const reducer: React.Reducer<GameState, GameAction> = (state, action) => {
   switch (action.type) {
@@ -174,7 +152,9 @@ const reducer: React.Reducer<GameState, GameAction> = (state, action) => {
     case 'remove':
       return {
         ...state,
-        particles: state.particles.filter(particle => particle.id !== action.id),
+        particles: state.particles.filter(
+          (particle) => particle.id !== action.id
+        ),
       };
     default:
       return state;
@@ -182,127 +162,162 @@ const reducer: React.Reducer<GameState, GameAction> = (state, action) => {
 };
 
 const Game = () => {
-  const [alreadyPatchedKarrot, setAlreadyPatchedKarrot] = useState(0);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [shouldPopup, setShouldPopup] = useState<boolean>(false);
-  const [shakeToggle, setShakeToggle] = useState(false);
+  const [isPaused, setIsPaused] = useState<boolean>(false);
+  const [isGameOver, setIsGameOver] = useState<boolean>(false);
+  const [isUserNew, setIsUserNew] = useState<boolean>(false);
   const [state, gameDispatch] = React.useReducer(reducer, { particles: [] });
-  const { userScore, clickCount } = useSelector((state: RootState) => ({
-    userScore: state.userDataReducer.score,
-    clickCount: state.counterReducer.clickCount,
-  }));
-  const history = useHistory();
-  const dispatch = useDispatch();
+  const [animationPlayState, setAnimationPlayState] =
+    useState<string>('paused');
+  // const history = useHistory();
   const analytics = useAnalytics();
-  const karrotRaiseApi = useKarrotRaiseApi();
-
-  type ParticleDestroyHandler = React.ComponentProps<typeof ClickAnimation>['onDestroy'];
-  const handleParticleDestroy = React.useCallback<ParticleDestroyHandler>(id => {
-    gameDispatch({ type: 'remove', id });
-  }, []);
-
+  const { userScore } = useUserData();
+  const { clickCount, onIncrementClickCount } = useClickCounter();
+  const { start, resume, pause, getRemainingTime } = useIdleTimer({
+    timeout: 100,
+    onIdle: handleOnIdle,
+    startManually: true,
+    debounce: 100,
+    // element: BigKarrotRef.current,
+  });
+  type ParticleDestroyHandler = React.ComponentProps<
+    typeof ClickAnimation
+  >['onDestroy'];
+  const handleParticleDestroy = React.useCallback<ParticleDestroyHandler>(
+    (id) => {
+      gameDispatch({ type: 'remove', id });
+    },
+    []
+  );
   const activateAnimation = (e: React.TouchEvent) => {
     const clientX = e.touches[0].clientX;
     const clientY = e.touches[0].clientY;
-    const posX =  clientX - 25, posY = clientY - 50;
+    const posX = clientX - 25,
+      posY = clientY - 50;
     gameDispatch({ type: 'spawn', posX, posY });
   };
-
-  const handleScreenTouch = (e: React.TouchEvent) => {
+  function handleKarrotTouch(e: React.TouchEvent) {
     e.stopPropagation();
     activateAnimation(e);
-    dispatch(incrementClickCount());
+    onIncrementClickCount();
+    setAnimationPlayState('paused');
+    pause();
+  }
+  function handlePause() {
+    analytics.logEvent('click_game_pause_button');
+    pause();
+    setAnimationPlayState('paused');
+    setIsPaused(true);
+  }
+  function handleGameOver() {
+    handlePause();
+    setIsGameOver(true);
   }
 
-  const activateBigKarrotAnimation = (e: React.TouchEvent) => {
-    handleScreenTouch(e);
-    setShakeToggle((prevState) => !prevState);
-  };
-
-  const handleGameEnd = async function (karrotRaiseApi: KarrotRaiseApi) {
-    try {
-      let karrotToPatch = clickCount - alreadyPatchedKarrot;
-      await karrotRaiseApi.patchUserScore(karrotToPatch);
-      analytics.logEvent('click_game_end_button', { score: karrotToPatch });
-      setIsModalOpen(true);
-      setAlreadyPatchedKarrot(clickCount);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  function closeModal() {
-    setIsModalOpen(false);
+  function handleOnIdle() {
+    resume();
+    setAnimationPlayState('running');
   }
+
   // Popup modal if user is new
   useEffect(() => {
+    analytics.logEvent('view_game_page');
     if (userScore === 0) {
-      setShouldPopup(true);
+      setIsUserNew(true);
     } else {
-      setShouldPopup(false);
+      setIsUserNew(false);
+      start();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userScore]);
 
   useEffect(() => {
-    return () => {
-      if (history.action === 'POP') {
-        // history.replace('/game' /* the new state */);
-        dispatch(reset());
+    const intervalId = setInterval(() => {
+      if (isPaused) {
+        pause();
+      } else {
+        resume();
+        console.log('tick', getRemainingTime());
       }
-    };
-  }, [dispatch, history]);
+    }, 100);
+    return () => clearInterval(intervalId);
+  }, [getRemainingTime, isPaused, isUserNew, pause, resume]);
+
+  // useEffect(() => {
+  //   // history.block((location, action) => {
+  //   //   console.log('#### history block', isBlock, action);
+  //   //   if (isBlock && action === 'POP') {
+  //   //     console.log('#### blocked ####');
+  //   //     return false;
+  //   //   }
+  //   // });
+
+  //   // const unblock = history.block('정말 떠나실건가요?');
+  //   // return () => {
+  //   //   unblock();
+  //   // };
+  // useEffect(() => {
+  //   if (history.action === 'POP') {
+  //     onResetCount();
+  //   }
+  // }, []);
+
   return (
     <>
-      <div css={customNav}>
-        <div css={customNavIcon}>
-          <GameEndButton
-            handleGameEnd={() => {
-              handleGameEnd(karrotRaiseApi);
-            }}
-          />
+      <PageContainer>
+        <div css={customNav}>
+          <TotalKarrotCount>
+            <p
+              style={{
+                color: '#F39E6E',
+              }}
+            >
+              총 당근
+            </p>
+            <p
+              style={{
+                color: '#EB5D0E',
+              }}
+            >
+              {commafy(userScore + clickCount)}
+            </p>
+          </TotalKarrotCount>
+          <PauseButton onClick={handlePause} />
         </div>
-      </div>
-      {/* <div
-        className="wrapper"
-        // css={fullScreenClickable}
-        // onClick={handleScreenClick}
-        // onTouchStart={handleScreenTouch}
-      >
-        {animationArr.map((item, index) => (
-          <ClickAnimation posX={item.posX} posY={item.posY} key={index} />
-        ))}
-      </div> */}
-      <div css={divStyle}>
-        <div css={scoreWrapper}>
-          <h1 css={clickCountStyle}>{commafy(clickCount)}</h1>
-        </div>
-        <div
-          style={{
-            flex: 1,
-            display: 'flex',
-            alignItems: 'flex-end',
-            justifyContent: 'center',
-            paddingBottom: '20%',
-          }}
-        >
-          <BigKarrot
-            onTouchStart={activateBigKarrotAnimation}
-            css={shakeToggle ? shakeLeft : shakeRight}
+        <ScoreWrapper>
+          <h2
             style={{
-              height: '30rem',
-              width: 'auto',
+              fontStyle: 'normal',
+              fontWeight: 'bold',
+              fontSize: '18px',
+              color: 'rgba(235, 93, 14, 0.3)',
             }}
+          >
+            Score
+          </h2>
+          <ClickCount>{commafy(clickCount)}</ClickCount>
+        </ScoreWrapper>
+        <BigKarrotContainer>
+          <BigKarrot
+            handleKarrotTouch={handleKarrotTouch}
+            handleGameOver={handleGameOver}
+            animationPlayState={animationPlayState}
           />
-          {state.particles.map(item => (
-            <ClickAnimation key={item.id} {...item} onDestroy={handleParticleDestroy} />
-          ))}
-        </div>
-      </div>
+        </BigKarrotContainer>
+
+        {state.particles.map((item) => (
+          <ClickAnimation
+            key={item.id}
+            {...item}
+            onDestroy={handleParticleDestroy}
+          />
+        ))}
+      </PageContainer>
+      {/* GAME PAUSE */}
       <Modal
-        isOpen={isModalOpen}
-        onRequestClose={closeModal}
+        isOpen={isPaused}
+        onRequestClose={() => setIsPaused(false)}
         shouldCloseOnOverlayClick={false}
-        contentLabel="Default Game End Modal"
+        contentLabel="Game Pause"
         css={modalStyle}
         style={{
           overlay: {
@@ -311,11 +326,28 @@ const Game = () => {
           },
         }}
       >
-        <DefaultGameEndModal closeModal={closeModal} />
+        <GamePause closeModal={() => setIsPaused(false)} />
       </Modal>
+      {/* GAME OVER */}
       <Modal
-        isOpen={shouldPopup}
-        onRequestClose={() => setShouldPopup(false)}
+        isOpen={isGameOver}
+        onRequestClose={() => setIsGameOver(false)}
+        shouldCloseOnOverlayClick={false}
+        contentLabel="Game Over"
+        css={modalStyle}
+        style={{
+          overlay: {
+            background: 'rgba(40, 40, 40, 0.8)',
+            zIndex: 100,
+          },
+        }}
+      >
+        <GameOver closeModal={() => setIsGameOver(false)} />
+      </Modal>
+      {/* GAME DIRECTION */}
+      <Modal
+        isOpen={isUserNew}
+        onRequestClose={() => setIsUserNew(false)}
         shouldCloseOnOverlayClick={true}
         contentLabel="Game Direction Popup Modal"
         css={popupModalStyle}
@@ -325,7 +357,7 @@ const Game = () => {
           },
         }}
       >
-        <GameDirectionPopupModal setShouldPopup={setShouldPopup} />
+        <GameDirectionPopupModal setIsUserNew={setIsUserNew} />
       </Modal>
     </>
   );

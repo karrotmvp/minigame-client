@@ -18,8 +18,9 @@ export function createKarrotMarketMini(
   config: KarrotMarketMiniConfig
 ): KarrotMarketMini {
   const mini = getMini();
-  const presetUrl = `${config.preserUrl}`;
-  const appId = `${config.appId}`;
+  const presetUrl: string = config.presetUrl!;
+  const appId: string = config.appId!;
+
   async function startPreset(runOnSuccess: (code: string) => void) {
     mini.startPreset({
       preset: presetUrl,
@@ -30,6 +31,8 @@ export function createKarrotMarketMini(
         if (result && result.code) {
           try {
             runOnSuccess(result.code);
+
+            console.log(result.code, 'api');
           } catch (error) {
             console.error(error);
           }
@@ -60,6 +63,8 @@ export function createKarrotMarketMini(
       startPreset,
       close,
       share,
+      // appId,
+      // presetUrl,
     };
   }
 }

@@ -16,26 +16,26 @@ const directionText = css`
 `;
 
 interface PopupModalProps {
-  setShouldPopup: any;
+  setIsUserNew: any;
 }
 const GameDirectionPopupModal: React.FC<PopupModalProps> = (props) => {
   return (
     <>
       <PointingFinger />
       <p css={directionText}>
-        당근을 눌러보세요!
+        점점 작아지는 당근을 터치해
         <br />
-        한번의 터치에
+        당근을 모아보세요!
         <br />
-        1개의 당근을 모을 수 있어요
+        계속 터치하면 당근은
+        <br />
+        작아지지 않아요
       </p>
       <Button
         size={`medium`}
         color={`secondary`}
         text={`게임 시작하기`}
-        onClick={() => {
-          props.setShouldPopup(false);
-        }}
+        onClick={() => props.setIsUserNew(false)}
       />
     </>
   );

@@ -1,36 +1,48 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import DefaultUserRow from 'components/leaderboard/DefaultUserRow';
-import TopUserRow from 'components/leaderboard/TopUserRow';
-import {
-  emphasizedTextStyle,
-  largeTextStyle,
-  mediumTextStyle,
-} from 'styles/textStyle';
+import styled from '@emotion/styled';
+
 import Button from 'components/buttons/Button';
-import IndividualLeaderboard from 'components/leaderboard/IndividualLeaderboard';
-import { useCallback, useEffect, useState } from 'react';
+import LeaderboardTabs from 'components/leaderboard/LeaderboardTabs';
+import { useEffect } from 'react';
 import { AppEjectionButton } from 'components/buttons/AppEjectionButton';
-
-import { commafy } from 'functions/numberFunctions';
 import { useAnalytics } from 'services/analytics';
-
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from 'reducers/rootReducer';
 import { useHistory } from 'react-router-dom';
-import { updateUserScore } from 'reducers/userDataReducer';
-import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
+// import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
+import { DefaultUserRow } from 'components/leaderboard/DefaultRow';
+import { TopUserRow } from 'components/leaderboard/TopRow';
+import useUserData from 'hooks/useUserData';
+import DailyUserCount from 'components/DailyUserCount';
+import TopImageUrl from 'assets/background.png';
 
-// nav
+const PageContainer = styled.div`
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+  background: #faf5f4;
+`;
+const Nav = styled.div`
+  background-image: url(${TopImageUrl});
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  width: 100%;
+  height: 220px;
+  margin-bottom: -10px;
+`;
 const customNav = css`
+  // position: fixed;
   left: 0;
   width: 100%;
-  // height: 100%;
-  top: 0;
+  // top: 0;
   display: flex;
+  flex-flow: row;
+  align-items: center;
+  justify-content: space-between;
   width: 100%;
-  height: 44px;
-  padding: 0 0.5rem;
+  height: 80px;
+  padding: 0 15px;
+  background: transparent;
 `;
 const customNavIcon = css`
   display: flex;
@@ -45,33 +57,51 @@ const customNavIcon = css`
   outline: none;
   z-index: 10;
 `;
-// main div`
-const divStyle = css`
-  display: flex;
-  flex-flow: column;
-  height: calc(100% - 2.75rem);
-`;
-const headingWrapper = css`
-  padding: 20px 26px 20px; ;
-`;
-const leaderboardWrapper = css`
-  flex: 1;
 
-  overflow: auto;
-  padding: 0 26px;
+const MyRow = styled.div`
+  margin: 0 18px 12px;
 `;
-const actionItemWrapper = css`
+const ActionItem = styled.div`
   display: flex;
   justify-content: center;
+  width: 100%;
   padding: 16px 24px 34px;
   border-top: 1px solid #ebebeb;
+  background: #ffffff;
   box-sizing: border-box;
   box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
-
-  text-decoration: none;
 `;
-const currentuserDataInfoRow = css`
-  margin: 20px 0 10px;
+
+const Container = styled.div`
+  display: flex;
+  flex-flow: column;
+
+  padding: 12px 14px;
+  margin: 4px 0;
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid #ebe0db;
+  background-color: #fff;
+
+  color: #3f3f3f;
+  h1 {
+    font-style: normal;
+    font-weight: normal;
+    font-size: 20px;
+    line-height: 161.7%;
+    /* or 32px */
+
+    letter-spacing: -0.02em;
+  }
+  h2 {
+    font-style: normal;
+    font-weight: normal;
+    font-size: 16px;
+    line-height: 161.7%;
+    /* identical to box height, or 26px */
+
+    letter-spacing: -0.02em;
+  }
 `;
 
 interface UserScoreNullProps {
@@ -79,15 +109,22 @@ interface UserScoreNullProps {
 }
 const UserScoreNull: React.FC<UserScoreNullProps> = (props) => {
   return (
-    <>
-      <h1 css={largeTextStyle}>
-        <span css={emphasizedTextStyle}>{props.nickname}</span>님, 아직 기록이
-        없어요
+    <Container>
+      <h1>
+        <span
+          style={{
+            fontWeight: 'bold',
+            color: '#EB5D0E',
+          }}
+        >
+          {props.nickname}
+        </span>
+        님,
+        <br />
+        아직 기록이 없어요
       </h1>
-      <h2 css={mediumTextStyle}>
-        당근을 수확하고 이웃들에게 한 마디 남겨봐요!
-      </h2>
-    </>
+      <h2>당근을 수확하고 이웃들에게 한 마디 남겨봐요!</h2>
+    </Container>
   );
 };
 interface UserScoreExistsProps {
@@ -95,125 +132,119 @@ interface UserScoreExistsProps {
   rank: number;
   score: number;
   comment: string;
-  townName: string;
+  districtName: string;
 }
 const UserScoreExists: React.FC<UserScoreExistsProps> = (props) => {
   return (
     <>
-      <h1 css={largeTextStyle}>
-        <span css={emphasizedTextStyle}>{props.nickname}</span>님은
-        <br />
-        {props.townName}에서
-        <span css={emphasizedTextStyle}> {commafy(props.rank)}위</span>
-        에요!
-      </h1>
-      <div css={currentuserDataInfoRow}>
-        {props.rank <= 10 ? (
-          <TopUserRow
-            rank={props.rank}
-            nickname={props.nickname}
-            score={props.score}
-            comment={props.comment}
-          />
-        ) : (
-          <DefaultUserRow
-            rank={props.rank}
-            nickname={props.nickname}
-            score={props.score}
-          />
-        )}
-      </div>
+      {props.rank <= 10 ? (
+        <TopUserRow
+          me={true}
+          rank={props.rank}
+          nickname={props.nickname}
+          score={props.score}
+          comment={props.comment}
+          districtName={props.districtName}
+        />
+      ) : (
+        <DefaultUserRow
+          me={true}
+          rank={props.rank}
+          nickname={props.nickname}
+          score={props.score}
+          districtName={props.districtName}
+        />
+      )}
     </>
   );
-};
-const initialState = {
-  nickname: '이웃',
-  score: 0,
-  rank: 999999,
-  comment: '',
 };
 
 const ReturningUserHome = () => {
-  const [userData, setUserData] = useState(initialState);
   const history = useHistory();
-  const dispatch = useDispatch();
   const analytics = useAnalytics();
-  const karrotRaiseApi = useKarrotRaiseApi();
-  const { townName } = useSelector((state: RootState) => ({
-    townName: state.userDataReducer.townName,
-  }));
+  // const karrotRaiseApi = useKarrotRaiseApi();
+  const {
+    accessToken,
+    // userId,
+    userDistrictName,
+    userNickname,
+    userScore,
+    userRank,
+    userComment,
+    // onUpdateUserData,
+  } = useUserData();
 
   const handleGameStart = () => {
-    analytics.logEvent('click_game_start_button');
+    analytics.logEvent('click_game_start_button', {
+      user_type: 'returning_user',
+    });
     history.push('/game');
   };
 
-  const getUserData = useCallback(
-    async (karrotRaiseApi: KarrotRaiseApi) => {
-      try {
-        const response = await karrotRaiseApi.getUserInfo();
-        if (response.isFetched === true && response.data) {
-          console.log('returningUserHome, getUserData', response.data);
-          const { nickname, score, rank, comment } = response.data.data;
-          setUserData({
-            nickname: nickname,
-            score: score,
-            rank: rank,
-            comment: comment,
-          });
-          dispatch(updateUserScore(score));
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    },
-    [dispatch]
-  );
+  // const getUserData = useCallback(
+  //   async (karrotRaiseApi: KarrotRaiseApi, accessToken: string) => {
+  //     try {
+  //       const {data} = await karrotRaiseApi.getUserInfo(accessToken);
+  //       if (data) {
+  //         const { nickname, score, rank, comment } = response.data.data;
+  //         onUpdateUserData(userId, nickname, score, rank, comment);
+  //       }
+  //     } catch (error) {
+  //       console.error(error);
+  //     }
+  //   },
+  //   [onUpdateUserData, userId]
+  // );
+
   useEffect(() => {
-    getUserData(karrotRaiseApi);
+    // getUserData(karrotRaiseApi, accessToken);
     analytics.logEvent('view_returning_user_home_page');
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [accessToken]);
 
   return (
-    <>
-      <div css={customNav}>
-        <div css={customNavIcon}>
-          <AppEjectionButton />
+    <PageContainer>
+      <Nav>
+        <div css={customNav}>
+          <div css={customNavIcon}>
+            <AppEjectionButton />
+          </div>
         </div>
-      </div>
-      <div css={divStyle}>
-        <div css={headingWrapper}>
-          {userData.rank !== null ? (
-            <UserScoreExists
-              nickname={userData.nickname}
-              rank={userData.rank}
-              score={userData.score}
-              comment={userData.comment}
-              townName={townName}
-            />
-          ) : (
-            <UserScoreNull nickname={userData.nickname} />
-          )}
-        </div>
+      </Nav>
 
-        <div css={leaderboardWrapper}>
-          <IndividualLeaderboard />
-        </div>
-        <div
-          // to="/game"
-          css={actionItemWrapper}
-          onClick={handleGameStart}
-        >
-          <Button
-            size={`large`}
-            color={`primary`}
-            text={`게임 시작`}
-            onClick={() => {}}
+      <MyRow>
+        {userRank !== null ? (
+          <UserScoreExists
+            nickname={userNickname}
+            rank={userRank}
+            score={userScore}
+            comment={userComment}
+            districtName={userDistrictName}
           />
-        </div>
+        ) : (
+          <UserScoreNull nickname={userNickname} />
+        )}
+      </MyRow>
+      <LeaderboardTabs />
+      <div
+        style={{
+          position: 'absolute',
+          bottom: '90px',
+          right: '24px',
+          zIndex: 101,
+        }}
+      >
+        <DailyUserCount />
       </div>
-    </>
+      <ActionItem>
+        <Button
+          size={`large`}
+          color={`primary`}
+          text={`게임 시작`}
+          onClick={handleGameStart}
+        />
+      </ActionItem>
+    </PageContainer>
   );
 };
 

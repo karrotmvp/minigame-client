@@ -1,32 +1,47 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import {
-  emphasizedTextStyle,
-  largeTextStyle,
-  mediumTextStyle,
-} from 'styles/textStyle';
+import styled from '@emotion/styled';
 import Button from '../components/buttons/Button';
-import IndividualLeaderboard from '../components/leaderboard/IndividualLeaderboard';
 import { AppEjectionButton } from 'components/buttons/AppEjectionButton';
 import { useHistory } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { RootState } from 'reducers/rootReducer';
 import { useCallback, useEffect } from 'react';
 import { Analytics, useAnalytics } from 'services/analytics';
-import { useKarrotMarketMini } from 'services/karrotMarketMini';
+// import { useKarrotMarketMini } from 'services/karrotMarketMini';
 import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
 import { getMini } from 'services/karrotMarket/mini';
-
-// nav
+import LeaderboardTabs from 'components/leaderboard/LeaderboardTabs';
+import useUserData from 'hooks/useUserData';
+import DailyUserCount from 'components/DailyUserCount';
+import TopImageUrl from 'assets/background.png';
+import { loadFromEnv as KarrotMiniPreset } from 'services/karrotMarket/mini';
+const PageContainer = styled.div`
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+  background: #faf5f4;
+`;
+const Nav = styled.div`
+  background-image: url(${TopImageUrl});
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  width: 100%;
+  height: 220px;
+  margin-bottom: -5px;
+`;
 const customNav = css`
+  // position: fixed;
   left: 0;
   width: 100%;
-  // height: 100%;
-  top: 0;
+  // top: 0;
   display: flex;
+  flex-flow: row;
+  align-items: center;
+  justify-content: space-between;
   width: 100%;
-  height: 44px;
-  padding: 0 0.5rem;
+  height: 80px;
+  padding: 0 15px;
+  background: transparent;
 `;
 const customNavIcon = css`
   display: flex;
@@ -41,46 +56,43 @@ const customNavIcon = css`
   outline: none;
   z-index: 10;
 `;
-const divStyle = css`
-  display: flex;
-  flex-flow: column;
-  height: calc(100% - 2.75rem);
-`;
-const headingWrapper = css`
-  padding: 20px 26px 20px; ;
-`;
-const leaderboardWrapper = css`
-  flex: 1;
 
-  overflow: auto;
-  padding: 0 26px;
-`;
-const actionItemWrapper = css`
+const ActionItem = styled.div`
+  // position: fixed;
+  // bottom: 0;
   display: flex;
   justify-content: center;
+  width: 100%;
   padding: 16px 24px 34px;
   border-top: 1px solid #ebebeb;
+  background: #ffffff;
   box-sizing: border-box;
   box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
 `;
 
 const NewUserHome = () => {
   let history = useHistory();
-  const { townName, regionId } = useSelector((state: RootState) => ({
-    townName: state.userDataReducer.townName,
-    regionId: state.userDataReducer.regionId,
-  }));
   const analytics = useAnalytics();
   const karrotRaiseApi = useKarrotRaiseApi();
-  const karrotMarketMini = useKarrotMarketMini();
+  // const karrotMarketMini = useKarrotMarketMini();
+  const { userRegionId, onUpdateAccessToken } = useUserData();
 
+  const mini = getMini();
+  console.log(userRegionId);
   const trackUser = useCallback(
-    async (karrotRaiseApi: KarrotRaiseApi, analytics: Analytics) => {
+    async (
+      karrotRaiseApi: KarrotRaiseApi,
+      accessToken: string,
+      analytics: Analytics
+    ) => {
       try {
-        const response = await karrotRaiseApi.getUserInfo();
-        if (response.isFetched === true && response.data) {
-          const { id } = response.data.data;
+        const { data, status } = await karrotRaiseApi.getUserInfo(accessToken);
+        if (status === 200) {
+          const { id } = data;
           analytics.setUserId(id);
+          console.log('tracking new-user... id:', id);
+        } else {
+          throw new Error('response data from getUserInfo api is undefined');
         }
       } catch (error) {
         console.error(error);
@@ -90,17 +102,19 @@ const NewUserHome = () => {
   );
 
   const getAccessToken = useCallback(
-    async (karrotRaiseApi, code: string | null, regionId: string) => {
+    async (karrotRaiseApi: KarrotRaiseApi, code: string, regionId: string) => {
       try {
-        if (code !== null) {
-          const response = await karrotRaiseApi.postOauth2({
-            code: code,
-            regionId: regionId,
-          });
-          if (response.isFetched && response.data) {
-            const { accessToken } = response.data.data;
-            window.localStorage.setItem('ACCESS_TOKEN', accessToken);
-          }
+        console.log(code, regionId, 'beforeapi');
+        const { data, status } = await karrotRaiseApi.postOauth2(
+          code,
+          regionId
+        );
+        if (status === 200) {
+          const { accessToken } = data;
+          console.log(accessToken);
+          // window.localStorage.setItem('ACCESS_TOKEN', accessToken);
+          onUpdateAccessToken(accessToken);
+          return accessToken;
         } else {
           throw new Error('Either code OR regionId is null');
         }
@@ -108,58 +122,87 @@ const NewUserHome = () => {
         console.error(error);
       }
     },
-    []
+    [onUpdateAccessToken]
   );
-<<<<<<< HEAD
-=======
 
->>>>>>> 66b69beee55dcc69b7ac8fd6094ccf65a141c942
-  const runOnSuccess = (code: string) => {
-    getAccessToken(karrotRaiseApi, code, regionId);
-    trackUser(karrotRaiseApi, analytics);
-    analytics.logEvent('click_game_start_button', { type: 'new_user' });
-    history.push('/game');
-  };
-  const handleNewUserAgreement = function () {
+  const handleNewUserAgreement = async function (
+    karrotRaiseApi: KarrotRaiseApi,
+    userRegionId: string,
+    analytics: Analytics
+  ) {
     // bypass mini preset in Web environment
     if (getMini().environment === 'Web') {
       history.push('/game');
+    } else {
+      analytics.logEvent('click_karrot_mini_preset', {
+        user_type: 'new_user',
+      });
+      const presetUrl = KarrotMiniPreset().presetUrl;
+      const appId = KarrotMiniPreset().appId;
+      mini.startPreset({
+        preset: presetUrl!,
+        params: {
+          appId: appId!,
+        },
+        onSuccess: async function (result: any) {
+          if (result && result.code) {
+            try {
+              const accessToken = await getAccessToken(
+                karrotRaiseApi,
+                result.code,
+                userRegionId
+              );
+              if (accessToken) {
+                await trackUser(karrotRaiseApi, accessToken, analytics);
+                analytics.logEvent('click_game_start_button', {
+                  user_type: 'new_user',
+                });
+                history.push('/game');
+              }
+            } catch (error) {
+              console.error(error);
+            }
+          }
+        },
+      });
     }
-    karrotMarketMini.startPreset(runOnSuccess);
   };
+
   useEffect(() => {
     analytics.logEvent('view_new_user_home_page');
   }, [analytics]);
   return (
-    <>
-      <div css={customNav}>
-        <div css={customNavIcon}>
-          <AppEjectionButton />
+    <PageContainer>
+      <Nav>
+        <div css={customNav}>
+          <div css={customNavIcon}>
+            <AppEjectionButton />
+          </div>
         </div>
+      </Nav>
+
+      <LeaderboardTabs />
+      <div
+        style={{
+          position: 'absolute',
+          bottom: '90px',
+          right: '24px',
+          zIndex: 101,
+        }}
+      >
+        <DailyUserCount />
       </div>
-      <div css={divStyle}>
-        <div css={headingWrapper}>
-          <h1 css={largeTextStyle}>
-            <span css={emphasizedTextStyle}>{townName} 이웃</span>님, 아직
-            기록이 없어요
-          </h1>
-          <h2 css={mediumTextStyle}>
-            당근을 수확하고 이웃들에게 한 마디 남겨봐요!
-          </h2>
-        </div>
-        <div css={leaderboardWrapper}>
-          <IndividualLeaderboard />
-        </div>
-        <div css={actionItemWrapper}>
-          <Button
-            size={`large`}
-            color={`primary`}
-            text={`게임 시작`}
-            onClick={handleNewUserAgreement}
-          />
-        </div>
-      </div>
-    </>
+      <ActionItem>
+        <Button
+          size={`large`}
+          color={`primary`}
+          text={`게임 시작`}
+          onClick={() =>
+            handleNewUserAgreement(karrotRaiseApi, userRegionId, analytics)
+          }
+        />
+      </ActionItem>
+    </PageContainer>
   );
 };
 

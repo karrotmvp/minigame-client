@@ -3,10 +3,17 @@ import { css } from '@emotion/react';
 
 const buttonStyle = ({ size, color }: any) => css`
   background: ${color === `primary`
-    ? `#eb5d0e`
+    ? `#EB5D0E`
     : `secondary`
     ? `#F39E6E`
     : `#F39E6E`};
+
+  box-shadow: ${color === `primary`
+    ? `0px 6px 0px 0px #C64F0C`
+    : `secondary`
+    ? `0px 6px 0px 0px #DF814B`
+    : `0px 6px 0px 0px #DF814B`};
+
   text-align: center;
   border: none;
   border-radius: 10px;
@@ -63,7 +70,8 @@ export const DisabledButton = ({ size, text }: ButtonProps) => {
     <button
       css={buttonStyle({ size })}
       style={{
-        background: '#D7D7D7',
+        backgroundColor: 'rgba(235, 93, 14, 0.4)',
+        boxShadow: `0px 6px 0px 0px #E89261`,
       }}
       disabled
     >

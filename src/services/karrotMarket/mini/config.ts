@@ -1,5 +1,5 @@
 export interface KarrotMarketMiniConfig {
-  preserUrl?: string;
+  presetUrl?: string;
   appId?: string;
 }
 
@@ -18,7 +18,7 @@ export function loadFromEnv(): KarrotMarketMiniConfig {
     );
   }
   return {
-    preserUrl: process.env.REACT_APP_MINI_PRESET,
+    presetUrl: process.env.REACT_APP_MINI_PRESET,
     appId: process.env.REACT_APP_APP_ID,
   };
 }

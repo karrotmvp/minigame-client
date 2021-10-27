@@ -1,8 +1,10 @@
 import { createContext, useContext } from 'react';
 import {
+  GetDistrictRankResponse,
   GetTownIdResponse,
-  GetTownUserRankResponse,
-  getUserInfoResponse,
+  GetUserRankResponse,
+  GetDailyUserCountResponse,
+  GetUserInfoResponse,
   PatchUserCommmentResponse,
   PatchUserScoreResposne,
   PostDemandResponse,
@@ -10,16 +12,21 @@ import {
 } from 'types/karrotRaiseApiTypes';
 
 export interface KarrotRaiseApi {
-  postOauth2(
-    code: string | null,
-    regionId: string
-  ): Promise<PostOauth2Response>;
+  postOauth2(code: string, regionId: string): Promise<PostOauth2Response>;
   getTownId(regionId: string): Promise<GetTownIdResponse>;
-  getTownUserRank(townId: string): Promise<GetTownUserRankResponse>;
-  getUserInfo(): Promise<getUserInfoResponse>;
-  patchUserScore(score: number): Promise<PatchUserScoreResposne>;
-  patchUserComment(comment: string): Promise<PatchUserCommmentResponse>;
-  postDemand(): Promise<PostDemandResponse>;
+  getUserRank(): Promise<GetUserRankResponse>;
+  getDistrictRank(): Promise<GetDistrictRankResponse>;
+  getDailyUserCount(): Promise<GetDailyUserCountResponse>;
+  getUserInfo(accessToken: string): Promise<GetUserInfoResponse>;
+  patchUserScore(
+    accessToken: string,
+    score: number
+  ): Promise<PatchUserScoreResposne>;
+  patchUserComment(
+    accessToken: string,
+    comment: string
+  ): Promise<PatchUserCommmentResponse>;
+  postDemand(accessToken: string): Promise<PostDemandResponse>;
 }
 
 // wow, such empty...
@@ -33,7 +40,15 @@ export const emptyKarrotRaiseApi: KarrotRaiseApi = {
       console.log(...args);
     });
   },
-  getTownUserRank(...args) {
+  getUserRank(...args) {
+    console.log(...args);
+    return new Promise(() => {});
+  },
+  getDistrictRank(...args) {
+    console.log(...args);
+    return new Promise(() => {});
+  },
+  getDailyUserCount(...args) {
     console.log(...args);
     return new Promise(() => {});
   },

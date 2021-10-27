@@ -1,85 +1,100 @@
-// oauth2 api types
-export interface PostOauth2Request {
-  code: string | null;
-  regionId: string;
-}
+// Oauth2
 export interface PostOauth2Response {
-  data?: {
-    data: {
-      accessToken: string;
-    };
+  data: {
+    accessToken: string;
   };
-  isFetched: boolean;
+  message: string;
+  status: number;
+  timestamp: string;
 }
 
-// town api types
-export interface GetTownIdRequest {
-  regionId: string;
+// Rank
+export interface PatchUserScoreResposne {
+  data: object;
+  message: string;
+  status: number;
+  timestamp: string;
 }
+export interface PatchUserCommmentResponse {
+  data: object;
+  message: string;
+  status: number;
+  timestamp: string;
+}
+export interface GetUserRankResponse {
+  data: {
+    comment: string;
+    nickname: string;
+    score: number;
+    town: {
+      id: string;
+      name1: string;
+      name2: string;
+    };
+    userId: string;
+  }[];
+  message: string;
+  status: number;
+  timestamp: string;
+}
+export interface GetDistrictRankResponse {
+  data: {
+    name1: string;
+    name2: string;
+    playerCount: number;
+    score: number;
+  }[];
+  message: string;
+  status: number;
+  timestamp: string;
+}
+
+// Town
 export interface GetTownIdResponse {
-  data?: {
-    data: {
+  data: {
+    id: string;
+    name1: string;
+    name2: string;
+  };
+  message: string;
+  status: number;
+  timestamp: string;
+}
+
+// User
+export interface GetDailyUserCountResponse {
+  data: number;
+  message: string;
+  status: number;
+  timestamp: string;
+}
+export interface GetUserInfoResponse {
+  data: {
+    id: string;
+    comment: string;
+    nickname: string;
+    rank: number;
+    score: number;
+    town: {
       id: string;
       name1: string;
       name2: string;
     };
   };
-
-  isFetched: boolean;
-}
-export interface GetTownUserRankRequest {
-  townId: string;
-}
-export interface GetTownUserRankResponse {
-  data?: {
-    data: {
-      comment: string;
-      nickname: string;
-      score: number;
-      userId: string;
-    }[];
-  };
-  isFetched: boolean;
-}
-// user api types
-export interface getUserInfoRequest {}
-
-export interface getUserInfoResponse {
-  data?: {
-    data: {
-      id: string;
-      comment: string;
-      nickname: string;
-      rank: number;
-      score: number;
-      town: {
-        id: string;
-        name1: string;
-        name2: string;
-      };
-    };
-  };
-  isFetched: boolean;
+  message: string;
+  status: number;
+  timestamp: string;
 }
 
-// user-rank api types
-export interface PatchUserScoreRequest {
-  score: number;
-}
-export interface PatchUserScoreResposne {
-  isFetched: boolean;
-}
-export interface PatchUserCommmentRequest {
-  comment: string;
-}
-export interface PatchUserCommmentResponse {
-  isFetched: boolean;
-}
-
-// demand-controller api types
-export interface PostDemandRequest {}
+// 사전 신청
 export interface PostDemandResponse {
-  isFetched: boolean;
+  // data: object;
+  // message: string;
+  // status: number;
+  // timestamp: string;
+
+  success: boolean;
+
   error?: {
     response: {
       data: {
