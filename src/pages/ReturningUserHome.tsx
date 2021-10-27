@@ -25,10 +25,10 @@ const Nav = styled.div`
   background-image: url(${TopImageUrl});
   background-size: cover;
   background-repeat: no-repeat;
-  background-position: center center;
+  background-position: center -50px;
   width: 100%;
   height: 220px;
-  margin-bottom: -10px;
+  margin-bottom: -60px;
 `;
 const customNav = css`
   // position: fixed;
@@ -107,26 +107,26 @@ const Container = styled.div`
 interface UserScoreNullProps {
   nickname: string;
 }
-const UserScoreNull: React.FC<UserScoreNullProps> = (props) => {
-  return (
-    <Container>
-      <h1>
-        <span
-          style={{
-            fontWeight: 'bold',
-            color: '#EB5D0E',
-          }}
-        >
-          {props.nickname}
-        </span>
-        님,
-        <br />
-        아직 기록이 없어요
-      </h1>
-      <h2>당근을 수확하고 이웃들에게 한 마디 남겨봐요!</h2>
-    </Container>
-  );
-};
+// const UserScoreNull: React.FC<UserScoreNullProps> = (props) => {
+//   return (
+//     <Container>
+//       <h1>
+//         <span
+//           style={{
+//             fontWeight: 'bold',
+//             color: '#EB5D0E',
+//           }}
+//         >
+//           {props.nickname}
+//         </span>
+//         님,
+//         <br />
+//         아직 기록이 없어요
+//       </h1>
+//       <h2>당근을 수확하고 이웃들에게 한 마디 남겨봐요!</h2>
+//     </Container>
+//   );
+// };
 interface UserScoreExistsProps {
   nickname: string;
   rank: number;
@@ -213,17 +213,18 @@ const ReturningUserHome = () => {
       </Nav>
 
       <MyRow>
-        {userRank !== null ? (
-          <UserScoreExists
-            nickname={userNickname}
-            rank={userRank}
-            score={userScore}
-            comment={userComment}
-            districtName={userDistrictName}
-          />
-        ) : (
-          <UserScoreNull nickname={userNickname} />
-        )}
+        {
+          userRank !== null ? (
+            <UserScoreExists
+              nickname={userNickname}
+              rank={userRank}
+              score={userScore}
+              comment={userComment}
+              districtName={userDistrictName}
+            />
+          ) : null
+          // <UserScoreNull nickname={userNickname} />
+        }
       </MyRow>
       <LeaderboardTabs />
       <div
