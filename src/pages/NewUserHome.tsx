@@ -144,7 +144,6 @@ const NewUserHome = () => {
         onSuccess: async function (result: any) {
           if (result && result.code) {
             try {
-              console.log(userRegionId, 'regoinIDSS>');
               const accessToken = await getAccessToken(
                 karrotRaiseApi,
                 result.code,

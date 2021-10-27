@@ -131,9 +131,7 @@ function App() {
       regionId: string
     ) {
       try {
-        console.log('workd?', regionId);
         const { data, status } = await karrotRaiseApi.getTownId(regionId);
-        // console.log(data);
         // example -> city=서울특별시(name1) district=서초구(name2)
         if (status === 200) {
           const { id: districtId, name2: districtName } = data;
@@ -148,7 +146,6 @@ function App() {
             '광진구',
           ];
           const isMyDistrictOpen = openedDistricts.indexOf(districtName + '');
-          console.log(openedDistricts.indexOf(districtName), isMyDistrictOpen);
           if (isMyDistrictOpen === -1) {
             if (typeof code === 'string') {
               setNonServiceUser({ isBack: true, districtName: districtName });
@@ -156,6 +153,8 @@ function App() {
               setNonServiceUser({ isBack: false, districtName: districtName });
             }
             setPageRedirection('non-service-area');
+          } else {
+            getAccessToken(karrotRaiseApi, code, regionId, analytics);
           }
         }
       } catch (error) {
@@ -173,7 +172,6 @@ function App() {
       analytics: Analytics
     ): Promise<void> {
       // code !== null means user is a returning user
-      console.log(regionId, 'accessstooken?');
       try {
         if (code !== null) {
           const { data, status } = await karrotRaiseApi.postOauth2(
@@ -182,6 +180,7 @@ function App() {
           );
           if (status === 200) {
             const { accessToken } = data;
+            console.log(accessToken, 'accessst   ooken');
             // window.localStorage.setItem('ACCESS_TOKEN', accessToken);
             onUpdateAccessToken(accessToken);
             trackUser(karrotRaiseApi, accessToken, analytics);
@@ -210,14 +209,12 @@ function App() {
       // if (regionId === null) {
       //   regionId = 'df5370052b3c';
       // }
-      // onUpdateRegionData(regionId, userDistrictId, userDistrictName);
-      console.log(regionId);
+
       filterNonServiceTown(karrotRaiseApi, code, regionId);
-      getAccessToken(karrotRaiseApi, code, regionId, analytics);
     } catch (error) {
       console.error(error);
     }
-  }, [analytics, filterNonServiceTown, getAccessToken, karrotRaiseApi]);
+  }, [analytics, filterNonServiceTown, karrotRaiseApi]);
 
   return (
     <div css={appStyle}>
