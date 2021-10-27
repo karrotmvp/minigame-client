@@ -138,14 +138,16 @@ function App() {
           console.log(districtId, districtName);
           onUpdateRegionData(regionId, districtId, districtName);
           // Filter out if user is not in our service area
+          // 서초, 송파, 광진, 강남, 강동 in order
           const openedDistricts = [
-            '서초구',
-            '송파구',
-            '강남구',
-            '강동구',
-            '광진구',
+            'df5370052b3c',
+            'edc00a5031fe',
+            '264e8b88eaa1',
+            '9bdfe83b68f3',
+            '072985998dd4',
           ];
-          const isMyDistrictOpen = openedDistricts.indexOf(districtName + '');
+          const isMyDistrictOpen = openedDistricts.indexOf(districtId);
+          console.log(isMyDistrictOpen, districtName);
           if (isMyDistrictOpen === -1) {
             if (typeof code === 'string') {
               setNonServiceUser({ isBack: true, districtName: districtName });
