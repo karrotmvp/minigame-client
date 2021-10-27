@@ -134,33 +134,6 @@ const NonServiceArea: React.FC<NonServiceAreaProps> = (props) => {
     []
   );
 
-  // const getAccessToken = useCallback(
-  //   async function (
-  //     karrotRaiseApi: KarrotRaiseApi,
-  //     code: string,
-  //     regionId: string
-  //   ) {
-  //     try {
-  //       if (code !== null) {
-  //         const { data } = await karrotRaiseApi.postOauth2(code, regionId);
-  //         if (data) {
-  //           const {
-  //             data: { accessToken },
-  //           } = data;
-  //           // window.localStorage.setItem('ACCESS_TOKEN', accessToken);
-  //           onUpdateAccessToken(accessToken);
-  //           return accessToken;
-  //         }
-  //       } else {
-  //         throw new Error('Either code OR regionId is null');
-  //       }
-  //     } catch (error) {
-  //       console.error(error);
-  //     }
-  //   },
-  //   [onUpdateAccessToken]
-  // );
-
   const getAccessToken = useCallback(
     async (karrotRaiseApi: KarrotRaiseApi, code: string, regionId: string) => {
       try {
@@ -182,30 +155,15 @@ const NonServiceArea: React.FC<NonServiceAreaProps> = (props) => {
     [onUpdateAccessToken]
   );
 
-  // const runOnSuccess = async (code: string) => {
-  //   console.log('run-on-success', code);
-  //   const accessToken = (await getAccessToken(
-  //     karrotRaiseApi,
-  //     code,
-  //     userRegionId
-  //   ))!;
-  //   await trackUser(karrotRaiseApi, accessToken, analytics);
-  //   const response = await karrotRaiseApi.postDemand(accessToken);
-  //   if (response.isFetched === true) {
-  //     setIsClicked(true);
-  //     analytics.logEvent('click_non_service_area_demand_button');
-  //   }
-  // };
-  // const handleDemand = async function () {
-  //   karrotMarketMini.startPreset(runOnSuccess);
-  // };
   const mini = getMini();
   const handleDemand = async function (
     karrotRaiseApi: KarrotRaiseApi,
     userRegionId: string,
     analytics: Analytics
   ) {
-    analytics.logEvent('click_preset', { type: 'non_service_area_user' });
+    analytics.logEvent('click_karrot_mini_preset', {
+      user_type: 'non_service_area_user',
+    });
     const presetUrl = KarrotMiniPreset().presetUrl;
     const appId = KarrotMiniPreset().appId;
     mini.startPreset({

@@ -134,6 +134,9 @@ const NewUserHome = () => {
     if (getMini().environment === 'Web') {
       history.push('/game');
     } else {
+      analytics.logEvent('click_karrot_mini_preset', {
+        user_type: 'new_user',
+      });
       const presetUrl = KarrotMiniPreset().presetUrl;
       const appId = KarrotMiniPreset().appId;
       mini.startPreset({
@@ -152,7 +155,7 @@ const NewUserHome = () => {
               if (accessToken) {
                 await trackUser(karrotRaiseApi, accessToken, analytics);
                 analytics.logEvent('click_game_start_button', {
-                  type: 'new_user',
+                  user_type: 'new_user',
                 });
                 history.push('/game');
               }

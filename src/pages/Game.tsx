@@ -203,6 +203,7 @@ const Game = () => {
     pause();
   }
   function handlePause() {
+    analytics.logEvent('click_game_pause_button');
     pause();
     setAnimationPlayState('paused');
     setIsPaused(true);

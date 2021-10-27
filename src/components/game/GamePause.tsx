@@ -93,7 +93,10 @@ const GamePause = ({ closeModal }: GamePauseProps) => {
   const analytics = useAnalytics();
   let history = useHistory();
   const karrotRaiseApi = useKarrotRaiseApi();
-
+  const handleContinue = () => {
+    analytics.logEvent('click_game_continue_button');
+    closeModal();
+  };
   const handleGameEnd = async (
     karrotRaiseApi: KarrotRaiseApi,
     accessToken: string,
@@ -158,7 +161,7 @@ const GamePause = ({ closeModal }: GamePauseProps) => {
           size={`medium`}
           color={`secondary`}
           text={`계속하기`}
-          onClick={closeModal}
+          onClick={handleContinue}
         />
         <Button
           size={`medium`}

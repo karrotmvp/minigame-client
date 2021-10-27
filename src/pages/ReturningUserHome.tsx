@@ -175,7 +175,9 @@ const ReturningUserHome = () => {
   } = useUserData();
 
   const handleGameStart = () => {
-    analytics.logEvent('click_game_start_button');
+    analytics.logEvent('click_game_start_button', {
+      user_type: 'returning_user',
+    });
     history.push('/game');
   };
 

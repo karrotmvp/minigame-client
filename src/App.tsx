@@ -115,7 +115,7 @@ function App() {
           const { id, nickname, score, rank, comment } = data;
           onUpdateUserData(id, nickname, score, rank, comment);
           analytics.setUserId(id);
-          console.log('tracking user... id:', id);
+          console.log('tracking returning-user... id:', id);
         }
       } catch (error) {
         console.error(error);
