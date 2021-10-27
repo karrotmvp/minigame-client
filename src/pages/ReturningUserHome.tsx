@@ -25,10 +25,10 @@ const Nav = styled.div`
   background-image: url(${TopImageUrl});
   background-size: cover;
   background-repeat: no-repeat;
-  background-position: center center;
+  background-position: center -50px;
   width: 100%;
   height: 220px;
-  margin-bottom: -10px;
+  margin-bottom: -60px;
 `;
 const customNav = css`
   // position: fixed;
@@ -72,61 +72,61 @@ const ActionItem = styled.div`
   box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
 `;
 
-const Container = styled.div`
-  display: flex;
-  flex-flow: column;
+// const Container = styled.div`
+//   display: flex;
+//   flex-flow: column;
 
-  padding: 12px 14px;
-  margin: 4px 0;
-  width: 100%;
-  border-radius: 10px;
-  border: 1px solid #ebe0db;
-  background-color: #fff;
+//   padding: 12px 14px;
+//   margin: 4px 0;
+//   width: 100%;
+//   border-radius: 10px;
+//   border: 1px solid #ebe0db;
+//   background-color: #fff;
 
-  color: #3f3f3f;
-  h1 {
-    font-style: normal;
-    font-weight: normal;
-    font-size: 20px;
-    line-height: 161.7%;
-    /* or 32px */
+//   color: #3f3f3f;
+//   h1 {
+//     font-style: normal;
+//     font-weight: normal;
+//     font-size: 20px;
+//     line-height: 161.7%;
+//     /* or 32px */
 
-    letter-spacing: -0.02em;
-  }
-  h2 {
-    font-style: normal;
-    font-weight: normal;
-    font-size: 16px;
-    line-height: 161.7%;
-    /* identical to box height, or 26px */
+//     letter-spacing: -0.02em;
+//   }
+//   h2 {
+//     font-style: normal;
+//     font-weight: normal;
+//     font-size: 16px;
+//     line-height: 161.7%;
+//     /* identical to box height, or 26px */
 
-    letter-spacing: -0.02em;
-  }
-`;
+//     letter-spacing: -0.02em;
+//   }
+// `;
 
-interface UserScoreNullProps {
-  nickname: string;
-}
-const UserScoreNull: React.FC<UserScoreNullProps> = (props) => {
-  return (
-    <Container>
-      <h1>
-        <span
-          style={{
-            fontWeight: 'bold',
-            color: '#EB5D0E',
-          }}
-        >
-          {props.nickname}
-        </span>
-        님,
-        <br />
-        아직 기록이 없어요
-      </h1>
-      <h2>당근을 수확하고 이웃들에게 한 마디 남겨봐요!</h2>
-    </Container>
-  );
-};
+// interface UserScoreNullProps {
+//   nickname: string;
+// }
+// const UserScoreNull: React.FC<UserScoreNullProps> = (props) => {
+//   return (
+//     <Container>
+//       <h1>
+//         <span
+//           style={{
+//             fontWeight: 'bold',
+//             color: '#EB5D0E',
+//           }}
+//         >
+//           {props.nickname}
+//         </span>
+//         님,
+//         <br />
+//         아직 기록이 없어요
+//       </h1>
+//       <h2>당근을 수확하고 이웃들에게 한 마디 남겨봐요!</h2>
+//     </Container>
+//   );
+// };
 interface UserScoreExistsProps {
   nickname: string;
   rank: number;
@@ -213,17 +213,18 @@ const ReturningUserHome = () => {
       </Nav>
 
       <MyRow>
-        {userRank !== null ? (
-          <UserScoreExists
-            nickname={userNickname}
-            rank={userRank}
-            score={userScore}
-            comment={userComment}
-            districtName={userDistrictName}
-          />
-        ) : (
-          <UserScoreNull nickname={userNickname} />
-        )}
+        {
+          userRank !== null ? (
+            <UserScoreExists
+              nickname={userNickname}
+              rank={userRank}
+              score={userScore}
+              comment={userComment}
+              districtName={userDistrictName}
+            />
+          ) : null
+          // <UserScoreNull nickname={userNickname} />
+        }
       </MyRow>
       <LeaderboardTabs />
       <div
