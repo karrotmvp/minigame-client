@@ -1,7 +1,10 @@
 import styled from '@emotion/styled';
 import { commafy } from 'functions/numberFunctions';
+import Medal1Url from 'assets/medal_1.svg';
+import Medal2Url from 'assets/medal_2.svg';
+import Medal3Url from 'assets/medal_3.svg';
 
-const Container = styled.div<{ me?: boolean }>`
+const Container = styled.div<{ me?: boolean; rank?: number }>`
   display: flex;
   flex-flow: row;
   align-items: center;
@@ -12,6 +15,28 @@ const Container = styled.div<{ me?: boolean }>`
   border-radius: ${(props) => (props.me === true ? '10px' : '5px')};
   border: 1px solid ${(props) => (props.me === true ? '#EBE0DB' : '#ececec')};
   background-color: #fff;
+
+  position: relative;
+
+  &::before {
+    content: '';
+    background-image: ${(props) =>
+      props.rank === 1
+        ? `url(${Medal1Url})`
+        : props.rank === 2
+        ? `url(${Medal2Url})`
+        : props.rank === 3
+        ? `url(${Medal3Url})`
+        : `transparent`};
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    width: 27px;
+    height: 34px;
+    position: absolute;
+    top: 0px;
+    left: 10px;
+  }
 `;
 
 const ContentsWrapper = styled.div`
@@ -61,7 +86,7 @@ const Score = styled.div`
 const Rank = styled.div`
   display: flex;
   align-self: flex-start;
-  margin-right: 15px;
+  margin-right: 20px;
   margin-top: 5px;
 
   font-style: normal;
@@ -169,7 +194,7 @@ export const TopUserRow: React.FC<TopUserRowProps> = (props) => {
     userComment = `${props.comment}`;
   }
   return (
-    <Container me={props.me}>
+    <Container me={props.me} rank={props.rank}>
       <Rank>{commafy(props.rank)}</Rank>
       <ContentsWrapper>
         <Info>
@@ -197,7 +222,7 @@ interface TopDistrictTowProps {
 }
 export const TopDistrictRow: React.FC<TopDistrictTowProps> = (props) => {
   return (
-    <Container>
+    <Container rank={props.rank}>
       <Rank>{commafy(props.rank)}</Rank>
       <ContentsWrapper>
         <Info>

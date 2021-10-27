@@ -24,10 +24,10 @@ const Nav = styled.div`
   background-image: url(${TopImageUrl});
   background-size: cover;
   background-repeat: no-repeat;
-  background-position: center center;
+  background-position: center -50px;
   width: 100%;
   height: 220px;
-  margin-bottom: -5px;
+  margin-bottom: -60px;
 `;
 const customNav = css`
   // position: fixed;
