@@ -12,7 +12,8 @@ import { getMini } from 'services/karrotMarket/mini';
 import LeaderboardTabs from 'components/leaderboard/LeaderboardTabs';
 import useUserData from 'hooks/useUserData';
 import DailyUserCount from 'components/DailyUserCount';
-import TopImageUrl from 'assets/background.png';
+import TopImageUrl from 'assets/images/background.png';
+import mvpLogoUrl from 'assets/images/mvp_logo.png';
 import { loadFromEnv as KarrotMiniPreset } from 'services/karrotMarket/mini';
 const PageContainer = styled.div`
   display: flex;
@@ -24,10 +25,10 @@ const Nav = styled.div`
   background-image: url(${TopImageUrl});
   background-size: cover;
   background-repeat: no-repeat;
-  background-position: center -50px;
+  background-position: center -10px;
   width: 100%;
   height: 220px;
-  margin-bottom: -60px;
+  margin-bottom: -20px;
 `;
 const customNav = css`
   // position: fixed;
@@ -178,6 +179,7 @@ const NewUserHome = () => {
           <div css={customNavIcon}>
             <AppEjectionButton />
           </div>
+          <img src={mvpLogoUrl} alt="" style={{ marginRight: '15px' }} />
         </div>
       </Nav>
 

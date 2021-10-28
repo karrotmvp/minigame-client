@@ -1,4 +1,4 @@
-import IconClose from 'assets/IconClose';
+import IconClose from 'assets/svg/IconClose';
 import { useKarrotMarketMini } from 'services/karrotMarketMini';
 
 const AppEjectionButton = () => {

@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
-import IconBack from '../assets/IconBack';
+import IconBack from '../assets/svg/IconBack';
 import { AppEjectionButton } from './buttons/AppEjectionButton';
 const Nav = styled.div`
   left: 0;

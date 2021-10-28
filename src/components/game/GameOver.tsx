@@ -2,7 +2,7 @@
 import { css } from '@emotion/react';
 import { emphasizedTextStyle, largeTextStyle } from 'styles/textStyle';
 import Button from '../buttons/Button';
-import { ReactComponent as Karrot } from 'assets/karrot.svg';
+import { ReactComponent as Karrot } from 'assets/svg/karrot.svg';
 import TopUserGameEndModal from './TopUserGameEndModal';
 import { useHistory } from 'react-router';
 import { useState } from 'react';
@@ -69,10 +69,7 @@ type UserData = {
 };
 Modal.setAppElement(document.createElement('div'));
 
-interface GameOverProps {
-  closeModal: () => void;
-}
-const GameOver = ({ closeModal }: GameOverProps) => {
+const GameOver = () => {
   const { clickCount } = useClickCounter();
   const {
     accessToken,
@@ -154,12 +151,6 @@ const GameOver = ({ closeModal }: GameOverProps) => {
           gap: '10px',
         }}
       >
-        {/* <Button
-          size={`medium`}
-          color={`secondary`}
-          text={`계속하기`}
-          onClick={closeModal}
-        /> */}
         <Button
           size={`medium`}
           color={`primary`}

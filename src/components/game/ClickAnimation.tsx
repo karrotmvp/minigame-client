@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import * as React from 'react';
 import { css, keyframes } from '@emotion/react';
-import karrotImageUrl from 'assets/karrot.svg';
+import karrotImageUrl from 'assets/svg/karrot.svg';
 
 const animation = keyframes`
   100% {
@@ -31,7 +31,12 @@ interface ClickAnimationProps {
   onDestroy: (id: string) => void;
 }
 
-const ClickAnimation: React.FC<ClickAnimationProps> = ({ id, posX, posY, onDestroy }) => {
+const ClickAnimation: React.FC<ClickAnimationProps> = ({
+  id,
+  posX,
+  posY,
+  onDestroy,
+}) => {
   React.useEffect(() => {
     setTimeout(() => {
       onDestroy(id);

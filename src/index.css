@@ -1,5 +1,12 @@
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css');
-
+@font-face {
+  font-family: 'Cafe24Ssurround';
+  src: url('assets/fonts/Cafe24Ssurround.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Cafe24SsurroundAir';
+  src: url('assets/fonts/Cafe24SsurroundAir.ttf') format('truetype');
+}
 * {
   font-family: Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto,
     'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR',
