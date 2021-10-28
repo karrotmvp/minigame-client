@@ -19,10 +19,14 @@ const ContentsWrapper = styled.div`
   flex: 1;
 `;
 const Rank = styled.div`
+  width: 30px;
+
   display: flex;
   align-self: flex-start;
-  margin-right: 15px;
-  margin-top: 5px;
+
+  margin-top: 2px;
+  margin-left: 5px;
+
   font-style: normal;
   font-weight: bold;
   font-size: 12px;

@@ -40,9 +40,12 @@ const Container = styled.div<{ me?: boolean; rank?: number }>`
 `;
 
 const Rank = styled.div`
+  width: 30px;
   display: flex;
   align-self: flex-start;
-  margin-right: 20px;
+
+  margin-top: 5px;
+  margin-left: 5px;
 
   font-style: normal;
   font-weight: bold;
@@ -54,7 +57,6 @@ const Rank = styled.div`
 `;
 const ContentsWrapper = styled.div`
   flex: 1;
-  margin-left: 5px;
 `;
 const Info = styled.div`
   display: flex;
@@ -196,7 +198,7 @@ export const TopUserRow: React.FC<TopUserRowProps> = (props) => {
   }
   return (
     <Container me={props.me} rank={props.rank}>
-      <Rank>{props.rank <= 3 ? null : commafy(props.rank)}</Rank>
+      <Rank>{props.rank <= 3 ? ' ' : commafy(props.rank)}</Rank>
       <ContentsWrapper>
         <Info>
           <Name rank={props.rank}>
@@ -224,7 +226,7 @@ interface TopDistrictTowProps {
 export const TopDistrictRow: React.FC<TopDistrictTowProps> = (props) => {
   return (
     <Container rank={props.rank}>
-      <Rank>{props.rank <= 3 ? null : commafy(props.rank)}</Rank>
+      <Rank>{props.rank <= 3 ? ' ' : commafy(props.rank)}</Rank>
       <ContentsWrapper>
         <Info>
           <Name rank={props.rank}>
