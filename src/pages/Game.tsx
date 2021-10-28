@@ -277,6 +277,7 @@ const Game = () => {
         }
       }
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [locationKeys]);
 
   return (

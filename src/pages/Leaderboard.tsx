@@ -3,7 +3,6 @@ import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 
 import { AppEjectionButton } from 'components/buttons/AppEjectionButton';
-import { largeTextStyle, emphasizedTextStyle } from 'styles/textStyle';
 import Button from 'components/buttons/Button';
 import { DefaultUserRow } from 'components/leaderboard/DefaultRow';
 import { TopUserRow } from 'components/leaderboard/TopRow';
