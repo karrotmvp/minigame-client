@@ -110,7 +110,7 @@ const TopUserGameEndModal: React.FC<TopUserGameEndModalProps> = (props) => {
       );
       if (status === 200) {
         onUpdateUserData(userId, userNickname, userScore, userRank, comment);
-        history.replace('/leaderboard');
+        history.push('/leaderboard');
       }
     },
     [history, onUpdateUserData, userId, userNickname, userRank, userScore]

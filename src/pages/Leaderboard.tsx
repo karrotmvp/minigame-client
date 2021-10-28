@@ -106,7 +106,7 @@ const Leaderboard = () => {
   const handlePlayAgain = async () => {
     analytics.logEvent('click_game_play_again_button');
     onResetCount();
-    history.replace('/game');
+    history.push('/game');
   };
 
   const handleShare = async () => {
@@ -141,7 +141,7 @@ const Leaderboard = () => {
     return () => {
       if (history.action === 'POP') {
         onResetCount();
-        history.replace('/game' /* the "new" state */);
+        history.push('/game' /* the "new" state */);
       }
     };
   }, [history, onResetCount]);

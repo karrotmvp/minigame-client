@@ -124,7 +124,7 @@ const GamePause = ({ closeModal }: GamePauseProps) => {
           if (rank <= 10) {
             setIsOpen(true);
           } else {
-            history.replace('/leaderboard');
+            history.push('/leaderboard');
           }
         }
       }
