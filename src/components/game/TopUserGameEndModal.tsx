@@ -2,7 +2,7 @@
 import { css } from '@emotion/react';
 import { emphasizedTextStyle, largeTextStyle } from 'styles/textStyle';
 import Button, { DisabledButton } from '../buttons/Button';
-import { ReactComponent as Karrot } from 'assets/karrot.svg';
+import { ReactComponent as Karrot } from 'assets/svg/karrot.svg';
 import { useCallback, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';

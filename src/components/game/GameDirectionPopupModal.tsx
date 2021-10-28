@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { ReactComponent as PointingFinger } from 'assets/PointingFinger.svg';
+import { ReactComponent as PointingFinger } from 'assets/svg/PointingFinger.svg';
 import Button from 'components/buttons/Button';
 
 const directionText = css`

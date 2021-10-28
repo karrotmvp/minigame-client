@@ -3,18 +3,17 @@ import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 import GamePause from 'components/game/GamePause';
 import React, { useEffect, useState } from 'react';
-import gameBackgroundUrl from 'assets/game_background.png';
-// import { ReactComponent as BigKarrot } from 'assets/Seocho_daangn.svg';
+import gameBackgroundUrl from 'assets/images/game_background.png';
 import Modal from 'react-modal';
 import GameDirectionPopupModal from 'components/game/GameDirectionPopupModal';
 import { commafy } from 'functions/numberFunctions';
 import ClickAnimation from 'components/game/ClickAnimation';
-// import { useHistory } from 'react-router';
+import { useHistory } from 'react-router';
 import { useAnalytics } from 'services/analytics';
 import useClickCounter from 'hooks/useClickCounter';
 import useUserData from 'hooks/useUserData';
 import BigKarrot from 'components/game/BigKarrot';
-import { ReactComponent as PauseButton } from 'assets/Pause.svg';
+import { ReactComponent as PauseButton } from 'assets/svg/Pause.svg';
 import { useIdleTimer } from 'react-idle-timer';
 import GameOver from 'components/game/GameOver';
 
@@ -168,15 +167,15 @@ const Game = () => {
   const [state, gameDispatch] = React.useReducer(reducer, { particles: [] });
   const [animationPlayState, setAnimationPlayState] =
     useState<string>('paused');
-  // const history = useHistory();
+  const history = useHistory();
   const analytics = useAnalytics();
   const { userScore } = useUserData();
-  const { clickCount, onIncrementClickCount } = useClickCounter();
+  const { clickCount, onIncrementClickCount, onResetCount } = useClickCounter();
   const { start, resume, pause, getRemainingTime } = useIdleTimer({
     timeout: 100,
     onIdle: handleOnIdle,
     startManually: true,
-    debounce: 100,
+    // debounce: 500,
     // element: BigKarrotRef.current,
   });
   type ParticleDestroyHandler = React.ComponentProps<
@@ -238,7 +237,7 @@ const Game = () => {
         resume();
         console.log('tick', getRemainingTime());
       }
-    }, 100);
+    }, 500);
     return () => clearInterval(intervalId);
   }, [getRemainingTime, isPaused, isUserNew, pause, resume]);
 
@@ -255,11 +254,31 @@ const Game = () => {
   //   // return () => {
   //   //   unblock();
   //   // };
-  // useEffect(() => {
-  //   if (history.action === 'POP') {
-  //     onResetCount();
-  //   }
-  // }, []);
+
+  const [locationKeys, setLocationKeys] = useState<any[]>([]);
+
+  useEffect(() => {
+    return history.listen((location) => {
+      if (history.action === 'PUSH') {
+        setLocationKeys([location.key]);
+      }
+
+      if (history.action === 'POP') {
+        if (locationKeys[1] === location.key) {
+          setLocationKeys(([_, ...keys]) => keys);
+
+          // Handle forward event
+        } else {
+          setLocationKeys((keys) => [location.key, ...keys]);
+
+          // Handle back event
+          console.log('back button pressed');
+          onResetCount();
+        }
+      }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [locationKeys]);
 
   return (
     <>
@@ -342,7 +361,7 @@ const Game = () => {
           },
         }}
       >
-        <GameOver closeModal={() => setIsGameOver(false)} />
+        <GameOver />
       </Modal>
       {/* GAME DIRECTION */}
       <Modal

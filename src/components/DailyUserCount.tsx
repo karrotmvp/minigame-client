@@ -6,13 +6,17 @@ const SpeechBalloon = styled.div`
   position: relative;
   background: #f39e6e;
   border-radius: 5px;
-  font-weight: normal;
-  font-size: 16px;
+
+  font-family: Cafe24SsurroundAir;
+  font-style: normal;
+  font-size: 10px;
   line-height: 161.7%;
   /* or 16px */
+
+  color: #ffffff;
+
   width: fit-content;
   padding: 4px 8px;
-  color: #ffffff;
 
   &:after {
     z-index: 1000;
@@ -30,7 +34,8 @@ const SpeechBalloon = styled.div`
   }
 
   span {
-    font-weight: 700;
+    font-family: Cafe24Ssurround;
+    font-weight: bold;
   }
 `;
 
@@ -53,6 +58,9 @@ const DailyUserCount = () => {
 
   useEffect(() => {
     getDailyUserCount(karrotRaiseApi);
+    return () => {
+      getDailyUserCount(karrotRaiseApi);
+    };
   }, [getDailyUserCount, karrotRaiseApi]);
 
   return (

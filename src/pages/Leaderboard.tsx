@@ -3,7 +3,6 @@ import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 
 import { AppEjectionButton } from 'components/buttons/AppEjectionButton';
-import { largeTextStyle, emphasizedTextStyle } from 'styles/textStyle';
 import Button from 'components/buttons/Button';
 import { DefaultUserRow } from 'components/leaderboard/DefaultRow';
 import { TopUserRow } from 'components/leaderboard/TopRow';
@@ -53,6 +52,23 @@ const customNavIcon = css`
 
 const Heading = styled.div`
   margin: 0 26px 20px;
+
+  font-family: Cafe24SsurroundAir;
+  font-size: 22px;
+  font-style: normal;
+  line-height: 161.7%;
+  /* or 36px */
+
+  letter-spacing: -0.02em;
+
+  color: #3f3f3f;
+`;
+
+const EmphasizedSpan = styled.span`
+  font-family: Cafe24Ssurround;
+  font-weight: bold;
+
+  color: #eb5d0e;
 `;
 const MyRow = styled.div`
   margin: 0 18px 12px;
@@ -137,13 +153,11 @@ const Leaderboard = () => {
         </div>
       </div>
       <Heading>
-        <h1 css={largeTextStyle}>
-          <span css={emphasizedTextStyle}>{userNickname}</span>님은
-          <br />
-          {userDistrictName}에서
-          <span css={emphasizedTextStyle}> {userRank}위</span>
-          에요!
-        </h1>
+        <EmphasizedSpan>{userNickname}</EmphasizedSpan>님은
+        <br />
+        {userDistrictName}에서
+        <EmphasizedSpan> {userRank}위</EmphasizedSpan>
+        에요!
       </Heading>
 
       <MyRow>

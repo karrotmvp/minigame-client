@@ -1,8 +1,8 @@
 import styled from '@emotion/styled';
 import { commafy } from 'functions/numberFunctions';
-import Medal1Url from 'assets/medal_1.svg';
-import Medal2Url from 'assets/medal_2.svg';
-import Medal3Url from 'assets/medal_3.svg';
+import Medal1Url from 'assets/svg/medal_1.svg';
+import Medal2Url from 'assets/svg/medal_2.svg';
+import Medal3Url from 'assets/svg/medal_3.svg';
 
 const Container = styled.div<{ me?: boolean; rank?: number }>`
   display: flex;
@@ -31,14 +31,30 @@ const Container = styled.div<{ me?: boolean; rank?: number }>`
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center center;
-    width: 27px;
-    height: 34px;
+    width: 25px;
+    height: 32px;
     position: absolute;
     top: 0px;
     left: 10px;
   }
 `;
 
+const Rank = styled.div`
+  width: 30px;
+  display: flex;
+  align-self: flex-start;
+
+  margin-top: 5px;
+  margin-left: 5px;
+
+  font-style: normal;
+  font-weight: bold;
+  font-size: 12px;
+  line-height: 161.7%;
+  /* or 19px */
+
+  color: #5b5b5b;
+`;
 const ContentsWrapper = styled.div`
   flex: 1;
 `;
@@ -83,20 +99,7 @@ const Score = styled.div`
   /* or 19px */
   color: #5b5b5b;
 `;
-const Rank = styled.div`
-  display: flex;
-  align-self: flex-start;
-  margin-right: 20px;
-  margin-top: 5px;
 
-  font-style: normal;
-  font-weight: bold;
-  font-size: 12px;
-  line-height: 161.7%;
-  /* or 19px */
-
-  color: #5b5b5b;
-`;
 // TOP USER ROW
 const SpeechBalloon = styled.div`
   position: relative;
@@ -195,7 +198,7 @@ export const TopUserRow: React.FC<TopUserRowProps> = (props) => {
   }
   return (
     <Container me={props.me} rank={props.rank}>
-      <Rank>{commafy(props.rank)}</Rank>
+      <Rank>{props.rank <= 3 ? ' ' : commafy(props.rank)}</Rank>
       <ContentsWrapper>
         <Info>
           <Name rank={props.rank}>
@@ -223,7 +226,7 @@ interface TopDistrictTowProps {
 export const TopDistrictRow: React.FC<TopDistrictTowProps> = (props) => {
   return (
     <Container rank={props.rank}>
-      <Rank>{commafy(props.rank)}</Rank>
+      <Rank>{props.rank <= 3 ? ' ' : commafy(props.rank)}</Rank>
       <ContentsWrapper>
         <Info>
           <Name rank={props.rank}>

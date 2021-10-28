@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import RefreshIconUrl from 'assets/refresh.svg';
+import RefreshIconUrl from 'assets/svg/refresh.svg';
 
 const Button = styled.button`
   border: none;

@@ -1,8 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css, keyframes } from '@emotion/react';
-// import { ReactComponent as BigKarrot } from 'assets/Seocho_daangn.svg';
 import { memo, FC } from 'react';
-import BigKarrotImageUrl from 'assets/big_karrot.png';
+import BigKarrotImageUrl from 'assets/images/big_karrot.png';
 
 const animationKeyframes = keyframes`
   100% {

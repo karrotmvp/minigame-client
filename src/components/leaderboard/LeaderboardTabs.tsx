@@ -11,6 +11,10 @@ const customizeTabs = css`
   --kf_tabs_tabBar-baseFontColor: #5b5b5b;
   --kf_tabs_tabBar-activeFontColor: #ff8845;
   --kf_tabs_tabBar-indicator-color: #ff8845;
+
+  a[role='tab'] {
+    transition: none;
+  }
 `;
 
 const LeaderboardContainer = styled.div`

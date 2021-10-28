@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { ReactComponent as WaitSvg } from 'assets/wait.svg';
+import { ReactComponent as WaitSvg } from 'assets/svg/wait.svg';
 
 const backgroundStyle = css`
   background: #ffffff;
