@@ -12,6 +12,7 @@ import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
 import { Analytics, useAnalytics } from 'services/analytics';
 import useUserData from 'hooks/useUserData';
 import useClickCounter from 'hooks/useClickCounter';
+import { getMini } from 'services/karrotMarket/mini';
 
 const modalStyle = css`
   position: absolute;
@@ -103,6 +104,12 @@ const GamePause = ({ closeModal }: GamePauseProps) => {
     clickCount: number,
     analytics: Analytics
   ) => {
+    // bypass in web environment
+    console.log('mini environment check,', getMini().environment);
+    if (getMini().environment === 'Web') {
+      history.push('/leaderboard');
+      return null;
+    }
     try {
       console.log(clickCount);
       analytics.logEvent('click_game_end_button', { score: clickCount });

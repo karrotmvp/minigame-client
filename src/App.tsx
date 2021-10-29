@@ -37,6 +37,7 @@ import {
 } from 'services/karrotMarketMini';
 import {
   createKarrotMarketMini,
+  getMini,
   loadFromEnv as loadKarrotMarketMiniConfig,
 } from 'services/karrotMarket/mini';
 import useUserData from 'hooks/useUserData';
@@ -211,7 +212,10 @@ function App() {
       // if (regionId === null) {
       //   regionId = 'df5370052b3c';
       // }
-
+      console.log('mini environment check,', getMini().environment);
+      if (getMini().environment === 'Web') {
+        setPageRedirection('home');
+      }
       filterNonServiceTown(karrotRaiseApi, code, regionId);
     } catch (error) {
       console.error(error);
