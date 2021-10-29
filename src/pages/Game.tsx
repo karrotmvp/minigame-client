@@ -187,14 +187,15 @@ const Game = () => {
     },
     []
   );
-  const activateAnimation = (e: React.TouchEvent) => {
-    const clientX = e.touches[0].clientX;
-    const clientY = e.touches[0].clientY;
+
+  const activateAnimation = (e: React.PointerEvent) => {
+    const clientX = e.clientX;
+    const clientY = e.clientY;
     const posX = clientX - 25,
       posY = clientY - 50;
     gameDispatch({ type: 'spawn', posX, posY });
   };
-  function handleKarrotTouch(e: React.TouchEvent) {
+  function handleKarrotTouch(e: React.PointerEvent) {
     e.stopPropagation();
     activateAnimation(e);
     onIncrementClickCount();
@@ -311,7 +312,7 @@ const Game = () => {
               color: 'rgba(235, 93, 14, 0.3)',
             }}
           >
-            Score
+            Scorei
           </h2>
           <ClickCount>{commafy(clickCount)}</ClickCount>
         </ScoreWrapper>
