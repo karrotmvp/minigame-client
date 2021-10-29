@@ -1,16 +1,26 @@
+import styled from '@emotion/styled';
 import IconClose from 'assets/svg/IconClose';
 import { useKarrotMarketMini } from 'services/karrotMarketMini';
 
+const Button = styled.button`
+  border: none;
+  background: none;
+  color: inherit;
+  border: none;
+  padding: 0;
+  font: inherit;
+  outline: none;
+  user-select: none;
+`;
 const AppEjectionButton = () => {
   const karrotMarketMini = useKarrotMarketMini();
   const handleAppEjection = () => {
     karrotMarketMini.close();
   };
   return (
-    // eslint-disable-next-line jsx-a11y/anchor-is-valid
-    <a aria-label="Eject" onClick={handleAppEjection}>
+    <Button onClick={handleAppEjection}>
       <IconClose />
-    </a>
+    </Button>
   );
 };
 
