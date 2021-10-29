@@ -15,8 +15,6 @@ export function createKarrotRaiseApi(
   async function postOauth2(code: string, regionId: string) {
     console.log('oauth api', code, regionId);
     try {
-      console.log('wwww');
-
       const { data } = await axios.post(
         `${baseUrl}/oauth`,
         {

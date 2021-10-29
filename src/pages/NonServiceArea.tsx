@@ -27,9 +27,7 @@ const customNavIcon = css`
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
   opacity: 1;
-  transition: opacity 300ms;
   width: 2.25rem;
   height: 2.75rem;
   text-decoration: none;

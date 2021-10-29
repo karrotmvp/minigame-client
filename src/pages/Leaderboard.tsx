@@ -23,10 +23,8 @@ const PageContainer = styled.div`
   background: #faf5f4;
 `;
 const customNav = css`
-  // position: fixed;
   left: 0;
   width: 100%;
-  // top: 0;
   display: flex;
   flex-flow: row;
   align-items: center;
@@ -40,9 +38,7 @@ const customNavIcon = css`
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
   opacity: 1;
-  transition: opacity 300ms;
   width: 2.25rem;
   height: 2.75rem;
   text-decoration: none;
@@ -154,8 +150,6 @@ const Leaderboard = () => {
       </div>
       <Heading>
         <EmphasizedSpan>{userNickname}</EmphasizedSpan>님은
-        <br />
-        {userDistrictName}에서
         <EmphasizedSpan> {userRank}위</EmphasizedSpan>
         에요!
       </Heading>
@@ -187,7 +181,7 @@ const Leaderboard = () => {
         <Button
           size={`medium`}
           color={`secondary`}
-          text={`자랑하기`}
+          text={`초대하기`}
           onClick={handleShare}
         />
         <Button

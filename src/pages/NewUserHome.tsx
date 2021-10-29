@@ -31,10 +31,8 @@ const Nav = styled.div`
   margin-bottom: -20px;
 `;
 const customNav = css`
-  // position: fixed;
   left: 0;
   width: 100%;
-  // top: 0;
   display: flex;
   flex-flow: row;
   align-items: center;
@@ -48,9 +46,7 @@ const customNavIcon = css`
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
   opacity: 1;
-  transition: opacity 300ms;
   width: 2.25rem;
   height: 2.75rem;
   text-decoration: none;
