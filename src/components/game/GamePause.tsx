@@ -5,7 +5,7 @@ import Button from '../buttons/Button';
 import { ReactComponent as Karrot } from 'assets/svg/karrot.svg';
 import TopUserGameEndModal from './TopUserGameEndModal';
 import { useHistory } from 'react-router';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import Modal from 'react-modal';
 import { commafy } from 'functions/numberFunctions';
 import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
@@ -71,9 +71,9 @@ type UserData = {
 Modal.setAppElement(document.createElement('div'));
 
 interface GamePauseProps {
-  closeModal: () => void;
+  setIsPaused: React.Dispatch<React.SetStateAction<boolean>>;
 }
-const GamePause = ({ closeModal }: GamePauseProps) => {
+const GamePause: React.FC<GamePauseProps> = (props) => {
   const { clickCount } = useClickCounter();
   const {
     accessToken,
@@ -96,7 +96,7 @@ const GamePause = ({ closeModal }: GamePauseProps) => {
   const karrotRaiseApi = useKarrotRaiseApi();
   const handleContinue = () => {
     analytics.logEvent('click_game_continue_button');
-    closeModal();
+    props.setIsPaused(false);
   };
   const handleGameEnd = async (
     karrotRaiseApi: KarrotRaiseApi,

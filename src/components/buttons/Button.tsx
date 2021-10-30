@@ -62,7 +62,7 @@ interface ButtonProps {
   size: string;
   color?: string;
   text: string;
-  onClick?: () => void;
+  onClick?: any;
 }
 
 export const DisabledButton = ({ size, text }: ButtonProps) => {

@@ -171,10 +171,11 @@ const Game = () => {
   const analytics = useAnalytics();
   const { userScore } = useUserData();
   const { clickCount, onIncrementClickCount, onResetCount } = useClickCounter();
-  const { start, resume, pause, getRemainingTime } = useIdleTimer({
+  const { start, reset, resume, pause, getRemainingTime } = useIdleTimer({
     timeout: 100,
     onIdle: handleOnIdle,
     startManually: true,
+    startOnMount: false,
     // debounce: 500,
     // element: BigKarrotRef.current,
   });
@@ -222,25 +223,25 @@ const Game = () => {
   useEffect(() => {
     analytics.logEvent('view_game_page');
     if (userScore === 0) {
+      console.log('userscore zero');
       setIsUserNew(true);
     } else {
       setIsUserNew(false);
-      start();
+      reset();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userScore]);
+  }, []);
 
   useEffect(() => {
     const intervalId = setInterval(() => {
+      console.log(isPaused);
       if (isPaused) {
         pause();
       } else {
         resume();
-        console.log('tick', getRemainingTime());
       }
     }, 500);
     return () => clearInterval(intervalId);
-  }, [getRemainingTime, isPaused, isUserNew, pause, resume]);
+  });
 
   // useEffect(() => {
   //   // history.block((location, action) => {
@@ -335,7 +336,7 @@ const Game = () => {
       {/* GAME PAUSE */}
       <Modal
         isOpen={isPaused}
-        onRequestClose={() => setIsPaused(false)}
+        // onRequestClose={() => setIsPaused(false)}
         shouldCloseOnOverlayClick={false}
         contentLabel="Game Pause"
         css={modalStyle}
@@ -346,12 +347,12 @@ const Game = () => {
           },
         }}
       >
-        <GamePause closeModal={() => setIsPaused(false)} />
+        <GamePause setIsPaused={setIsPaused} />
       </Modal>
       {/* GAME OVER */}
       <Modal
         isOpen={isGameOver}
-        onRequestClose={() => setIsGameOver(false)}
+        // onRequestClose={() => setIsGameOver(false)}
         shouldCloseOnOverlayClick={false}
         contentLabel="Game Over"
         css={modalStyle}
@@ -367,7 +368,7 @@ const Game = () => {
       {/* GAME DIRECTION */}
       <Modal
         isOpen={isUserNew}
-        onRequestClose={() => setIsUserNew(false)}
+        // onRequestClose={start()}
         shouldCloseOnOverlayClick={true}
         contentLabel="Game Direction Popup Modal"
         css={popupModalStyle}
