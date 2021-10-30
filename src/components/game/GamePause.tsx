@@ -5,13 +5,14 @@ import Button from '../buttons/Button';
 import { ReactComponent as Karrot } from 'assets/svg/karrot.svg';
 import TopUserGameEndModal from './TopUserGameEndModal';
 import { useHistory } from 'react-router';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import Modal from 'react-modal';
 import { commafy } from 'functions/numberFunctions';
 import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
 import { Analytics, useAnalytics } from 'services/analytics';
 import useUserData from 'hooks/useUserData';
 import useClickCounter from 'hooks/useClickCounter';
+import { getMini } from 'services/karrotMarket/mini';
 
 const modalStyle = css`
   position: absolute;
@@ -70,9 +71,9 @@ type UserData = {
 Modal.setAppElement(document.createElement('div'));
 
 interface GamePauseProps {
-  closeModal: () => void;
+  setIsPaused: React.Dispatch<React.SetStateAction<boolean>>;
 }
-const GamePause = ({ closeModal }: GamePauseProps) => {
+const GamePause: React.FC<GamePauseProps> = (props) => {
   const { clickCount } = useClickCounter();
   const {
     accessToken,
@@ -95,7 +96,7 @@ const GamePause = ({ closeModal }: GamePauseProps) => {
   const karrotRaiseApi = useKarrotRaiseApi();
   const handleContinue = () => {
     analytics.logEvent('click_game_continue_button');
-    closeModal();
+    props.setIsPaused(false);
   };
   const handleGameEnd = async (
     karrotRaiseApi: KarrotRaiseApi,
@@ -103,6 +104,12 @@ const GamePause = ({ closeModal }: GamePauseProps) => {
     clickCount: number,
     analytics: Analytics
   ) => {
+    // bypass in web environment
+    console.log('mini environment check,', getMini().environment);
+    if (getMini().environment === 'Web') {
+      history.push('/leaderboard');
+      return null;
+    }
     try {
       console.log(clickCount);
       analytics.logEvent('click_game_end_button', { score: clickCount });

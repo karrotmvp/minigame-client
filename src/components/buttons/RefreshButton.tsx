@@ -10,6 +10,9 @@ const Button = styled.button`
   font: inherit;
   outline: none;
   user-select: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
   &:active {
     transform: scale(1.2);

@@ -7,6 +7,7 @@ import { DefaultUserRow } from './DefaultRow';
 import useUserData from 'hooks/useUserData';
 import { TopUserRow } from './TopRow';
 import RefreshButton from '../buttons/RefreshButton';
+import WeeklyCountdown from 'components/WeeklyCountdown';
 
 const divStyle = css`
   // max-height: inherit;
@@ -21,7 +22,7 @@ const Refresh = styled.div`
   flex-flow: row;
   justify-content: space-between;
 
-  margin: 19px 2px 12px 0;
+  margin: 14px 2px 12px 0;
   p {
     font-style: normal;
     font-weight: 600;
@@ -119,7 +120,18 @@ const IndividualLeaderboard = () => {
   return (
     <div css={divStyle}>
       <Refresh>
-        <p>이번 주 랭킹</p>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'flex-end',
+            gap: '4px',
+          }}
+        >
+          <p>이번 주 랭킹</p>
+          <WeeklyCountdown />
+        </div>
         <RefreshButton
           refreshLeaderboard={() =>
             refreshLeaderboard(karrotRaiseApi, accessToken)
