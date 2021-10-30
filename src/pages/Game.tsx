@@ -171,7 +171,7 @@ const Game = () => {
   const analytics = useAnalytics();
   const { userScore } = useUserData();
   const { clickCount, onIncrementClickCount, onResetCount } = useClickCounter();
-  const { start, reset, resume, pause, getRemainingTime } = useIdleTimer({
+  const { reset, resume, pause } = useIdleTimer({
     timeout: 100,
     onIdle: handleOnIdle,
     startManually: true,
@@ -229,6 +229,7 @@ const Game = () => {
       setIsUserNew(false);
       reset();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
