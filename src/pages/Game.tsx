@@ -204,10 +204,10 @@ const Game = () => {
     pause();
   }
   function handlePause() {
-    analytics.logEvent('click_game_pause_button');
     pause();
     setAnimationPlayState('paused');
     setIsPaused(true);
+    analytics.logEvent('click_game_pause_button');
   }
   function handleGameOver() {
     handlePause();
@@ -303,7 +303,7 @@ const Game = () => {
               {commafy(userScore + clickCount)}
             </p>
           </TotalKarrotCount>
-          <PauseButton onClick={handlePause} />
+          <PauseButton onClick={() => handlePause} />
         </div>
         <ScoreWrapper>
           <h2
