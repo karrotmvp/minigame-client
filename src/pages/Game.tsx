@@ -303,7 +303,7 @@ const Game = () => {
               {commafy(userScore + clickCount)}
             </p>
           </TotalKarrotCount>
-          <PauseButton onClick={() => handlePause} />
+          <PauseButton onClick={handlePause} />
         </div>
         <ScoreWrapper>
           <h2
