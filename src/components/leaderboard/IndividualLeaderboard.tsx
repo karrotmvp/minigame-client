@@ -7,7 +7,7 @@ import { DefaultUserRow } from './DefaultRow';
 import useUserData from 'hooks/useUserData';
 import { TopUserRow } from './TopRow';
 import RefreshButton from '../buttons/RefreshButton';
-import WeeklyCountdown from 'components/WeeklyCountdown';
+// import WeeklyCountdown from 'components/WeeklyCountdown';
 
 const divStyle = css`
   // max-height: inherit;
