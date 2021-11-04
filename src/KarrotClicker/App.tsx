@@ -1,10 +1,10 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 // import 'app.css';
-import LoadingScreen from 'KarrotClicker/components/LoadingScreen';
-import NewUserHome from './pages/NewUserHome';
-import Game from './pages/Game';
-import Leaderboard from './pages/Leaderboard';
+import LoadingScreen from 'temp/components/LoadingScreen';
+import NewUserHome from '../temp/pages/NewUserHome';
+import Game from '../temp/pages/Game';
+import Leaderboard from '../temp/pages/Leaderboard';
 import { useCallback, useEffect, useState } from 'react';
 import {
   Route,
@@ -21,17 +21,17 @@ import {
   createFirebaseAnalytics,
   loadFromEnv as loadFirebaseAnalyticsConfig,
 } from 'services/analytics/firebase';
-import ReturningUserHome from 'KarrotClicker/pages/ReturningUserHome';
-import NonServiceArea from 'KarrotClicker/pages/NonServiceArea';
+import ReturningUserHome from 'temp/pages/ReturningUserHome';
+import NonServiceArea from 'temp/pages/NonServiceArea';
 import {
   emptyKarrotRaiseApi,
   KarrotRaiseApi,
   KarrotRaiseApiContext,
-} from 'KarrotClicker/services/karrotRaiseApi';
+} from 'services/karrotRaiseApi';
 import {
   createKarrotRaiseApi,
   loadFromEnv as loadKarrotRaiseApiConfig,
-} from 'KarrotClicker/services/api/karrotRaise';
+} from 'services/api/karrotRaise';
 import {
   emptyKarrotMarketMini,
   KarrotMarketMiniContext,
@@ -41,7 +41,7 @@ import {
   getMini,
   loadFromEnv as loadKarrotMarketMiniConfig,
 } from 'services/karrotMarket/mini';
-import useUserData from 'KarrotClicker/hooks/useUserData';
+import useUserData from 'hooks/useUserData';
 
 const appStyle = css`
   height: 100vh;

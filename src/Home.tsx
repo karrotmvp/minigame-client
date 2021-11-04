@@ -45,7 +45,10 @@ export const Home: React.FC = () => {
         <Cell backgroundColor={`#0E74FF`} onClick={() => push(`/game-2048`)}>
           <Title>2048 퍼즐</Title>
         </Cell>
-        <Cell backgroundColor={`#FF8845`}>
+        <Cell
+          backgroundColor={`#FF8845`}
+          onClick={() => push(`/karrot-clicker`)}
+        >
           <Title>당근모아</Title>
         </Cell>
         <Cell backgroundColor={`#0E74FF`}>

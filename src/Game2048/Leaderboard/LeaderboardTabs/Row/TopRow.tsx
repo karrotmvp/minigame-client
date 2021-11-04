@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { commafy } from 'KarrotClicker/functions/numberFunctions';
+import { commafy } from 'functions/numberFunctions';
 import Medal1Url from '../../../assets/images/medal1.png';
 import Medal2Url from '../../../assets/images/medal2.png';
 import Medal3Url from '../../../assets/images/medal2.png';

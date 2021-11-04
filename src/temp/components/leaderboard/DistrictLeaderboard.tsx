@@ -2,11 +2,11 @@
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 import { useCallback, useEffect, useState } from 'react';
-
+import { DefaultDistrictRow } from './DefaultRow';
+import { TopDistrictRow } from './TopRow';
 import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
-import { DefaultDistrictRow, TopDistrictRow } from '../Row';
-import { RefreshButton } from 'components/Button';
 import WeeklyCountdown from 'temp/components/WeeklyCountdown';
+import { RefreshButton } from '../../../components/Button';
 
 const divStyle = css`
   max-height: inherit;
@@ -49,7 +49,7 @@ const leaderboardWrapperStyle = css`
 `;
 
 // interface DistrictRankData {}
-export const DistrictLeaderboard = () => {
+const DistrictLeaderboard = () => {
   const [districtRankData, setDistrictRankData] = useState<any[]>([]);
   const karrotRaiseApi = useKarrotRaiseApi();
 
@@ -136,3 +136,5 @@ export const DistrictLeaderboard = () => {
     </div>
   );
 };
+
+export default DistrictLeaderboard;
