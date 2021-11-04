@@ -314,7 +314,7 @@ const Game = () => {
               color: 'rgba(235, 93, 14, 0.3)',
             }}
           >
-            Scorei
+            Score
           </h2>
           <ClickCount>{commafy(clickCount)}</ClickCount>
         </ScoreWrapper>
