@@ -1,10 +1,8 @@
 import styled from '@emotion/styled';
-import { commafy } from 'functions/numberFunctions';
-import Medal1Url from 'assets/svg/KarrotClicker/medal1.svg';
-import Medal2Url from 'assets/svg/KarrotClicker/medal2.svg';
-import Medal3Url from 'assets/svg/KarrotClicker/medal3.svg';
+import { commafy } from 'utils/functions/numberFunctions';
+import React from 'react';
 
-const Container = styled.div<{ me?: boolean; rank?: number }>`
+const Container = styled.div<{ me?: boolean }>`
   display: flex;
   flex-flow: row;
   align-items: center;
@@ -13,38 +11,20 @@ const Container = styled.div<{ me?: boolean; rank?: number }>`
   margin: 4px 0;
   width: 100%;
   border-radius: ${(props) => (props.me === true ? '10px' : '5px')};
-  border: 1px solid ${(props) => (props.me === true ? '#EBE0DB' : '#ececec')};
+  border: 1px solid #ececec;
   background-color: #fff;
-
-  position: relative;
-
-  &::before {
-    content: '';
-    background-image: ${(props) =>
-      props.rank === 1
-        ? `url(${Medal1Url})`
-        : props.rank === 2
-        ? `url(${Medal2Url})`
-        : props.rank === 3
-        ? `url(${Medal3Url})`
-        : `transparent`};
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center center;
-    width: 25px;
-    height: 32px;
-    position: absolute;
-    top: 0px;
-    left: 10px;
-  }
 `;
 
+const ContentsWrapper = styled.div`
+  flex: 1;
+`;
 const Rank = styled.div`
   width: 30px;
+
   display: flex;
   align-self: flex-start;
 
-  margin-top: 5px;
+  margin-top: 2px;
   margin-left: 5px;
 
   font-style: normal;
@@ -55,9 +35,6 @@ const Rank = styled.div`
 
   color: #5b5b5b;
 `;
-const ContentsWrapper = styled.div`
-  flex: 1;
-`;
 const Info = styled.div`
   display: flex;
   flex-flow: row;
@@ -65,28 +42,20 @@ const Info = styled.div`
   gap: 12px;
   margin-bottom: 4px;
 `;
-const Name = styled.div<{ rank: number }>`
+const Name = styled.div`
   display: flex;
   flex-flow: row;
   gap: 4px;
   align-items: center;
-
-  color: ${(props) =>
-    props.rank === 1
-      ? '#EB5D0E'
-      : props.rank === 2
-      ? '#ff8845'
-      : props.rank === 3
-      ? '#F39E6E'
-      : '#5B5B5B'};
 
   font-style: normal;
   font-weight: 600;
   font-size: 16px;
   line-height: 161.7%;
   /* identical to box height, or 26px */
-`;
 
+  color: #5b5b5b;
+`;
 const Score = styled.div`
   display: flex;
   justify-content: flex-end;
@@ -98,36 +67,6 @@ const Score = styled.div`
   line-height: 161.7%;
   /* or 19px */
   color: #5b5b5b;
-`;
-
-// TOP USER ROW
-const SpeechBalloon = styled.div`
-  position: relative;
-  width: fit-content;
-  padding: 2px 8px;
-  background: #f5f5f5;
-
-  border-radius: 5px;
-
-  &:after {
-    z-index: 1000;
-    content: '';
-    position: absolute;
-    top: 4px;
-    left: -10px;
-    width: 0;
-    height: 0;
-    border: 6px solid transparent;
-    border-right-color: #f5f5f5;
-  }
-
-  font-style: normal;
-  font-weight: noraml;
-  font-size: 10px;
-  line-height: 161.7%;
-  /* or 19px */
-
-  color: #616161;
 `;
 
 const DistrictName = styled.div<{ districtName: string }>`
@@ -181,27 +120,22 @@ const PlayerCount = styled.div`
 
   color: #7c7c7c;
 `;
-interface TopUserRowProps {
+
+interface DefaultUserRowProps {
   me?: boolean;
   rank: number;
   nickname: string;
   score: number;
-  comment: string;
   districtName: string;
 }
-export const TopUserRow: React.FC<TopUserRowProps> = (props) => {
-  let userComment;
-  if (props.comment.length <= 0) {
-    userComment = `한마디 작성 중...`;
-  } else {
-    userComment = `${props.comment}`;
-  }
+
+export const DefaultUserRow: React.FC<DefaultUserRowProps> = (props) => {
   return (
-    <Container me={props.me} rank={props.rank}>
-      <Rank>{props.rank <= 3 ? ' ' : commafy(props.rank)}</Rank>
+    <Container me={props.me}>
+      <Rank>{commafy(props.rank)}</Rank>
       <ContentsWrapper>
         <Info>
-          <Name rank={props.rank}>
+          <Name>
             <DistrictName districtName={props.districtName}>
               {props.districtName.slice(0, -1)}
             </DistrictName>
@@ -209,27 +143,27 @@ export const TopUserRow: React.FC<TopUserRowProps> = (props) => {
           </Name>
           <Score>{commafy(props.score)}</Score>
         </Info>
-        <SpeechBalloon>{userComment}</SpeechBalloon>
       </ContentsWrapper>
     </Container>
   );
 };
 
-interface TopDistrictTowProps {
+interface DefaultDistrictRowProps {
   rank: number;
   cityName: string;
   districtName: string;
   playerCount: number;
   score: number;
-  // comment: string;
 }
-export const TopDistrictRow: React.FC<TopDistrictTowProps> = (props) => {
+export const DefaultDistrictRow: React.FC<DefaultDistrictRowProps> = (
+  props
+) => {
   return (
-    <Container rank={props.rank}>
-      <Rank>{props.rank <= 3 ? ' ' : commafy(props.rank)}</Rank>
+    <Container>
+      <Rank>{commafy(props.rank)}</Rank>
       <ContentsWrapper>
         <Info>
-          <Name rank={props.rank}>
+          <Name>
             {props.cityName.slice(0, -3)} {props.districtName}
           </Name>
           <Score>{commafy(props.score)}</Score>

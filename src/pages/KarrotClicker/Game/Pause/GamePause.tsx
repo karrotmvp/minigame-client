@@ -2,16 +2,16 @@
 import { css } from '@emotion/react';
 import { emphasizedTextStyle, largeTextStyle } from 'styles/textStyle';
 import { ReactComponent as Karrot } from 'assets/svg/KarrotClicker/small_circle_karrot.svg';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import Modal from 'react-modal';
-import { commafy } from 'functions/numberFunctions';
+import { commafy } from 'utils/functions/numberFunctions';
 import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
 import { Analytics, useAnalytics } from 'services/analytics';
 import useUserData from 'hooks/useUserData';
 import useClickCounter from 'hooks/useClickCounter';
 import { getMini } from 'services/karrotMarket/mini';
 import { Button } from 'components/Button';
-import { TopRank } from './TopRank';
+import { TopRank } from '../GameOver';
 import { useNavigator } from '@karrotframe/navigator';
 
 const modalStyle = css`
@@ -70,14 +70,13 @@ type UserData = {
 };
 Modal.setAppElement(document.createElement('div'));
 
-type Props = {
-  setIsGameOver: React.Dispatch<React.SetStateAction<boolean>>;
-};
-export const GameOver: React.FC<Props> = (props) => {
+interface GamePauseProps {
+  setIsPaused: React.Dispatch<React.SetStateAction<boolean>>;
+}
+export const GamePause: React.FC<GamePauseProps> = (props) => {
   const analytics = useAnalytics();
   const karrotRaiseApi = useKarrotRaiseApi();
   const { push } = useNavigator();
-
   const { clickCount } = useClickCounter();
   const {
     accessToken,
@@ -100,6 +99,13 @@ export const GameOver: React.FC<Props> = (props) => {
   const goToLeaderboardPage = () => {
     push(`/karrot-clicker/leaderboard`);
   };
+
+  // Button handler
+  const handleContinue = () => {
+    analytics.logEvent('click_game_continue_button');
+    props.setIsPaused(false);
+  };
+
   const handleGameEnd = async (
     karrotRaiseApi: KarrotRaiseApi,
     accessToken: string,
@@ -107,13 +113,11 @@ export const GameOver: React.FC<Props> = (props) => {
     analytics: Analytics
   ) => {
     // bypass in web environment
-    console.log(
-      'gameover modal,mini environment check,',
-      getMini().environment
-    );
+    console.log('mini environment check,', getMini().environment);
     if (getMini().environment === 'Web') {
-      props.setIsGameOver(false);
+      props.setIsPaused(false);
       goToLeaderboardPage();
+      return null;
     }
     try {
       console.log(clickCount);
@@ -123,8 +127,8 @@ export const GameOver: React.FC<Props> = (props) => {
         clickCount
       );
       if (status === 200) {
-        const { data, status } = await karrotRaiseApi.getUserInfo(accessToken);
-        if (status === 200) {
+        const { data } = await karrotRaiseApi.getUserInfo(accessToken);
+        if (data) {
           const { nickname, score, rank, comment } = data;
           onUpdateUserData(userId, nickname, score, rank, comment);
           setUserData({
@@ -171,8 +175,14 @@ export const GameOver: React.FC<Props> = (props) => {
       >
         <Button
           size={`medium`}
+          color={`secondary`}
+          text={`계속하기`}
+          onClick={handleContinue}
+        />
+        <Button
+          size={`medium`}
           color={`primary`}
-          text={`랭킹보기`}
+          text={`게임종료`}
           onClick={() =>
             handleGameEnd(karrotRaiseApi, accessToken, clickCount, analytics)
           }

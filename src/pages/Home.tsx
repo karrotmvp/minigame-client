@@ -15,7 +15,7 @@ const Grid = styled.div`
 `;
 
 const Cell = styled.div<{ backgroundColor: string }>`
-  aspect-ratio: 1;
+  // aspect-ratio: 1;
   background-color: ${(props) => props.backgroundColor};
 `;
 

@@ -1,4 +1,4 @@
-import { TileProps } from '../Game2048/Game/Tile';
+import { TileProps } from '../pages/Game2048/Game/Tile';
 // action types
 export const CREATE_TILE = 'game2048/CREATE_TILE' as const;
 export const UPDATE_TILE = 'game2048/UPDATE_TILE' as const;

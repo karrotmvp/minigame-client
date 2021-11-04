@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
 import { ScreenHelmet, useNavigator } from '@karrotframe/navigator';
-import { LeaderboardTabs } from 'Game2048/Leaderboard/LeaderboardTabs';
+import { LeaderboardTabs } from 'pages/Game2048/Leaderboard/LeaderboardTabs';
 import { RefreshCountdown } from 'components/RefreshCountdown';
 import { LastWeekTopDistrict, LastWeekTopTownie } from './LastWeekWinner';
 

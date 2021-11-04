@@ -3,7 +3,7 @@ import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 import React, { useEffect, useRef, useState } from 'react';
 import Modal from 'react-modal';
-import { commafy } from 'functions/numberFunctions';
+import { commafy } from 'utils/functions/numberFunctions';
 import { useAnalytics } from 'services/analytics';
 import useClickCounter from 'hooks/useClickCounter';
 import useUserData from 'hooks/useUserData';

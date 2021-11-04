@@ -8,12 +8,12 @@ import useUserData from 'hooks/useUserData';
 import TopImageUrl from 'assets/images/KarrotClicker/home_top_banner.png';
 import { Button } from 'components/Button';
 import { BackButton } from 'components/Button/NavigationButton';
-import { ActiveUserCount } from '../../components/ActiveUserCount';
-import { LeaderboardTabs } from 'KarrotClicker/Leaderboard/LeaderboardTabs';
+import { ActiveUserCount } from '../../../components/ActiveUserCount';
+import { LeaderboardTabs } from 'pages/KarrotClicker/Leaderboard/LeaderboardTabs';
 import {
   DefaultUserRow,
   TopUserRow,
-} from 'KarrotClicker/Leaderboard/LeaderboardTabs/Row';
+} from 'pages/KarrotClicker/Leaderboard/LeaderboardTabs/Row';
 
 const PageContainer = styled.div`
   display: flex;

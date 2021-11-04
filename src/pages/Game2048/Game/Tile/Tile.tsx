@@ -11,18 +11,30 @@ export type TileProps = {
 
 interface Props extends TileProps {
   boardWidth: number;
+  cellWidth: number;
 }
 
-const SingleTile = styled.div<{ value: number }>`
+const SingleTile = styled.div<{
+  value: number;
+  tileWidth: number;
+  scale: number;
+  offsetX: number;
+  offsetY: number;
+}>`
   position: absolute;
   display: flex;
   justify-content: center;
   align-items: center;
+  width: ${(props) => props.tileWidth}px;
+  height: ${(props) => props.tileWidth - 6}px;
+
+  border-radius: 3px
 
   transition-property: left, top, transform;
   transition-duration: 250ms, 250ms, 100ms;
-  transform: scale(1);
-
+  transform: ${(props) => `scale(${props.scale})`};
+  top: ${(props) => props.offsetY}px;
+  left: ${(props) => props.offsetX}px;
   font-style: normal;
   font-weight: 600;
   font-size: ${(props) =>
@@ -42,12 +54,20 @@ const SingleTile = styled.div<{ value: number }>`
       : `0px 6px 0px 0px #000000`};
 `;
 
-export const Tile = ({ boardWidth, id, coordinate, value }: Props) => {
+export const Tile = ({
+  boardWidth,
+  cellWidth,
+  id,
+  coordinate,
+  value,
+}: Props) => {
   const [scale, setScale] = useState(1);
-
-  const tileWidth = (boardWidth - boardPadding * 16 * 5) / 4;
+  console.log(boardWidth);
+  const tileWidth = cellWidth;
   const coordinateToPixels = (coordinate: number) => {
-    const pixel = (coordinate / 4) * boardWidth + boardPadding * 16;
+    const pixel =
+      (cellWidth + boardPadding * 16) * coordinate + boardPadding * 16;
+    console.log(pixel);
     return pixel;
   };
 
@@ -62,19 +82,15 @@ export const Tile = ({ boardWidth, id, coordinate, value }: Props) => {
       setTimeout(() => setScale(1), 100);
     }
   }, [shouldAnimate, scale]);
-  const style = {
-    width: tileWidth,
-    height: tileWidth,
-    top: coordinateToPixels(coordinate[1]),
-    left: coordinateToPixels(coordinate[0]),
-    transform: `scale(${scale})`,
-  };
 
   return (
     <SingleTile
       className={`tile id-${id} value-${value}`}
-      style={style}
       value={value}
+      tileWidth={tileWidth}
+      scale={scale}
+      offsetX={coordinateToPixels(coordinate[0])}
+      offsetY={coordinateToPixels(coordinate[1])}
     >
       {value}
     </SingleTile>

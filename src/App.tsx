@@ -2,13 +2,13 @@ import React, { useEffect, useState } from 'react';
 import '@karrotframe/navigator/index.css';
 import { Navigator, Screen } from '@karrotframe/navigator';
 // import { KarrotClickerApp } from 'KarrotClicker';
-import { Home } from 'Home';
-import { Game2048Home } from 'Game2048/Home';
-import { Game2048Game } from 'Game2048/Game';
-import { Game2048Leaderboard } from 'Game2048/Leaderboard';
-import { KarrotClickerHome } from 'KarrotClicker/Home';
-import { KarrotClickerGame } from 'KarrotClicker/Game';
-import { KarrotClickerLeaderboard } from 'KarrotClicker/Leaderboard';
+import { Home } from 'pages/Home';
+import { Game2048Home } from 'pages/Game2048/Home';
+import { Game2048Game } from 'pages/Game2048/Game';
+import { Game2048Leaderboard } from 'pages/Game2048/Leaderboard';
+import { KarrotClickerHome } from 'pages/KarrotClicker/Home';
+import { KarrotClickerGame } from 'pages/KarrotClicker/Game';
+import { KarrotClickerLeaderboard } from 'pages/KarrotClicker/Leaderboard';
 import {
   createFirebaseAnalytics,
   loadFromEnv as loadFirebaseAnalyticsConfig,
@@ -32,7 +32,7 @@ import {
   loadFromEnv as loadKarrotMarketMiniConfig,
 } from 'services/karrotMarket/mini';
 import { AnalyticsContext, emptyAnalytics } from 'services/analytics';
-import { NonServiceArea } from 'components/NonServiceArea';
+import { NonServiceArea } from 'pages/NonServiceArea';
 import useUserData from 'hooks/useUserData';
 import { withLogIn, withOpenRegion } from 'components/hoc';
 
