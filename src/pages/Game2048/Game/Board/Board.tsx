@@ -40,7 +40,7 @@ const Cell = styled.div<{ cellWidth: number }>`
   width: ${(props) => props.cellWidth}px;
   height: ${(props) => props.cellWidth}px;
   background: #f5f8fb;
-  border-radius: 3px;
+  border-radius: 10px;
 `;
 
 export const Board = () => {
@@ -92,9 +92,8 @@ export const Board = () => {
           moveDown();
           break;
       }
-      console.log('GameSection', tileList);
     },
-    [tileList, moveRight, moveLeft, moveUp, moveDown]
+    [moveRight, moveLeft, moveUp, moveDown]
   );
   const throttledHandleKeyDown = useThrottledCallback(
     handleKeyDown,
@@ -130,13 +129,7 @@ export const Board = () => {
         boardWidth={boardWidth}
       >
         {tileList.map(({ id, ...rest }) => (
-          <Tile
-            id={id}
-            key={`tile-${id}`}
-            {...rest}
-            boardWidth={boardWidth}
-            cellWidth={cellWidth}
-          />
+          <Tile id={id} key={`tile-${id}`} {...rest} cellWidth={cellWidth} />
         ))}
       </TileContainer>
       <Grid>
