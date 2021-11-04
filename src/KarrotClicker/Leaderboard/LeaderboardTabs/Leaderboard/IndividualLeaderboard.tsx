@@ -3,9 +3,11 @@ import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 import { useCallback, useEffect, useState } from 'react';
 import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
+
 import useUserData from 'hooks/useUserData';
-import { TopUserRow } from '../Row/TopRow';
-import { DefaultUserRow } from '../Row/DefaultRow';
+import { RefreshButton } from 'components/Button';
+import { DefaultUserRow, TopUserRow } from '../Row';
+import { RefreshCountdown } from 'components/RefreshCountdown';
 
 const divStyle = css`
   // max-height: inherit;
@@ -15,6 +17,22 @@ const divStyle = css`
   overflow: hidden;
 `;
 
+const Refresh = styled.div`
+  display: flex;
+  flex-flow: row;
+  justify-content: space-between;
+
+  margin: 14px 2px 12px 0;
+  p {
+    font-style: normal;
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 161.7%;
+    /* or 19px */
+
+    color: #5b5b5b;
+  }
+`;
 const LeaderboardWrapper = styled.div`
   display: flex;
   flex-flow: column;
@@ -101,6 +119,26 @@ export const IndividualLeaderboard = () => {
 
   return (
     <div css={divStyle}>
+      <Refresh>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'flex-end',
+            gap: '4px',
+          }}
+        >
+          <p>이번 주 랭킹</p>
+          <RefreshCountdown />
+        </div>
+        <RefreshButton
+          refreshLeaderboard={() =>
+            refreshLeaderboard(karrotRaiseApi, accessToken)
+          }
+        />
+      </Refresh>
+
       <LeaderboardWrapper>
         {individualRankData.slice(0, 10).map((user) => {
           return (

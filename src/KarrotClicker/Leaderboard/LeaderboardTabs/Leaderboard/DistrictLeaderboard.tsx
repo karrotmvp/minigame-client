@@ -1,11 +1,10 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
+import { RefreshButton } from 'components/Button';
 import { useCallback, useEffect, useState } from 'react';
-
 import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
 import { DefaultDistrictRow, TopDistrictRow } from '../Row';
-import { RefreshButton } from 'components/Button';
 import { RefreshCountdown } from 'components/RefreshCountdown';
 
 const divStyle = css`
@@ -48,7 +47,6 @@ const leaderboardWrapperStyle = css`
   scrollbar-width: none; /* Firefox */
 `;
 
-// interface DistrictRankData {}
 export const DistrictLeaderboard = () => {
   const [districtRankData, setDistrictRankData] = useState<any[]>([]);
   const karrotRaiseApi = useKarrotRaiseApi();
