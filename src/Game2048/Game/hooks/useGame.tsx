@@ -1,310 +1,319 @@
-import React, { useCallback, useEffect, useReducer, useRef } from 'react';
-import { gameInitialState, gameReducer } from '../reducers/gameReducer';
+import { useCallback, useEffect, useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from 'reducers/rootReducer';
+import {
+  createTileAction,
+  mergeTileAction,
+  moveEndAction,
+  moveStartAction,
+  updateScoreAction,
+  updateTileAction,
+} from 'reducers/game2048Reducer';
+import { animationDuration } from '../styles';
 import { TileProps } from '../Tile';
-
-let uniqueId = 1;
-const getUniqueId = () => {
-  const nextId = () => {
-    return uniqueId++;
-  };
-
-  return nextId;
-};
-const coordinateToIndex = (coordinate: [number, number]) => {
-  return coordinate[1] * 4 + coordinate[0];
-};
-
-const indexToCoordinate = (index: number) => {
-  const x = index % 4;
-  const y = Math.floor(index / 4);
-  return [x, y];
-};
+import { useUniqueId } from './useUniqueId';
 
 export const useGame = () => {
-  const initialRender = useRef(true);
-  const [state, dispatch] = useReducer(gameReducer, gameInitialState);
-  const uniqueId = getUniqueId();
-  const tileArray: TileProps[] = state.byIds.map((id) => state.tiles[id]);
+  const isInitialRender = useRef(true);
+  const nextId = useUniqueId();
 
-  //   const arr = [1,2,3,4,5,6,7,8,9];
-
-  // const newArr = [];
-  // while(arr.length) newArr.push(arr.splice(0,3));
-
-  // console.log(newArr);
-  const indexToCoordinate = (index: number) => {
-    const row = Math.floor(index / 4);
-    const col = index % 4;
-    return [row, col];
-  };
-
-  // const isEmptyCell = (board: number[][]) => {
-  //   for (let i = 0; i < board.length; i++) {
-  //     for (let j = 0; j < board[i].length; j++) {
-  //       if (board[i][j] === 0) return true;
-  //     }
-  //   }
-  // };
+  const { tiles, byIds, hasChanged, inMotion } = useSelector(
+    (state: RootState) => ({
+      tiles: state.game2048Reducer.tiles,
+      byIds: state.game2048Reducer.byIds,
+      hasChanged: state.game2048Reducer.hasChanged,
+      inMotion: state.game2048Reducer.inMotion,
+    })
+  );
+  const dispatch = useDispatch();
   const createTile = useCallback(
     ({ coordinate, value }: Partial<TileProps>) => {
       const tile = {
-        id: uniqueId(),
+        id: nextId(),
         coordinate,
         value,
       } as TileProps;
-      dispatch({ type: 'create', tile });
+      dispatch(createTileAction(tile));
     },
-    [uniqueId]
+    [dispatch, nextId]
   );
+  // A must-have to keep the sliding animation if the action merges tiles together.
   const mergeTile = (source: TileProps, destination: TileProps) => {
-    dispatch({ type: 'merge', source, destination });
+    dispatch(mergeTileAction(source, destination));
   };
 
-  const getBoard = useCallback(() => {
-    const board: number[] = Array(16).fill(0);
-    state.byIds.forEach((id) => {
-      const { coordinate } = state.tiles[id];
+  // A must-have to keep the sliding animation if the action merges tiles together.
+  const throttledMergeTile = (source: TileProps, destination: TileProps) => {
+    setTimeout(() => mergeTile(source, destination), animationDuration);
+  };
+
+  const updateTile = (tile: TileProps) => {
+    dispatch(updateTileAction(tile));
+  };
+
+  const didTileMove = (source: TileProps, destination: TileProps) => {
+    const hasXChanged = source.coordinate[0] !== destination.coordinate[0];
+    const hasYChanged = source.coordinate[1] !== destination.coordinate[1];
+
+    return hasXChanged || hasYChanged;
+  };
+
+  const retrieveTileMap = useCallback(() => {
+    const tileMap = new Array(16).fill(0);
+
+    byIds.forEach((id) => {
+      const { coordinate } = tiles[id];
       const index = coordinateToIndex(coordinate);
-      board[index] = id;
+      tileMap[index] = id;
     });
-    // const board2D = [];
-    // while (board.length > 0) {
-    //   board2D.push(board.splice(0, 4));
-    // }
-    // console.log(board2D);
-    console.log('previousBoard', board);
 
-    return board;
-  }, [state.byIds, state.tiles]);
+    return tileMap;
+  }, [byIds, tiles]);
 
-  const findEmptyCells = useCallback(() => {
-    const board = getBoard();
-    let emptyCells = [];
-    for (let i = 0; i < board.length; i++) {
-      if (board[i] === 0) {
-        emptyCells.push(i);
+  const findEmptyTiles = useCallback(() => {
+    const tileMap = retrieveTileMap();
+
+    const emptyTiles = tileMap.reduce((result, tileId, index) => {
+      if (tileId === 0) {
+        return [...result, indexToCoordinate(index) as [number, number]];
       }
-    }
-    return emptyCells;
-  }, [getBoard]);
+
+      return result;
+    }, [] as [number, number][]);
+
+    return emptyTiles;
+  }, [retrieveTileMap]);
 
   const generateRandomTile = useCallback(() => {
-    // 10% chance of 4 tile is being generated
-    const randomValue = () => {
-      const random = Math.random();
-      if (random < 0.1) {
-        return 4;
-      } else {
-        return 2;
-      }
-    };
-    const randomIndex = () => {
-      return Math.floor(Math.random() * 16);
-    };
+    const emptyTiles = findEmptyTiles();
 
-    const emptyCells = findEmptyCells();
-    if (emptyCells.length > 0) {
-      const coordinate = indexToCoordinate(randomIndex()) as [number, number];
-      const value = randomValue();
-      createTile({ coordinate, value });
+    if (emptyTiles.length > 0) {
+      const index = Math.floor(Math.random() * emptyTiles.length);
+      const coordinate = emptyTiles[index];
+
+      createTile({ coordinate, value: 2 });
     }
-  }, [createTile, findEmptyCells]);
+  }, [findEmptyTiles, createTile]);
 
-  // const move = () => {
-  //   // new tiles cannot be created during motion.
-  //   // dispatch({ type: "START_MOVE" });
-
-  //   const maxIndex = 3;
-
-  //   // iterates through every row or column (depends on move kind - vertical or horizontal).
-  //   for (
-  //     let rowOrColumnIndex = 0;
-  //     rowOrColumnIndex < 4;
-  //     rowOrColumnIndex += 1
-  //   ) {
-  //     // retrieves tiles in the row or column.
-  //     const availableTileIds = retrieveTileIdsPerRowOrColumn(rowOrColumnIndex);
-
-  //     // previousTile is used to determine if tile can be merged with the current tile.
-  //     let previousTile: TileProps | undefined;
-  //     // mergeCount helps to fill gaps created by tile merges - two tiles become one.
-  //     let mergedTilesCount = 0;
-
-  //     // interate through available tiles.
-  //     availableTileIds.forEach((tileId, nonEmptyTileIndex) => {
-  //       const currentTile = tiles[tileId];
-
-  //       // if previous tile has the same value as the current one they should be merged together.
-  //       if (
-  //         previousTile !== undefined &&
-  //         previousTile.value === currentTile.value
-  //       ) {
-  //         const tile = {
-  //           ...currentTile,
-  //           position: previousTile.position,
-  //           mergeWith: previousTile.id,
-  //         } as TileMeta;
-
-  //         // delays the merge by 250ms, so the sliding animation can be completed.
-  //         throttledMergeTile(tile, previousTile);
-  //         // previous tile must be cleared as a single tile can be merged only once per move.
-  //         previousTile = undefined;
-  //         // increment the merged counter to correct position for the consecutive tiles to get rid of gaps
-  //         mergedTilesCount += 1;
-
-  //         return updateTile(tile);
-  //       }
-
-  //       // else - previous and current tiles are different - move the tile to the first free space.
-  //       const tile = {
-  //         ...currentTile,
-  //         position: indexToPosition(
-  //           calculateFirstFreeIndex(
-  //             rowOrColumnIndex,
-  //             nonEmptyTileIndex,
-  //             mergedTilesCount,
-  //             maxIndex
-  //           )
-  //         ),
-  //       } as TileMeta;
-
-  //       // previous tile become the current tile to check if the next tile can be merged with this one.
-  //       previousTile = tile;
-
-  //       // only if tile has changed its position it will be updated
-  //       if (didTileMove(currentTile, tile)) {
-  //         return updateTile(tile);
-  //       }
-  //     });
-  //   }
-
-  //   // wait until the end of all animations.
-  //   const animationDuration = 250;
-  //   setTimeout(() => dispatch({ type: 'move_end' }), animationDuration);
-  // };
-
-  // const moveLeft = () => {
-  //   const retrieveTileIdsByRow = (rowIndex: number) => {
-  //     const tileMap = retrieveTileMap();
-
-  //     const tileIdsInRow = [
-  //       tileMap[rowIndex * tileCountPerRowOrColumn + 0],
-  //       tileMap[rowIndex * tileCountPerRowOrColumn + 1],
-  //       tileMap[rowIndex * tileCountPerRowOrColumn + 2],
-  //       tileMap[rowIndex * tileCountPerRowOrColumn + 3],
-  //     ];
-
-  //     const nonEmptyTiles = tileIdsInRow.filter((id) => id !== 0);
-  //     return nonEmptyTiles;
-  //   };
-
-  //   const calculateFirstFreeIndex = (
-  //     tileIndex: number,
-  //     tileInRowIndex: number,
-  //     howManyMerges: number,
-  //     _: number
-  //   ) => {
-  //     return (
-  //       tileIndex * tileCountPerRowOrColumn + tileInRowIndex - howManyMerges
-  //     );
-  //   };
-
-  //   return move.bind(this, retrieveTileIdsByRow, calculateFirstFreeIndex);
-  // };
-
-  const convertTo2D = (board: number[]) => {
-    let board2D = [];
-    while (board.length > 0) {
-      board2D.push(board.splice(0, 4));
-    }
-    return board2D as number[][];
-  };
-  const moveRight = () => {
-    const board = getBoard();
-    const board2D = convertTo2D(board);
-    let newBoard = [];
-    for (let i = 0; i < board2D.length; i++) {
-      let filteredRow = board2D[i].filter((row) => row);
-      let emptyCells = Array(4 - filteredRow.length).fill(0);
-      let newRow = emptyCells.concat(filteredRow);
-      newBoard.push(newRow);
-    }
-    console.log('newboard', newBoard);
-    return newBoard;
-    // const nonEmptyCells = board2D.filter((id) => id !== 0);
-    // console.log('nonEmptyCells', nonEmptyCells);
-
-    // const nonEmptyCells = board2D.filter((id) => id !== 0);
+  const coordinateToIndex = (coordinate: [number, number]) => {
+    return coordinate[1] * 4 + coordinate[0];
   };
 
-  // const moveLeft = () => {
-  //   const board = getBoard();
-  //   let board2D = [];
-  //   while (board.length > 0) {
-  //     board2D.push(board.splice(0, 4));
-  //   }
-  //   let newBoard = [];
-  //   for (let i = 0; i < board2D.length; i++) {
-  //     let filteredRow = board2D[i].filter((row) => row);
-  //     let emptyCells = Array(4 - filteredRow.length).fill(0);
-  //     let newRow = filteredRow.concat(emptyCells);
-  //     newBoard.push(newRow);
-  //   }
-  //   // board = newBoard;
-  //   console.log('new', newBoard);
-  //   return newBoard;
-  // };
-  // console.log(state.tiles);
+  const indexToCoordinate = (index: number) => {
+    const x = index % 4;
+    const y = Math.floor(index / 4);
+    return [x, y];
+  };
 
-  // const moveRight = () => {
-  //   const board2D = [];
-  //   while (board.length > 0) {
-  //     board2D.push(board.splice(0, 4));
-  //   }
-  //   console.log(board2D);
-  //   let newBoard = [];
-  //   for (let i = 0; i < board2D.length; i++) {
-  //     let filteredRow = board2D[i].filter((row) => row);
-  //     let emptyCells = Array(4 - filteredRow.length).fill(0);
-  //     let newRow = emptyCells.concat(filteredRow);
-  //     newBoard.push(newRow);
-  //   }
-  //   // board = newBoard;
-  //   return newBoard;
-  // };
-  // const moveLeft = () => {
-  //   const board2D = [];
-  //   while (board.length > 0) {
-  //     board2D.push(board.splice(0, 4));
-  //   }
-  //   console.log(board2D);
-  //   let newBoard = [];
-  //   for (let i = 0; i < board2D.length; i++) {
-  //     let filteredRow = board2D[i].filter((row) => row);
-  //     let emptyCells = Array(4 - filteredRow.length).fill(0);
-  //     let newRow = filteredRow.concat(emptyCells);
-  //     newBoard.push(newRow);
-  //   }
-  //   return newBoard;
-  // };
+  type RetrieveTileIdsPerRowOrColumn = (rowOrColumnIndex: number) => number[];
 
-  const merge = () => {};
+  type CalculateTileIndex = (
+    tileIndex: number,
+    tileInRowIndex: number,
+    howManyMerges: number,
+    maxIndexInRow: number
+  ) => number;
 
-  // array transpose
-  // array[0].map((_, colIndex) => array.map(row => row[colIndex]));
+  const move = (
+    retrieveTileIdsPerRowOrColumn: RetrieveTileIdsPerRowOrColumn,
+    calculateFirstFreeIndex: CalculateTileIndex
+  ) => {
+    // new tiles cannot be created during motion.
+    dispatch(moveStartAction());
+    const maxIndex = 4 - 1;
+    // iterates through every row or column (depends on move kind - vertical or horizontal).
+    for (
+      let rowOrColumnIndex = 0;
+      rowOrColumnIndex < 4;
+      rowOrColumnIndex += 1
+    ) {
+      // retrieves tiles in the row or column.
+      const availableTileIds = retrieveTileIdsPerRowOrColumn(rowOrColumnIndex);
+
+      // previousTile is used to determine if tile can be merged with the current tile.
+      let previousTile: TileProps | undefined;
+      // mergeCount helps to fill gaps created by tile merges - two tiles become one.
+      let mergedTilesCount = 0;
+      // interate through available tiles.
+      availableTileIds.forEach((tileId, nonEmptyTileIndex) => {
+        const currentTile = tiles[tileId];
+
+        // if previous tile has the same value as the current one they should be merged together.
+        if (
+          previousTile !== undefined &&
+          previousTile.value === currentTile.value
+        ) {
+          const tile = {
+            ...currentTile,
+            coordinate: previousTile.coordinate,
+            mergeWith: previousTile.id,
+          } as TileProps;
+
+          // delays the merge by 250ms, so the sliding animation can be completed.
+          let score = currentTile.value * 2;
+          throttledMergeTile(tile, previousTile);
+          dispatch(updateScoreAction(score));
+          // previous tile must be cleared as a single tile can be merged only once per move.
+          previousTile = undefined;
+          // increment the merged counter to correct coordinate for the consecutive tiles to get rid of gaps
+          mergedTilesCount += 1;
+
+          return updateTile(tile);
+        }
+
+        // else - previous and current tiles are different - move the tile to the first free space.
+        const tile = {
+          ...currentTile,
+          coordinate: indexToCoordinate(
+            calculateFirstFreeIndex(
+              rowOrColumnIndex,
+              nonEmptyTileIndex,
+              mergedTilesCount,
+              maxIndex
+            )
+          ),
+        } as TileProps;
+
+        // previous tile become the current tile to check if the next tile can be merged with this one.
+        previousTile = tile;
+
+        // only if tile has changed its coordinate it will be updated
+        if (didTileMove(currentTile, tile)) {
+          return updateTile(tile);
+        }
+      });
+    }
+    // wait until the end of all animations.
+    setTimeout(() => dispatch(moveEndAction()), animationDuration);
+    // dispatch({ type: 'update_score', score: 0 });
+  };
+
+  const moveLeftFactory = () => {
+    const retrieveTileIdsByRow = (rowIndex: number) => {
+      const tileMap = retrieveTileMap();
+
+      const tileIdsInRow = [
+        tileMap[rowIndex * 4 + 0],
+        tileMap[rowIndex * 4 + 1],
+        tileMap[rowIndex * 4 + 2],
+        tileMap[rowIndex * 4 + 3],
+      ];
+
+      const nonEmptyTiles = tileIdsInRow.filter((id) => id !== 0);
+      return nonEmptyTiles;
+    };
+
+    const calculateFirstFreeIndex = (
+      tileIndex: number,
+      tileInRowIndex: number,
+      howManyMerges: number,
+      _: number
+    ) => {
+      return tileIndex * 4 + tileInRowIndex - howManyMerges;
+    };
+
+    return move.bind(this, retrieveTileIdsByRow, calculateFirstFreeIndex);
+  };
+  const moveRightFactory = () => {
+    const retrieveTileIdsByRow = (rowIndex: number) => {
+      const tileMap = retrieveTileMap();
+
+      const tileIdsInRow = [
+        tileMap[rowIndex * 4 + 0],
+        tileMap[rowIndex * 4 + 1],
+        tileMap[rowIndex * 4 + 2],
+        tileMap[rowIndex * 4 + 3],
+      ];
+
+      const nonEmptyTiles = tileIdsInRow.filter((id) => id !== 0);
+      return nonEmptyTiles.reverse();
+    };
+
+    const calculateFirstFreeIndex = (
+      tileIndex: number,
+      tileInRowIndex: number,
+      howManyMerges: number,
+      maxIndexInRow: number
+    ) => {
+      return tileIndex * 4 + maxIndexInRow + howManyMerges - tileInRowIndex;
+    };
+
+    return move.bind(this, retrieveTileIdsByRow, calculateFirstFreeIndex);
+  };
+  const moveUpFactory = () => {
+    const retrieveTileIdsByColumn = (columnIndex: number) => {
+      const tileMap = retrieveTileMap();
+
+      const tileIdsInColumn = [
+        tileMap[columnIndex + 4 * 0],
+        tileMap[columnIndex + 4 * 1],
+        tileMap[columnIndex + 4 * 2],
+        tileMap[columnIndex + 4 * 3],
+      ];
+
+      const nonEmptyTiles = tileIdsInColumn.filter((id) => id !== 0);
+      return nonEmptyTiles;
+    };
+
+    const calculateFirstFreeIndex = (
+      tileIndex: number,
+      tileInColumnIndex: number,
+      howManyMerges: number,
+      _: number
+    ) => {
+      return tileIndex + 4 * (tileInColumnIndex - howManyMerges);
+    };
+
+    return move.bind(this, retrieveTileIdsByColumn, calculateFirstFreeIndex);
+  };
+  const moveDownFactory = () => {
+    const retrieveTileIdsByColumn = (columnIndex: number) => {
+      const tileMap = retrieveTileMap();
+
+      const tileIdsInColumn = [
+        tileMap[columnIndex + 4 * 0],
+        tileMap[columnIndex + 4 * 1],
+        tileMap[columnIndex + 4 * 2],
+        tileMap[columnIndex + 4 * 3],
+      ];
+
+      const nonEmptyTiles = tileIdsInColumn.filter((id) => id !== 0);
+      return nonEmptyTiles.reverse();
+    };
+
+    const calculateFirstFreeIndex = (
+      tileIndex: number,
+      tileInColumnIndex: number,
+      howManyMerges: number,
+      maxIndexInColumn: number
+    ) => {
+      return (
+        tileIndex + 4 * (maxIndexInColumn - tileInColumnIndex + howManyMerges)
+      );
+    };
+
+    return move.bind(this, retrieveTileIdsByColumn, calculateFirstFreeIndex);
+  };
 
   useEffect(() => {
-    if (initialRender.current === true) {
+    if (isInitialRender.current) {
       createTile({ coordinate: [0, 1], value: 2 });
       createTile({ coordinate: [0, 2], value: 2 });
-      initialRender.current = false;
+      isInitialRender.current = false;
       return;
     }
-
-    if (!state.inMotion && state.hasChanged) {
+    if (!inMotion && hasChanged) {
       generateRandomTile();
     }
-  }, [createTile, generateRandomTile, state.inMotion, state.hasChanged]);
+  }, [hasChanged, inMotion, createTile, generateRandomTile]);
 
-  return { tileArray, moveRight };
+  const tileList = byIds.map((tileId) => tiles[tileId]);
+  // const turnScore = score;
+  // console.log('turnScore', score);
+  const moveLeft = moveLeftFactory();
+  const moveRight = moveRightFactory();
+  const moveUp = moveUpFactory();
+  const moveDown = moveDownFactory();
+
+  return { tileList, moveLeft, moveRight, moveUp, moveDown };
 };

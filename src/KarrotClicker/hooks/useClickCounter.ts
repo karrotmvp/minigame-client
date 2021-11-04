@@ -1,10 +1,7 @@
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  incrementClickCount,
-  reset,
-} from 'KarrotClicker/reducers/counterReducer';
-import { RootState } from 'KarrotClicker/reducers/rootReducer';
+import { incrementClickCount, reset } from 'reducers/counterReducer';
+import { RootState } from 'reducers/rootReducer';
 
 export default function useClickCounter() {
   const { clickCount } = useSelector((state: RootState) => ({

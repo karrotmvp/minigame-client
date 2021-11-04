@@ -1,11 +1,11 @@
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from 'KarrotClicker/reducers/rootReducer';
+import { RootState } from 'reducers/rootReducer';
 import {
   updateRegionData,
   updateAccessToken,
   updateUserData,
-} from 'KarrotClicker/reducers/userDataReducer';
+} from 'reducers/userDataReducer';
 
 export default function useUserData() {
   const {
