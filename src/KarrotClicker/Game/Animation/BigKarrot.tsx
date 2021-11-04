@@ -3,7 +3,7 @@ import { css, keyframes } from '@emotion/react';
 import BigKarrotImageUrl from 'assets/images/KarrotClicker/big_karrot.png';
 const animationKeyframes = keyframes`
   100% {
-    transform: scale(0.01);
+    transform: scale(0.05);
     // transform: rotate(45deg);
   }
 }

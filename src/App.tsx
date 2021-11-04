@@ -105,30 +105,21 @@ const App: React.FC = () => {
           <KarrotMarketMiniContext.Provider value={karrotMarketMini}>
             <Screen path="/" component={withLogIn(Home)} />
             {/* Game 2048 */}
-            <Screen
-              path="/game-2048"
-              component={withOpenRegion(Game2048Home, true)}
-            />
+            <Screen path="/game-2048" component={Game2048Home} />
             <Screen path="/game-2048/game" component={Game2048Game} />
             <Screen
               path="/game-2048/leaderboard"
               component={Game2048Leaderboard}
             />
             {/* Karrot Clicker */}
-            <Screen
-              path="/karrot-clicker"
-              component={withOpenRegion(KarrotClickerHome, true)}
-            />
+            <Screen path="/karrot-clicker" component={KarrotClickerHome} />
             <Screen path="/karrot-clicker/game" component={KarrotClickerGame} />
             <Screen
               path="/karrot-clicker/leaderboard"
               component={KarrotClickerLeaderboard}
             />
 
-            <Screen
-              path="/non-service-area"
-              component={withOpenRegion(NonServiceArea, false)}
-            />
+            <Screen path="/non-service-area" component={NonServiceArea} />
           </KarrotMarketMiniContext.Provider>
         </AnalyticsContext.Provider>
       </KarrotRaiseApiContext.Provider>

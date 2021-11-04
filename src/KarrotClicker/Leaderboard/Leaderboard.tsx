@@ -102,6 +102,13 @@ export const Leaderboard = () => {
   const goToGamePage = () => {
     pop();
   };
+
+  // const resetGame = () => {
+  //   // big karrot scale back to 1
+  //   // animation state to 'running'
+  //   // start() react-idle-timer
+  //   // reset count to 0
+  // };
   const handlePlayAgain = async () => {
     analytics.logEvent('click_game_play_again_button');
     onResetCount();

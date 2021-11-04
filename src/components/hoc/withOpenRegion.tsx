@@ -3,7 +3,7 @@ import useUserData from 'hooks/useUserData';
 import React, { useCallback, useEffect, useState } from 'react';
 import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
 
-export const withOpenRegion = (WrappedComponent: any, option: boolean) => {
+export const withOpenRegion = (WrappedComponent: any) => {
   const OpenRegionCheck = (props: any) => {
     const karrotRaiseApi = useKarrotRaiseApi();
     const { code, userRegionId, onUpdateRegionData } = useUserData();

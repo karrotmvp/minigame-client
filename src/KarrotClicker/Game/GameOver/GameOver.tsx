@@ -114,7 +114,6 @@ export const GameOver: React.FC<Props> = (props) => {
     if (getMini().environment === 'Web') {
       props.setIsGameOver(false);
       goToLeaderboardPage();
-      return null;
     }
     try {
       console.log(clickCount);

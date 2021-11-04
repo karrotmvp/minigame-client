@@ -158,10 +158,10 @@ export const Game = () => {
     setIsPaused(true);
     analytics.logEvent('click_game_pause_button');
   };
-  function handleGameOver() {
-    handlePauseGame();
+  const handleGameOver = () => {
+    // handlePauseGame();
     setIsGameOver(true);
-  }
+  };
 
   // function handleOnIdle() {
   //   resume();
@@ -183,7 +183,9 @@ export const Game = () => {
     console.log('user did something', event);
     setAnimationPlayState('paused');
   };
-
+  const resetGame = () => {
+    start();
+  };
   const { start, resume, pause } = useIdleTimer({
     timeout: 2000,
     startManually: true,
