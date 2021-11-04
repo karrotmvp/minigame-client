@@ -1,7 +1,16 @@
-import React, { useLayoutEffect, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 import styled from '@emotion/styled';
 import { Tile, TileProps } from '../Tile';
-import { boardMargin, boardPadding } from '../styles';
+import { animationDuration, boardMargin, boardPadding } from '../styles';
+import { useGame } from '../hooks/useGame';
+import { useThrottledCallback } from 'use-debounce/lib';
+import { useSwipeable } from 'react-swipeable';
 
 const Container = styled.div`
   position: relative;
@@ -34,14 +43,73 @@ const Cell = styled.div<{ cellWidth: number }>`
   border-radius: 3px;
 `;
 
-type Props = {
-  tiles: TileProps[];
-};
-export const Board = ({ tiles }: Props) => {
+export const Board = () => {
   const tileContainerRef = useRef() as React.MutableRefObject<HTMLDivElement>;
   const [boardWidth, setBoardWidth] = useState<number>(0);
   const [cellWidth, setCellWidth] = useState<number>(0);
 
+  const { tileList, moveRight, moveLeft, moveUp, moveDown } = useGame();
+
+  // mobile(touch) friendly
+  const handlers = useSwipeable({
+    onSwiped: (eventData) => console.log('User Swiped!', eventData),
+    onSwipedLeft: useThrottledCallback(() => moveLeft(), animationDuration, {
+      leading: true,
+      trailing: false,
+    }),
+    onSwipedRight: useThrottledCallback(() => moveRight(), animationDuration, {
+      leading: true,
+      trailing: false,
+    }),
+    onSwipedUp: useThrottledCallback(() => moveUp(), animationDuration, {
+      leading: true,
+      trailing: false,
+    }),
+    onSwipedDown: useThrottledCallback(() => moveDown(), animationDuration, {
+      leading: true,
+      trailing: false,
+    }),
+    preventDefaultTouchmoveEvent: true,
+  });
+
+  // desktop(keyboard) friendly
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      // disables page scrolling with keyboard arrows
+      e.preventDefault();
+
+      switch (e.code) {
+        case 'ArrowRight':
+          moveRight();
+          break;
+        case 'ArrowLeft':
+          moveLeft();
+          break;
+        case 'ArrowUp':
+          moveUp();
+          break;
+        case 'ArrowDown':
+          moveDown();
+          break;
+      }
+      console.log('GameSection', tileList);
+    },
+    [tileList, moveRight, moveLeft, moveUp, moveDown]
+  );
+  const throttledHandleKeyDown = useThrottledCallback(
+    handleKeyDown,
+    animationDuration,
+    { leading: true, trailing: false }
+  );
+  useEffect(() => {
+    window.addEventListener('keydown', throttledHandleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', throttledHandleKeyDown);
+    };
+  }, [throttledHandleKeyDown]);
+
+  // change board & tile size responsively to window size
   useLayoutEffect(() => {
     function updateSize() {
       setBoardWidth(tileContainerRef.current.offsetWidth);
@@ -55,13 +123,13 @@ export const Board = ({ tiles }: Props) => {
   }, []);
 
   return (
-    <Container className="board">
+    <Container className="board" {...handlers}>
       <TileContainer
         className="tile-container"
         ref={tileContainerRef}
         boardWidth={boardWidth}
       >
-        {tiles.map(({ id, ...rest }) => (
+        {tileList.map(({ id, ...rest }) => (
           <Tile
             id={id}
             key={`tile-${id}`}

@@ -29,47 +29,6 @@ export const Game = () => {
   // }));
   const { push, pop } = useNavigator();
 
-  const { tileList, moveRight, moveLeft, moveUp, moveDown } = useGame();
-
-  const handleKeyDown = useCallback(
-    (e: KeyboardEvent) => {
-      // disables page scrolling with keyboard arrows
-      e.preventDefault();
-
-      switch (e.code) {
-        case 'ArrowRight':
-          moveRight();
-          break;
-        case 'ArrowLeft':
-          moveLeft();
-          break;
-        case 'ArrowUp':
-          moveUp();
-          break;
-        case 'ArrowDown':
-          moveDown();
-          break;
-      }
-      console.log('GameSection', tileList);
-    },
-    [tileList, moveRight, moveLeft, moveUp, moveDown]
-  );
-
-  // protects the reducer from being flooded with events.
-  const throttledHandleKeyDown = useThrottledCallback(
-    handleKeyDown,
-    animationDuration,
-    { leading: true, trailing: false }
-  );
-
-  useEffect(() => {
-    window.addEventListener('keydown', throttledHandleKeyDown);
-
-    return () => {
-      window.removeEventListener('keydown', throttledHandleKeyDown);
-    };
-  }, [throttledHandleKeyDown]);
-
   const goToLeaderboardPage = () => {
     push(`/game-2048/leaderboard`);
   };
@@ -78,14 +37,14 @@ export const Game = () => {
     pop();
   };
   return (
-    <Page>
+    <Page className="game-page">
       {/* <ScreenHelmet /> */}
       <HighScoreContainer>
         <MyHighScore />
         <TownieHighScore />
       </HighScoreContainer>
       <CurrentScore />
-      <Board tiles={tileList} />
+      <Board />
       <button onClick={goToLeaderboardPage}>to leaderboard</button>
       <button onClick={goBackToHomePage}>back to home</button>
     </Page>
