@@ -1,22 +1,19 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
-
-import LeaderboardTabs from 'temp/components/leaderboard/LeaderboardTabs';
 import { useEffect } from 'react';
-import {
-  AppEjectionButton,
-  BackButton,
-} from 'components/Button/NavigationButton';
 import { useAnalytics } from 'services/analytics';
-// import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
-import { DefaultUserRow } from 'temp/components/leaderboard/DefaultRow';
-import { TopUserRow } from 'temp/components/leaderboard/TopRow';
+import { useNavigator } from '@karrotframe/navigator';
 import useUserData from 'hooks/useUserData';
-import DailyUserCount from 'temp/components/DailyUserCount';
 import TopImageUrl from 'assets/images/KarrotClicker/home_top_banner.png';
-import { ScreenHelmet, useNavigator } from '@karrotframe/navigator';
 import { Button } from 'components/Button';
+import { BackButton } from 'components/Button/NavigationButton';
+import { ActiveUserCount } from '../../components/ActiveUserCount';
+import { LeaderboardTabs } from 'KarrotClicker/Leaderboard/LeaderboardTabs';
+import {
+  DefaultUserRow,
+  TopUserRow,
+} from 'KarrotClicker/Leaderboard/LeaderboardTabs/Row';
 
 const PageContainer = styled.div`
   display: flex;
@@ -106,7 +103,6 @@ const UserScoreExists: React.FC<UserScoreExistsProps> = (props) => {
 
 export const Home = () => {
   const { push } = useNavigator();
-
   const analytics = useAnalytics();
   // const karrotRaiseApi = useKarrotRaiseApi();
   const {
@@ -133,6 +129,7 @@ export const Home = () => {
   useEffect(() => {
     // getUserData(karrotRaiseApi, accessToken);
     analytics.logEvent('view_returning_user_home_page');
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accessToken]);
 
@@ -170,7 +167,7 @@ export const Home = () => {
           zIndex: 101,
         }}
       >
-        <DailyUserCount />
+        <ActiveUserCount />
       </div>
       <ActionItem>
         <Button

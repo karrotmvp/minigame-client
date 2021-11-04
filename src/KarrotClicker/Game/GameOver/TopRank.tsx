@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { emphasizedTextStyle, largeTextStyle } from 'temp/styles/textStyle';
+import { emphasizedTextStyle, largeTextStyle } from 'styles/textStyle';
 import { ReactComponent as Karrot } from 'assets/svg/KarrotClicker/small_circle_karrot.svg';
 import { useCallback, useState } from 'react';
 import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';

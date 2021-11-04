@@ -39,7 +39,7 @@ const SpeechBalloon = styled.div`
   }
 `;
 
-const DailyUserCount = () => {
+export const ActiveUserCount = () => {
   const [dailyUserCount, setDailyUserCount] = useState<number>(0);
   const karrotRaiseApi = useKarrotRaiseApi();
   const getDailyUserCount = useCallback(
@@ -69,5 +69,3 @@ const DailyUserCount = () => {
     </SpeechBalloon>
   );
 };
-
-export default DailyUserCount;

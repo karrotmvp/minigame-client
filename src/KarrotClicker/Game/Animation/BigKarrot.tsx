@@ -1,6 +1,5 @@
 /** @jsxImportSource @emotion/react */
 import { css, keyframes } from '@emotion/react';
-import { memo, FC } from 'react';
 import BigKarrotImageUrl from 'assets/images/KarrotClicker/big_karrot.png';
 const animationKeyframes = keyframes`
   100% {
@@ -26,7 +25,7 @@ interface BigKarrotProps {
   handleGameOver: () => void;
   animationPlayState: string;
 }
-const BigKarrot: FC<BigKarrotProps> = (props) => {
+export const BigKarrot: React.FC<BigKarrotProps> = (props) => {
   console.log(props.animationPlayState);
   return (
     <img
@@ -44,5 +43,3 @@ const BigKarrot: FC<BigKarrotProps> = (props) => {
     />
   );
 };
-
-export default memo(BigKarrot);

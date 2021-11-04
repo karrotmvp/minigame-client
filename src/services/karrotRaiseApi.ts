@@ -9,7 +9,7 @@ import {
   PatchUserScoreResposne,
   PostDemandResponse,
   PostOauth2Response,
-} from 'temp/types/karrotRaiseApiTypes';
+} from 'services/api/karrotRaise/karrotRaiseApiTypes';
 
 export interface KarrotRaiseApi {
   postOauth2(code: string, regionId: string): Promise<PostOauth2Response>;

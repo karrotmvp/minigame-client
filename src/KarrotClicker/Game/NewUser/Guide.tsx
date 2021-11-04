@@ -16,12 +16,10 @@ const directionText = css`
 `;
 
 interface PopupModalProps {
-  setIsUserNew: React.Dispatch<React.SetStateAction<boolean>>;
+  // setIsUserNew: React.Dispatch<React.SetStateAction<boolean>>;
+  handleNewUserGameStart: () => void;
 }
 export const Guide: React.FC<PopupModalProps> = (props) => {
-  const handleClick = () => {
-    props.setIsUserNew(false);
-  };
   return (
     <>
       <PointingFinger />
@@ -38,7 +36,7 @@ export const Guide: React.FC<PopupModalProps> = (props) => {
         size={`medium`}
         color={`secondary`}
         text={`게임 시작하기`}
-        onClick={handleClick}
+        onClick={props.handleNewUserGameStart}
       />
     </>
   );

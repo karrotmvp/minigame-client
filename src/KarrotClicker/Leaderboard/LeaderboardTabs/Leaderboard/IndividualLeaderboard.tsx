@@ -3,11 +3,11 @@ import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 import { useCallback, useEffect, useState } from 'react';
 import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
-import { DefaultUserRow } from './DefaultRow';
+
 import useUserData from 'hooks/useUserData';
-import { TopUserRow } from './TopRow';
-import WeeklyCountdown from 'temp/components/WeeklyCountdown';
 import { RefreshButton } from 'components/Button';
+import { DefaultUserRow, TopUserRow } from '../Row';
+import { RefreshCountdown } from 'components/RefreshCountdown';
 
 const divStyle = css`
   // max-height: inherit;
@@ -64,7 +64,7 @@ const infoText = css`
   color: #7c7c7c;
 `;
 
-const IndividualLeaderboard = () => {
+export const IndividualLeaderboard = () => {
   const [individualRankData, setIndividualRankData] = useState<any[]>([]);
   const karrotRaiseApi = useKarrotRaiseApi();
   const { accessToken, userId, onUpdateUserData } = useUserData();
@@ -130,7 +130,7 @@ const IndividualLeaderboard = () => {
           }}
         >
           <p>이번 주 랭킹</p>
-          <WeeklyCountdown />
+          <RefreshCountdown />
         </div>
         <RefreshButton
           refreshLeaderboard={() =>
@@ -172,5 +172,3 @@ const IndividualLeaderboard = () => {
     </div>
   );
 };
-
-export default IndividualLeaderboard;

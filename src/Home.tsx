@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from '@emotion/styled';
 import { ScreenHelmet, useNavigator } from '@karrotframe/navigator';
+import useUserData from 'hooks/useUserData';
 
 const HomePage = styled.div`
   // height: calc(100% -2.75rem);
@@ -30,6 +31,27 @@ const Title = styled.h1`
 `;
 export const Home: React.FC = () => {
   const { push } = useNavigator();
+  const {
+    accessToken,
+    // userId,
+    userDistrictName,
+    userNickname,
+    userScore,
+    userRank,
+    userComment,
+    // onUpdateUserData,
+  } = useUserData();
+  useEffect(() => {
+    console.log(
+      accessToken,
+      // userId,
+      userDistrictName,
+      userNickname,
+      userScore,
+      userRank,
+      userComment
+    );
+  }, []);
   return (
     <HomePage>
       <ScreenHelmet

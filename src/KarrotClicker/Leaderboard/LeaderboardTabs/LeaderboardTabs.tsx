@@ -4,8 +4,7 @@ import styled from '@emotion/styled';
 import { Tabs } from '@karrotframe/tabs';
 import '@karrotframe/tabs/index.css';
 import { useCallback, useState } from 'react';
-import DistrictLeaderboard from './DistrictLeaderboard';
-import IndividualLeaderboard from './IndividualLeaderboard';
+import { DistrictLeaderboard, IndividualLeaderboard } from './Leaderboard';
 
 const customizeTabs = css`
   --kf_tabs_tabBar-baseFontColor: #5b5b5b;
@@ -30,7 +29,7 @@ const LeaderboardContainer = styled.div`
   border-bottom-style: none;
 `;
 
-const LeaderboardTabs = () => {
+export const LeaderboardTabs = () => {
   const [activeTabKey, setActiveTabKey] = useState<string>('district');
   console.log('leaderboard tabs');
   return (
@@ -57,5 +56,3 @@ const LeaderboardTabs = () => {
     </LeaderboardContainer>
   );
 };
-
-export default LeaderboardTabs;

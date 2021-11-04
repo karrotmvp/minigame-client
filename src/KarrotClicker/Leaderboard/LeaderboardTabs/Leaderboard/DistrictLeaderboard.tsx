@@ -1,12 +1,11 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
+import { RefreshButton } from 'components/Button';
 import { useCallback, useEffect, useState } from 'react';
-import { DefaultDistrictRow } from './DefaultRow';
-import { TopDistrictRow } from './TopRow';
 import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
-import WeeklyCountdown from 'temp/components/WeeklyCountdown';
-import { RefreshButton } from '../../../components/Button';
+import { DefaultDistrictRow, TopDistrictRow } from '../Row';
+import { RefreshCountdown } from 'components/RefreshCountdown';
 
 const divStyle = css`
   max-height: inherit;
@@ -48,8 +47,7 @@ const leaderboardWrapperStyle = css`
   scrollbar-width: none; /* Firefox */
 `;
 
-// interface DistrictRankData {}
-const DistrictLeaderboard = () => {
+export const DistrictLeaderboard = () => {
   const [districtRankData, setDistrictRankData] = useState<any[]>([]);
   const karrotRaiseApi = useKarrotRaiseApi();
 
@@ -98,7 +96,7 @@ const DistrictLeaderboard = () => {
           }}
         >
           <p>이번 주 랭킹</p>
-          <WeeklyCountdown />
+          <RefreshCountdown />
         </div>
         <RefreshButton
           refreshLeaderboard={() => refreshLeaderboard(karrotRaiseApi)}
@@ -136,5 +134,3 @@ const DistrictLeaderboard = () => {
     </div>
   );
 };
-
-export default DistrictLeaderboard;

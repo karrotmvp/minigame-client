@@ -1,8 +1,20 @@
 // action types
+export const UPDATE_QUERY_PARAMS_DATA =
+  'useData/UPDATE_QUERY_PARAMS_DATA' as const;
 export const UPDATE_ACCESS_TOKEN = 'useData/UPDATE_ACCESS_TOKEN' as const;
 export const UPDATE_REGION_DATA = 'userData/UPDATE_REGION_DATA' as const;
 export const UPDATE_USER_DATA = 'userData/UPDATE_USER_DATA' as const;
 // actions,
+export const updateQueryParamsData = (
+  code: string | null,
+  regionId: string | null
+) => ({
+  type: UPDATE_QUERY_PARAMS_DATA,
+  payload: {
+    code,
+    regionId,
+  },
+});
 export const updateAccessToken = (accessToken: string) => ({
   type: UPDATE_ACCESS_TOKEN,
   payload: { accessToken },
@@ -39,12 +51,14 @@ export const updateUserData = (
 });
 
 type UserDataAction =
+  | ReturnType<typeof updateQueryParamsData>
   | ReturnType<typeof updateAccessToken>
   | ReturnType<typeof updateRegionData>
   | ReturnType<typeof updateUserData>;
 
 // initial state
 type UserDataState = {
+  code: string | null;
   accessToken: string;
   id: string;
   nickname: string;
@@ -53,10 +67,11 @@ type UserDataState = {
   comment: string;
   townId: string;
   townName: string;
-  regionId: string;
+  regionId: string | null;
 };
 const initialState: UserDataState = {
   accessToken: window.localStorage.getItem('ACCESS_TOKEN')!,
+  code: null,
   id: '',
   nickname: '',
   score: 0,
@@ -64,7 +79,7 @@ const initialState: UserDataState = {
   comment: '',
   townId: '',
   townName: '',
-  regionId: '',
+  regionId: null,
 };
 
 // reducer
@@ -73,13 +88,18 @@ const userDataReducer = (
   action: UserDataAction
 ) => {
   switch (action.type) {
+    case UPDATE_QUERY_PARAMS_DATA:
+      return {
+        ...state,
+        code: action.payload.code,
+        regionId: action.payload.regionId,
+      };
     case UPDATE_ACCESS_TOKEN:
       return {
         ...state,
         accessToken: action.payload.accessToken,
       };
     case UPDATE_REGION_DATA:
-      // console.log('in redux reducer', action.payload.regionId);
       return {
         ...state,
         regionId: action.payload.regionId,

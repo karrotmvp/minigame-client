@@ -5,10 +5,12 @@ import {
   updateRegionData,
   updateAccessToken,
   updateUserData,
+  updateQueryParamsData,
 } from 'reducers/userDataReducer';
 
 export default function useUserData() {
   const {
+    code,
     accessToken,
     regionId: userRegionId,
     townId: userDistrictId,
@@ -19,6 +21,7 @@ export default function useUserData() {
     rank: userRank,
     comment: userComment,
   } = useSelector((state: RootState) => ({
+    code: state.userDataReducer.code,
     accessToken: state.userDataReducer.accessToken,
     regionId: state.userDataReducer.regionId,
     townId: state.userDataReducer.townId,
@@ -31,6 +34,12 @@ export default function useUserData() {
   }));
   const dispatch = useDispatch();
 
+  const saveQueryParamsData = (
+    code: string | null,
+    regionId: string | null
+  ) => {
+    dispatch(updateQueryParamsData(code, regionId));
+  };
   const onUpdateAccessToken = useCallback(
     (accessToken: string) => dispatch(updateAccessToken(accessToken)),
     [dispatch]
@@ -55,6 +64,7 @@ export default function useUserData() {
   );
 
   return {
+    code,
     accessToken,
     userRegionId,
     userDistrictId,
@@ -67,5 +77,6 @@ export default function useUserData() {
     onUpdateAccessToken,
     onUpdateRegionData,
     onUpdateUserData,
+    saveQueryParamsData,
   };
 }

@@ -1,22 +1,17 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
-
-import { AppEjectionButton } from 'components/Button/NavigationButton';
-
-import { useHistory } from 'react-router-dom';
-import { useAnalytics } from 'services/analytics';
-import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
+import { useCallback, useEffect } from 'react';
 import { useKarrotMarketMini } from 'services/karrotMarketMini';
-
+import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
+import { useAnalytics } from 'services/analytics';
+import { useNavigator } from '@karrotframe/navigator';
 import useClickCounter from 'hooks/useClickCounter';
 import useUserData from 'hooks/useUserData';
-import { useCallback, useEffect } from 'react';
-import { TopUserRow } from 'temp/components/leaderboard/TopRow';
-import { DefaultUserRow } from 'temp/components/leaderboard/DefaultRow';
-import LeaderboardTabs from 'temp/components/leaderboard/LeaderboardTabs';
+import { AppEjectionButton } from 'components/Button/NavigationButton';
 import { Button } from 'components/Button';
-import { useNavigator } from '@karrotframe/navigator';
+import { DefaultUserRow, TopUserRow } from './LeaderboardTabs/Row';
+import { LeaderboardTabs } from './LeaderboardTabs';
 
 // nav
 const PageContainer = styled.div`

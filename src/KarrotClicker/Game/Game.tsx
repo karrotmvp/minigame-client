@@ -1,14 +1,12 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Modal from 'react-modal';
 import { commafy } from 'functions/numberFunctions';
-import ClickAnimation from 'temp/components/game/ClickAnimation';
 import { useAnalytics } from 'services/analytics';
 import useClickCounter from 'hooks/useClickCounter';
 import useUserData from 'hooks/useUserData';
-import BigKarrot from 'temp/components/game/BigKarrot';
 import { ReactComponent as PauseButton } from 'assets/svg/pause.svg';
 import gameBackgroundUrl from 'assets/images/KarrotClicker/game_background.png';
 import { useIdleTimer } from 'react-idle-timer';
@@ -16,6 +14,8 @@ import { GamePause } from './Pause';
 import { Guide } from './NewUser';
 import { GameOver } from './GameOver';
 import { useClickAnimation } from './hooks/useClickAnimation';
+import ClickAnimation from './Animation/ClickAnimation';
+import { BigKarrot } from './Animation/BigKarrot';
 
 const PageContainer = styled.div`
   background-image: url(${gameBackgroundUrl});
@@ -129,15 +129,7 @@ export const Game = () => {
   const { clickCount, onIncrementClickCount, onResetCount } = useClickCounter();
   const { handleParticleSpawn, handleParticleDestroy, state } =
     useClickAnimation();
-  const { start, resume, pause } = useIdleTimer({
-    timeout: 100,
-    onIdle: handleOnIdle,
-    startManually: true,
-    // startOnMount: false,
-    // debounce: 500,
-    // element: BigKarrotRef.current,
-  });
-
+  const bigKarrotRef = useRef<HTMLImageElement>(null);
   const [isPaused, setIsPaused] = useState<boolean>(false);
   const [isGameOver, setIsGameOver] = useState<boolean>(false);
   const [isUserNew, setIsUserNew] = useState<boolean>(false);
@@ -155,25 +147,57 @@ export const Game = () => {
     e.stopPropagation();
     activateAnimation(e);
     onIncrementClickCount();
-    setAnimationPlayState('paused');
-    pause();
+    // setAnimationPlayState('paused');
+    // pause();
   }
-  function handlePause() {
+
+  // User clicks pause button
+  const handlePauseGame = () => {
     pause();
     setAnimationPlayState('paused');
     setIsPaused(true);
     analytics.logEvent('click_game_pause_button');
-  }
+  };
   function handleGameOver() {
-    handlePause();
+    handlePauseGame();
     setIsGameOver(true);
   }
 
-  function handleOnIdle() {
-    resume();
-    setAnimationPlayState('running');
-  }
+  // function handleOnIdle() {
+  //   resume();
+  //   setAnimationPlayState('running');
+  // }
 
+  const handleOnIdle = (event: any) => {
+    console.log('user is idle', event);
+    // console.log('last active', getLastActiveTime())
+    setAnimationPlayState('running');
+  };
+
+  // const handleOnActive = (event: any) => {
+  //   console.log('user is active', event)
+  //   // console.log('time remaining', getRemainingTime())
+  // }
+
+  const handleOnAction = (event: any) => {
+    console.log('user did something', event);
+    setAnimationPlayState('paused');
+  };
+
+  const { start, resume, pause } = useIdleTimer({
+    timeout: 2000,
+    startManually: true,
+    onIdle: handleOnIdle,
+    // onActive: handleOnActive,
+    onAction: handleOnAction,
+  });
+
+  const handleNewUserGameStart = () => {
+    // setIsUseNew to false closes guide modal
+    setIsUserNew(false);
+    // starts react-idle-timer
+    start();
+  };
   // Popup modal if user is new
   useEffect(() => {
     analytics.logEvent('view_game_page');
@@ -188,17 +212,17 @@ export const Game = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      console.log(isPaused);
-      if (isPaused) {
-        pause();
-      } else {
-        resume();
-      }
-    }, 500);
-    return () => clearInterval(intervalId);
-  });
+  // useEffect(() => {
+  //   const intervalId = setInterval(() => {
+  //     console.log(isPaused);
+  //     if (isPaused) {
+  //       pause();
+  //     } else {
+  //       resume();
+  //     }
+  //   }, 500);
+  //   return () => clearInterval(intervalId);
+  // }, [isPaused, pause, resume]);
 
   return (
     <>
@@ -220,7 +244,7 @@ export const Game = () => {
               {commafy(userScore + clickCount)}
             </p>
           </TotalKarrotCount>
-          <PauseButton onClick={handlePause} />
+          <PauseButton onClick={handlePauseGame} />
         </div>
         <ScoreWrapper>
           <h2
@@ -296,7 +320,7 @@ export const Game = () => {
           },
         }}
       >
-        <Guide setIsUserNew={setIsUserNew} />
+        <Guide handleNewUserGameStart={handleNewUserGameStart} />
       </Modal>
     </>
   );

@@ -1,8 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { ReactComponent as WaitSvg } from '../assets/svg/wait.svg';
-import { AppEjectionButton } from 'components/Button/NavigationButton';
-import { Button, DisabledButton } from 'components/Button';
+import { ReactComponent as WaitSvg } from 'assets/svg/wait.svg';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Analytics, useAnalytics } from 'services/analytics';
 import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
@@ -12,6 +10,7 @@ import {
   getMini,
   loadFromEnv as KarrotMiniPreset,
 } from 'services/karrotMarket/mini';
+import { AppEjectionButton, Button, DisabledButton } from 'components/Button';
 
 const customNav = css`
   left: 0;
@@ -94,16 +93,7 @@ const coloredText = css`
   color: #eb5d0e;
 `;
 
-interface NonServiceAreaProps {
-  location: {
-    state: {
-      isNonServiceUserBack: boolean;
-      districtName: string;
-    };
-  };
-}
-
-const NonServiceArea: React.FC<NonServiceAreaProps> = (props) => {
+export const NonServiceArea = () => {
   const [isClicked, setIsClicked] = useState<boolean>(false);
   const analytics = useAnalytics();
   const karrotRaiseApi = useKarrotRaiseApi();
@@ -193,13 +183,6 @@ const NonServiceArea: React.FC<NonServiceAreaProps> = (props) => {
     });
   };
 
-  useEffect(() => {
-    analytics.logEvent('view_non_service_area_page');
-    if (props.location.state.isNonServiceUserBack === true) {
-      setIsClicked(true);
-    }
-  }, [analytics, props.location.state.isNonServiceUserBack]);
-
   return (
     <>
       <div css={customNav}>
@@ -210,7 +193,7 @@ const NonServiceArea: React.FC<NonServiceAreaProps> = (props) => {
       <div css={backgroundStyle}>
         <WaitSvg css={svgStyle} />
         <h1 css={mainText}>
-          <span css={coloredText}>{props.location.state.districtName}</span>
+          <span css={coloredText}>non_service_area_districtName</span>
           지역은
           <br />
           아직 준비 중이에요
@@ -230,7 +213,7 @@ const NonServiceArea: React.FC<NonServiceAreaProps> = (props) => {
             color={`primary`}
             text={`오픈 알림 받기`}
             onClick={() =>
-              handleDemand(karrotRaiseApi, userRegionId, analytics)
+              handleDemand(karrotRaiseApi, userRegionId!, analytics)
             }
           />
         )}
@@ -238,5 +221,3 @@ const NonServiceArea: React.FC<NonServiceAreaProps> = (props) => {
     </>
   );
 };
-
-export default NonServiceArea;
