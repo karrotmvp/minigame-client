@@ -10,7 +10,7 @@ import { Analytics, useAnalytics } from 'services/analytics';
 import useUserData from 'hooks/useUserData';
 import useClickCounter from 'hooks/useClickCounter';
 import { getMini } from 'services/karrotMarket/mini';
-import { Button } from 'components/Button';
+import { OldButton } from 'components/Button';
 import { TopRank } from './TopRank';
 import { useNavigator } from '@karrotframe/navigator';
 
@@ -169,7 +169,7 @@ export const GameOver: React.FC<Props> = (props) => {
           gap: '10px',
         }}
       >
-        <Button
+        <OldButton
           size={`medium`}
           color={`primary`}
           text={`랭킹보기`}

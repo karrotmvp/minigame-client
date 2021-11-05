@@ -9,7 +9,7 @@ import { useNavigator } from '@karrotframe/navigator';
 import useClickCounter from 'hooks/useClickCounter';
 import useUserData from 'hooks/useUserData';
 import { AppEjectionButton } from 'components/Button/NavigationButton';
-import { Button } from 'components/Button';
+import { OldButton } from 'components/Button';
 import { DefaultUserRow, TopUserRow } from './LeaderboardTabs/Row';
 import { LeaderboardTabs } from './LeaderboardTabs';
 
@@ -188,13 +188,13 @@ export const Leaderboard = () => {
       <LeaderboardTabs />
 
       <ActionItem>
-        <Button
+        <OldButton
           size={`medium`}
           color={`secondary`}
           text={`초대하기`}
           onClick={handleShare}
         />
-        <Button
+        <OldButton
           size={`medium`}
           color={`primary`}
           text={`다시하기`}

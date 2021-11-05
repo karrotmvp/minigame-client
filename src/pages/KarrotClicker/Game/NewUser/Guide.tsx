@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { ReactComponent as PointingFinger } from 'assets/svg/KarrotClicker/pointing_finger.svg';
-import { Button } from 'components/Button/Button';
+import { OldButton } from 'components/Button/Button';
 
 const directionText = css`
   font-style: normal;
@@ -32,7 +32,7 @@ export const Guide: React.FC<PopupModalProps> = (props) => {
         <br />
         작아지지 않아요
       </p>
-      <Button
+      <OldButton
         size={`medium`}
         color={`secondary`}
         text={`게임 시작하기`}

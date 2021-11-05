@@ -10,7 +10,11 @@ import {
   getMini,
   loadFromEnv as KarrotMiniPreset,
 } from 'services/karrotMarket/mini';
-import { AppEjectionButton, Button, DisabledButton } from 'components/Button';
+import {
+  AppEjectionButton,
+  OldButton,
+  DisabledButton,
+} from 'components/Button';
 
 const customNav = css`
   left: 0;
@@ -208,7 +212,7 @@ export const NonServiceArea = () => {
         {isClicked ? (
           <DisabledButton size={`large`} text={`오픈 알림 신청 완료`} />
         ) : (
-          <Button
+          <OldButton
             size={`medium`}
             color={`primary`}
             text={`오픈 알림 받기`}

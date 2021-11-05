@@ -6,7 +6,7 @@ import { useAnalytics } from 'services/analytics';
 import { useNavigator } from '@karrotframe/navigator';
 import useUserData from 'hooks/useUserData';
 import TopImageUrl from 'assets/images/KarrotClicker/home_top_banner.png';
-import { Button } from 'components/Button';
+import { OldButton } from 'components/Button';
 import { BackButton } from 'components/Button/NavigationButton';
 import { ActiveUserCount } from '../../../components/ActiveUserCount';
 import { LeaderboardTabs } from 'pages/KarrotClicker/Leaderboard/LeaderboardTabs';
@@ -170,7 +170,7 @@ export const Home = () => {
         <ActiveUserCount />
       </div>
       <ActionItem>
-        <Button
+        <OldButton
           size={`large`}
           color={`primary`}
           text={`게임 시작`}

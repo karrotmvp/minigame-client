@@ -5,7 +5,7 @@ import { ReactComponent as Karrot } from 'assets/svg/KarrotClicker/small_circle_
 import { useCallback, useState } from 'react';
 import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
 import useUserData from 'hooks/useUserData';
-import { Button, DisabledButton } from 'components/Button';
+import { OldButton, DisabledButton } from 'components/Button';
 import { useNavigator } from '@karrotframe/navigator';
 const largeText = css`
   margin: 15px 0;
@@ -155,7 +155,7 @@ export const TopRank: React.FC<Props> = (props) => {
         </div>
 
         {topUserComment.length > 0 ? (
-          <Button
+          <OldButton
             size={`large`}
             color={`primary`}
             text={`등록하기`}

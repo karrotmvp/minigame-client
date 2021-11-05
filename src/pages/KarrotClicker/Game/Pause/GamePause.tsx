@@ -10,7 +10,7 @@ import { Analytics, useAnalytics } from 'services/analytics';
 import useUserData from 'hooks/useUserData';
 import useClickCounter from 'hooks/useClickCounter';
 import { getMini } from 'services/karrotMarket/mini';
-import { Button } from 'components/Button';
+import { OldButton } from 'components/Button';
 import { TopRank } from '../GameOver';
 import { useNavigator } from '@karrotframe/navigator';
 
@@ -173,13 +173,13 @@ export const GamePause: React.FC<GamePauseProps> = (props) => {
           gap: '10px',
         }}
       >
-        <Button
+        <OldButton
           size={`medium`}
           color={`secondary`}
           text={`계속하기`}
           onClick={handleContinue}
         />
-        <Button
+        <OldButton
           size={`medium`}
           color={`primary`}
           text={`게임종료`}

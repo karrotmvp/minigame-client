@@ -16,7 +16,7 @@ const Container = styled.div`
   position: relative;
 `;
 
-const TileContainer = styled.div<{ boardWidth: number }>`
+const TileContainer = styled.div`
   position: absolute;
   z-index: 2;
   width: calc(100% - ${boardMargin}rem * 2);
@@ -123,11 +123,7 @@ export const Board = () => {
 
   return (
     <Container className="board" {...handlers}>
-      <TileContainer
-        className="tile-container"
-        ref={tileContainerRef}
-        boardWidth={boardWidth}
-      >
+      <TileContainer className="tile-container" ref={tileContainerRef}>
         {tileList.map(({ id, ...rest }) => (
           <Tile id={id} key={`tile-${id}`} {...rest} cellWidth={cellWidth} />
         ))}
