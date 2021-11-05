@@ -28,7 +28,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "codegen": "openapi-generator-cli generate -i $SWAGGER_URL -g typescript-axios -o ./src/services/openapi_generator"
   },
   "eslintConfig": {
     "extends": [
