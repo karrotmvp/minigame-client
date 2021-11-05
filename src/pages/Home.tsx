@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import styled from '@emotion/styled';
 import { ScreenHelmet, useNavigator } from '@karrotframe/navigator';
 import useUserData from 'hooks/useUserData';
+import { useMinigameApi } from 'services/api/minigameApi';
 
 const HomePage = styled.div`
   // height: calc(100% -2.75rem);
@@ -30,6 +31,10 @@ const Title = styled.h1`
   color: #ffffff;
 `;
 export const Home: React.FC = () => {
+  const api = useMinigameApi();
+  // api.oauth2Api().karrotLoginUsingPOST(requestDto).then((request))
+
+  // const resp = api.oauth2Api().karrotLoginUsingPOST({code: "", regionId: ""})
   const { push } = useNavigator();
   const {
     accessToken,

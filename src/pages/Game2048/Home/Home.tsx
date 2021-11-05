@@ -23,6 +23,7 @@ export const Home = () => {
   const goToGamePage = () => {
     push(`/game-2048/game`);
   };
+
   return (
     <Page>
       <ScreenHelmet />
