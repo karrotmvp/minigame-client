@@ -2,13 +2,13 @@ import React, { useEffect, useState } from 'react';
 import '@karrotframe/navigator/index.css';
 import { Navigator, Screen } from '@karrotframe/navigator';
 // import { KarrotClickerApp } from 'KarrotClicker';
-import { Home } from 'Home';
-import { Game2048Home } from 'Game2048/Home';
-import { Game2048Game } from 'Game2048/Game';
-import { Game2048Leaderboard } from 'Game2048/Leaderboard';
-import { KarrotClickerHome } from 'KarrotClicker/Home';
-import { KarrotClickerGame } from 'KarrotClicker/Game';
-import { KarrotClickerLeaderboard } from 'KarrotClicker/Leaderboard';
+import { Home } from 'pages/Home';
+import { Game2048Home } from 'pages/Game2048/Home';
+import { Game2048Game } from 'pages/Game2048/Game';
+import { Game2048Leaderboard } from 'pages/Game2048/Leaderboard';
+import { KarrotClickerHome } from 'pages/KarrotClicker/Home';
+import { KarrotClickerGame } from 'pages/KarrotClicker/Game';
+import { KarrotClickerLeaderboard } from 'pages/KarrotClicker/Leaderboard';
 import {
   createFirebaseAnalytics,
   loadFromEnv as loadFirebaseAnalyticsConfig,
@@ -32,10 +32,11 @@ import {
   loadFromEnv as loadKarrotMarketMiniConfig,
 } from 'services/karrotMarket/mini';
 import { AnalyticsContext, emptyAnalytics } from 'services/analytics';
-import { NonServiceArea } from 'components/NonServiceArea';
+import { NonServiceArea } from 'pages/NonServiceArea';
 import useUserData from 'hooks/useUserData';
 import { withLogIn, withOpenRegion } from 'components/hoc';
 
+import { MinigameApiProvider, useMinigameApi } from 'services/api/minigameApi';
 const App: React.FC = () => {
   const { saveQueryParamsData } = useUserData();
 
@@ -44,6 +45,8 @@ const App: React.FC = () => {
   const [karrotMarketMini, setKarrotMarketMini] = useState(
     emptyKarrotMarketMini
   );
+  // const [minigameApi, setMinigameApi] = seState(empty)
+  const api = useMinigameApi();
   // Firebase Analytics가 설정되어 있으면 인스턴스를 초기화하고 교체합니다.
   useEffect(() => {
     try {
@@ -86,6 +89,12 @@ const App: React.FC = () => {
       const code: string | null = searchParams.get('code');
       const regionId: string | null = searchParams.get('region_id');
       saveQueryParamsData(code, regionId);
+      if (code && regionId) {
+        const response = api
+          .oauth2Api()
+          .karrotLoginUsingPOST({ code, regionId });
+        console.log(response);
+      }
     } catch (error) {
       console.error(error);
     }
@@ -100,29 +109,34 @@ const App: React.FC = () => {
         karrotMarketMini.close();
       }}
     >
-      <KarrotRaiseApiContext.Provider value={karrotRaiseApi}>
-        <AnalyticsContext.Provider value={analytics}>
-          <KarrotMarketMiniContext.Provider value={karrotMarketMini}>
-            <Screen path="/" component={withLogIn(Home)} />
-            {/* Game 2048 */}
-            <Screen path="/game-2048" component={Game2048Home} />
-            <Screen path="/game-2048/game" component={Game2048Game} />
-            <Screen
-              path="/game-2048/leaderboard"
-              component={Game2048Leaderboard}
-            />
-            {/* Karrot Clicker */}
-            <Screen path="/karrot-clicker" component={KarrotClickerHome} />
-            <Screen path="/karrot-clicker/game" component={KarrotClickerGame} />
-            <Screen
-              path="/karrot-clicker/leaderboard"
-              component={KarrotClickerLeaderboard}
-            />
+      <MinigameApiProvider>
+        <KarrotRaiseApiContext.Provider value={karrotRaiseApi}>
+          <AnalyticsContext.Provider value={analytics}>
+            <KarrotMarketMiniContext.Provider value={karrotMarketMini}>
+              <Screen path="/" component={withLogIn(Home)} />
+              {/* Game 2048 */}
+              <Screen path="/game-2048" component={Game2048Home} />
+              <Screen path="/game-2048/game" component={Game2048Game} />
+              <Screen
+                path="/game-2048/leaderboard"
+                component={Game2048Leaderboard}
+              />
+              {/* Karrot Clicker */}
+              <Screen path="/karrot-clicker" component={KarrotClickerHome} />
+              <Screen
+                path="/karrot-clicker/game"
+                component={KarrotClickerGame}
+              />
+              <Screen
+                path="/karrot-clicker/leaderboard"
+                component={KarrotClickerLeaderboard}
+              />
 
-            <Screen path="/non-service-area" component={NonServiceArea} />
-          </KarrotMarketMiniContext.Provider>
-        </AnalyticsContext.Provider>
-      </KarrotRaiseApiContext.Provider>
+              <Screen path="/non-service-area" component={NonServiceArea} />
+            </KarrotMarketMiniContext.Provider>
+          </AnalyticsContext.Provider>
+        </KarrotRaiseApiContext.Provider>
+      </MinigameApiProvider>
     </Navigator>
   );
 };
