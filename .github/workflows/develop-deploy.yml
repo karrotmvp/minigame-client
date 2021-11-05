@@ -51,3 +51,12 @@ jobs:
           AWS_REGION: 'ap-northeast-2'
           AWS_S3_BUCKET: ${{secrets.AWS_S3_BUCKET}}
           SOURCE_DIR: 'build'
+      - name: invalidate
+        uses: chetan/invalidate-cloudfront-action@v2
+        env:
+          DISTRIBUTION: E2OJ5TSVFOKGQI
+          PATHS: '/index.html'
+          AWS_REGION: ap-northeast-2
+          AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
+          AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+          continue-on-error: true
