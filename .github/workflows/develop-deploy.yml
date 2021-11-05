@@ -35,7 +35,11 @@ jobs:
         run: npm install
 
       - name: Build
-        run: npm run build
+        env:
+          SWAGGER_URL: 'https://api-alpha.daangn-ourapt.com/v2/api-docs'
+        run: | 
+          npm run codegen
+          run: npm run build
 
       - name: Deploy to S3
         uses: jakejarvis/s3-sync-action@master
