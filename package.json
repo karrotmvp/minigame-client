@@ -29,7 +29,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "codegen": "openapi-generator-cli generate -i $SWAGGER_URL -g typescript-axios -o ./src/services/openapi_generator"
+    "codegen": "openapi-generator-cli generate -i $SWAGGER_URL -g typescript-axios -o ./src/services/openapi_generator",
+    "swagger": "openapi-generator-cli generate -i https://alpha.daangn-game.com/v2/api-docs -g typescript-axios -o ./src/services/openapi_generator"
   },
   "eslintConfig": {
     "extends": [
