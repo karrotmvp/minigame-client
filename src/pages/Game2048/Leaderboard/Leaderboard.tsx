@@ -1,20 +1,20 @@
 import { ScreenHelmet, useNavigator } from '@karrotframe/navigator';
 import React from 'react';
 import { LeaderboardTabs } from './LeaderboardTabs';
-import { RefreshCountdown } from '../../../components/RefreshCountdown';
+import { WeeklyCountdown } from '../../../components/Timer';
 
 export const Leaderboard = () => {
   const { pop } = useNavigator();
 
-  const goBackToGamePage = () => {
+  const goToGamePage = () => {
     pop();
   };
   return (
     <div>
       <ScreenHelmet />
-      <RefreshCountdown />
+      <WeeklyCountdown />
       {/* <LeaderboardTabs /> */}
-      <button onClick={goBackToGamePage}>back to game page</button>
+      <button onClick={goToGamePage}>back to game page</button>
     </div>
   );
 };

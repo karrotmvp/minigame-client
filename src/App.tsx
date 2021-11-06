@@ -113,7 +113,7 @@ const App: React.FC = () => {
         <KarrotRaiseApiContext.Provider value={karrotRaiseApi}>
           <AnalyticsContext.Provider value={analytics}>
             <KarrotMarketMiniContext.Provider value={karrotMarketMini}>
-              <Screen path="/" component={withLogIn(Home)} />
+              <Screen path="/" component={Home} />
               {/* Game 2048 */}
               <Screen path="/game-2048" component={Game2048Home} />
               <Screen path="/game-2048/game" component={Game2048Game} />

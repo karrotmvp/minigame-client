@@ -42,7 +42,7 @@ export const Game = () => {
   const goToLeaderboardPage = () => {
     push(`/game-2048/leaderboard`);
   };
-  const goBackToHomePage = () => {
+  const goToHomePage = () => {
     pop();
   };
 

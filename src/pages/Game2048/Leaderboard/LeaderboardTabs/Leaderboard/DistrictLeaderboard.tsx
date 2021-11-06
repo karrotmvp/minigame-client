@@ -6,7 +6,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
 import { DefaultDistrictRow, TopDistrictRow } from '../Row';
 import { RefreshButton } from 'components/Button';
-import { RefreshCountdown } from 'components/RefreshCountdown';
+import { WeeklyCountdown } from 'components/Timer';
 
 const divStyle = css`
   max-height: inherit;
@@ -87,24 +87,6 @@ export const DistrictLeaderboard = () => {
 
   return (
     <div css={divStyle}>
-      <Refresh>
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'flex-end',
-            gap: '4px',
-          }}
-        >
-          <p>이번 주 랭킹</p>
-          <RefreshCountdown />
-        </div>
-        <RefreshButton
-          refreshLeaderboard={() => refreshLeaderboard(karrotRaiseApi)}
-        />
-      </Refresh>
-
       <div css={leaderboardWrapperStyle}>
         {districtRankData.slice(0, 10).map((district) => {
           return (

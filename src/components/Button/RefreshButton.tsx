@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import RefreshIconUrl from '../../assets/svg/refresh.svg';
+import { RefreshIcon } from 'assets/Icon';
 
 const Button = styled.button`
   border: none;
@@ -23,13 +23,13 @@ const Button = styled.button`
 `;
 
 interface RefreshButtonProps {
-  refreshLeaderboard: () => void;
+  handleRefresh: () => void;
 }
 
 export const RefreshButton: React.FC<RefreshButtonProps> = (props) => {
   return (
-    <Button onClick={props.refreshLeaderboard}>
-      <img src={RefreshIconUrl} alt="" />
+    <Button onClick={props.handleRefresh}>
+      <RefreshIcon />
     </Button>
   );
 };

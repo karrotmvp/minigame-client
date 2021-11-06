@@ -86,7 +86,6 @@ export const useGame = () => {
 
   const generateRandomTile = useCallback(() => {
     const emptyTiles = findEmptyTiles();
-
     if (emptyTiles.length > 0) {
       const index = Math.floor(Math.random() * emptyTiles.length);
       const coordinate = emptyTiles[index];
@@ -296,6 +295,7 @@ export const useGame = () => {
   };
 
   useEffect(() => {
+    // if ()
     if (isInitialRender.current) {
       createTile({ coordinate: [0, 1], value: 2 });
       createTile({ coordinate: [0, 2], value: 2 });

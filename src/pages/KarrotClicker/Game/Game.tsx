@@ -7,7 +7,6 @@ import { commafy } from 'utils/functions/numberFunctions';
 import { useAnalytics } from 'services/analytics';
 import useClickCounter from 'hooks/useClickCounter';
 import useUserData from 'hooks/useUserData';
-import { ReactComponent as PauseButton } from 'assets/svg/pause.svg';
 import gameBackgroundUrl from 'assets/images/KarrotClicker/game_background.png';
 import { useIdleTimer } from 'react-idle-timer';
 import { GamePause } from './Pause';
@@ -16,6 +15,7 @@ import { GameOver } from './GameOver';
 import { useClickAnimation } from './hooks/useClickAnimation';
 import ClickAnimation from './Animation/ClickAnimation';
 import { BigKarrot } from './Animation/BigKarrot';
+import { PauseIcon } from 'assets/Icon';
 
 const PageContainer = styled.div`
   background-image: url(${gameBackgroundUrl});
@@ -246,7 +246,9 @@ export const Game = () => {
               {commafy(userScore + clickCount)}
             </p>
           </TotalKarrotCount>
-          <PauseButton onClick={handlePauseGame} />
+          <button onClick={handlePauseGame}>
+            <PauseIcon />
+          </button>
         </div>
         <ScoreWrapper>
           <h2

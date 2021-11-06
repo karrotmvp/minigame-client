@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 import { useNavigator } from '@karrotframe/navigator';
-import IconBack from 'assets/svg/IconBack';
-import IconClose from 'assets/svg/IconClose';
+import { BackIcon, CloseIcon } from 'assets/Icon';
+
 import { useKarrotMarketMini } from 'services/karrotMarketMini';
 
 const Button = styled.button`
@@ -21,7 +21,7 @@ export const AppEjectionButton = () => {
   };
   return (
     <Button onClick={handleAppEjection}>
-      <IconClose />
+      <CloseIcon />
     </Button>
   );
 };
@@ -33,7 +33,7 @@ export const BackButton = () => {
   };
   return (
     <Button onClick={goBackOnePage}>
-      <IconBack />
+      <BackIcon />
     </Button>
   );
 };

@@ -1,19 +1,5 @@
-import styled from '@emotion/styled';
+import { useCurrentScreen } from '@karrotframe/navigator';
 import { useState, useEffect, useCallback } from 'react';
-
-const Countdown = styled.span`
-  font-style: normal;
-  font-weight: 400;
-  font-size: 10px;
-  line-height: 161.7%;
-  /* or 19px */
-
-  color: #5b5b5b;
-
-  span {
-    color: #eb5d0e;
-  }
-`;
 
 function _getNextMonday() {
   let date = new Date('November 3, 2021');
@@ -34,7 +20,8 @@ interface Time {
   minutes: number;
   seconds: number;
 }
-export const RefreshCountdown = () => {
+export const WeeklyCountdown = () => {
+  const { isTop } = useCurrentScreen();
   const [time, setTime] = useState<Time>({
     hours: Math.floor(_getTimeLeft() / (1000 * 60 * 60)),
     minutes: Math.floor((_getTimeLeft() % (1000 * 60 * 60)) / (1000 * 60)),
@@ -68,19 +55,17 @@ export const RefreshCountdown = () => {
   }, []);
 
   useEffect(() => {
-    const timerID = setInterval(() => tick(), 1000);
-    return () => clearInterval(timerID);
-  }, [tick]);
+    if (isTop) {
+      const timerID = setInterval(() => tick(), 1000);
+      return () => clearInterval(timerID);
+    }
+  }, [isTop, tick]);
 
   return (
-    <Countdown>
-      (초기화까지
-      <span>
-        {` ${time?.hours.toString().padStart(2, '0')}:${time?.minutes
-          .toString()
-          .padStart(2, '0')}:${time?.seconds.toString().padStart(2, '0')}`}
-      </span>
-      )
-    </Countdown>
+    <>
+      {` ${time?.hours.toString().padStart(2, '0')}:${time?.minutes
+        .toString()
+        .padStart(2, '0')}:${time?.seconds.toString().padStart(2, '0')}`}
+    </>
   );
 };

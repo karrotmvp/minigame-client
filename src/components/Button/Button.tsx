@@ -102,20 +102,46 @@ type Props = {
   children?: React.ReactNode;
 };
 
-const CustomButton = styled.div<{ size: string }>`
+const CustomButton = styled.a<{ size: string }>`
   text-align: center;
   border: none;
   border-radius: 10px;
+  font-style: normal;
 
-  font-size: ${(props) => (props.size === `tiny` ? rem(14) : `1rem`)};
-  color: ${(props) => (props.color === `secondary` ? `#82B6FF` : `hotpink`)};
-  background: ${(props) =>
-    props.color === `secondary` ? `#FFFFFF` : `hotpink`};
-  box-shadow: ${(props) =>
-    props.color === `secondary` ? `0px 6px 0px 0px #C8D8EE` : `hotpink`};
+  width: ${(props) => (props.size === `large` ? `100%` : `fit-content`)};
 
   padding: ${(props) =>
-    props.size === `tiny` ? `${rem(6)} ${rem(11)} ${rem(5)}` : `1rem`};
+    props.size === `large`
+      ? `${rem(6)} 0`
+      : `tiny`
+      ? `${rem(6)} ${rem(11)} ${rem(5)}`
+      : `0`};
+
+  font-weight: ${(props) => (props.size === `large` ? 'bold' : `normal`)};
+
+  font-size: ${(props) =>
+    props.size === `large` ? rem(20) : `tiny` ? rem(14) : `1rem`};
+
+  color: ${(props) =>
+    props.color === `primary`
+      ? `#FFFFFF`
+      : `secondary`
+      ? `#82B6FF`
+      : `hotpink`};
+
+  background: ${(props) =>
+    props.color === `primary`
+      ? `#0E74FF`
+      : `secondary`
+      ? `#FFFFFF`
+      : `hotpink`};
+
+  box-shadow: ${(props) =>
+    props.color === `primary`
+      ? `0px 6px 0px 0px #1457AE`
+      : `secondary`
+      ? `0px 6px 0px 0px #C8D8EE`
+      : `hotpink`};
 `;
 
 export const Button = (props: Props) => {

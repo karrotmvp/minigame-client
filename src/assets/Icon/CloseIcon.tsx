@@ -1,4 +1,6 @@
-const IconClose: React.FC = () => {
+import React from 'react';
+
+export const CloseIcon: React.FC = () => {
   return (
     <svg
       width="14"
@@ -22,5 +24,3 @@ const IconClose: React.FC = () => {
     </svg>
   );
 };
-
-export default IconClose;

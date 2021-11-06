@@ -1,20 +1,17 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
+import { useCurrentScreen } from '@karrotframe/navigator';
 import { Tabs } from '@karrotframe/tabs';
 import '@karrotframe/tabs/index.css';
 import { useCallback, useState } from 'react';
 import { DistrictLeaderboard, IndividualLeaderboard } from './Leaderboard';
 
-const customizeTabs = css`
-  --kf_tabs_tabBar-baseFontColor: #5b5b5b;
-  --kf_tabs_tabBar-activeFontColor: #ff8845;
-  --kf_tabs_tabBar-indicator-color: #ff8845;
-
-  a[role='tab'] {
-    transition: none;
-  }
-`;
+// const customizeTabs = css`
+//   --kf_tabs_tabBar-borderColor: none;
+//   --kf_tabs_tabBar-indicator-color: none;
+//   --kf_tabs_tabBar-activeFontColor: hotpink !important;
+// `;
 
 const LeaderboardContainer = styled.div`
   flex: 1;
@@ -30,17 +27,29 @@ const LeaderboardContainer = styled.div`
 `;
 
 export const LeaderboardTabs = () => {
+  const { isTop } = useCurrentScreen();
   const [activeTabKey, setActiveTabKey] = useState<string>('district');
+  const handleTabChange = (key: string) => {
+    console.log(isTop);
+    if (isTop) {
+      setActiveTabKey(key);
+    }
+  };
   console.log('leaderboard tabs');
   return (
     <LeaderboardContainer>
       <Tabs
-        css={customizeTabs}
+        // css={customizeTabs}
+        // className={css`
+        //   --kf_tabs_tabBar-borderColor: none;
+        //   --kf_tabs_tabBar-indicator-color: none;
+        //   --kf_tabs_tabBar-activeFontColor: hotpink;
+        // `}
         activeTabKey={activeTabKey}
         tabs={[
           {
             key: 'district',
-            buttonLabel: '동네별',
+            buttonLabel: '지역 랭킹',
             component: useCallback(() => <DistrictLeaderboard />, []),
           },
           {
@@ -49,9 +58,7 @@ export const LeaderboardTabs = () => {
             component: useCallback(() => <IndividualLeaderboard />, []),
           },
         ]}
-        onTabChange={(key) => {
-          setActiveTabKey(key);
-        }}
+        onTabChange={handleTabChange}
       />
     </LeaderboardContainer>
   );
