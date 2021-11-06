@@ -47,7 +47,7 @@ type Props = {
 };
 export const Nav = (props: Props) => {
   return (
-    <Wrapper>
+    <Wrapper className="nav">
       <Left onClick={props.onClickLeft}>{props.appendLeft}</Left>
       <Right onClick={props.onClickRight}>{props.apppendRight}</Right>
     </Wrapper>

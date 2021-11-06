@@ -9,12 +9,13 @@ import { WeeklyCountdown } from 'components/Timer';
 import { LastWeekTopDistrict, LastWeekTopTownie } from './LastWeekWinner';
 import { rem } from 'polished';
 import { Button } from 'components/Button';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import topBanner from 'assets/svg/game2048/home_top_banner.svg';
 import { Nav } from 'components/Navigation/Nav';
 import { BackIcon } from 'assets/Icon';
 import { ReactComponent as BannerImage } from 'assets/svg/game2048/home_top_banner.svg';
 import { Refresh } from './Refresh';
+import { MyInfo } from './MyInfo';
 const Page = styled.div`
   display: flex;
   flex-flow: column;
@@ -30,7 +31,7 @@ const Banner = styled.div`
   padding-bottom: 1rem;
 `;
 
-const LastWeekWinnerContainer = styled.div`
+const Container = styled.div`
   display: flex;
   flex-flow: row;
   gap: ${rem(12)};
@@ -50,6 +51,8 @@ const ActionItems = styled.div`
 
 export const Home = () => {
   const { push, pop } = useNavigator();
+  const [isRanked, setIsRanked] = useState<boolean>(false);
+
   // const { isTop } = useCurrentScreen();
   const goToMainPage = () => {
     pop();
@@ -61,31 +64,47 @@ export const Home = () => {
   const handleGameStart = () => {
     goToGamePage();
   };
-
-  const handleRefresh = () => {};
-
   const getLastWeekTopTownie = () => {};
 
   const getLastWeekTopDistrict = () => {};
+
+  const handleRefresh = () => {};
+
+  const getMyInfo = () => {};
+
   // useEffect(() => {
   //   if (isTop) {
   //     console.log('isTop');
   //   }
   // });
+  useEffect(() => {
+    setIsRanked(true);
+  }, []);
   return (
     <Page>
       {/* <ScreenHelmet /> */}
       <Nav appendLeft={<BackIcon />} onClickLeft={goToMainPage} />
-      <Banner>
+      <Banner className="banner">
         <BannerImage />
       </Banner>
-      <LastWeekWinnerContainer>
+      <Container className="last-week-winner">
         <LastWeekTopDistrict getLastWeekTopDistrict={getLastWeekTopDistrict} />
         <LastWeekTopTownie getLastWeekTopTownie={getLastWeekTopTownie} />
-      </LastWeekWinnerContainer>
+      </Container>
 
       <Refresh handleRefresh={handleRefresh} />
-
+      <Container>
+        {isRanked ? (
+          <MyInfo
+            rank={234}
+            name={`username`}
+            district={`district name`}
+            score={12123}
+            highestRank={1}
+            highestScore={12323894}
+          />
+        ) : null}
+      </Container>
       <LeaderboardTabs />
 
       <ActionItems>
