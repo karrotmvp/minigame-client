@@ -12,7 +12,7 @@ import {
 import {
   AppEjectionButton,
   OldButton,
-  DisabledButton,
+  OldDisabledButton,
 } from 'components/Button';
 import { useUserData } from 'hooks';
 import { useCookies } from 'react-cookie';
@@ -210,7 +210,7 @@ export const NonServiceArea = () => {
       </div>
       <div css={actionItemWraper}>
         {isClicked ? (
-          <DisabledButton size={`large`} text={`오픈 알림 신청 완료`} />
+          <OldDisabledButton size={`large`} text={`오픈 알림 신청 완료`} />
         ) : (
           <OldButton
             size={`medium`}

@@ -35,12 +35,13 @@ export const useGame = () => {
   const isInitialRender = useRef(true);
   const nextId = useUniqueId();
   const dispatch = useDispatch();
-  const { tiles, byIds, hasChanged, inMotion } = useSelector(
+  const { score, tiles, byIds, hasChanged, inMotion } = useSelector(
     (state: RootState) => ({
       tiles: state.game2048Reducer.tiles,
       byIds: state.game2048Reducer.byIds,
       hasChanged: state.game2048Reducer.hasChanged,
       inMotion: state.game2048Reducer.inMotion,
+      score: state.game2048Reducer.score,
     })
   );
   // Tile manager
@@ -106,7 +107,7 @@ export const useGame = () => {
       })();
       const randomValue = (() => {
         const random = Math.random();
-        return random < 0.9 ? 23 : 47;
+        return random < 0.9 ? 2 : 4;
       })();
       createTile({ coordinate: randomCoordinate, value: randomValue });
     }
@@ -277,42 +278,42 @@ export const useGame = () => {
   })();
 
   // Game controller
-  const resetGame = () => {
-    dispatch(resetGameAction);
+  const resetGame = useCallback(() => {
+    dispatch(resetGameAction());
+    generateRandomTile();
+    generateRandomTile();
+
+    console.log('reset');
+  }, [dispatch, generateRandomTile]);
+  const checkGameOver = () => {
+    const emptyTiles = findEmptyTiles();
+    if (emptyTiles.length <= 0) {
+      console.log('gameover');
+    }
   };
-  // const checkGameOver = () => {
-  //   const emptyTiles = findEmptyTiles();
-  //   if (emptyTiles.length <= 0) {
-  //     console.log('gameover');
-  //   }
-  // };
   useEffect(() => {
     if (isInitialRender.current) {
-      createTile({ coordinate: [0, 1], value: 2 });
-      createTile({ coordinate: [0, 2], value: 2 });
+      createTile({ coordinate: [3, 1], value: 2 });
+      createTile({ coordinate: [1, 1], value: 2 });
       isInitialRender.current = false;
       return;
     }
-
     if (!inMotion && hasChanged) {
       generateRandomTile();
-      // checkGameOver();
-      // console.log('s');
     }
-    // const emptyTiles = findEmptyTiles();
-    // if (emptyTiles.length <= 0) {
-    //   console.log('gameover');
-    // }
   }, [createTile, generateRandomTile, hasChanged, inMotion]);
 
   const tileList = byIds.map((tileId) => tiles[tileId]);
   // console.log(tileList);
+
   return {
+    score,
     tileList,
     moveLeft,
     moveRight,
     moveUp,
     moveDown,
     resetGame,
+    checkGameOver,
   };
 };

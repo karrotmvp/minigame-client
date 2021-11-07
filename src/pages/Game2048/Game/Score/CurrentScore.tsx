@@ -25,14 +25,14 @@ const Score = styled.div`
   color: #0e74ff;
 `;
 
-export const CurrentScore = () => {
-  const { score } = useSelector((state: RootState) => ({
-    score: state.game2048Reducer.score,
-  }));
+type Props = {
+  score: number;
+};
+export const CurrentScore: React.FC<Props> = (props) => {
   return (
     <Container>
       <Text>Score</Text>
-      <Score>{score}</Score>
+      <Score>{props.score}</Score>
     </Container>
   );
 };

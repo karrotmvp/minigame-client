@@ -38,9 +38,17 @@ export const useKarrotMarketMini = () => {
     });
   };
 
+  const shareApp = (url: string, text: string) => {
+    mini.share({
+      url,
+      text,
+    });
+  };
+
   return {
     isInWebEnvironment,
     ejectApp,
     handleThirdPartyAgreement,
+    shareApp,
   };
 };

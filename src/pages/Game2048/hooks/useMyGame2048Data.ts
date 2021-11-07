@@ -5,7 +5,7 @@ import {
 } from 'reducers/game2048DataReducer';
 import { RootState } from 'reducers/rootReducer';
 
-export const useGame2048Data = () => {
+export const useMyGame2048Data = () => {
   const { score, rank, comment, gameType } = useSelector(
     (state: RootState) => ({
       score: state.game2048DataReducer.score,
@@ -16,7 +16,11 @@ export const useGame2048Data = () => {
   );
   const dispatch = useDispatch();
 
-  const updateGame2048Data = (score: number, rank: number, comment: string) => {
+  const updateMyGame2048Data = (
+    score: number,
+    rank: number,
+    comment: string
+  ) => {
     dispatch(updateUserGameDataAction(score, rank, comment));
   };
 
@@ -28,7 +32,7 @@ export const useGame2048Data = () => {
     rank,
     comment,
     gameType,
-    updateGame2048Data,
+    updateMyGame2048Data,
     setGameTypeToGame2048,
   };
 };

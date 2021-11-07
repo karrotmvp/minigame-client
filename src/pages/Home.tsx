@@ -7,7 +7,7 @@ import { Nav } from 'components/Navigation/Nav';
 import { CloseIcon } from 'assets/Icon';
 import { rem } from 'polished';
 import { commafy } from 'utils/functions/numberFunctions';
-import { useGame2048Data } from './Game2048/hooks';
+import { useMyGame2048Data } from './Game2048/hooks';
 import { useKarrotClickerData } from './KarrotClicker/hooks';
 
 export const Home: React.FC = () => {
@@ -16,7 +16,7 @@ export const Home: React.FC = () => {
   const { isTop } = useCurrentScreen();
   const { isInWebEnvironment, ejectApp } = useKarrotMarketMini();
   const [userCount, setUserCount] = useState<number>(0);
-  const { updateGame2048Data, setGameTypeToGame2048 } = useGame2048Data();
+  const { updateMyGame2048Data, setGameTypeToGame2048 } = useMyGame2048Data();
   const { updateKarrotClickerData, setGameTypeToKarrotClicker } =
     useKarrotClickerData();
 
@@ -37,7 +37,7 @@ export const Home: React.FC = () => {
       } = await minigameApi.gameUserApi().getMyRankInfoUsingGET('GAME_2048');
       console.log(data);
       if (data) {
-        updateGame2048Data(data.score, data.rank!, data.comment);
+        updateMyGame2048Data(data.score, data.rank!, data.comment);
       }
       push(`/game-2048`);
     }

@@ -4,7 +4,7 @@ import { emphasizedTextStyle, largeTextStyle } from 'styles/textStyle';
 import { ReactComponent as Karrot } from 'assets/svg/KarrotClicker/small_circle_karrot.svg';
 import { useCallback, useState } from 'react';
 import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
-import { OldButton, DisabledButton } from 'components/Button';
+import { OldButton, OldDisabledButton } from 'components/Button';
 import { useNavigator } from '@karrotframe/navigator';
 import { useCookies } from 'react-cookie';
 import { useKarrotClickerData } from 'pages/KarrotClicker/hooks';
@@ -161,7 +161,7 @@ export const TopRank: React.FC<Props> = (props) => {
             }}
           />
         ) : (
-          <DisabledButton size={`large`} text={`등록하기`} />
+          <OldDisabledButton size={`large`} text={`등록하기`} />
         )}
       </div>
     </>

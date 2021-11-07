@@ -8,14 +8,15 @@ import { useCallback, useEffect, useState } from 'react';
 import { Nav } from 'components/Navigation/Nav';
 import { BackIcon } from 'assets/Icon';
 import { ReactComponent as BannerImage } from 'assets/svg/game2048/home_top_banner.svg';
-import { Refresh } from './Refresh';
-import { MyInfo } from './MyInfo';
+import { Refresh } from '../Leaderboard/Refresh';
+import { MyInfo } from '../Leaderboard/MyInfo';
 import { useMinigameApi } from 'services/api/minigameApi';
 import { ActiveUserCount } from 'components/ActiveUserCount';
 import { TownRankResponseDto } from 'services/openapi_generator';
 import { useAccessToken } from 'hooks/useAccessToken';
-import { useGame2048Data } from '../hooks';
+import { useMyGame2048Data } from '../hooks';
 import { useKarrotMarketMini } from 'hooks';
+import { useThrottledCallback } from 'use-debounce/lib';
 
 export const Home = () => {
   const { isTop } = useCurrentScreen();
@@ -24,7 +25,7 @@ export const Home = () => {
   const { accessToken } = useAccessToken();
   const { isInWebEnvironment, handleThirdPartyAgreement } =
     useKarrotMarketMini();
-  const { rank, gameType, updateGame2048Data } = useGame2048Data();
+  const { rank, gameType, updateMyGame2048Data } = useMyGame2048Data();
   const [isRanked, setIsRanked] = useState<boolean>(false);
   const [userLeaderboardData, setUserLeaderboardData] = useState<any[]>([]);
   const [districtLeaderboardData, setDistrictLeaderboardData] = useState<any[]>(
@@ -61,7 +62,7 @@ export const Home = () => {
       data: { data },
     } = await minigameApi.gameUserApi().getMyRankInfoUsingGET(gameType);
     if (data) {
-      updateGame2048Data(data.score, data.rank!, data.comment);
+      updateMyGame2048Data(data.score, data.rank!, data.comment);
     }
   };
 
@@ -93,12 +94,13 @@ export const Home = () => {
     }
   }, [gameType, minigameApi]);
 
-  const handleRefresh = () => {
+  // Throttle refresh for 5 seconds
+  const handleRefresh = useThrottledCallback(() => {
     updateMyGameData();
     getUserLeaderboardData();
     getDistrictLeaderboardData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  };
+  }, 5000);
 
   useEffect(() => {
     if (isTop) {
@@ -136,7 +138,12 @@ export const Home = () => {
         <ActiveUserCount gameType="GAME_2048" />
       </div>
       <ActionItems>
-        <Button size={`large`} color={`primary`} onClick={handleGameStart}>
+        <Button
+          size={`large`}
+          fontSize={rem(20)}
+          color={`primary`}
+          onClick={handleGameStart}
+        >
           게임 시작
         </Button>
       </ActionItems>
@@ -167,7 +174,7 @@ const ActionItems = styled.div`
   display: flex;
   justify-content: center;
   width: 100%;
-  padding: ${rem(16)} ${rem(24)} ${rem(34)};
+  padding: ${rem(15)} ${rem(18)} ${rem(30)};
   border-top: 1px solid #ebebeb;
   background: #ffffff;
   box-sizing: border-box;

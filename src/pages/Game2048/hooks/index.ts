@@ -1,1 +1,1 @@
-export * from './useGame2048Data';
+export * from './useMyGame2048Data';
