@@ -1,5 +1,24 @@
 import styled from '@emotion/styled';
-import { useState } from 'react';
+
+export const TownieHighScore = () => {
+  // API GET TOWNIE HIGH SCORE
+  return (
+    <Container>
+      <Text>주민 최고점수</Text>
+      <Score></Score>
+    </Container>
+  );
+};
+export const MyHighScore = () => {
+  // API GET MY HIGH SCORE
+
+  return (
+    <Container>
+      <Text>내 최고점수</Text>
+      <Score></Score>
+    </Container>
+  );
+};
 
 const Container = styled.div`
   display: flex;
@@ -24,24 +43,3 @@ const Score = styled.div`
   font-size: 0.875rem;
   color: #4694ff;
 `;
-export const TownieHighScore = () => {
-  // API GET TOWNIE HIGH SCORE
-  return (
-    <Container>
-      <Text>주민 최고점수</Text>
-      <Score></Score>
-    </Container>
-  );
-};
-export const MyHighScore = () => {
-  const [totalScore, setTotalScore] = useState(0);
-
-  // API GET MY HIGH SCORE
-
-  return (
-    <Container>
-      <Text>내 최고점수</Text>
-      <Score></Score>
-    </Container>
-  );
-};

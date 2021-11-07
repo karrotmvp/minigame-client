@@ -13,11 +13,10 @@ import { useMyGame2048Data } from '../hooks';
 import { useKarrotMarketMini } from 'hooks';
 import { Refresh } from './Refresh';
 import { useThrottledCallback } from 'use-debounce/lib';
-import { useGame } from '../Game/Game/hooks';
 
 export const Leaderboard = () => {
   const { isTop } = useCurrentScreen();
-  const { push, pop } = useNavigator();
+  const { pop } = useNavigator();
   const minigameApi = useMinigameApi();
   const { ejectApp, shareApp } = useKarrotMarketMini();
   const { rank, gameType, updateMyGame2048Data } = useMyGame2048Data();

@@ -1,7 +1,16 @@
 import styled from '@emotion/styled';
 
-import { useSelector } from 'react-redux';
-import { RootState } from 'reducers/rootReducer';
+type Props = {
+  score: number;
+};
+export const CurrentScore: React.FC<Props> = (props) => {
+  return (
+    <Container>
+      <Text>Score</Text>
+      <Score>{props.score}</Score>
+    </Container>
+  );
+};
 
 const Container = styled.div`
   display: flex;
@@ -24,15 +33,3 @@ const Score = styled.div`
   font-size: 3.125rem;
   color: #0e74ff;
 `;
-
-type Props = {
-  score: number;
-};
-export const CurrentScore: React.FC<Props> = (props) => {
-  return (
-    <Container>
-      <Text>Score</Text>
-      <Score>{props.score}</Score>
-    </Container>
-  );
-};

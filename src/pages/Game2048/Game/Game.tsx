@@ -1,8 +1,8 @@
 import styled from '@emotion/styled';
-import { useNavigator } from '@karrotframe/navigator';
+import { useCurrentScreen } from '@karrotframe/navigator';
 import { Button } from 'components/Button';
 import { rem } from 'polished';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import ReactModal from 'react-modal';
 import { useSwipeable } from 'react-swipeable';
 import { useMinigameApi } from 'services/api/minigameApi';
@@ -13,10 +13,9 @@ import { useGame } from './Game/hooks';
 import { animationDuration } from './Game/styles';
 import { PostComment } from './Modal';
 import { CurrentScore, MyHighScore, TownieHighScore } from './Score';
-// ReactModal.setAppElement(document.createElement('div'));
 
 export const Game: React.FC = () => {
-  const { push, pop } = useNavigator();
+  const { isTop } = useCurrentScreen();
   const minigameApi = useMinigameApi();
   const {
     score: bestScore,
@@ -103,11 +102,13 @@ export const Game: React.FC = () => {
   );
 
   useEffect(() => {
-    if (bestScore === 0) {
-      setIsUserNew(true);
-      console.log('guide is on for new user');
+    if (isTop) {
+      if (bestScore === 0) {
+        setIsUserNew(true);
+        console.log('guide is on for new user');
+      }
     }
-  }, []);
+  }, [bestScore, isTop]);
   // useEffect(() => {
   //   setIsUserInTopTen(true);
   // }, []);

@@ -26,7 +26,7 @@ export const ActiveUserCount: React.FC<Props> = (props) => {
       console.log('ActiveUserCount', props.gameType);
       getDailyUserCount();
     }
-  }, [getDailyUserCount, isTop]);
+  }, [getDailyUserCount, isTop, props.gameType]);
   return (
     <SpeechBalloon gameType={props.gameType}>
       <span>{dailyUserCount}</span>명이 플레이 중!
