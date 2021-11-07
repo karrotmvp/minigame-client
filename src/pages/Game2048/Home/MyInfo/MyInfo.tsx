@@ -2,6 +2,44 @@ import React from 'react';
 import styled from '@emotion/styled';
 import { rem } from 'polished';
 import { commafy } from 'utils/functions/numberFunctions';
+import { useUserData } from 'hooks';
+import { useGame2048Data } from 'pages/Game2048/hooks';
+
+export const MyInfo: React.FC = () => {
+  const { userName, districtName } = useUserData();
+  const { score, rank, comment } = useGame2048Data();
+
+  const highestRank = 1;
+  const highestScore = 999999;
+  return (
+    <Container className="my-info">
+      <Row>
+        <Info>
+          <Rank>{rank}</Rank>
+          <Name>
+            {userName}
+            <District>{districtName}</District>
+          </Name>
+        </Info>
+        <Score>{commafy(score)}</Score>
+      </Row>
+      <Hr />
+      <Row>
+        <Wrapper>
+          역대 최고랭킹
+          <Score>{highestRank}</Score>
+        </Wrapper>
+        <Wrapper
+          style={{
+            marginLeft: '20px',
+          }}
+        >
+          역대 최고기록<Score>{commafy(highestScore)}</Score>
+        </Wrapper>
+      </Row>
+    </Container>
+  );
+};
 
 const Container = styled.div`
   display: flex;
@@ -79,45 +117,3 @@ const Wrapper = styled.div`
   flex: 1;
   color: #96a8b9;
 `;
-type Props = {
-  rank: number;
-  name: string;
-  district: string;
-  score: number;
-  highestRank: number;
-  highestScore: number;
-};
-export const MyInfo: React.FC<Props> = (props) => {
-  return (
-    <Container className="my-info">
-      <Row>
-        <Info>
-          <Rank>{props.rank}</Rank>
-          <Name>
-            {props.name}
-            <District>{props.district}</District>
-          </Name>
-        </Info>
-        <Score>{commafy(props.score)}</Score>
-      </Row>
-      <Hr />
-      <Row>
-        <Wrapper
-        // style={{
-        //   paddingRight: '20px',
-        // }}
-        >
-          역대 최고랭킹
-          <Score>{props.highestRank}</Score>
-        </Wrapper>
-        <Wrapper
-          style={{
-            marginLeft: '20px',
-          }}
-        >
-          역대 최고기록<Score>{commafy(props.highestScore)}</Score>
-        </Wrapper>
-      </Row>
-    </Container>
-  );
-};

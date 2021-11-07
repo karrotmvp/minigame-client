@@ -1,8 +1,9 @@
 import styled from '@emotion/styled';
 import { commafy } from 'utils/functions/numberFunctions';
-import Medal1Url from '../../../assets/images/medal1.png';
-import Medal2Url from '../../../assets/images/medal2.png';
-import Medal3Url from '../../../assets/images/medal2.png';
+import Medal1Url from 'assets/svg/game2048/medal1.svg';
+import Medal2Url from 'assets/svg/game2048/medal1.svg';
+import Medal3Url from 'assets/svg/game2048/medal1.svg';
+import { rem } from 'polished';
 
 const Container = styled.div<{ me?: boolean; rank?: number }>`
   display: flex;
@@ -31,16 +32,17 @@ const Container = styled.div<{ me?: boolean; rank?: number }>`
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center center;
-    width: 25px;
-    height: 32px;
+    width: 15px;
+    height: 20px;
+    // transform: scale(1.5);
     position: absolute;
-    top: 0px;
-    left: 10px;
+    top: 16px;
+    left: 20px;
   }
 `;
 
 const Rank = styled.div`
-  width: 30px;
+  width: 25px;
   display: flex;
   align-self: flex-start;
 
@@ -71,20 +73,13 @@ const Name = styled.div<{ rank: number }>`
   gap: 4px;
   align-items: center;
 
-  color: ${(props) =>
-    props.rank === 1
-      ? '#EB5D0E'
-      : props.rank === 2
-      ? '#ff8845'
-      : props.rank === 3
-      ? '#F39E6E'
-      : '#5B5B5B'};
-
   font-style: normal;
   font-weight: 600;
-  font-size: 16px;
+  font-size: ${rem(16)};
   line-height: 161.7%;
   /* identical to box height, or 26px */
+
+  color: #0e74ff;
 `;
 
 const Score = styled.div`
@@ -104,7 +99,7 @@ const Score = styled.div`
 const SpeechBalloon = styled.div`
   position: relative;
   width: fit-content;
-  padding: 2px 8px;
+  padding: 1px 6px;
   background: #f5f5f5;
 
   border-radius: 5px;
@@ -122,52 +117,28 @@ const SpeechBalloon = styled.div`
   }
 
   font-style: normal;
-  font-weight: noraml;
-  font-size: 10px;
+  font-weight: normal;
+  font-size: ${rem(10)};
   line-height: 161.7%;
-  /* or 19px */
+  /* or 16px */
 
-  color: #616161;
+  color: #7c7c7c;
 `;
 
 const DistrictName = styled.div<{ districtName: string }>`
-  border: 0.5px solid;
-  box-sizing: border-box;
-  border-radius: 7px;
   height: fit-content;
   width: fit-content;
-  padding: 1px 5px;
+  padding: 0 5px;
 
+  color: #7c7c7c;
   font-style: normal;
-  font-weight: 600;
-  font-size: 8px;
+  font-weight: normal;
+  font-size: ${rem(8)};
   line-height: 161.7%;
 
-  color: ${(props) =>
-    props.districtName === `서초구`
-      ? '#6BA577'
-      : props.districtName === `송파구`
-      ? '#E17373'
-      : props.districtName === `강동구`
-      ? '#AE93C3'
-      : props.districtName === `강남구`
-      ? `#9398C3`
-      : props.districtName === `광진구`
-      ? `#DD8758`
-      : '#5B5B5B'};
-
-  border-color: ${(props) =>
-    props.districtName === `서초구`
-      ? '#6BA577'
-      : props.districtName === `송파구`
-      ? '#E17373'
-      : props.districtName === `강동구`
-      ? '#AE93C3'
-      : props.districtName === `강남구`
-      ? `#9398C3`
-      : props.districtName === `광진구`
-      ? `#DD8758`
-      : '#5B5B5B'};
+  border: 0.5px solid #7c7c7c;
+  box-sizing: border-box;
+  border-radius: 7px;
 `;
 
 const PlayerCount = styled.div`
@@ -184,9 +155,10 @@ const PlayerCount = styled.div`
 interface TopUserRowProps {
   me?: boolean;
   rank: number;
-  nickname: string;
+  userName: string;
   score: number;
   comment: string;
+  cityName: string;
   districtName: string;
 }
 export const TopUserRow: React.FC<TopUserRowProps> = (props) => {
@@ -202,10 +174,10 @@ export const TopUserRow: React.FC<TopUserRowProps> = (props) => {
       <ContentsWrapper>
         <Info>
           <Name rank={props.rank}>
+            {props.userName}
             <DistrictName districtName={props.districtName}>
-              {props.districtName.slice(0, -1)}
+              {props.cityName.slice(0, 2)} {props.districtName}
             </DistrictName>
-            {props.nickname}
           </Name>
           <Score>{commafy(props.score)}</Score>
         </Info>

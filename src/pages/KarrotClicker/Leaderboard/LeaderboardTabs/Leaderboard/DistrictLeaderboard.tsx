@@ -47,7 +47,7 @@ const leaderboardWrapperStyle = css`
   scrollbar-width: none; /* Firefox */
 `;
 
-export const DistrictLeaderboard = () => {
+export const DistrictLeaderboard: React.FC = () => {
   const [districtRankData, setDistrictRankData] = useState<any[]>([]);
   const karrotRaiseApi = useKarrotRaiseApi();
 

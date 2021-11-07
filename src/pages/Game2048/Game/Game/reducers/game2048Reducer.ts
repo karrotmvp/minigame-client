@@ -1,5 +1,6 @@
-import { TileProps } from '../pages/Game2048/Game/Tile';
+import { TileProps } from '../Tile';
 // action types
+export const RESET = 'game2048/RESET' as const;
 export const CREATE_TILE = 'game2048/CREATE_TILE' as const;
 export const UPDATE_TILE = 'game2048/UPDATE_TILE' as const;
 export const MERGE_TILE = 'game2048/MERGE_TILE' as const;
@@ -7,25 +8,42 @@ export const MOVE_START = 'game2048/MOVE_START' as const;
 export const MOVE_END = 'game2048/MOVE_END' as const;
 export const UPDATE_SCORE = 'game2048/UPDATE_SCORE' as const;
 // actions
+export const resetGameAction = () => ({
+  type: RESET,
+});
 export const createTileAction = (tile: TileProps) => ({
   type: CREATE_TILE,
-  payload: { tile },
+  payload: {
+    tile,
+  },
 });
 export const updateTileAction = (tile: TileProps) => ({
   type: UPDATE_TILE,
-  payload: { tile },
+  payload: {
+    tile,
+  },
 });
 export const mergeTileAction = (source: TileProps, destination: TileProps) => ({
   type: MERGE_TILE,
-  payload: { source, destination },
+  payload: {
+    source,
+    destination,
+  },
 });
-export const moveStartAction = () => ({ type: MOVE_START });
-export const moveEndAction = () => ({ type: MOVE_END });
+export const moveStartAction = () => ({
+  type: MOVE_START,
+});
+export const moveEndAction = () => ({
+  type: MOVE_END,
+});
 export const updateScoreAction = (score: number) => ({
   type: UPDATE_SCORE,
-  payload: { score },
+  payload: {
+    score,
+  },
 });
-type GameAction =
+type Game2048Action =
+  | ReturnType<typeof resetGameAction>
   | ReturnType<typeof createTileAction>
   | ReturnType<typeof updateTileAction>
   | ReturnType<typeof mergeTileAction>
@@ -33,7 +51,7 @@ type GameAction =
   | ReturnType<typeof moveEndAction>
   | ReturnType<typeof updateScoreAction>;
 
-export type GameState = {
+export type Game2048State = {
   tiles: {
     [id: number]: TileProps;
   };
@@ -41,32 +59,23 @@ export type GameState = {
   hasChanged: boolean;
   byIds: number[];
   score: number;
-  // totalScore: number;
 };
 
-export const initialState: GameState = {
+export const initialState: Game2048State = {
   tiles: {},
   byIds: [],
   hasChanged: false,
   inMotion: false,
   score: 0,
-  // totalScore: 0,
 };
 
-// export type GameAction =
-//   | { type: 'create_tile'; tile: TileProps }
-//   | { type: 'update_tile'; tile: TileProps }
-//   | { type: 'merge_tile'; source: TileProps; destination: TileProps }
-//   | { type: 'update_score'; score: number }
-//   | { type: 'reset_score' }
-//   | { type: 'move_start' }
-//   | { type: 'move_end' };
-
 const game2048Reducer = (
-  state: GameState = initialState,
-  action: GameAction
+  state: Game2048State = initialState,
+  action: Game2048Action
 ) => {
   switch (action.type) {
+    case RESET:
+      return initialState;
     case CREATE_TILE:
       return {
         ...state,
@@ -107,16 +116,10 @@ const game2048Reducer = (
         hasChanged: true,
       };
     case UPDATE_SCORE:
-      // console.log(state.score, action.score);
       return {
         ...state,
         score: state.score + action.payload.score,
       };
-    // case 'reset_score':
-    //   return {
-    //     ...state,
-    //     score: 0,
-    //   };
     case MOVE_START:
       return {
         ...state,

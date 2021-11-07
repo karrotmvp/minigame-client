@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import '@karrotframe/navigator/index.css';
 import { Navigator, Screen } from '@karrotframe/navigator';
-// import { KarrotClickerApp } from 'KarrotClicker';
 import { Home } from 'pages/Home';
 import { Game2048Home } from 'pages/Game2048/Home';
 import { Game2048Game } from 'pages/Game2048/Game';
@@ -15,7 +14,6 @@ import {
 } from 'services/analytics/firebase';
 import {
   emptyKarrotRaiseApi,
-  KarrotRaiseApi,
   KarrotRaiseApiContext,
 } from 'services/karrotRaiseApi';
 import {
@@ -28,25 +26,22 @@ import {
 } from 'services/karrotMarketMini';
 import {
   createKarrotMarketMini,
-  getMini,
   loadFromEnv as loadKarrotMarketMiniConfig,
 } from 'services/karrotMarket/mini';
 import { AnalyticsContext, emptyAnalytics } from 'services/analytics';
 import { NonServiceArea } from 'pages/NonServiceArea';
-import useUserData from 'hooks/useUserData';
-import { withLogIn, withOpenRegion } from 'components/hoc';
 
-import { MinigameApiProvider, useMinigameApi } from 'services/api/minigameApi';
+import { MinigameApiProvider } from 'services/api/minigameApi';
+import { useUserData } from 'hooks';
+import { useAccessToken } from 'hooks/useAccessToken';
 const App: React.FC = () => {
-  const { saveQueryParamsData } = useUserData();
-
+  const { setRegionInfo } = useUserData();
+  const { getAccessToken } = useAccessToken();
   const [analytics, setAnalytics] = useState(emptyAnalytics);
   const [karrotRaiseApi, setKarrotRaiseApi] = useState(emptyKarrotRaiseApi);
   const [karrotMarketMini, setKarrotMarketMini] = useState(
     emptyKarrotMarketMini
   );
-  // const [minigameApi, setMinigameApi] = seState(empty)
-  const api = useMinigameApi();
   // Firebase Analytics가 설정되어 있으면 인스턴스를 초기화하고 교체합니다.
   useEffect(() => {
     try {
@@ -82,24 +77,31 @@ const App: React.FC = () => {
     }
   }, []);
 
+  const getQueryParams = () => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const code: string | null = searchParams.get('code');
+    const regionId: string | null = searchParams.get('region_id');
+    return [code, regionId];
+  };
+
   useEffect(() => {
+    // if(cookies.accessToken !== undefined) {
+    // }
     try {
+      const [code, regionId] = getQueryParams();
       analytics.logEvent('launch_app');
-      const searchParams = new URLSearchParams(window.location.search);
-      const code: string | null = searchParams.get('code');
-      const regionId: string | null = searchParams.get('region_id');
-      saveQueryParamsData(code, regionId);
-      if (code && regionId) {
-        const response = api
-          .oauth2Api()
-          .karrotLoginUsingPOST({ code, regionId });
-        console.log(response);
+      console.log(code, regionId);
+      if (regionId) {
+        setRegionInfo(regionId);
+        if (code) {
+          getAccessToken(code, regionId);
+        }
       }
     } catch (error) {
       console.error(error);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [analytics]);
+  }, []);
 
   return (
     <Navigator

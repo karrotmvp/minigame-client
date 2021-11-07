@@ -3,11 +3,11 @@ import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 import { useCallback, useEffect, useState } from 'react';
 import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
-
-import useUserData from 'hooks/useUserData';
 import { RefreshButton } from 'components/Button';
 import { DefaultUserRow, TopUserRow } from '../Row';
 import { WeeklyCountdown } from 'components/Timer';
+import { useCookies } from 'react-cookie';
+import { useKarrotClickerData } from 'pages/KarrotClicker/hooks';
 
 const divStyle = css`
   // max-height: inherit;
@@ -64,24 +64,26 @@ const infoText = css`
   color: #7c7c7c;
 `;
 
-export const IndividualLeaderboard = () => {
+export const IndividualLeaderboard: React.FC = () => {
   const [individualRankData, setIndividualRankData] = useState<any[]>([]);
   const karrotRaiseApi = useKarrotRaiseApi();
-  const { accessToken, userId, onUpdateUserData } = useUserData();
-  const getUserData = useCallback(
-    async function (karrotRaiseApi: KarrotRaiseApi, accessToken: string) {
-      try {
-        const { data, status } = await karrotRaiseApi.getUserInfo(accessToken);
-        if (status === 200) {
-          const { nickname, score, rank, comment } = data;
-          onUpdateUserData(userId, nickname, score, rank, comment);
-        }
-      } catch (error) {
-        console.error(error);
+  const { updateKarrotClickerData } = useKarrotClickerData();
+  const [cookies] = useCookies();
+  const getUserData = useCallback(async function (
+    karrotRaiseApi: KarrotRaiseApi,
+    accessToken: string
+  ) {
+    try {
+      const { data, status } = await karrotRaiseApi.getUserInfo(accessToken);
+      if (status === 200) {
+        const { score, rank, comment } = data;
+        updateKarrotClickerData(score, rank, comment);
       }
-    },
-    [onUpdateUserData, userId]
-  );
+    } catch (error) {
+      console.error(error);
+    }
+  },
+  []);
 
   const getUserLeaderboardData = useCallback(async function (
     karrotRaiseApi: KarrotRaiseApi
@@ -114,8 +116,8 @@ export const IndividualLeaderboard = () => {
   );
 
   useEffect(() => {
-    refreshLeaderboard(karrotRaiseApi, accessToken);
-  }, [accessToken, karrotRaiseApi, refreshLeaderboard]);
+    refreshLeaderboard(karrotRaiseApi, cookies.accessToken);
+  }, [cookies.accessToken, karrotRaiseApi, refreshLeaderboard]);
 
   return (
     <div css={divStyle}>
@@ -133,7 +135,9 @@ export const IndividualLeaderboard = () => {
           <WeeklyCountdown />
         </div>
         <RefreshButton
-          handleRefresh={() => refreshLeaderboard(karrotRaiseApi, accessToken)}
+          handleRefresh={() =>
+            refreshLeaderboard(karrotRaiseApi, cookies.accessToken)
+          }
         />
       </Refresh>
 
@@ -143,7 +147,7 @@ export const IndividualLeaderboard = () => {
             <TopUserRow
               key={user.userId}
               rank={user.rank}
-              nickname={user.nickname}
+              userName={user.userName}
               comment={user.comment}
               score={user.score}
               districtName={user.town.name2}
@@ -160,7 +164,7 @@ export const IndividualLeaderboard = () => {
             <DefaultUserRow
               key={user.userId}
               rank={user.rank}
-              nickname={user.nickname}
+              userName={user.userName}
               score={user.score}
               districtName={user.town.name2}
             />

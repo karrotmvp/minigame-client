@@ -1,37 +1,51 @@
-/** @jsxImportSource @emotion/react */
-import { css } from '@emotion/react';
 import styled from '@emotion/styled';
-import { useCallback, useEffect, useState } from 'react';
-
-import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
 import { DefaultDistrictRow, TopDistrictRow } from '../Row';
-import { RefreshButton } from 'components/Button';
-import { WeeklyCountdown } from 'components/Timer';
 
-const divStyle = css`
+type Props = {
+  districtLeaderboardData: any[];
+};
+export const DistrictLeaderboard: React.FC<Props> = (props) => {
+  return (
+    <Container>
+      <Wrapper>
+        {props.districtLeaderboardData.slice(0, 10).map((district) => {
+          return (
+            <TopDistrictRow
+              key={district.name2}
+              rank={district.rank}
+              cityName={district.name1}
+              districtName={district.name2}
+              playerCount={district.playerCount}
+              score={district.score}
+            />
+          );
+        })}
+        {props.districtLeaderboardData.slice(10).map((district) => {
+          return (
+            <DefaultDistrictRow
+              key={district.name2}
+              rank={district.rank}
+              cityName={district.name1}
+              districtName={district.name2}
+              playerCount={district.playerCount}
+              score={district.score}
+            />
+          );
+        })}
+      </Wrapper>
+    </Container>
+  );
+};
+
+const Container = styled.div`
   max-height: inherit;
   box-sizing: border-box;
   width: 100%;
   height: 100%;
   overflow: hidden;
 `;
-const Refresh = styled.div`
-  display: flex;
-  flex-flow: row;
-  justify-content: space-between;
 
-  margin: 14px 2px 12px 0;
-  p {
-    font-style: normal;
-    font-weight: 600;
-    font-size: 12px;
-    line-height: 161.7%;
-    /* or 19px */
-
-    color: #5b5b5b;
-  }
-`;
-const leaderboardWrapperStyle = css`
+const Wrapper = styled.div`
   display: flex;
   flex-flow: column;
   align-items: center;
@@ -47,74 +61,3 @@ const leaderboardWrapperStyle = css`
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
 `;
-
-// interface DistrictRankData {}
-export const DistrictLeaderboard = () => {
-  const [districtRankData, setDistrictRankData] = useState<any[]>([]);
-  const karrotRaiseApi = useKarrotRaiseApi();
-
-  const getDistrictLeaderboardData = useCallback(
-    async (karrotRaiseApi: KarrotRaiseApi) => {
-      try {
-        const { data, status } = await karrotRaiseApi.getDistrictRank();
-        if (status === 200) {
-          const indexedDistrictRankData = data.map(
-            (item: any, index: number) => ({
-              rank: index + 1,
-              ...item,
-            })
-          );
-
-          setDistrictRankData(indexedDistrictRankData);
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    },
-    []
-  );
-
-  const refreshLeaderboard = useCallback(
-    async (karrotRaiseApi: KarrotRaiseApi) => {
-      await getDistrictLeaderboardData(karrotRaiseApi);
-    },
-    [getDistrictLeaderboardData]
-  );
-
-  useEffect(() => {
-    refreshLeaderboard(karrotRaiseApi);
-  }, [karrotRaiseApi, refreshLeaderboard]);
-
-  return (
-    <div css={divStyle}>
-      <div css={leaderboardWrapperStyle}>
-        {districtRankData.slice(0, 10).map((district) => {
-          return (
-            <TopDistrictRow
-              key={district.name2}
-              rank={district.rank}
-              cityName={district.name1}
-              districtName={district.name2}
-              playerCount={district.playerCount}
-              // participant={district.participant}
-              score={district.score}
-            />
-          );
-        })}
-
-        {districtRankData.slice(10).map((district) => {
-          return (
-            <DefaultDistrictRow
-              key={district.name2}
-              rank={district.rank}
-              cityName={district.name1}
-              districtName={district.name2}
-              playerCount={district.playerCount}
-              score={district.score}
-            />
-          );
-        })}
-      </div>
-    </div>
-  );
-};

@@ -6,7 +6,7 @@ import React, {
   useState,
 } from 'react';
 import styled from '@emotion/styled';
-import { Tile, TileProps } from '../Tile';
+import { Tile } from '../Tile';
 import { animationDuration, boardMargin, boardPadding } from '../styles';
 import { useGame } from '../hooks/useGame';
 import { useThrottledCallback } from 'use-debounce/lib';
@@ -45,7 +45,6 @@ const Cell = styled.div<{ cellWidth: number }>`
 
 export const Board = () => {
   const tileContainerRef = useRef() as React.MutableRefObject<HTMLDivElement>;
-  const [boardWidth, setBoardWidth] = useState<number>(0);
   const [cellWidth, setCellWidth] = useState<number>(0);
 
   const { tileList, moveRight, moveLeft, moveUp, moveDown } = useGame();
@@ -102,7 +101,6 @@ export const Board = () => {
   );
   useEffect(() => {
     window.addEventListener('keydown', throttledHandleKeyDown);
-
     return () => {
       window.removeEventListener('keydown', throttledHandleKeyDown);
     };
@@ -111,7 +109,6 @@ export const Board = () => {
   // change board & tile size responsively to window size
   useLayoutEffect(() => {
     function updateSize() {
-      setBoardWidth(tileContainerRef.current.offsetWidth);
       setCellWidth(
         (tileContainerRef.current.offsetWidth - 5 * boardPadding * 16) / 4
       );

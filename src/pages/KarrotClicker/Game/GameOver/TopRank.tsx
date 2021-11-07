@@ -4,9 +4,11 @@ import { emphasizedTextStyle, largeTextStyle } from 'styles/textStyle';
 import { ReactComponent as Karrot } from 'assets/svg/KarrotClicker/small_circle_karrot.svg';
 import { useCallback, useState } from 'react';
 import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
-import useUserData from 'hooks/useUserData';
 import { OldButton, DisabledButton } from 'components/Button';
 import { useNavigator } from '@karrotframe/navigator';
+import { useCookies } from 'react-cookie';
+import { useKarrotClickerData } from 'pages/KarrotClicker/hooks';
+import { useUserData } from 'hooks';
 const largeText = css`
   margin: 15px 0;
 `;
@@ -78,21 +80,14 @@ type Props = {
 };
 export const TopRank: React.FC<Props> = (props) => {
   const { push } = useNavigator();
+  const [cookies] = useCookies();
   const [topUserComment, setTopUserComment] = useState({
     comment: props.comment,
     length: props.comment.length,
   });
   const karrotRaiseApi = useKarrotRaiseApi();
-  const {
-    accessToken,
-    userId,
-    userNickname,
-    userScore,
-    userRank,
-    userDistrictName,
-    onUpdateUserData,
-  } = useUserData();
-
+  const { score, rank, updateKarrotClickerData } = useKarrotClickerData();
+  const { districtName } = useUserData();
   // Page navigation
   const goToLeaderboardPage = () => {
     push(`/karrot-clicker/leaderboard`);
@@ -104,24 +99,22 @@ export const TopRank: React.FC<Props> = (props) => {
       length: e.target.value.length,
     });
   };
-  const addComment = useCallback(
-    async function (
-      karrotRaiseApi: KarrotRaiseApi,
-      accessToken: string,
-      comment: string
-    ) {
-      const { status } = await karrotRaiseApi.patchUserComment(
-        accessToken,
-        comment
-      );
-      if (status === 200) {
-        onUpdateUserData(userId, userNickname, userScore, userRank, comment);
-        goToLeaderboardPage();
-      }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [onUpdateUserData, userId, userNickname, userRank, userScore]
-  );
+  const addComment = useCallback(async function (
+    karrotRaiseApi: KarrotRaiseApi,
+    accessToken: string,
+    comment: string
+  ) {
+    const { status } = await karrotRaiseApi.patchUserComment(
+      accessToken,
+      comment
+    );
+    if (status === 200) {
+      updateKarrotClickerData(score, rank, comment);
+      // onUpdateUserData(userId, useruserName, userScore, userRank, comment);
+      goToLeaderboardPage();
+    }
+  },
+  []);
 
   return (
     <>
@@ -137,7 +130,7 @@ export const TopRank: React.FC<Props> = (props) => {
       </h1>
       <hr css={horizontalLine} />
       <p css={infoText}>
-        {userDistrictName} 이웃들에게
+        {districtName} 이웃들에게
         <br />
         하고 싶은 말을 남겨보세요
       </p>
@@ -148,7 +141,7 @@ export const TopRank: React.FC<Props> = (props) => {
             type="text"
             onChange={handleTopUserInput}
             value={topUserComment.comment}
-            placeholder={`예) 내가 ${userDistrictName}짱!`}
+            placeholder={`예) 내가 ${districtName}짱!`}
             maxLength={20}
           />
           <p css={commentLengthCount}>{topUserComment.length}/20</p>
@@ -160,7 +153,11 @@ export const TopRank: React.FC<Props> = (props) => {
             color={`primary`}
             text={`등록하기`}
             onClick={() => {
-              addComment(karrotRaiseApi, accessToken, topUserComment.comment);
+              addComment(
+                karrotRaiseApi,
+                cookies.accessToken,
+                topUserComment.comment
+              );
             }}
           />
         ) : (

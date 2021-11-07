@@ -7,12 +7,13 @@ import Modal from 'react-modal';
 import { commafy } from 'utils/functions/numberFunctions';
 import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
 import { Analytics, useAnalytics } from 'services/analytics';
-import useUserData from 'hooks/useUserData';
-import useClickCounter from 'hooks/useClickCounter';
+import useClickCounter from 'pages/KarrotClicker/hooks/useClickCounter';
 import { getMini } from 'services/karrotMarket/mini';
 import { OldButton } from 'components/Button';
 import { TopRank } from '../GameOver';
 import { useNavigator } from '@karrotframe/navigator';
+import { useCookies } from 'react-cookie';
+import { useKarrotClickerData } from 'pages/KarrotClicker/hooks';
 
 const modalStyle = css`
   position: absolute;
@@ -55,19 +56,6 @@ const totalKarrotText = css`
   margin: 15px 0 23px;
 `;
 
-// const initialState = {
-//   nickname: '',
-//   score: 0,
-//   rank: 100,
-//   comment: '',
-// };
-
-type UserData = {
-  nickname: string;
-  score: number;
-  rank: number;
-  comment: string;
-};
 Modal.setAppElement(document.createElement('div'));
 
 interface GamePauseProps {
@@ -78,21 +66,10 @@ export const GamePause: React.FC<GamePauseProps> = (props) => {
   const karrotRaiseApi = useKarrotRaiseApi();
   const { push } = useNavigator();
   const { clickCount } = useClickCounter();
-  const {
-    accessToken,
-    userId,
-    userNickname,
-    userScore,
-    userRank,
-    userComment,
-    onUpdateUserData,
-  } = useUserData();
-  const [userData, setUserData] = useState<UserData>({
-    nickname: userNickname,
-    score: userScore,
-    rank: userRank,
-    comment: userComment,
-  });
+  const { score, rank, comment, updateKarrotClickerData } =
+    useKarrotClickerData();
+  const [cookies] = useCookies();
+
   const [modalIsOpen, setIsOpen] = useState(false);
 
   // Page navigation
@@ -129,14 +106,9 @@ export const GamePause: React.FC<GamePauseProps> = (props) => {
       if (status === 200) {
         const { data } = await karrotRaiseApi.getUserInfo(accessToken);
         if (data) {
-          const { nickname, score, rank, comment } = data;
-          onUpdateUserData(userId, nickname, score, rank, comment);
-          setUserData({
-            nickname: nickname,
-            score: score,
-            rank: rank,
-            comment: comment,
-          });
+          const { score, rank, comment } = data;
+          updateKarrotClickerData(score, rank, comment);
+
           if (rank <= 10) {
             setIsOpen(true);
           } else {
@@ -162,7 +134,7 @@ export const GamePause: React.FC<GamePauseProps> = (props) => {
         수확했어요!
       </h1>
       <hr css={horizontalLine} />
-      <p css={totalKarrotText}>총 당근 {commafy(userScore + clickCount)}개</p>
+      <p css={totalKarrotText}>총 당근 {commafy(score! + clickCount)}개</p>
       <div
         style={{
           width: `100%`,
@@ -184,7 +156,12 @@ export const GamePause: React.FC<GamePauseProps> = (props) => {
           color={`primary`}
           text={`게임종료`}
           onClick={() =>
-            handleGameEnd(karrotRaiseApi, accessToken, clickCount, analytics)
+            handleGameEnd(
+              karrotRaiseApi,
+              cookies.accessToken,
+              clickCount,
+              analytics
+            )
           }
         />
       </div>
@@ -200,7 +177,7 @@ export const GamePause: React.FC<GamePauseProps> = (props) => {
           },
         }}
       >
-        <TopRank rank={userData.rank} comment={userData.comment} />
+        <TopRank rank={rank!} comment={comment!} />
       </Modal>
     </>
   );

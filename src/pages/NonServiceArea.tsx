@@ -5,7 +5,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Analytics, useAnalytics } from 'services/analytics';
 import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
 // import { useKarrotMarketMini } from 'services/karrotMarketMini';
-import useUserData from 'hooks/useUserData';
 import {
   getMini,
   loadFromEnv as KarrotMiniPreset,
@@ -15,6 +14,8 @@ import {
   OldButton,
   DisabledButton,
 } from 'components/Button';
+import { useUserData } from 'hooks';
+import { useCookies } from 'react-cookie';
 
 const customNav = css`
   left: 0;
@@ -102,8 +103,8 @@ export const NonServiceArea = () => {
   const analytics = useAnalytics();
   const karrotRaiseApi = useKarrotRaiseApi();
   // const karrotMarketMini = useKarrotMarketMini();
-  const { userRegionId, onUpdateAccessToken } = useUserData();
-
+  const { regionId } = useUserData();
+  const [cookies, setCookies] = useCookies();
   const trackUser = useCallback(
     async (
       karrotRaiseApi: KarrotRaiseApi,
@@ -133,8 +134,6 @@ export const NonServiceArea = () => {
           const { data } = await karrotRaiseApi.postOauth2(code, regionId);
           if (data) {
             const { accessToken } = data;
-            // window.localStorage.setItem('ACCESS_TOKEN', accessToken);
-            onUpdateAccessToken(accessToken);
             return accessToken;
           }
         } else {
@@ -144,7 +143,7 @@ export const NonServiceArea = () => {
         console.error(error);
       }
     },
-    [onUpdateAccessToken]
+    []
   );
 
   const mini = getMini();
@@ -172,6 +171,7 @@ export const NonServiceArea = () => {
               userRegionId
             );
             if (accessToken) {
+              setCookies(`accessToken`, accessToken);
               await trackUser(karrotRaiseApi, accessToken, analytics);
               const data = await karrotRaiseApi.postDemand(accessToken);
               if (data.success === true) {
@@ -216,9 +216,7 @@ export const NonServiceArea = () => {
             size={`medium`}
             color={`primary`}
             text={`오픈 알림 받기`}
-            onClick={() =>
-              handleDemand(karrotRaiseApi, userRegionId!, analytics)
-            }
+            onClick={() => handleDemand(karrotRaiseApi, regionId!, analytics)}
           />
         )}
       </div>

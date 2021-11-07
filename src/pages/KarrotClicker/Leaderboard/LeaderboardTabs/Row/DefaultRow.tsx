@@ -124,7 +124,7 @@ const PlayerCount = styled.div`
 interface DefaultUserRowProps {
   me?: boolean;
   rank: number;
-  nickname: string;
+  userName: string;
   score: number;
   districtName: string;
 }
@@ -139,7 +139,7 @@ export const DefaultUserRow: React.FC<DefaultUserRowProps> = (props) => {
             <DistrictName districtName={props.districtName}>
               {props.districtName.slice(0, -1)}
             </DistrictName>
-            {props.nickname}
+            {props.userName}
           </Name>
           <Score>{commafy(props.score)}</Score>
         </Info>

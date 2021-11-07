@@ -6,17 +6,35 @@ import {
   mergeTileAction,
   moveEndAction,
   moveStartAction,
+  resetGameAction,
   updateScoreAction,
   updateTileAction,
-} from 'reducers/game2048Reducer';
-import { animationDuration } from '../styles';
+} from 'pages/Game2048/Game/Game/reducers/game2048Reducer';
 import { TileProps } from '../Tile';
 import { useUniqueId } from './useUniqueId';
+import { animationDuration } from '../styles';
+
+type RetrieveTileIdsPerRowOrColumn = (rowOrColumnIndex: number) => number[];
+type CalculateTileIndex = (
+  tileIndex: number,
+  tileInRowIndex: number,
+  howManyMerges: number,
+  maxIndexInRow: number
+) => number;
+
+const coordinateToIndex = (coordinate: [number, number]) => {
+  return coordinate[1] * 4 + coordinate[0];
+};
+const indexToCoordinate = (index: number) => {
+  const x = index % 4;
+  const y = Math.floor(index / 4);
+  return [x, y];
+};
 
 export const useGame = () => {
   const isInitialRender = useRef(true);
   const nextId = useUniqueId();
-
+  const dispatch = useDispatch();
   const { tiles, byIds, hasChanged, inMotion } = useSelector(
     (state: RootState) => ({
       tiles: state.game2048Reducer.tiles,
@@ -25,7 +43,7 @@ export const useGame = () => {
       inMotion: state.game2048Reducer.inMotion,
     })
   );
-  const dispatch = useDispatch();
+  // Tile manager
   const createTile = useCallback(
     ({ coordinate, value }: Partial<TileProps>) => {
       const tile = {
@@ -37,27 +55,21 @@ export const useGame = () => {
     },
     [dispatch, nextId]
   );
-  // A must-have to keep the sliding animation if the action merges tiles together.
   const mergeTile = (source: TileProps, destination: TileProps) => {
     dispatch(mergeTileAction(source, destination));
   };
-
-  // A must-have to keep the sliding animation if the action merges tiles together.
   const throttledMergeTile = (source: TileProps, destination: TileProps) => {
     setTimeout(() => mergeTile(source, destination), animationDuration);
   };
-
   const updateTile = (tile: TileProps) => {
     dispatch(updateTileAction(tile));
   };
-
   const didTileMove = (source: TileProps, destination: TileProps) => {
     const hasXChanged = source.coordinate[0] !== destination.coordinate[0];
     const hasYChanged = source.coordinate[1] !== destination.coordinate[1];
 
     return hasXChanged || hasYChanged;
   };
-
   const retrieveTileMap = useCallback(() => {
     const tileMap = new Array(16).fill(0);
 
@@ -86,58 +98,38 @@ export const useGame = () => {
 
   const generateRandomTile = useCallback(() => {
     const emptyTiles = findEmptyTiles();
+    console.log(emptyTiles);
     if (emptyTiles.length > 0) {
-      const index = Math.floor(Math.random() * emptyTiles.length);
-      const coordinate = emptyTiles[index];
-
-      createTile({ coordinate, value: 2 });
+      const randomCoordinate = (() => {
+        const randomIndex = Math.floor(Math.random() * emptyTiles.length);
+        return emptyTiles[randomIndex];
+      })();
+      const randomValue = (() => {
+        const random = Math.random();
+        return random < 0.9 ? 23 : 47;
+      })();
+      createTile({ coordinate: randomCoordinate, value: randomValue });
     }
   }, [findEmptyTiles, createTile]);
 
-  const coordinateToIndex = (coordinate: [number, number]) => {
-    return coordinate[1] * 4 + coordinate[0];
-  };
-
-  const indexToCoordinate = (index: number) => {
-    const x = index % 4;
-    const y = Math.floor(index / 4);
-    return [x, y];
-  };
-
-  type RetrieveTileIdsPerRowOrColumn = (rowOrColumnIndex: number) => number[];
-
-  type CalculateTileIndex = (
-    tileIndex: number,
-    tileInRowIndex: number,
-    howManyMerges: number,
-    maxIndexInRow: number
-  ) => number;
-
+  // Move controller
   const move = (
     retrieveTileIdsPerRowOrColumn: RetrieveTileIdsPerRowOrColumn,
     calculateFirstFreeIndex: CalculateTileIndex
   ) => {
-    // new tiles cannot be created during motion.
     dispatch(moveStartAction());
     const maxIndex = 4 - 1;
-    // iterates through every row or column (depends on move kind - vertical or horizontal).
     for (
       let rowOrColumnIndex = 0;
       rowOrColumnIndex < 4;
       rowOrColumnIndex += 1
     ) {
-      // retrieves tiles in the row or column.
       const availableTileIds = retrieveTileIdsPerRowOrColumn(rowOrColumnIndex);
-
-      // previousTile is used to determine if tile can be merged with the current tile.
       let previousTile: TileProps | undefined;
-      // mergeCount helps to fill gaps created by tile merges - two tiles become one.
       let mergedTilesCount = 0;
-      // interate through available tiles.
+
       availableTileIds.forEach((tileId, nonEmptyTileIndex) => {
         const currentTile = tiles[tileId];
-
-        // if previous tile has the same value as the current one they should be merged together.
         if (
           previousTile !== undefined &&
           previousTile.value === currentTile.value
@@ -148,19 +140,14 @@ export const useGame = () => {
             mergeWith: previousTile.id,
           } as TileProps;
 
-          // delays the merge by 250ms, so the sliding animation can be completed.
           let score = currentTile.value * 2;
           throttledMergeTile(tile, previousTile);
           dispatch(updateScoreAction(score));
-          // previous tile must be cleared as a single tile can be merged only once per move.
           previousTile = undefined;
-          // increment the merged counter to correct coordinate for the consecutive tiles to get rid of gaps
           mergedTilesCount += 1;
 
           return updateTile(tile);
         }
-
-        // else - previous and current tiles are different - move the tile to the first free space.
         const tile = {
           ...currentTile,
           coordinate: indexToCoordinate(
@@ -173,21 +160,16 @@ export const useGame = () => {
           ),
         } as TileProps;
 
-        // previous tile become the current tile to check if the next tile can be merged with this one.
         previousTile = tile;
 
-        // only if tile has changed its coordinate it will be updated
         if (didTileMove(currentTile, tile)) {
           return updateTile(tile);
         }
       });
     }
-    // wait until the end of all animations.
     setTimeout(() => dispatch(moveEndAction()), animationDuration);
-    // dispatch({ type: 'update_score', score: 0 });
   };
-
-  const moveLeftFactory = () => {
+  const moveLeft = (() => {
     const retrieveTileIdsByRow = (rowIndex: number) => {
       const tileMap = retrieveTileMap();
 
@@ -212,8 +194,8 @@ export const useGame = () => {
     };
 
     return move.bind(this, retrieveTileIdsByRow, calculateFirstFreeIndex);
-  };
-  const moveRightFactory = () => {
+  })();
+  const moveRight = (() => {
     const retrieveTileIdsByRow = (rowIndex: number) => {
       const tileMap = retrieveTileMap();
 
@@ -238,8 +220,8 @@ export const useGame = () => {
     };
 
     return move.bind(this, retrieveTileIdsByRow, calculateFirstFreeIndex);
-  };
-  const moveUpFactory = () => {
+  })();
+  const moveUp = (() => {
     const retrieveTileIdsByColumn = (columnIndex: number) => {
       const tileMap = retrieveTileMap();
 
@@ -264,8 +246,8 @@ export const useGame = () => {
     };
 
     return move.bind(this, retrieveTileIdsByColumn, calculateFirstFreeIndex);
-  };
-  const moveDownFactory = () => {
+  })();
+  const moveDown = (() => {
     const retrieveTileIdsByColumn = (columnIndex: number) => {
       const tileMap = retrieveTileMap();
 
@@ -292,28 +274,45 @@ export const useGame = () => {
     };
 
     return move.bind(this, retrieveTileIdsByColumn, calculateFirstFreeIndex);
-  };
+  })();
 
+  // Game controller
+  const resetGame = () => {
+    dispatch(resetGameAction);
+  };
+  // const checkGameOver = () => {
+  //   const emptyTiles = findEmptyTiles();
+  //   if (emptyTiles.length <= 0) {
+  //     console.log('gameover');
+  //   }
+  // };
   useEffect(() => {
-    // if ()
     if (isInitialRender.current) {
       createTile({ coordinate: [0, 1], value: 2 });
       createTile({ coordinate: [0, 2], value: 2 });
       isInitialRender.current = false;
       return;
     }
+
     if (!inMotion && hasChanged) {
       generateRandomTile();
+      // checkGameOver();
+      // console.log('s');
     }
-  }, [hasChanged, inMotion, createTile, generateRandomTile]);
+    // const emptyTiles = findEmptyTiles();
+    // if (emptyTiles.length <= 0) {
+    //   console.log('gameover');
+    // }
+  }, [createTile, generateRandomTile, hasChanged, inMotion]);
 
   const tileList = byIds.map((tileId) => tiles[tileId]);
-  // const turnScore = score;
-  // console.log('turnScore', score);
-  const moveLeft = moveLeftFactory();
-  const moveRight = moveRightFactory();
-  const moveUp = moveUpFactory();
-  const moveDown = moveDownFactory();
-
-  return { tileList, moveLeft, moveRight, moveUp, moveDown };
+  // console.log(tileList);
+  return {
+    tileList,
+    moveLeft,
+    moveRight,
+    moveUp,
+    moveDown,
+    resetGame,
+  };
 };

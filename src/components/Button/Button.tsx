@@ -107,7 +107,7 @@ const CustomButton = styled.a<{ size: string }>`
   border: none;
   border-radius: 10px;
   font-style: normal;
-
+  line-height: 161.7%;
   width: ${(props) => (props.size === `large` ? `100%` : `fit-content`)};
 
   padding: ${(props) =>
@@ -144,7 +144,7 @@ const CustomButton = styled.a<{ size: string }>`
       : `hotpink`};
 `;
 
-export const Button = (props: Props) => {
+export const Button: React.FC<Props> = (props) => {
   return (
     <CustomButton size={props.size} color={props.color} onClick={props.onClick}>
       {props.children}

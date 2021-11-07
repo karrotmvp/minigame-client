@@ -4,7 +4,6 @@ import styled from '@emotion/styled';
 import { useEffect } from 'react';
 import { useAnalytics } from 'services/analytics';
 import { useNavigator } from '@karrotframe/navigator';
-import useUserData from 'hooks/useUserData';
 import TopImageUrl from 'assets/images/KarrotClicker/home_top_banner.png';
 import { OldButton } from 'components/Button';
 import { BackButton } from 'components/Button/NavigationButton';
@@ -14,6 +13,8 @@ import {
   DefaultUserRow,
   TopUserRow,
 } from 'pages/KarrotClicker/Leaderboard/LeaderboardTabs/Row';
+import { useUserData } from 'hooks';
+import { useKarrotClickerData } from '../hooks';
 
 const PageContainer = styled.div`
   display: flex;
@@ -70,7 +71,7 @@ const ActionItem = styled.div`
 `;
 
 interface UserScoreExistsProps {
-  nickname: string;
+  userName: string;
   rank: number;
   score: number;
   comment: string;
@@ -83,7 +84,7 @@ const UserScoreExists: React.FC<UserScoreExistsProps> = (props) => {
         <TopUserRow
           me={true}
           rank={props.rank}
-          nickname={props.nickname}
+          userName={props.userName}
           score={props.score}
           comment={props.comment}
           districtName={props.districtName}
@@ -92,7 +93,7 @@ const UserScoreExists: React.FC<UserScoreExistsProps> = (props) => {
         <DefaultUserRow
           me={true}
           rank={props.rank}
-          nickname={props.nickname}
+          userName={props.userName}
           score={props.score}
           districtName={props.districtName}
         />
@@ -104,18 +105,8 @@ const UserScoreExists: React.FC<UserScoreExistsProps> = (props) => {
 export const Home = () => {
   const { push } = useNavigator();
   const analytics = useAnalytics();
-  // const karrotRaiseApi = useKarrotRaiseApi();
-  const {
-    accessToken,
-    // userId,
-    userDistrictName,
-    userNickname,
-    userScore,
-    userRank,
-    userComment,
-    // onUpdateUserData,
-  } = useUserData();
-
+  const { userName, districtName } = useUserData();
+  const { rank, score, comment } = useKarrotClickerData();
   const goToGamePage = () => {
     push(`/karrot-clicker/game`);
   };
@@ -131,7 +122,7 @@ export const Home = () => {
     analytics.logEvent('view_returning_user_home_page');
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [accessToken]);
+  }, []);
 
   return (
     <PageContainer>
@@ -142,20 +133,19 @@ export const Home = () => {
           </div>
         </div>
       </Nav>
-      {/* <ScreenHelmet /> */}
 
       <MyRow>
         {
-          userRank !== null ? (
+          rank !== null ? (
             <UserScoreExists
-              nickname={userNickname}
-              rank={userRank}
-              score={userScore}
-              comment={userComment}
-              districtName={userDistrictName}
+              userName={userName!}
+              rank={rank!}
+              score={score!}
+              comment={comment!}
+              districtName={districtName!}
             />
           ) : null
-          // <UserScoreNull nickname={userNickname} />
+          // <UserScoreNull userName={useruserName} />
         }
       </MyRow>
       <LeaderboardTabs />
@@ -167,7 +157,7 @@ export const Home = () => {
           zIndex: 101,
         }}
       >
-        <ActiveUserCount />
+        <ActiveUserCount gameType="GAME_KARROT" />
       </div>
       <ActionItem>
         <OldButton

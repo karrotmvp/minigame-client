@@ -1,0 +1,34 @@
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  setGameTypeAction,
+  updateUserGameDataAction,
+} from 'reducers/game2048DataReducer';
+import { RootState } from 'reducers/rootReducer';
+
+export const useGame2048Data = () => {
+  const { score, rank, comment, gameType } = useSelector(
+    (state: RootState) => ({
+      score: state.game2048DataReducer.score,
+      rank: state.game2048DataReducer.rank,
+      comment: state.game2048DataReducer.comment,
+      gameType: state.game2048DataReducer.gameType,
+    })
+  );
+  const dispatch = useDispatch();
+
+  const updateGame2048Data = (score: number, rank: number, comment: string) => {
+    dispatch(updateUserGameDataAction(score, rank, comment));
+  };
+
+  const setGameTypeToGame2048 = (gameType: 'GAME_KARROT' | 'GAME_2048') => {
+    dispatch(setGameTypeAction(gameType));
+  };
+  return {
+    score,
+    rank,
+    comment,
+    gameType,
+    updateGame2048Data,
+    setGameTypeToGame2048,
+  };
+};

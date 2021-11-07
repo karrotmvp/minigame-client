@@ -1,2 +1,2 @@
 export * from './DistrictLeaderboard';
-export * from './IndividualLeaderboard';
+export * from './UserLeaderboard';
