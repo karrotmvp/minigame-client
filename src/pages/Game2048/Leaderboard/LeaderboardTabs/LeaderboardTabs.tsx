@@ -2,6 +2,7 @@ import styled from '@emotion/styled';
 import { useCurrentScreen } from '@karrotframe/navigator';
 import { Tabs } from '@karrotframe/tabs';
 import '@karrotframe/tabs/index.css';
+import { motion } from 'framer-motion';
 import { useCallback, useState } from 'react';
 import { DistrictLeaderboard, UserLeaderboard } from './Leaderboard';
 
@@ -19,7 +20,7 @@ export const LeaderboardTabs: React.FC<Props> = (props) => {
     }
   };
   return (
-    <LeaderboardContainer>
+    <LeaderboardContainer drag="y">
       <Tabs
         // css={customizeTabs}
         // className={css`
@@ -65,9 +66,9 @@ export const LeaderboardTabs: React.FC<Props> = (props) => {
 //   --kf_tabs_tabBar-activeFontColor: hotpink !important;
 // `;
 
-const LeaderboardContainer = styled.div`
+const LeaderboardContainer = styled(motion.div)`
   flex: 1;
-  overflow: hidden;
+  overflow: auto;
   padding: 18px 18px 0;
   margin: 0 18px;
   max-height: inherit;

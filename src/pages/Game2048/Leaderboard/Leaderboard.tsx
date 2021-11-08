@@ -41,7 +41,7 @@ export const Leaderboard = () => {
   const updateMyGameData = async () => {
     const {
       data: { data },
-    } = await minigameApi.gameUserApi().getMyRankInfoUsingGET(gameType);
+    } = await minigameApi.gameUserApi.getMyRankInfoUsingGET(gameType);
     if (data) {
       updateMyGame2048Data(data.score, data.rank!, data.comment);
     }
@@ -56,7 +56,7 @@ export const Leaderboard = () => {
   const getUserLeaderboardData = useCallback(async () => {
     const {
       data: { data },
-    } = await minigameApi.gameUserApi().getLeaderBoardByUserUsingGET(gameType);
+    } = await minigameApi.gameUserApi.getLeaderBoardByUserUsingGET(gameType);
     if (data) {
       const indexedDistrictRankData = data.map((item: any, index: number) => ({
         rank: index + 1,
@@ -69,7 +69,7 @@ export const Leaderboard = () => {
   const getDistrictLeaderboardData = useCallback(async () => {
     const {
       data: { data },
-    } = await minigameApi.gameTownApi().getLeaderBoardByTownUsingGET(gameType);
+    } = await minigameApi.gameTownApi.getLeaderBoardByTownUsingGET(gameType);
     if (data) {
       const indexedDistrictRankData = data.map(
         (item: TownRankResponseDto, index: number) => ({

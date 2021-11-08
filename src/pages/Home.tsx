@@ -19,7 +19,6 @@ export const Home: React.FC = () => {
   const { updateMyGame2048Data, setGameTypeToGame2048 } = useMyGame2048Data();
   const { updateKarrotClickerData, setGameTypeToKarrotClicker } =
     useKarrotClickerData();
-
   const exitApp = () => {
     console.log('Ejected from the app. Now back to Karrot Market');
     ejectApp();
@@ -34,8 +33,7 @@ export const Home: React.FC = () => {
     } else {
       const {
         data: { data },
-      } = await minigameApi.gameUserApi().getMyRankInfoUsingGET('GAME_2048');
-      console.log(data);
+      } = await minigameApi.gameUserApi.getMyRankInfoUsingGET('GAME_2048');
       if (data) {
         updateMyGame2048Data(data.score, data.rank!, data.comment);
       }
@@ -51,8 +49,7 @@ export const Home: React.FC = () => {
     } else {
       const {
         data: { data },
-      } = await minigameApi.gameUserApi().getMyRankInfoUsingGET('GAME_KARROT');
-      console.log(data);
+      } = await minigameApi.gameUserApi.getMyRankInfoUsingGET('GAME_KARROT');
       if (data) {
         updateKarrotClickerData(data.score, data.rank!, data.comment);
       }
@@ -61,7 +58,7 @@ export const Home: React.FC = () => {
   };
 
   const getUserCount = useCallback(async () => {
-    const { data } = await minigameApi.userApi().getUserCountUsingGET();
+    const { data } = await minigameApi.userApi.getUserCountUsingGET();
     if (data.data) {
       setUserCount(data.data);
     }

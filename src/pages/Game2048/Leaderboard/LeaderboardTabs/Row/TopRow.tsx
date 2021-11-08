@@ -157,13 +157,13 @@ interface TopUserRowProps {
   rank: number;
   userName: string;
   score: number;
-  comment: string;
+  comment: string | null;
   cityName: string;
   districtName: string;
 }
 export const TopUserRow: React.FC<TopUserRowProps> = (props) => {
   let userComment;
-  if (props.comment.length <= 0 || null) {
+  if (props.comment === '' || props.comment === null) {
     userComment = `한마디 작성 중...`;
   } else {
     userComment = `${props.comment}`;

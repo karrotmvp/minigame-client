@@ -304,7 +304,6 @@ export const useGame = () => {
   }, [createTile, generateRandomTile, hasChanged, inMotion]);
 
   const tileList = byIds.map((tileId) => tiles[tileId]);
-  // console.log(tileList);
 
   return {
     score,

@@ -22,7 +22,6 @@ export const withOpenRegion = (WrappedComponent: any) => {
         // example -> city=서울특별시(name1) district=서초구(name2)
         if (status === 200) {
           const { id: districtId, name2: districtName } = data;
-          console.log(districtId, districtName);
           setDistrictInfo(districtId, districtName);
           // Filter out if user is not in our service area
           // 서초, 송파, 광진, 강남, 강동 in order
@@ -34,7 +33,6 @@ export const withOpenRegion = (WrappedComponent: any) => {
             '072985998dd4',
           ];
           const isMyDistrictOpen = openedDistricts.indexOf(districtId);
-          console.log(isMyDistrictOpen, districtName);
           if (isMyDistrictOpen === -1) {
             setIsOpenRegion(false);
             push(`/non-service-area`);
@@ -47,7 +45,6 @@ export const withOpenRegion = (WrappedComponent: any) => {
     []);
 
     useEffect(() => {
-      console.log(regionId);
       // checkOpenRegion(karrotRaiseApi, regionId);
       if (isOpenRegion === false) {
         push(`/non-service-area`);

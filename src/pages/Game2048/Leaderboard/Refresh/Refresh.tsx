@@ -41,13 +41,13 @@ export const Refresh: React.FC<Props> = (props) => {
     <Container className="refresh">
       <Text>
         이번 주 랭킹
-        <Countdown>
+        {/* <Countdown>
           (초기화까지
           <span>
             <WeeklyCountdown />
           </span>
           )
-        </Countdown>
+        </Countdown> */}
       </Text>
       <RefreshButton handleRefresh={props.handleRefresh} />
     </Container>
