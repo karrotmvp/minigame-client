@@ -6,7 +6,7 @@ import { DefaultDistrictRow } from './DefaultRow';
 import { TopDistrictRow } from './TopRow';
 import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
 import RefreshButton from 'components/buttons/RefreshButton';
-import WeeklyCountdown from 'components/WeeklyCountdown';
+// import WeeklyCountdown from 'components/WeeklyCountdown';
 
 const divStyle = css`
   max-height: inherit;
@@ -98,7 +98,7 @@ const DistrictLeaderboard = () => {
           }}
         >
           <p>이번 주 랭킹</p>
-          <WeeklyCountdown />
+          {/* <WeeklyCountdown /> */}
         </div>
         <RefreshButton
           refreshLeaderboard={() => refreshLeaderboard(karrotRaiseApi)}

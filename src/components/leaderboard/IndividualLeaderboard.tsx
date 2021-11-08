@@ -7,7 +7,7 @@ import { DefaultUserRow } from './DefaultRow';
 import useUserData from 'hooks/useUserData';
 import { TopUserRow } from './TopRow';
 import RefreshButton from '../buttons/RefreshButton';
-import WeeklyCountdown from 'components/WeeklyCountdown';
+// import WeeklyCountdown from 'components/WeeklyCountdown';
 
 const divStyle = css`
   // max-height: inherit;
@@ -130,7 +130,7 @@ const IndividualLeaderboard = () => {
           }}
         >
           <p>이번 주 랭킹</p>
-          <WeeklyCountdown />
+          {/* <WeeklyCountdown /> */}
         </div>
         <RefreshButton
           refreshLeaderboard={() =>
