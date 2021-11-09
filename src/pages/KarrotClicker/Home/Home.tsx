@@ -1,74 +1,16 @@
-/** @jsxImportSource @emotion/react */
-import { css } from '@emotion/react';
 import styled from '@emotion/styled';
+import { useNavigator } from '@karrotframe/navigator';
+import { CloseIcon } from 'assets/Icon';
+import { ActiveUserCount } from 'components/ActiveUserCount';
+import { OldButton } from 'components/Button';
+import { Nav } from 'components/Navigation/Nav';
+import { useUserData } from 'hooks';
+import { rem } from 'polished';
 import { useEffect } from 'react';
 import { useAnalytics } from 'services/analytics';
-import { useNavigator } from '@karrotframe/navigator';
-import TopImageUrl from 'assets/images/KarrotClicker/home_top_banner.png';
-import { OldButton } from 'components/Button';
-import { BackButton } from 'components/Button/NavigationButton';
-import { ActiveUserCount } from '../../../components/ActiveUserCount';
-import { LeaderboardTabs } from 'pages/KarrotClicker/Leaderboard/LeaderboardTabs';
-import {
-  DefaultUserRow,
-  TopUserRow,
-} from 'pages/KarrotClicker/Leaderboard/LeaderboardTabs/Row';
-import { useUserData } from 'hooks';
 import { useKarrotClickerData } from '../hooks';
-
-const PageContainer = styled.div`
-  display: flex;
-  flex-flow: column;
-  height: 100%;
-  background: #faf5f4;
-`;
-const Nav = styled.div`
-  background-image: url(${TopImageUrl});
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center -10px;
-  width: 100%;
-  height: 220px;
-  margin-bottom: -20px;
-`;
-const customNav = css`
-  left: 0;
-  width: 100%;
-  display: flex;
-  flex-flow: row;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  height: 80px;
-  padding: 0 15px;
-  background: transparent;
-`;
-const customNavIcon = css`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 1;
-  transition: opacity 300ms;
-  width: 2.25rem;
-  height: 2.75rem;
-  text-decoration: none;
-  outline: none;
-  z-index: 10;
-`;
-
-const MyRow = styled.div`
-  margin: 0 18px 12px;
-`;
-const ActionItem = styled.div`
-  display: flex;
-  justify-content: center;
-  width: 100%;
-  padding: 16px 24px 34px;
-  border-top: 1px solid #ebebeb;
-  background: #ffffff;
-  box-sizing: border-box;
-  box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
-`;
+import { LeaderboardTabs } from '../Leaderboard/LeaderboardTabs';
+import { DefaultUserRow, TopUserRow } from '../Leaderboard/LeaderboardTabs/Row';
 
 interface UserScoreExistsProps {
   userName: string;
@@ -124,16 +66,15 @@ export const Home = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // leave mini app
+  const leaveMiniApp = () => {};
   return (
-    <PageContainer>
-      <Nav>
-        <div css={customNav}>
-          <div css={customNavIcon}>
-            <BackButton />
-          </div>
-        </div>
-      </Nav>
-
+    <Page className="karrot-clicker-home-page">
+      <Nav appendLeft={<CloseIcon />} />
+      <Banner className="banner">
+        {/* <BannerImage /> */}
+        {/* <img src={BannerImage} /> */}
+      </Banner>
       <MyRow>
         {
           rank !== null ? (
@@ -159,14 +100,43 @@ export const Home = () => {
       >
         <ActiveUserCount gameType="GAME_KARROT" />
       </div>
-      <ActionItem>
+      <ActionItems>
         <OldButton
           size={`large`}
           color={`primary`}
           text={`게임 시작`}
           onClick={handleGameStart}
         />
-      </ActionItem>
-    </PageContainer>
+      </ActionItems>
+    </Page>
   );
 };
+
+const Page = styled.div`
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+  background: #faf5f4;
+`;
+const Banner = styled.div`
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+  align-items: center;
+  padding-bottom: 1rem;
+  // width: 100px;
+`;
+
+const MyRow = styled.div`
+  margin: 0 18px 12px;
+`;
+const ActionItems = styled.div`
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: ${rem(15)} ${rem(18)} ${rem(30)};
+  border-top: 1px solid #ebebeb;
+  background: #ffffff;
+  box-sizing: border-box;
+  box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+`;

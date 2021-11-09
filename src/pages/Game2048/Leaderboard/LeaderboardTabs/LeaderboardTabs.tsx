@@ -1,3 +1,4 @@
+import { css } from '@emotion/css';
 import styled from '@emotion/styled';
 import { useCurrentScreen } from '@karrotframe/navigator';
 import { Tabs } from '@karrotframe/tabs';
@@ -22,12 +23,11 @@ export const LeaderboardTabs: React.FC<Props> = (props) => {
   return (
     <LeaderboardContainer drag="y">
       <Tabs
-        // css={customizeTabs}
-        // className={css`
-        //   --kf_tabs_tabBar-borderColor: none;
-        //   --kf_tabs_tabBar-indicator-color: none;
-        //   --kf_tabs_tabBar-activeFontColor: hotpink;
-        // `}
+        className={css`
+          --kf_tabs_tabBar-borderColor: none;
+          --kf_tabs_tabBar-indicator-color: none;
+          --kf_tabs_tabBar-activeFontColor: hotpink;
+        `}
         activeTabKey={activeTabKey}
         tabs={[
           {
@@ -60,11 +60,6 @@ export const LeaderboardTabs: React.FC<Props> = (props) => {
     </LeaderboardContainer>
   );
 };
-// const customizeTabs = css`
-//   --kf_tabs_tabBar-borderColor: none;
-//   --kf_tabs_tabBar-indicator-color: none;
-//   --kf_tabs_tabBar-activeFontColor: hotpink !important;
-// `;
 
 const LeaderboardContainer = styled(motion.div)`
   flex: 1;
