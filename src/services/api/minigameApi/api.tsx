@@ -12,9 +12,8 @@ import { useAccessToken } from 'hooks';
 function CreateMinigameApi({ accessToken }: { accessToken?: string }) {
   console.log('here', accessToken);
   if (accessToken) {
-    console.log(accessToken);
     const configuration = new Configuration({
-      apiKey: accessToken,
+      apiKey: `Bearer ${accessToken}`,
     });
     console.log(configuration);
     const oauth2Api = new Oauth2Api(configuration);
@@ -47,12 +46,13 @@ function CreateMinigameApi({ accessToken }: { accessToken?: string }) {
   }
 }
 
-const MinigameApiContext = createContext(CreateMinigameApi({}));
 
+const MinigameApiContext = createContext<ReturnType<typeof CreateMinigameApi>>(
+  null as any
+);
 export const MinigameApiProvider: React.FC = (props) => {
-  // retrieve access-token from cookie
   const { accessToken } = useAccessToken();
-  const api = CreateMinigameApi({ accessToken });
+  const api = useMemo(() => CreateMinigameApi({ accessToken }), [accessToken]);
   return (
     <MinigameApiContext.Provider value={api}>
       {props.children}

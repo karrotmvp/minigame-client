@@ -31,8 +31,6 @@ import {
 import { AnalyticsContext, emptyAnalytics } from 'services/analytics';
 import { NonServiceArea } from 'pages/NonServiceArea';
 
-import { MinigameApiProvider } from 'services/api/minigameApi';
-import { useSignAccessToken, useUserData } from 'hooks';
 const App: React.FC = () => {
   const { setRegionInfo } = useUserData();
   const { signAccessToken } = useSignAccessToken();
@@ -90,6 +88,7 @@ const App: React.FC = () => {
       const [code, regionId] = getQueryParams();
       analytics.logEvent('launch_app');
       console.log(code, regionId);
+      // handle if code and/or region id does not exist
       if (regionId) {
         setRegionInfo(regionId);
         if (code) {
