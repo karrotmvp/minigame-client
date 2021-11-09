@@ -1,4 +1,4 @@
-import { useAccessToken, useUserData } from 'hooks';
+import { useSignAccessToken, useUserData } from 'hooks';
 import { useAnalytics } from 'services/analytics';
 import {
   getMini,
@@ -8,7 +8,7 @@ import {
 export const useKarrotMarketMini = () => {
   const mini = getMini();
   const { regionId } = useUserData();
-  const { getAccessToken } = useAccessToken();
+  const { signAccessToken } = useSignAccessToken();
   const presetUrl = karrotMarketMiniConfig().presetUrl;
   const appId = karrotMarketMiniConfig().appId;
 
@@ -32,7 +32,7 @@ export const useKarrotMarketMini = () => {
       },
       onSuccess: async function (result) {
         if (result && result.code) {
-          getAccessToken(result.code, regionId);
+          signAccessToken(result.code, regionId);
         }
       },
     });

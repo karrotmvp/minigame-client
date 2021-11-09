@@ -32,11 +32,10 @@ import { AnalyticsContext, emptyAnalytics } from 'services/analytics';
 import { NonServiceArea } from 'pages/NonServiceArea';
 
 import { MinigameApiProvider } from 'services/api/minigameApi';
-import { useUserData } from 'hooks';
-import { useAccessToken } from 'hooks/useAccessToken';
+import { useSignAccessToken, useUserData } from 'hooks';
 const App: React.FC = () => {
   const { setRegionInfo } = useUserData();
-  const { getAccessToken } = useAccessToken();
+  const { signAccessToken } = useSignAccessToken();
   const [analytics, setAnalytics] = useState(emptyAnalytics);
   const [karrotRaiseApi, setKarrotRaiseApi] = useState(emptyKarrotRaiseApi);
   const [karrotMarketMini, setKarrotMarketMini] = useState(
@@ -94,7 +93,7 @@ const App: React.FC = () => {
       if (regionId) {
         setRegionInfo(regionId);
         if (code) {
-          getAccessToken(code, regionId);
+          signAccessToken(code, regionId);
         }
       }
     } catch (error) {
@@ -104,42 +103,36 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <Navigator
-      theme="Cupertino"
-      onClose={() => {
-        console.log('Close button is pressed');
-        karrotMarketMini.close();
-      }}
-    >
-      <MinigameApiProvider>
-        <KarrotRaiseApiContext.Provider value={karrotRaiseApi}>
-          <AnalyticsContext.Provider value={analytics}>
-            <KarrotMarketMiniContext.Provider value={karrotMarketMini}>
-              <Screen path="/" component={Home} />
-              {/* Game 2048 */}
-              <Screen path="/game-2048" component={Game2048Home} />
-              <Screen path="/game-2048/game" component={Game2048Game} />
-              <Screen
-                path="/game-2048/leaderboard"
-                component={Game2048Leaderboard}
-              />
-              {/* Karrot Clicker */}
-              <Screen path="/karrot-clicker" component={KarrotClickerHome} />
-              <Screen
-                path="/karrot-clicker/game"
-                component={KarrotClickerGame}
-              />
-              <Screen
-                path="/karrot-clicker/leaderboard"
-                component={KarrotClickerLeaderboard}
-              />
-
-              <Screen path="/non-service-area" component={NonServiceArea} />
-            </KarrotMarketMiniContext.Provider>
-          </AnalyticsContext.Provider>
-        </KarrotRaiseApiContext.Provider>
-      </MinigameApiProvider>
-    </Navigator>
+    <KarrotRaiseApiContext.Provider value={karrotRaiseApi}>
+      <AnalyticsContext.Provider value={analytics}>
+        <KarrotMarketMiniContext.Provider value={karrotMarketMini}>
+          <Navigator
+            theme="Cupertino"
+            onClose={() => {
+              console.log('Close button is pressed');
+              karrotMarketMini.close();
+            }}
+          >
+            <Screen path="/" component={Home} />
+            {/* Game 2048 */}
+            <Screen path="/game-2048" component={Game2048Home} />
+            <Screen path="/game-2048/game" component={Game2048Game} />
+            <Screen
+              path="/game-2048/leaderboard"
+              component={Game2048Leaderboard}
+            />
+            {/* Karrot Clicker */}
+            <Screen path="/karrot-clicker" component={KarrotClickerHome} />
+            <Screen path="/karrot-clicker/game" component={KarrotClickerGame} />
+            <Screen
+              path="/karrot-clicker/leaderboard"
+              component={KarrotClickerLeaderboard}
+            />
+            <Screen path="/non-service-area" component={NonServiceArea} />
+          </Navigator>
+        </KarrotMarketMiniContext.Provider>
+      </AnalyticsContext.Provider>
+    </KarrotRaiseApiContext.Provider>
   );
 };
 

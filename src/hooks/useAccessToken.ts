@@ -2,10 +2,18 @@ import { useCookies } from 'react-cookie';
 import { useMinigameApi } from 'services/api/minigameApi';
 
 export const useAccessToken = () => {
-  const minigameApi = useMinigameApi();
-  const [cookies, setCookies] = useCookies(['accessToken']);
+  const [cookies] = useCookies(['accessToken']);
   const accessToken: string = cookies.accessToken;
-  const getAccessToken = async (code: string, regionId: string) => {
+  return {
+    accessToken,
+  };
+};
+
+export const useSignAccessToken = () => {
+  const minigameApi = useMinigameApi();
+  const [, setCookies] = useCookies(['accessToken']);
+
+  const signAccessToken = async (code: string, regionId: string) => {
     const {
       data: { data },
     } = await minigameApi.oauth2Api.karrotLoginUsingPOST({ code, regionId });
@@ -15,7 +23,6 @@ export const useAccessToken = () => {
   };
 
   return {
-    accessToken,
-    getAccessToken,
+    signAccessToken,
   };
 };
