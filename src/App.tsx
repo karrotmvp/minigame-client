@@ -113,7 +113,7 @@ const App: React.FC = () => {
               karrotMarketMini.close();
             }}
           >
-            <Screen path="/" component={Home} />
+            <Screen path="/" component={KarrotClickerHome} />
             {/* Game 2048 */}
             <Screen path="/game-2048" component={Game2048Home} />
             <Screen path="/game-2048/game" component={Game2048Game} />
