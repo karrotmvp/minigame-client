@@ -1,8 +1,4 @@
-<<<<<<< Updated upstream
 import React, { createContext, useContext, useMemo } from 'react';
-import { Oauth2ApiFactory } from '../../openapi_generator/api';
-=======
-import React, { createContext, useContext, useEffect, useMemo } from 'react';
 import {
   Oauth2Api,
   UserApi,
@@ -10,22 +6,12 @@ import {
   GameTownApi,
   GamePlayApi,
 } from '../../openapi_generator/api';
->>>>>>> Stashed changes
 import { Configuration } from '../../openapi_generator/configuration';
-import useUserData from 'hooks/useUserData';
-// export const Oauth2Api = () => Oauth2ApiFactory();
-// Oauth2Api().karrotLoginUsingPOST({ code, regionId });
+import { useAccessToken } from 'hooks';
 
-export const CreateMinigameApi = (accessToken?: string) => {
-  const config = new Configuration({
-    apiKey: accessToken,
-  });
+function CreateMinigameApi({ accessToken }: { accessToken?: string }) {
+  console.log('here', accessToken);
   if (accessToken) {
-<<<<<<< Updated upstream
-    const oauth2Api = () => Oauth2ApiFactory(config);
-
-=======
-    console.log(accessToken);
     const configuration = new Configuration({
       apiKey: `Bearer ${accessToken}`,
     });
@@ -36,37 +22,37 @@ export const CreateMinigameApi = (accessToken?: string) => {
     const gameTownApi = new GameTownApi(configuration);
     const gamePlayApi = new GamePlayApi(configuration);
     console.log(gameUserApi);
->>>>>>> Stashed changes
     return {
       oauth2Api,
+      userApi,
+      gameUserApi,
+      gameTownApi,
+      gamePlayApi,
     };
   } else {
-    const oauth2Api = () => Oauth2ApiFactory();
-    return { oauth2Api };
+    console.log('no access token');
+    const oauth2Api = new Oauth2Api();
+    const userApi = new UserApi();
+    const gameUserApi = new GameUserApi();
+    const gameTownApi = new GameTownApi();
+    const gamePlayApi = new GamePlayApi();
+    return {
+      oauth2Api,
+      userApi,
+      gameUserApi,
+      gameTownApi,
+      gamePlayApi,
+    };
   }
-};
+}
 
-// export const emptyMinigameApi = {
-//   oauth2Api(...args: any[]) {
-//     console.log(...args);
-//   },
-// };
 
-<<<<<<< Updated upstream
-const MinigameApiContext = createContext(CreateMinigameApi(''));
-
-export const MinigameApiProvider: React.FC = (props) => {
-  const { accessToken } = useUserData();
-  const api = useMemo(() => CreateMinigameApi(accessToken), [accessToken]);
-=======
 const MinigameApiContext = createContext<ReturnType<typeof CreateMinigameApi>>(
   null as any
 );
-
 export const MinigameApiProvider: React.FC = (props) => {
   const { accessToken } = useAccessToken();
   const api = useMemo(() => CreateMinigameApi({ accessToken }), [accessToken]);
->>>>>>> Stashed changes
   return (
     <MinigameApiContext.Provider value={api}>
       {props.children}
@@ -74,4 +60,6 @@ export const MinigameApiProvider: React.FC = (props) => {
   );
 };
 
-export const useMinigameApi = () => useContext(MinigameApiContext);
+export function useMinigameApi() {
+  return useContext(MinigameApiContext);
+}

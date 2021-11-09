@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
-import IconBack from 'assets/svg/IconBack';
+import { BackIcon } from 'assets/Icon';
 import { AppEjectionButton } from 'components/Button';
 const Nav = styled.div`
   left: 0;
@@ -43,7 +43,7 @@ const TopNav = ({ action, handleNavBackAction }: TopNavprops) => {
           <AppEjectionButton />
         ) : action === `back` ? (
           <div onClick={handleNavBackAction}>
-            <IconBack />
+            <BackIcon />
           </div>
         ) : null}
       </div>

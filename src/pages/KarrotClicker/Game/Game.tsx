@@ -5,9 +5,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import Modal from 'react-modal';
 import { commafy } from 'utils/functions/numberFunctions';
 import { useAnalytics } from 'services/analytics';
-import useClickCounter from 'hooks/useClickCounter';
-import useUserData from 'hooks/useUserData';
-import { ReactComponent as PauseButton } from 'assets/svg/pause.svg';
+import useClickCounter from 'pages/KarrotClicker/hooks/useClickCounter';
 import gameBackgroundUrl from 'assets/images/KarrotClicker/game_background.png';
 import { useIdleTimer } from 'react-idle-timer';
 import { GamePause } from './Pause';
@@ -16,6 +14,8 @@ import { GameOver } from './GameOver';
 import { useClickAnimation } from './hooks/useClickAnimation';
 import ClickAnimation from './Animation/ClickAnimation';
 import { BigKarrot } from './Animation/BigKarrot';
+import { PauseIcon } from 'assets/Icon';
+import { useKarrotClickerData } from '../hooks';
 
 const PageContainer = styled.div`
   background-image: url(${gameBackgroundUrl});
@@ -125,7 +125,7 @@ Modal.setAppElement(document.createElement('div'));
 
 export const Game = () => {
   const analytics = useAnalytics();
-  const { userScore } = useUserData();
+  const { score } = useKarrotClickerData();
   const { clickCount, onIncrementClickCount, onResetCount } = useClickCounter();
   const { handleParticleSpawn, handleParticleDestroy, state } =
     useClickAnimation();
@@ -203,8 +203,8 @@ export const Game = () => {
   // Popup modal if user is new
   useEffect(() => {
     analytics.logEvent('view_game_page');
-    if (userScore === 0) {
-      console.log('userscore zero');
+    if (score === 0) {
+      console.log('score zero');
       const timerId = setTimeout(() => setIsUserNew(true), 250);
       return () => clearTimeout(timerId);
     } else {
@@ -243,10 +243,12 @@ export const Game = () => {
                 color: '#EB5D0E',
               }}
             >
-              {commafy(userScore + clickCount)}
+              {commafy(score! + clickCount)}
             </p>
           </TotalKarrotCount>
-          <PauseButton onClick={handlePauseGame} />
+          <button onClick={handlePauseGame}>
+            <PauseIcon />
+          </button>
         </div>
         <ScoreWrapper>
           <h2

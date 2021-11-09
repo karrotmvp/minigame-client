@@ -1,24 +1,69 @@
-/** @jsxImportSource @emotion/react */
-import { css } from '@emotion/react';
+import { css } from '@emotion/css';
 import styled from '@emotion/styled';
+import { useCurrentScreen } from '@karrotframe/navigator';
 import { Tabs } from '@karrotframe/tabs';
 import '@karrotframe/tabs/index.css';
+import { motion } from 'framer-motion';
 import { useCallback, useState } from 'react';
-import { DistrictLeaderboard, IndividualLeaderboard } from './Leaderboard';
+import { DistrictLeaderboard, UserLeaderboard } from './Leaderboard';
 
-const customizeTabs = css`
-  --kf_tabs_tabBar-baseFontColor: #5b5b5b;
-  --kf_tabs_tabBar-activeFontColor: #ff8845;
-  --kf_tabs_tabBar-indicator-color: #ff8845;
+type Props = {
+  districtLeaderboardData: any[];
+  userLeaderboardData: any[];
+};
+export const LeaderboardTabs: React.FC<Props> = (props) => {
+  const { isTop } = useCurrentScreen();
+  const [activeTabKey, setActiveTabKey] = useState<string>('district');
+  const handleTabChange = (key: string) => {
+    if (isTop) {
+      console.log('Leaderboard Tabs is on top');
+      setActiveTabKey(key);
+    }
+  };
+  return (
+    <LeaderboardContainer drag="y">
+      <Tabs
+        className={css`
+          --kf_tabs_tabBar-borderColor: none;
+          --kf_tabs_tabBar-indicator-color: none;
+          --kf_tabs_tabBar-activeFontColor: hotpink;
+        `}
+        activeTabKey={activeTabKey}
+        tabs={[
+          {
+            key: 'district',
+            buttonLabel: '지역 랭킹',
+            component: useCallback(
+              () => (
+                <DistrictLeaderboard
+                  districtLeaderboardData={props.districtLeaderboardData}
+                />
+              ),
+              [props.districtLeaderboardData]
+            ),
+          },
+          {
+            key: 'individual',
+            buttonLabel: '전국 랭킹',
+            component: useCallback(
+              () => (
+                <UserLeaderboard
+                  userLeaderboardData={props.userLeaderboardData}
+                />
+              ),
+              [props.userLeaderboardData]
+            ),
+          },
+        ]}
+        onTabChange={handleTabChange}
+      />
+    </LeaderboardContainer>
+  );
+};
 
-  a[role='tab'] {
-    transition: none;
-  }
-`;
-
-const LeaderboardContainer = styled.div`
+const LeaderboardContainer = styled(motion.div)`
   flex: 1;
-  overflow: hidden;
+  overflow: auto;
   padding: 18px 18px 0;
   margin: 0 18px;
   max-height: inherit;
@@ -28,31 +73,3 @@ const LeaderboardContainer = styled.div`
   border-radius: 10px 10px 0 0;
   border-bottom-style: none;
 `;
-
-export const LeaderboardTabs = () => {
-  const [activeTabKey, setActiveTabKey] = useState<string>('district');
-  console.log('leaderboard tabs');
-  return (
-    <LeaderboardContainer>
-      <Tabs
-        css={customizeTabs}
-        activeTabKey={activeTabKey}
-        tabs={[
-          {
-            key: 'district',
-            buttonLabel: '동네별',
-            component: useCallback(() => <DistrictLeaderboard />, []),
-          },
-          {
-            key: 'individual',
-            buttonLabel: '주민별',
-            component: useCallback(() => <IndividualLeaderboard />, []),
-          },
-        ]}
-        onTabChange={(key) => {
-          setActiveTabKey(key);
-        }}
-      />
-    </LeaderboardContainer>
-  );
-};

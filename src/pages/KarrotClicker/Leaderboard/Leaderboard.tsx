@@ -6,12 +6,14 @@ import { useKarrotMarketMini } from 'services/karrotMarketMini';
 import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
 import { useAnalytics } from 'services/analytics';
 import { useNavigator } from '@karrotframe/navigator';
-import useClickCounter from 'hooks/useClickCounter';
-import useUserData from 'hooks/useUserData';
+import useClickCounter from 'pages/KarrotClicker/hooks/useClickCounter';
 import { AppEjectionButton } from 'components/Button/NavigationButton';
 import { OldButton } from 'components/Button';
 import { DefaultUserRow, TopUserRow } from './LeaderboardTabs/Row';
 import { LeaderboardTabs } from './LeaderboardTabs';
+import { useCookies } from 'react-cookie';
+import { useUserData } from 'hooks';
+import { useKarrotClickerData } from '../hooks';
 
 // nav
 const PageContainer = styled.div`
@@ -86,16 +88,10 @@ export const Leaderboard = () => {
   const analytics = useAnalytics();
   const karrotRaiseApi = useKarrotRaiseApi();
   const karrotMarketMini = useKarrotMarketMini();
-  const {
-    accessToken,
-    userId,
-    userDistrictName,
-    userNickname,
-    userScore,
-    userRank,
-    userComment,
-    onUpdateUserData,
-  } = useUserData();
+  const { userName, districtName } = useUserData();
+  const { score, rank, comment, updateKarrotClickerData } =
+    useKarrotClickerData();
+  const [cookies] = useCookies();
   const { onResetCount } = useClickCounter();
 
   // Page navigation
@@ -103,12 +99,6 @@ export const Leaderboard = () => {
     pop();
   };
 
-  // const resetGame = () => {
-  //   // big karrot scale back to 1
-  //   // animation state to 'running'
-  //   // start() react-idle-timer
-  //   // reset count to 0
-  // };
   const handlePlayAgain = async () => {
     analytics.logEvent('click_game_play_again_button');
     onResetCount();
@@ -128,29 +118,21 @@ export const Leaderboard = () => {
       try {
         const { data } = await karrotRaiseApi.getUserInfo(accessToken);
         if (data) {
-          const { nickname, score, rank, comment } = data;
-          onUpdateUserData(userId, nickname, score, rank, comment);
+          const { score, rank, comment } = data;
+          updateKarrotClickerData(score, rank, comment);
         }
       } catch (error) {
         console.error(error);
       }
     },
-    [onUpdateUserData, userId]
+    []
   );
 
   useEffect(() => {
     analytics.logEvent('view_leaderboard_page');
-    getUserData(karrotRaiseApi, accessToken);
-  }, [accessToken, analytics, getUserData, karrotRaiseApi]);
+    getUserData(karrotRaiseApi, cookies.accessToken);
+  }, [analytics, cookies.accessToken, getUserData, karrotRaiseApi]);
 
-  // useEffect(() => {
-  //   return () => {
-  //     if (history.action === 'POP') {
-  //       onResetCount();
-  //       history.push('/game' /* the "new" state */);
-  //     }
-  //   };
-  // }, [history, onResetCount]);
   return (
     <PageContainer>
       <div css={customNav}>
@@ -159,28 +141,28 @@ export const Leaderboard = () => {
         </div>
       </div>
       <Heading>
-        <EmphasizedSpan>{userNickname}</EmphasizedSpan>님은
-        <EmphasizedSpan> {userRank}위</EmphasizedSpan>
+        <EmphasizedSpan>{userName}</EmphasizedSpan>님은
+        <EmphasizedSpan> {rank}위</EmphasizedSpan>
         에요!
       </Heading>
 
       <MyRow>
-        {userRank <= 10 ? (
+        {rank! <= 10 ? (
           <TopUserRow
             me={true}
-            rank={userRank}
-            nickname={userNickname}
-            score={userScore}
-            comment={userComment}
-            districtName={userDistrictName}
+            rank={rank!}
+            userName={userName!}
+            score={score!}
+            comment={comment!}
+            districtName={districtName!}
           />
         ) : (
           <DefaultUserRow
             me={true}
-            rank={userRank}
-            nickname={userNickname}
-            score={userScore}
-            districtName={userDistrictName}
+            rank={rank!}
+            userName={userName!}
+            score={score!}
+            districtName={districtName!}
           />
         )}
       </MyRow>

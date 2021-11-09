@@ -1,4 +1,5 @@
 import React from 'react';
+import { CookiesProvider } from 'react-cookie';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { MinigameApiProvider } from 'services/api/minigameApi';
@@ -7,11 +8,6 @@ import App from './App';
 import './index.css';
 ReactDOM.render(
   <React.StrictMode>
-<<<<<<< Updated upstream
-    <Provider store={store}>
-      <App />
-    </Provider>
-=======
     <CookiesProvider>
       <Provider store={store}>
         <MinigameApiProvider>
@@ -19,7 +15,6 @@ ReactDOM.render(
         </MinigameApiProvider>
       </Provider>
     </CookiesProvider>
->>>>>>> Stashed changes
   </React.StrictMode>,
   document.getElementById('root')
 );

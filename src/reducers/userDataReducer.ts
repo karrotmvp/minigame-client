@@ -1,85 +1,54 @@
 // action types
-export const UPDATE_QUERY_PARAMS_DATA =
-  'useData/UPDATE_QUERY_PARAMS_DATA' as const;
-export const UPDATE_ACCESS_TOKEN = 'useData/UPDATE_ACCESS_TOKEN' as const;
-export const UPDATE_REGION_DATA = 'userData/UPDATE_REGION_DATA' as const;
-export const UPDATE_USER_DATA = 'userData/UPDATE_USER_DATA' as const;
+export const SET_USER_INFO = 'userData/SET_USER_INFO' as const;
+export const SET_REGION_INFO = 'userData/SET_REGION_INFO' as const;
+export const SET_DISTRICT_INFO = 'userData/SET_DISTRICT_INFO' as const;
+
 // actions,
-export const updateQueryParamsData = (
-  code: string | null,
-  regionId: string | null
-) => ({
-  type: UPDATE_QUERY_PARAMS_DATA,
+export const setUserInfoAction = (userId: string, userName: string) => ({
+  type: SET_USER_INFO,
   payload: {
-    code,
-    regionId,
-  },
-});
-export const updateAccessToken = (accessToken: string) => ({
-  type: UPDATE_ACCESS_TOKEN,
-  payload: { accessToken },
-});
-
-export const updateRegionData = (
-  regionId: string,
-  townId: string,
-  townName: string
-) => ({
-  type: UPDATE_REGION_DATA,
-  payload: {
-    regionId,
-    townId,
-    townName,
+    userId,
+    userName,
   },
 });
 
-export const updateUserData = (
-  id: string,
-  nickname: string,
-  score: number,
-  rank: number,
-  comment: string
-) => ({
-  type: UPDATE_USER_DATA,
+export const setRegionInfoAction = (regionId: string) => ({
+  type: SET_REGION_INFO,
   payload: {
-    id,
-    nickname,
-    score,
-    rank,
-    comment,
+    regionId,
+  },
+});
+
+export const setDistrictInfoAction = (
+  districtId: string,
+  districtName: string
+) => ({
+  type: SET_DISTRICT_INFO,
+  payload: {
+    districtId,
+    districtName,
   },
 });
 
 type UserDataAction =
-  | ReturnType<typeof updateQueryParamsData>
-  | ReturnType<typeof updateAccessToken>
-  | ReturnType<typeof updateRegionData>
-  | ReturnType<typeof updateUserData>;
+  | ReturnType<typeof setUserInfoAction>
+  | ReturnType<typeof setRegionInfoAction>
+  | ReturnType<typeof setDistrictInfoAction>;
 
 // initial state
 type UserDataState = {
-  code: string | null;
-  accessToken: string;
-  id: string;
-  nickname: string;
-  score: number;
-  rank: number;
-  comment: string;
-  townId: string;
-  townName: string;
-  regionId: string | null;
+  userId: string;
+  userName: string;
+  regionId: string;
+  districtId: string;
+  districtName: string;
 };
 const initialState: UserDataState = {
-  accessToken: window.localStorage.getItem('ACCESS_TOKEN')!,
-  code: null,
-  id: '',
-  nickname: '',
-  score: 0,
-  rank: 0,
-  comment: '',
-  townId: '',
-  townName: '',
-  regionId: null,
+  userId: '',
+  userName: '',
+  regionId: '',
+  districtId: '',
+  districtName: '',
 };
 
 // reducer
@@ -88,32 +57,23 @@ const userDataReducer = (
   action: UserDataAction
 ) => {
   switch (action.type) {
-    case UPDATE_QUERY_PARAMS_DATA:
+    case SET_USER_INFO:
       return {
         ...state,
-        code: action.payload.code,
-        regionId: action.payload.regionId,
+        userId: action.payload.userId,
+        userName: action.payload.userName,
       };
-    case UPDATE_ACCESS_TOKEN:
-      return {
-        ...state,
-        accessToken: action.payload.accessToken,
-      };
-    case UPDATE_REGION_DATA:
+    case SET_REGION_INFO:
       return {
         ...state,
         regionId: action.payload.regionId,
-        townId: action.payload.townId,
-        townName: action.payload.townName,
       };
-    case UPDATE_USER_DATA:
+
+    case SET_DISTRICT_INFO:
       return {
         ...state,
-        id: action.payload.id,
-        nickname: action.payload.nickname,
-        score: action.payload.score,
-        rank: action.payload.rank,
-        comment: action.payload.comment,
+        districtId: action.payload.districtId,
+        districtName: action.payload.districtName,
       };
     default:
       return state;

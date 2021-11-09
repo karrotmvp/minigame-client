@@ -19,6 +19,10 @@
   font-size: 16px;
 }
 
+#root {
+  width: 100vw;
+  height: 100vh;
+}
 *:not(input) {
   user-select: none;
 }
@@ -37,7 +41,18 @@
   color: inherit;
 }
 
-#root {
-  width: 100vw;
-  height: 100vh;
+button,
+input[type='submit'],
+input[type='reset'] {
+  background: none;
+  color: inherit;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  outline: none;
+}
+
+button:focus {
+  outline: none;
 }

@@ -1,76 +1,19 @@
-/** @jsxImportSource @emotion/react */
-import { css } from '@emotion/react';
 import styled from '@emotion/styled';
+import { useNavigator } from '@karrotframe/navigator';
+import { CloseIcon } from 'assets/Icon';
+import { ActiveUserCount } from 'components/ActiveUserCount';
+import { OldButton } from 'components/Button';
+import { Nav } from 'components/Navigation/Nav';
+import { useUserData } from 'hooks';
+import { rem } from 'polished';
 import { useEffect } from 'react';
 import { useAnalytics } from 'services/analytics';
-import { useNavigator } from '@karrotframe/navigator';
-import useUserData from 'hooks/useUserData';
-import TopImageUrl from 'assets/images/KarrotClicker/home_top_banner.png';
-import { OldButton } from 'components/Button';
-import { BackButton } from 'components/Button/NavigationButton';
-import { ActiveUserCount } from '../../../components/ActiveUserCount';
-import { LeaderboardTabs } from 'pages/KarrotClicker/Leaderboard/LeaderboardTabs';
-import {
-  DefaultUserRow,
-  TopUserRow,
-} from 'pages/KarrotClicker/Leaderboard/LeaderboardTabs/Row';
-
-const PageContainer = styled.div`
-  display: flex;
-  flex-flow: column;
-  height: 100%;
-  background: #faf5f4;
-`;
-const Nav = styled.div`
-  background-image: url(${TopImageUrl});
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center -10px;
-  width: 100%;
-  height: 220px;
-  margin-bottom: -20px;
-`;
-const customNav = css`
-  left: 0;
-  width: 100%;
-  display: flex;
-  flex-flow: row;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  height: 80px;
-  padding: 0 15px;
-  background: transparent;
-`;
-const customNavIcon = css`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 1;
-  transition: opacity 300ms;
-  width: 2.25rem;
-  height: 2.75rem;
-  text-decoration: none;
-  outline: none;
-  z-index: 10;
-`;
-
-const MyRow = styled.div`
-  margin: 0 18px 12px;
-`;
-const ActionItem = styled.div`
-  display: flex;
-  justify-content: center;
-  width: 100%;
-  padding: 16px 24px 34px;
-  border-top: 1px solid #ebebeb;
-  background: #ffffff;
-  box-sizing: border-box;
-  box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
-`;
+import { useKarrotClickerData } from '../hooks';
+import { LeaderboardTabs } from '../Leaderboard/LeaderboardTabs';
+import { DefaultUserRow, TopUserRow } from '../Leaderboard/LeaderboardTabs/Row';
 
 interface UserScoreExistsProps {
-  nickname: string;
+  userName: string;
   rank: number;
   score: number;
   comment: string;
@@ -83,7 +26,7 @@ const UserScoreExists: React.FC<UserScoreExistsProps> = (props) => {
         <TopUserRow
           me={true}
           rank={props.rank}
-          nickname={props.nickname}
+          userName={props.userName}
           score={props.score}
           comment={props.comment}
           districtName={props.districtName}
@@ -92,7 +35,7 @@ const UserScoreExists: React.FC<UserScoreExistsProps> = (props) => {
         <DefaultUserRow
           me={true}
           rank={props.rank}
-          nickname={props.nickname}
+          userName={props.userName}
           score={props.score}
           districtName={props.districtName}
         />
@@ -104,18 +47,8 @@ const UserScoreExists: React.FC<UserScoreExistsProps> = (props) => {
 export const Home = () => {
   const { push } = useNavigator();
   const analytics = useAnalytics();
-  // const karrotRaiseApi = useKarrotRaiseApi();
-  const {
-    accessToken,
-    // userId,
-    userDistrictName,
-    userNickname,
-    userScore,
-    userRank,
-    userComment,
-    // onUpdateUserData,
-  } = useUserData();
-
+  const { userName, districtName } = useUserData();
+  const { rank, score, comment } = useKarrotClickerData();
   const goToGamePage = () => {
     push(`/karrot-clicker/game`);
   };
@@ -131,31 +64,29 @@ export const Home = () => {
     analytics.logEvent('view_returning_user_home_page');
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [accessToken]);
+  }, []);
 
+  // leave mini app
+  const leaveMiniApp = () => {};
   return (
-    <PageContainer>
-      <Nav>
-        <div css={customNav}>
-          <div css={customNavIcon}>
-            <BackButton />
-          </div>
-        </div>
-      </Nav>
-      {/* <ScreenHelmet /> */}
-
+    <Page className="karrot-clicker-home-page">
+      <Nav appendLeft={<CloseIcon />} />
+      <Banner className="banner">
+        {/* <BannerImage /> */}
+        {/* <img src={BannerImage} /> */}
+      </Banner>
       <MyRow>
         {
-          userRank !== null ? (
+          rank !== null ? (
             <UserScoreExists
-              nickname={userNickname}
-              rank={userRank}
-              score={userScore}
-              comment={userComment}
-              districtName={userDistrictName}
+              userName={userName!}
+              rank={rank!}
+              score={score!}
+              comment={comment!}
+              districtName={districtName!}
             />
           ) : null
-          // <UserScoreNull nickname={userNickname} />
+          // <UserScoreNull userName={useruserName} />
         }
       </MyRow>
       <LeaderboardTabs />
@@ -167,16 +98,45 @@ export const Home = () => {
           zIndex: 101,
         }}
       >
-        <ActiveUserCount />
+        <ActiveUserCount gameType="GAME_KARROT" />
       </div>
-      <ActionItem>
+      <ActionItems>
         <OldButton
           size={`large`}
           color={`primary`}
           text={`게임 시작`}
           onClick={handleGameStart}
         />
-      </ActionItem>
-    </PageContainer>
+      </ActionItems>
+    </Page>
   );
 };
+
+const Page = styled.div`
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+  background: #faf5f4;
+`;
+const Banner = styled.div`
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+  align-items: center;
+  padding-bottom: 1rem;
+  // width: 100px;
+`;
+
+const MyRow = styled.div`
+  margin: 0 18px 12px;
+`;
+const ActionItems = styled.div`
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: ${rem(15)} ${rem(18)} ${rem(30)};
+  border-top: 1px solid #ebebeb;
+  background: #ffffff;
+  box-sizing: border-box;
+  box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+`;

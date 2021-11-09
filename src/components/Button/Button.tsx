@@ -68,7 +68,7 @@ interface ButtonProps {
   children?: React.ReactNode;
 }
 
-export const DisabledButton = ({ size, text }: ButtonProps) => {
+export const OldDisabledButton = ({ size, text }: ButtonProps) => {
   return (
     <button
       css={oldButtonStyle({ size })}
@@ -92,35 +92,97 @@ export const OldButton = ({ size, color, text, onClick }: ButtonProps) => {
 };
 
 type Props = {
-  // fontSize: string;
-  // fontColor: string;
-  // buttonColor: string;
-  // shadowColor: string;
   size: string;
+  fontSize: string;
   color: string;
   onClick?: any;
   children?: React.ReactNode;
+  type?: string;
 };
 
-const CustomButton = styled.div<{ size: string }>`
+const CustomButton = styled.a<{
+  size: string;
+  fontSize: string;
+  color: string;
+}>`
   text-align: center;
   border: none;
   border-radius: 10px;
-
-  font-size: ${(props) => (props.size === `tiny` ? rem(14) : `1rem`)};
-  color: ${(props) => (props.color === `secondary` ? `#82B6FF` : `hotpink`)};
-  background: ${(props) =>
-    props.color === `secondary` ? `#FFFFFF` : `hotpink`};
-  box-shadow: ${(props) =>
-    props.color === `secondary` ? `0px 6px 0px 0px #C8D8EE` : `hotpink`};
+  font-style: normal;
+  line-height: 161.7%;
+  width: ${(props) => (props.size === `large` ? `100%` : `fit-content`)};
 
   padding: ${(props) =>
-    props.size === `tiny` ? `${rem(6)} ${rem(11)} ${rem(5)}` : `1rem`};
+    props.size === `large`
+      ? `${rem(8)} 0`
+      : `tiny`
+      ? `${rem(6)} ${rem(11)} ${rem(5)}`
+      : `0`};
+
+  font-weight: ${(props) =>
+    props.size === `large`
+      ? 'bold'
+      : props.color === `secondary2`
+      ? `bold`
+      : `normal`};
+
+  font-size: ${(props) => props.fontSize};
+
+  color: ${(props) =>
+    props.color === `primary`
+      ? `#FFFFFF`
+      : props.color === `secondary1`
+      ? `#FFFFFF`
+      : props.color === `secondary2`
+      ? `#82B6FF`
+      : props.type === `disabled`
+      ? `#FFFFFF`
+      : `#FFFFFF`};
+
+  background: ${(props) =>
+    props.color === `primary`
+      ? `#0E74FF`
+      : props.color === `secondary1`
+      ? `#82B6FF`
+      : props.color === `secondary2`
+      ? `#FFFFFF`
+      : props.type === `disabled`
+      ? `#E3EFFF`
+      : `#E3EFFF`};
+
+  box-shadow: ${(props) =>
+    props.color === `primary`
+      ? `0px 6px 0px 0px #1457AE`
+      : props.color === `secondary1`
+      ? `0px 6px 0px 0px #4192FF`
+      : props.color === `secondary2`
+      ? `0px 6px 0px 0px #C8D8EE`
+      : `0px 6px 0px 0px #E3EFFF`};
+
+  pointer-events: ${(props) => (props.type === `disabled` ? `none` : `auto`)};
 `;
 
-export const Button = (props: Props) => {
+export const Button: React.FC<Props> = (props) => {
   return (
-    <CustomButton size={props.size} color={props.color} onClick={props.onClick}>
+    <CustomButton
+      size={props.size}
+      fontSize={props.fontSize}
+      color={props.color}
+      onClick={props.onClick}
+    >
+      {props.children}
+    </CustomButton>
+  );
+};
+
+export const DisabledButton: React.FC<Props> = (props) => {
+  return (
+    <CustomButton
+      size={props.size}
+      fontSize={props.fontSize}
+      color={props.color}
+      type={`disabled`}
+    >
       {props.children}
     </CustomButton>
   );

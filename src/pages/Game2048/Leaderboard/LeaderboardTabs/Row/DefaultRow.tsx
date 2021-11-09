@@ -1,6 +1,7 @@
 import styled from '@emotion/styled';
 import { commafy } from 'utils/functions/numberFunctions';
 import React from 'react';
+import { rem } from 'polished';
 
 const Container = styled.div<{ me?: boolean }>`
   display: flex;
@@ -50,11 +51,11 @@ const Name = styled.div`
 
   font-style: normal;
   font-weight: 600;
-  font-size: 16px;
+  font-size: ${rem(16)};
   line-height: 161.7%;
   /* identical to box height, or 26px */
 
-  color: #5b5b5b;
+  color: #0e74ff;
 `;
 const Score = styled.div`
   display: flex;
@@ -70,43 +71,19 @@ const Score = styled.div`
 `;
 
 const DistrictName = styled.div<{ districtName: string }>`
-  border: 0.5px solid;
-  box-sizing: border-box;
-  border-radius: 7px;
   height: fit-content;
   width: fit-content;
-  padding: 1px 5px;
+  padding: 0 5px;
 
+  color: #7c7c7c;
   font-style: normal;
-  font-weight: 600;
-  font-size: 8px;
+  font-weight: normal;
+  font-size: ${rem(8)};
   line-height: 161.7%;
 
-  color: ${(props) =>
-    props.districtName === `서초구`
-      ? '#6BA577'
-      : props.districtName === `송파구`
-      ? '#E17373'
-      : props.districtName === `강동구`
-      ? '#AE93C3'
-      : props.districtName === `강남구`
-      ? `#9398C3`
-      : props.districtName === `광진구`
-      ? `#DD8758`
-      : '#5B5B5B'};
-
-  border-color: ${(props) =>
-    props.districtName === `서초구`
-      ? '#6BA577'
-      : props.districtName === `송파구`
-      ? '#E17373'
-      : props.districtName === `강동구`
-      ? '#AE93C3'
-      : props.districtName === `강남구`
-      ? `#9398C3`
-      : props.districtName === `광진구`
-      ? `#DD8758`
-      : '#5B5B5B'};
+  border: 0.5px solid #7c7c7c;
+  box-sizing: border-box;
+  border-radius: 7px;
 `;
 
 const PlayerCount = styled.div`
@@ -124,8 +101,9 @@ const PlayerCount = styled.div`
 interface DefaultUserRowProps {
   me?: boolean;
   rank: number;
-  nickname: string;
+  userName: string;
   score: number;
+  cityName: string;
   districtName: string;
 }
 
@@ -136,10 +114,10 @@ export const DefaultUserRow: React.FC<DefaultUserRowProps> = (props) => {
       <ContentsWrapper>
         <Info>
           <Name>
+            {props.userName}
             <DistrictName districtName={props.districtName}>
-              {props.districtName.slice(0, -1)}
+              {props.cityName.slice(0, 2)} {props.districtName}
             </DistrictName>
-            {props.nickname}
           </Name>
           <Score>{commafy(props.score)}</Score>
         </Info>
