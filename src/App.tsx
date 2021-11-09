@@ -36,10 +36,20 @@ import { NonServiceArea } from 'pages/NonServiceArea';
 import useUserData from 'hooks/useUserData';
 import { withLogIn, withOpenRegion } from 'components/hoc';
 
+<<<<<<< Updated upstream
 import { MinigameApiProvider, useMinigameApi } from 'services/api/minigameApi';
 const App: React.FC = () => {
   const { saveQueryParamsData } = useUserData();
 
+=======
+import { MinigameApiProvider } from 'services/api/minigameApi';
+import { useSignAccessToken, useUserData } from 'hooks';
+// import { useAccessToken } from 'hooks/useAccessToken';
+const App: React.FC = () => {
+  const { setRegionInfo } = useUserData();
+  // const { getAccessToken } = useAccessToken();
+  const { signAccessToken } = useSignAccessToken();
+>>>>>>> Stashed changes
   const [analytics, setAnalytics] = useState(emptyAnalytics);
   const [karrotRaiseApi, setKarrotRaiseApi] = useState(emptyKarrotRaiseApi);
   const [karrotMarketMini, setKarrotMarketMini] = useState(
@@ -85,6 +95,7 @@ const App: React.FC = () => {
   useEffect(() => {
     try {
       analytics.logEvent('launch_app');
+<<<<<<< Updated upstream
       const searchParams = new URLSearchParams(window.location.search);
       const code: string | null = searchParams.get('code');
       const regionId: string | null = searchParams.get('region_id');
@@ -94,6 +105,15 @@ const App: React.FC = () => {
           .oauth2Api()
           .karrotLoginUsingPOST({ code, regionId });
         console.log(response);
+=======
+      console.log(code, regionId);
+      // handle if code and/or region id does not exist
+      if (regionId) {
+        setRegionInfo(regionId);
+        if (code) {
+          signAccessToken(code, regionId);
+        }
+>>>>>>> Stashed changes
       }
     } catch (error) {
       console.error(error);
@@ -102,6 +122,7 @@ const App: React.FC = () => {
   }, [analytics]);
 
   return (
+<<<<<<< Updated upstream
     <Navigator
       theme="Cupertino"
       onClose={() => {
@@ -131,13 +152,39 @@ const App: React.FC = () => {
                 path="/karrot-clicker/leaderboard"
                 component={KarrotClickerLeaderboard}
               />
+=======
+    <KarrotRaiseApiContext.Provider value={karrotRaiseApi}>
+      <AnalyticsContext.Provider value={analytics}>
+        <KarrotMarketMiniContext.Provider value={karrotMarketMini}>
+          <Navigator
+            theme="Cupertino"
+            onClose={() => {
+              console.log('Close button is pressed');
+              karrotMarketMini.close();
+            }}
+          >
+            <Screen path="/" component={Home} />
+            {/* Game 2048 */}
+            <Screen path="/game-2048" component={Game2048Home} />
+            <Screen path="/game-2048/game" component={Game2048Game} />
+            <Screen
+              path="/game-2048/leaderboard"
+              component={Game2048Leaderboard}
+            />
+            {/* Karrot Clicker */}
+            <Screen path="/karrot-clicker" component={KarrotClickerHome} />
+            <Screen path="/karrot-clicker/game" component={KarrotClickerGame} />
+            <Screen
+              path="/karrot-clicker/leaderboard"
+              component={KarrotClickerLeaderboard}
+            />
+>>>>>>> Stashed changes
 
-              <Screen path="/non-service-area" component={NonServiceArea} />
-            </KarrotMarketMiniContext.Provider>
-          </AnalyticsContext.Provider>
-        </KarrotRaiseApiContext.Provider>
-      </MinigameApiProvider>
-    </Navigator>
+            <Screen path="/non-service-area" component={NonServiceArea} />
+          </Navigator>
+        </KarrotMarketMiniContext.Provider>
+      </AnalyticsContext.Provider>
+    </KarrotRaiseApiContext.Provider>
   );
 };
 
