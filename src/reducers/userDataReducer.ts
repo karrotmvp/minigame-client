@@ -20,12 +20,14 @@ export const setRegionInfoAction = (regionId: string) => ({
 });
 
 export const setDistrictInfoAction = (
-  districtId: string,
-  districtName: string
+  districtId: string, //id
+  cityName: string, //name1
+  districtName: string //name2
 ) => ({
   type: SET_DISTRICT_INFO,
   payload: {
     districtId,
+    cityName,
     districtName,
   },
 });
@@ -41,6 +43,7 @@ type UserDataState = {
   userName: string;
   regionId: string;
   districtId: string;
+  cityName: string;
   districtName: string;
 };
 const initialState: UserDataState = {
@@ -48,6 +51,7 @@ const initialState: UserDataState = {
   userName: '',
   regionId: '',
   districtId: '',
+  cityName: '',
   districtName: '',
 };
 
@@ -73,6 +77,7 @@ const userDataReducer = (
       return {
         ...state,
         districtId: action.payload.districtId,
+        cityName: action.payload.cityName,
         districtName: action.payload.districtName,
       };
     default:

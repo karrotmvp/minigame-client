@@ -40,7 +40,7 @@ const SpeechBalloon = styled.div<{ gameType: 'GAME_KARROT' | 'GAME_2048' }>`
       ? `#82B6FF`
       : props.gameType === `GAME_KARROT`
       ? `#F39E6E`
-      : `transparent`}
+      : `#F39E6E`}
   border-radius: 5px;
 
   font-family: Cafe24SsurroundAir;

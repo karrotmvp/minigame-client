@@ -1,11 +1,11 @@
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  setGameTypeAction,
   updateUserGameDataAction,
-} from 'reducers/game2048DataReducer';
+  setGameTypeAction,
+} from 'reducers/karrotClickerDataReducer';
 import { RootState } from 'reducers/rootReducer';
 
-export const useMyGame2048Data = () => {
+export const useMyKarrotClickerData = () => {
   const { score, rank, comment, gameType } = useSelector(
     (state: RootState) => ({
       score: state.game2048DataReducer.score,
@@ -16,7 +16,7 @@ export const useMyGame2048Data = () => {
   );
   const dispatch = useDispatch();
 
-  const updateMyGame2048Data = (
+  const updateMyKarrotClickerData = (
     score: number,
     rank: number,
     comment: string
@@ -24,15 +24,16 @@ export const useMyGame2048Data = () => {
     dispatch(updateUserGameDataAction(score, rank, comment));
   };
 
-  const setGameTypeToGame2048 = () => {
-    dispatch(setGameTypeAction('GAME_2048'));
+  const setGameTypeToKarrotClicker = () => {
+    dispatch(setGameTypeAction('GAME_KARROT'));
   };
+
   return {
     score,
     rank,
     comment,
     gameType,
-    updateMyGame2048Data,
-    setGameTypeToGame2048,
+    updateMyKarrotClickerData,
+    setGameTypeToKarrotClicker,
   };
 };

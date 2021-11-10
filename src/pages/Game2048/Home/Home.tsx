@@ -15,7 +15,7 @@ import { ActiveUserCount } from 'components/ActiveUserCount';
 import { TownRankResponseDto } from 'services/openapi_generator';
 import { useAccessToken } from 'hooks/useAccessToken';
 import { useMyGame2048Data } from '../hooks';
-import { useKarrotMarketMini } from 'hooks';
+import { useMini } from 'hooks';
 import { useThrottledCallback } from 'use-debounce/lib';
 
 export const Home = () => {
@@ -23,8 +23,7 @@ export const Home = () => {
   const { push, pop } = useNavigator();
   const minigameApi = useMinigameApi();
   const { accessToken } = useAccessToken();
-  const { isInWebEnvironment, handleThirdPartyAgreement } =
-    useKarrotMarketMini();
+  const { isInWebEnvironment, handleThirdPartyAgreement } = useMini();
   const { rank, gameType, updateMyGame2048Data } = useMyGame2048Data();
   const [isRanked, setIsRanked] = useState<boolean>(false);
   const [userLeaderboardData, setUserLeaderboardData] = useState<any[]>([]);

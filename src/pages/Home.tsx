@@ -2,30 +2,30 @@ import React, { useCallback, useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
 import { useMinigameApi } from 'services/api/minigameApi';
-import { useKarrotMarketMini } from 'hooks';
+import { useMini } from 'hooks';
 import { Nav } from 'components/Navigation/Nav';
 import { CloseIcon } from 'assets/Icon';
 import { rem } from 'polished';
 import { commafy } from 'utils/functions/numberFunctions';
 import { useMyGame2048Data } from './Game2048/hooks';
-import { useKarrotClickerData } from './KarrotClicker/hooks';
+import { useMyKarrotClickerData } from './KarrotClicker/hooks';
 
 export const Home: React.FC = () => {
   const minigameApi = useMinigameApi();
   const { push } = useNavigator();
   const { isTop } = useCurrentScreen();
-  const { isInWebEnvironment, ejectApp } = useKarrotMarketMini();
+  const { isInWebEnvironment, ejectApp } = useMini();
   const [userCount, setUserCount] = useState<number>(0);
   const { updateMyGame2048Data, setGameTypeToGame2048 } = useMyGame2048Data();
-  const { updateKarrotClickerData, setGameTypeToKarrotClicker } =
-    useKarrotClickerData();
+  const { updateMyKarrotClickerData, setGameTypeToKarrotClicker } =
+    useMyKarrotClickerData();
   const exitApp = () => {
     console.log('Ejected from the app. Now back to Karrot Market');
     ejectApp();
   };
 
   const goToGame2048 = async () => {
-    setGameTypeToGame2048('GAME_2048');
+    setGameTypeToGame2048();
     // bypass in web environment
     if (isInWebEnvironment) {
       console.log('bypass in web environment: main to game-2048');
@@ -42,7 +42,7 @@ export const Home: React.FC = () => {
   };
 
   const goToKarrotClicker = async () => {
-    setGameTypeToKarrotClicker('GAME_KARROT');
+    setGameTypeToKarrotClicker();
     if (isInWebEnvironment) {
       console.log('bypass in web environment: main to karrot-clicker');
       push(`/karrot-clicker`);
@@ -51,7 +51,7 @@ export const Home: React.FC = () => {
         data: { data },
       } = await minigameApi.gameUserApi.getMyRankInfoUsingGET('GAME_KARROT');
       if (data) {
-        updateKarrotClickerData(data.score, data.rank!, data.comment);
+        updateMyKarrotClickerData(data.score, data.rank!, data.comment);
       }
       push(`/karrot-clicker`);
     }

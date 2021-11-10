@@ -49,8 +49,6 @@ export const setApiKeyToObject = async function (
   keyParamName: string,
   configuration?: Configuration
 ) {
-  console.log('setApiKeyToObject', configuration);
-
   if (configuration && configuration.apiKey) {
     const localVarApiKeyValue =
       typeof configuration.apiKey === 'function'

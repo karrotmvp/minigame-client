@@ -1,3 +1,3 @@
 export * from './useUserData';
-export * from './useKarrotMarketMini';
+export * from './useMini';
 export * from './useAccessToken';

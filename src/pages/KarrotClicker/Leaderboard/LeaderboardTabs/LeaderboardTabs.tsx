@@ -1,33 +1,9 @@
-/** @jsxImportSource @emotion/react */
-import { css } from '@emotion/react';
+import { css } from '@emotion/css';
 import styled from '@emotion/styled';
 import { Tabs } from '@karrotframe/tabs';
 import '@karrotframe/tabs/index.css';
 import { useCallback, useState } from 'react';
 import { DistrictLeaderboard, IndividualLeaderboard } from './Leaderboard';
-
-const customizeTabs = css`
-  --kf_tabs_tabBar-baseFontColor: #5b5b5b;
-  --kf_tabs_tabBar-activeFontColor: #ff8845;
-  --kf_tabs_tabBar-indicator-color: #ff8845;
-
-  a[role='tab'] {
-    transition: none;
-  }
-`;
-
-const LeaderboardContainer = styled.div`
-  flex: 1;
-  overflow: hidden;
-  padding: 18px 18px 0;
-  margin: 0 18px;
-  max-height: inherit;
-  background: #ffffff;
-  border: 1px solid #ebe0db;
-  box-sizing: border-box;
-  border-radius: 10px 10px 0 0;
-  border-bottom-style: none;
-`;
 
 export const LeaderboardTabs = () => {
   const [activeTabKey, setActiveTabKey] = useState<string>('district');
@@ -35,7 +11,11 @@ export const LeaderboardTabs = () => {
   return (
     <LeaderboardContainer>
       <Tabs
-        css={customizeTabs}
+        className={css`
+          --kf_tabs_tabBar-baseFontColor: #5b5b5b;
+          --kf_tabs_tabBar-activeFontColor: #ff8845;
+          --kf_tabs_tabBar-indicator-color: #ff8845;
+        `}
         activeTabKey={activeTabKey}
         tabs={[
           {
@@ -56,3 +36,16 @@ export const LeaderboardTabs = () => {
     </LeaderboardContainer>
   );
 };
+
+const LeaderboardContainer = styled.div`
+  flex: 1;
+  overflow: hidden;
+  padding: 18px 18px 0;
+  margin: 0 18px;
+  max-height: inherit;
+  background: #ffffff;
+  border: 1px solid #ebe0db;
+  box-sizing: border-box;
+  border-radius: 10px 10px 0 0;
+  border-bottom-style: none;
+`;

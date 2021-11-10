@@ -1,2 +1,2 @@
-export * from './useKarrotClickerData';
+export * from './useMyKarrotClickerData';
 export * from './useClickCounter';

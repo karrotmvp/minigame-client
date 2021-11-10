@@ -13,6 +13,7 @@ export const useUserData = () => {
       userName: state.userDataReducer.userName,
       regionId: state.userDataReducer.regionId,
       districtId: state.userDataReducer.districtId,
+      cityName: state.userDataReducer.cityName,
       districtName: state.userDataReducer.districtName,
     })
   );
@@ -22,8 +23,12 @@ export const useUserData = () => {
     dispatch(setRegionInfoAction(regionId));
   };
 
-  const setDistrictInfo = (districtId: string, districtName: string) => {
-    dispatch(setDistrictInfoAction(districtId, districtName));
+  const setDistrictInfo = (
+    districtId: string,
+    cityName: string,
+    districtName: string
+  ) => {
+    dispatch(setDistrictInfoAction(districtId, cityName, districtName));
   };
 
   const setUserInfo = (userId: string, userName: string) => {

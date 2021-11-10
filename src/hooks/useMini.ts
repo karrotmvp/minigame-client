@@ -1,11 +1,10 @@
 import { useSignAccessToken, useUserData } from 'hooks';
-import { useAnalytics } from 'services/analytics';
 import {
   getMini,
   loadFromEnv as karrotMarketMiniConfig,
 } from 'services/karrotMarket/mini';
 
-export const useKarrotMarketMini = () => {
+export const useMini = () => {
   const mini = getMini();
   const { regionId } = useUserData();
   const { signAccessToken } = useSignAccessToken();

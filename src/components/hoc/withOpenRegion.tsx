@@ -1,28 +1,29 @@
 import { useNavigator } from '@karrotframe/navigator';
 import { useUserData } from 'hooks';
-import React, { useCallback, useEffect, useState } from 'react';
-import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
+import { useCallback, useEffect, useState } from 'react';
+import { useMinigameApi } from 'services/api/minigameApi';
 
 export const withOpenRegion = (WrappedComponent: any) => {
   const OpenRegionCheck = (props: any) => {
-    const karrotRaiseApi = useKarrotRaiseApi();
+    const minigameApi = useMinigameApi();
     const { regionId, setDistrictInfo } = useUserData();
     const { push } = useNavigator();
     const [isOpenRegion, setIsOpenRegion] = useState(true);
 
     const checkOpenRegion = useCallback(async function (
-      karrotRaiseApi: KarrotRaiseApi,
       regionId: string | null
     ) {
       try {
         if (regionId === null) {
           throw new Error('regionId is null. Are you on Web environment?');
         }
-        const { data, status } = await karrotRaiseApi.getTownId(regionId);
+        const {
+          data: { data },
+        } = await minigameApi.townApi().getTownInfoUsingGET(regionId);
+
         // example -> city=서울특별시(name1) district=서초구(name2)
-        if (status === 200) {
-          const { id: districtId, name2: districtName } = data;
-          setDistrictInfo(districtId, districtName);
+        if (data) {
+          setDistrictInfo(data.id, data.name1, data.name2);
           // Filter out if user is not in our service area
           // 서초, 송파, 광진, 강남, 강동 in order
           const openedDistricts = [
@@ -32,7 +33,7 @@ export const withOpenRegion = (WrappedComponent: any) => {
             '9bdfe83b68f3',
             '072985998dd4',
           ];
-          const isMyDistrictOpen = openedDistricts.indexOf(districtId);
+          const isMyDistrictOpen = openedDistricts.indexOf(data.id);
           if (isMyDistrictOpen === -1) {
             setIsOpenRegion(false);
             push(`/non-service-area`);

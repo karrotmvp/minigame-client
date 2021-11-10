@@ -5,6 +5,7 @@ import {
   GameUserApi,
   GameTownApi,
   GamePlayApi,
+  TownApiFactory,
 } from '../../openapi_generator/api';
 import { Configuration } from '../../openapi_generator/configuration';
 import { useAccessToken } from 'hooks';
@@ -14,6 +15,7 @@ function CreateMinigameApi({ accessToken }: { accessToken?: string }) {
   if (accessToken) {
     const configuration = new Configuration({
       apiKey: `Bearer ${accessToken}`,
+      basePath: `https://alpha.daangn-game.com`,
     });
     console.log(configuration);
     const oauth2Api = new Oauth2Api(configuration);
@@ -21,6 +23,7 @@ function CreateMinigameApi({ accessToken }: { accessToken?: string }) {
     const gameUserApi = new GameUserApi(configuration);
     const gameTownApi = new GameTownApi(configuration);
     const gamePlayApi = new GamePlayApi(configuration);
+    const townApi = () => TownApiFactory(configuration);
     console.log(gameUserApi);
     return {
       oauth2Api,
@@ -28,6 +31,7 @@ function CreateMinigameApi({ accessToken }: { accessToken?: string }) {
       gameUserApi,
       gameTownApi,
       gamePlayApi,
+      townApi,
     };
   } else {
     console.log('no access token');
@@ -36,16 +40,18 @@ function CreateMinigameApi({ accessToken }: { accessToken?: string }) {
     const gameUserApi = new GameUserApi();
     const gameTownApi = new GameTownApi();
     const gamePlayApi = new GamePlayApi();
+    const townApi = () => TownApiFactory();
+
     return {
       oauth2Api,
       userApi,
       gameUserApi,
       gameTownApi,
       gamePlayApi,
+      townApi,
     };
   }
 }
-
 
 const MinigameApiContext = createContext<ReturnType<typeof CreateMinigameApi>>(
   null as any

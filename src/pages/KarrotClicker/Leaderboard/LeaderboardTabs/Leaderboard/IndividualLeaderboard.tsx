@@ -2,12 +2,105 @@
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 import { useCallback, useEffect, useState } from 'react';
-import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
 import { RefreshButton } from 'components/Button';
 import { DefaultUserRow, TopUserRow } from '../Row';
-import { WeeklyCountdown } from 'components/Timer';
-import { useCookies } from 'react-cookie';
-import { useKarrotClickerData } from 'pages/KarrotClicker/hooks';
+import { useMyKarrotClickerData } from 'pages/KarrotClicker/hooks';
+import { useMinigameApi } from 'services/api/minigameApi';
+// import { WeeklyCountdown } from 'components/Timer';
+
+export const IndividualLeaderboard: React.FC = () => {
+  const [individualRankData, setIndividualRankData] = useState<any[]>([]);
+  const minigameApi = useMinigameApi();
+  const { gameType, updateMyKarrotClickerData } = useMyKarrotClickerData();
+
+  const updateMyData = useCallback(async () => {
+    const {
+      data: { data },
+    } = await minigameApi.gameUserApi.getMyRankInfoUsingGET(gameType);
+    if (data) {
+      updateMyKarrotClickerData(data.score, data.rank, data.comment);
+    }
+    //
+    console.log('update my data');
+  }, [gameType, minigameApi.gameUserApi, updateMyKarrotClickerData]);
+  const updateIndividualLeaderboard = useCallback(async () => {
+    const {
+      data: { data },
+    } = await minigameApi.gameUserApi.getLeaderBoardByUserUsingGET(gameType);
+    if (data) {
+      const indexedindividualRankData = data.map(
+        (item: any, index: number) => ({
+          rank: index + 1,
+          ...item,
+        })
+      );
+      setIndividualRankData(indexedindividualRankData);
+    }
+    //
+    console.log('update individual leaderboard');
+  }, [gameType, minigameApi.gameUserApi]);
+
+  const refreshLeaderboard = useCallback(() => {
+    updateMyData();
+    updateIndividualLeaderboard();
+  }, []);
+
+  useEffect(() => {
+    refreshLeaderboard();
+    console.log('leaderboard refreshed');
+  }, [refreshLeaderboard]);
+  return (
+    <div css={divStyle}>
+      <Refresh>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'flex-end',
+            gap: '4px',
+          }}
+        >
+          <p>이번 주 랭킹</p>
+
+          {/* <WeeklyCountdown /> */}
+        </div>
+        <RefreshButton handleRefresh={refreshLeaderboard} />
+      </Refresh>
+
+      <LeaderboardWrapper>
+        {individualRankData.slice(0, 10).map((user) => {
+          return (
+            <TopUserRow
+              key={user.userId}
+              rank={user.rank}
+              userName={user.userName}
+              comment={user.comment}
+              score={user.score}
+              districtName={user.town.name2}
+            />
+          );
+        })}
+        <p css={infoText}>
+          🎉 TOP 10 🎉 이 되어서
+          <br />
+          이웃들에게 한 마디를 남겨보세요!
+        </p>
+        {individualRankData.slice(10).map((user) => {
+          return (
+            <DefaultUserRow
+              key={user.userId}
+              rank={user.rank}
+              userName={user.userName}
+              score={user.score}
+              districtName={user.town.name2}
+            />
+          );
+        })}
+      </LeaderboardWrapper>
+    </div>
+  );
+};
 
 const divStyle = css`
   // max-height: inherit;
@@ -63,115 +156,3 @@ const infoText = css`
 
   color: #7c7c7c;
 `;
-
-export const IndividualLeaderboard: React.FC = () => {
-  const [individualRankData, setIndividualRankData] = useState<any[]>([]);
-  const karrotRaiseApi = useKarrotRaiseApi();
-  const { updateKarrotClickerData } = useKarrotClickerData();
-  const [cookies] = useCookies();
-  const getUserData = useCallback(async function (
-    karrotRaiseApi: KarrotRaiseApi,
-    accessToken: string
-  ) {
-    try {
-      const { data, status } = await karrotRaiseApi.getUserInfo(accessToken);
-      if (status === 200) {
-        const { score, rank, comment } = data;
-        updateKarrotClickerData(score, rank, comment);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  },
-  []);
-
-  const getUserLeaderboardData = useCallback(async function (
-    karrotRaiseApi: KarrotRaiseApi
-  ) {
-    try {
-      const { data, status } = await karrotRaiseApi.getUserRank();
-      if (status === 200) {
-        // console.log(response.data);
-        const indexedindividualRankData = data.map(
-          (item: any, index: number) => ({
-            rank: index + 1,
-            ...item,
-          })
-        );
-        setIndividualRankData(indexedindividualRankData);
-        console.log(indexedindividualRankData);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  },
-  []);
-
-  const refreshLeaderboard = useCallback(
-    async (karrotRaiseApi: KarrotRaiseApi, accessToken: string) => {
-      await getUserData(karrotRaiseApi, accessToken);
-      await getUserLeaderboardData(karrotRaiseApi);
-    },
-    [getUserLeaderboardData, getUserData]
-  );
-
-  useEffect(() => {
-    refreshLeaderboard(karrotRaiseApi, cookies.accessToken);
-  }, [cookies.accessToken, karrotRaiseApi, refreshLeaderboard]);
-
-  return (
-    <div css={divStyle}>
-      <Refresh>
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'flex-end',
-            gap: '4px',
-          }}
-        >
-          <p>이번 주 랭킹</p>
-
-          {/* <WeeklyCountdown /> */}
-        </div>
-        <RefreshButton
-          handleRefresh={() =>
-            refreshLeaderboard(karrotRaiseApi, cookies.accessToken)
-          }
-        />
-      </Refresh>
-
-      <LeaderboardWrapper>
-        {individualRankData.slice(0, 10).map((user) => {
-          return (
-            <TopUserRow
-              key={user.userId}
-              rank={user.rank}
-              userName={user.userName}
-              comment={user.comment}
-              score={user.score}
-              districtName={user.town.name2}
-            />
-          );
-        })}
-        <p css={infoText}>
-          🎉 TOP 10 🎉 이 되어서
-          <br />
-          이웃들에게 한 마디를 남겨보세요!
-        </p>
-        {individualRankData.slice(10).map((user) => {
-          return (
-            <DefaultUserRow
-              key={user.userId}
-              rank={user.rank}
-              userName={user.userName}
-              score={user.score}
-              districtName={user.town.name2}
-            />
-          );
-        })}
-      </LeaderboardWrapper>
-    </div>
-  );
-};

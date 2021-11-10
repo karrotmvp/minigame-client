@@ -10,7 +10,7 @@ import { MyInfo } from './MyInfo';
 import { useMinigameApi } from 'services/api/minigameApi';
 import { TownRankResponseDto } from 'services/openapi_generator';
 import { useMyGame2048Data } from '../hooks';
-import { useKarrotMarketMini } from 'hooks';
+import { useMini } from 'hooks';
 import { Refresh } from './Refresh';
 import { useThrottledCallback } from 'use-debounce/lib';
 
@@ -18,7 +18,7 @@ export const Leaderboard = () => {
   const { isTop } = useCurrentScreen();
   const { pop } = useNavigator();
   const minigameApi = useMinigameApi();
-  const { ejectApp, shareApp } = useKarrotMarketMini();
+  const { ejectApp, shareApp } = useMini();
   const { rank, gameType, updateMyGame2048Data } = useMyGame2048Data();
   const [isRanked, setIsRanked] = useState<boolean>(false);
   const [userLeaderboardData, setUserLeaderboardData] = useState<any[]>([]);

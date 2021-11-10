@@ -8,34 +8,37 @@ import { Game2048Leaderboard } from 'pages/Game2048/Leaderboard';
 import { KarrotClickerHome } from 'pages/KarrotClicker/Home';
 import { KarrotClickerGame } from 'pages/KarrotClicker/Game';
 import { KarrotClickerLeaderboard } from 'pages/KarrotClicker/Leaderboard';
+import { NonServiceArea } from 'pages/NonServiceArea';
+
 import {
   createFirebaseAnalytics,
   loadFromEnv as loadFirebaseAnalyticsConfig,
 } from 'services/analytics/firebase';
+import { AnalyticsContext, emptyAnalytics } from 'services/analytics';
+// import {
+//   emptyKarrotRaiseApi,
+//   KarrotRaiseApiContext,
+//   createKarrotRaiseApi,
+//   loadFromEnv as loadKarrotRaiseApiConfig,
+// } from 'services/karrotRaiseApi';
 import {
-  emptyKarrotRaiseApi,
-  KarrotRaiseApiContext,
-} from 'services/karrotRaiseApi';
-import {
-  createKarrotRaiseApi,
-  loadFromEnv as loadKarrotRaiseApiConfig,
-} from 'services/api/karrotRaise';
-import {
-  emptyKarrotMarketMini,
   KarrotMarketMiniContext,
+  emptyKarrotMarketMini,
 } from 'services/karrotMarketMini';
 import {
   createKarrotMarketMini,
   loadFromEnv as loadKarrotMarketMiniConfig,
 } from 'services/karrotMarket/mini';
-import { AnalyticsContext, emptyAnalytics } from 'services/analytics';
-import { NonServiceArea } from 'pages/NonServiceArea';
+
+import { useSignAccessToken, useUserData } from 'hooks';
+import { useMinigameApi } from 'services/api/minigameApi';
 
 const App: React.FC = () => {
-  const { setRegionInfo } = useUserData();
+  const minigameApi = useMinigameApi();
+  const { setRegionInfo, setDistrictInfo } = useUserData();
   const { signAccessToken } = useSignAccessToken();
   const [analytics, setAnalytics] = useState(emptyAnalytics);
-  const [karrotRaiseApi, setKarrotRaiseApi] = useState(emptyKarrotRaiseApi);
+  // const [karrotRaiseApi, setKarrotRaiseApi] = useState(emptyKarrotRaiseApi);
   const [karrotMarketMini, setKarrotMarketMini] = useState(
     emptyKarrotMarketMini
   );
@@ -51,16 +54,16 @@ const App: React.FC = () => {
     }
   }, []);
   // KarrotRaiseApi...
-  useEffect(() => {
-    try {
-      // check karrot-raise api
-      const karrotRaiseApiConfig = loadKarrotRaiseApiConfig();
-      const karrotRaiseApi = createKarrotRaiseApi(karrotRaiseApiConfig);
-      setKarrotRaiseApi(karrotRaiseApi);
-    } catch (error) {
-      console.error(error);
-    }
-  }, []);
+  // useEffect(() => {
+  //   try {
+  //     // check karrot-raise api
+  //     const karrotRaiseApiConfig = loadKarrotRaiseApiConfig();
+  //     const karrotRaiseApi = createKarrotRaiseApi(karrotRaiseApiConfig);
+  //     setKarrotRaiseApi(karrotRaiseApi);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // }, []);
   // Mini...
   useEffect(() => {
     try {
@@ -80,6 +83,18 @@ const App: React.FC = () => {
     const regionId: string | null = searchParams.get('region_id');
     return [code, regionId];
   };
+  const getDistrictInfo = async (regionId: string) => {
+    try {
+      const {
+        data: { data },
+      } = await minigameApi.townApi().getTownInfoUsingGET(regionId);
+      if (data) {
+        setDistrictInfo(data.id, data.name1, data.name2);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   useEffect(() => {
     // if(cookies.accessToken !== undefined) {
@@ -91,6 +106,7 @@ const App: React.FC = () => {
       // handle if code and/or region id does not exist
       if (regionId) {
         setRegionInfo(regionId);
+        getDistrictInfo(regionId);
         if (code) {
           signAccessToken(code, regionId);
         }
@@ -102,36 +118,36 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <KarrotRaiseApiContext.Provider value={karrotRaiseApi}>
-      <AnalyticsContext.Provider value={analytics}>
-        <KarrotMarketMiniContext.Provider value={karrotMarketMini}>
-          <Navigator
-            theme="Cupertino"
-            onClose={() => {
-              console.log('Close button is pressed');
-              karrotMarketMini.close();
-            }}
-          >
-            <Screen path="/" component={KarrotClickerHome} />
-            {/* Game 2048 */}
-            <Screen path="/game-2048" component={Game2048Home} />
-            <Screen path="/game-2048/game" component={Game2048Game} />
-            <Screen
-              path="/game-2048/leaderboard"
-              component={Game2048Leaderboard}
-            />
-            {/* Karrot Clicker */}
-            <Screen path="/karrot-clicker" component={KarrotClickerHome} />
-            <Screen path="/karrot-clicker/game" component={KarrotClickerGame} />
-            <Screen
-              path="/karrot-clicker/leaderboard"
-              component={KarrotClickerLeaderboard}
-            />
-            <Screen path="/non-service-area" component={NonServiceArea} />
-          </Navigator>
-        </KarrotMarketMiniContext.Provider>
-      </AnalyticsContext.Provider>
-    </KarrotRaiseApiContext.Provider>
+    // <KarrotRaiseApiContext.Provider value={karrotRaiseApi}>
+    <AnalyticsContext.Provider value={analytics}>
+      <KarrotMarketMiniContext.Provider value={karrotMarketMini}>
+        <Navigator
+          theme="Cupertino"
+          onClose={() => {
+            console.log('Close button is pressed');
+            karrotMarketMini.close();
+          }}
+        >
+          <Screen path="/" component={KarrotClickerHome} />
+          {/* Game 2048 */}
+          <Screen path="/game-2048" component={Game2048Home} />
+          <Screen path="/game-2048/game" component={Game2048Game} />
+          <Screen
+            path="/game-2048/leaderboard"
+            component={Game2048Leaderboard}
+          />
+          {/* Karrot Clicker */}
+          <Screen path="/karrot-clicker" component={KarrotClickerHome} />
+          <Screen path="/karrot-clicker/game" component={KarrotClickerGame} />
+          <Screen
+            path="/karrot-clicker/leaderboard"
+            component={KarrotClickerLeaderboard}
+          />
+          <Screen path="/non-service-area" component={NonServiceArea} />
+        </Navigator>
+      </KarrotMarketMiniContext.Provider>
+    </AnalyticsContext.Provider>
+    // </KarrotRaiseApiContext.Provider>
   );
 };
 

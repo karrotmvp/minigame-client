@@ -1,14 +1,15 @@
 import styled from '@emotion/styled';
-import { useNavigator } from '@karrotframe/navigator';
+import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
 import { CloseIcon } from 'assets/Icon';
 import { ActiveUserCount } from 'components/ActiveUserCount';
 import { OldButton } from 'components/Button';
 import { Nav } from 'components/Navigation/Nav';
-import { useUserData } from 'hooks';
+import { useAccessToken, useMini, useUserData } from 'hooks';
 import { rem } from 'polished';
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useAnalytics } from 'services/analytics';
-import { useKarrotClickerData } from '../hooks';
+import { useMinigameApi } from 'services/api/minigameApi';
+import { useMyKarrotClickerData } from '../hooks';
 import { LeaderboardTabs } from '../Leaderboard/LeaderboardTabs';
 import { DefaultUserRow, TopUserRow } from '../Leaderboard/LeaderboardTabs/Row';
 
@@ -20,9 +21,10 @@ interface UserScoreExistsProps {
   districtName: string;
 }
 const UserScoreExists: React.FC<UserScoreExistsProps> = (props) => {
+  console.log(props.rank, 's');
   return (
     <>
-      {props.rank <= 10 ? (
+      {props.rank === 0 ? null : props.rank <= 10 ? (
         <TopUserRow
           me={true}
           rank={props.rank}
@@ -46,48 +48,86 @@ const UserScoreExists: React.FC<UserScoreExistsProps> = (props) => {
 
 export const Home = () => {
   const { push } = useNavigator();
+  const { isTop } = useCurrentScreen();
   const analytics = useAnalytics();
-  const { userName, districtName } = useUserData();
-  const { rank, score, comment } = useKarrotClickerData();
+  const karrotMarketMini = useMini();
+  const { userName, districtName, setUserInfo } = useUserData();
+  const {
+    rank,
+    score,
+    comment,
+    setGameTypeToKarrotClicker,
+    updateMyKarrotClickerData,
+  } = useMyKarrotClickerData();
+  const { isInWebEnvironment, handleThirdPartyAgreement } = useMini();
+  const minigameApi = useMinigameApi();
+  const { accessToken } = useAccessToken();
   const goToGamePage = () => {
     push(`/karrot-clicker/game`);
   };
+
   const handleGameStart = () => {
-    analytics.logEvent('click_game_start_button', {
-      user_type: 'returning_user',
-    });
-    goToGamePage();
+    // bypass in web environment
+    if (isInWebEnvironment) {
+      console.log('bypass in web environment: home-page to game-page');
+      goToGamePage();
+    } else {
+      if (accessToken) {
+        // if access token exists, user is not new
+        goToGamePage();
+      } else {
+        // if user is new, open third-party agreement preset
+        handleThirdPartyAgreement();
+        // executes if user agrees third-party agreement
+        analytics.logEvent('click_karrot_mini_preset_agree_button', {
+          game_type: 'karrot-clicker',
+        });
+        console.log(
+        );
+        goToGamePage();
+      }
+    }
   };
 
-  useEffect(() => {
-    // getUserData(karrotRaiseApi, accessToken);
-    analytics.logEvent('view_returning_user_home_page');
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // =================================================================================================
+  const leaveMiniApp = () => {
+    karrotMarketMini.ejectApp();
+  };
+  const goToKarrotClicker = useCallback(async () => {
+    setGameTypeToKarrotClicker();
+    const {
+      data: { data },
+    } = await minigameApi.gameUserApi.getMyRankInfoUsingGET('GAME_KARROT');
+    if (data) {
+      setUserInfo(data.id, data.nickname);
+      updateMyKarrotClickerData(data.score, data.rank, data.comment);
+    }
+  }, [
+    minigameApi.gameUserApi,
+    setGameTypeToKarrotClicker,
+    setUserInfo,
+    updateMyKarrotClickerData,
+  ]);
 
   // leave mini app
   const leaveMiniApp = () => {};
   return (
     <Page className="karrot-clicker-home-page">
-      <Nav appendLeft={<CloseIcon />} />
+      <Nav appendLeft={<CloseIcon />} onClickLeft={leaveMiniApp} />
       <Banner className="banner">
         {/* <BannerImage /> */}
         {/* <img src={BannerImage} /> */}
       </Banner>
       <MyRow>
-        {
-          rank !== null ? (
-            <UserScoreExists
-              userName={userName!}
-              rank={rank!}
-              score={score!}
-              comment={comment!}
-              districtName={districtName!}
-            />
-          ) : null
-          // <UserScoreNull userName={useruserName} />
-        }
+        {rank !== null ? (
+          <UserScoreExists
+            userName={userName!}
+            rank={rank!}
+            score={score!}
+            comment={comment!}
+            districtName={districtName!}
+          />
+        ) : null}
       </MyRow>
       <LeaderboardTabs />
       <div
@@ -95,7 +135,7 @@ export const Home = () => {
           position: 'absolute',
           bottom: '90px',
           right: '24px',
-          zIndex: 101,
+          zIndex: 10100,
         }}
       >
         <ActiveUserCount gameType="GAME_KARROT" />

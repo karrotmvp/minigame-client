@@ -3,9 +3,83 @@ import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 import { RefreshButton } from 'components/Button';
 import { useCallback, useEffect, useState } from 'react';
-import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
 import { DefaultDistrictRow, TopDistrictRow } from '../Row';
-import { WeeklyCountdown } from 'components/Timer';
+// import { WeeklyCountdown } from 'components/Timer';
+import { useMinigameApi } from 'services/api/minigameApi';
+import { useMyKarrotClickerData } from 'pages/KarrotClicker/hooks';
+
+export const DistrictLeaderboard: React.FC = () => {
+  const minigameApi = useMinigameApi();
+  const { gameType } = useMyKarrotClickerData();
+  const [districtRankData, setDistrictRankData] = useState<any[]>([]);
+
+  const updateDistrictLeaderboard = useCallback(async () => {
+    const {
+      data: { data },
+    } = await minigameApi.gameTownApi.getLeaderBoardByTownUsingGET(gameType);
+    if (data) {
+      const indexedDistrictRankData = data.map((item: any, index: number) => ({
+        rank: index + 1,
+        ...item,
+      }));
+      setDistrictRankData(indexedDistrictRankData);
+    }
+    console.log('update district leaderboard');
+  }, [gameType, minigameApi.gameTownApi]);
+
+  useEffect(() => {
+    updateDistrictLeaderboard();
+  }, [updateDistrictLeaderboard]);
+
+  return (
+    <div css={divStyle}>
+      <Refresh>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'flex-end',
+            gap: '4px',
+          }}
+        >
+          <p>이번 주 랭킹</p>
+          {/* <WeeklyCountdown /> */}
+        </div>
+        <RefreshButton handleRefresh={updateDistrictLeaderboard} />
+      </Refresh>
+
+      <div css={leaderboardWrapperStyle}>
+        {districtRankData.slice(0, 10).map((district) => {
+          return (
+            <TopDistrictRow
+              key={district.name2}
+              rank={district.rank}
+              cityName={district.name1}
+              districtName={district.name2}
+              playerCount={district.playerCount}
+              // participant={district.participant}
+              score={district.score}
+            />
+          );
+        })}
+
+        {districtRankData.slice(10).map((district) => {
+          return (
+            <DefaultDistrictRow
+              key={district.name2}
+              rank={district.rank}
+              cityName={district.name1}
+              districtName={district.name2}
+              playerCount={district.playerCount}
+              score={district.score}
+            />
+          );
+        })}
+      </div>
+    </div>
+  );
+};
 
 const divStyle = css`
   max-height: inherit;
@@ -46,91 +120,3 @@ const leaderboardWrapperStyle = css`
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
 `;
-
-export const DistrictLeaderboard: React.FC = () => {
-  const [districtRankData, setDistrictRankData] = useState<any[]>([]);
-  const karrotRaiseApi = useKarrotRaiseApi();
-
-  const getDistrictLeaderboardData = useCallback(
-    async (karrotRaiseApi: KarrotRaiseApi) => {
-      try {
-        const { data, status } = await karrotRaiseApi.getDistrictRank();
-        if (status === 200) {
-          const indexedDistrictRankData = data.map(
-            (item: any, index: number) => ({
-              rank: index + 1,
-              ...item,
-            })
-          );
-
-          setDistrictRankData(indexedDistrictRankData);
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    },
-    []
-  );
-
-  const refreshLeaderboard = useCallback(
-    async (karrotRaiseApi: KarrotRaiseApi) => {
-      await getDistrictLeaderboardData(karrotRaiseApi);
-    },
-    [getDistrictLeaderboardData]
-  );
-
-  useEffect(() => {
-    refreshLeaderboard(karrotRaiseApi);
-  }, [karrotRaiseApi, refreshLeaderboard]);
-
-  return (
-    <div css={divStyle}>
-      <Refresh>
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'flex-end',
-            gap: '4px',
-          }}
-        >
-          <p>이번 주 랭킹</p>
-          {/* <WeeklyCountdown /> */}
-        </div>
-        <RefreshButton
-          handleRefresh={() => refreshLeaderboard(karrotRaiseApi)}
-        />
-      </Refresh>
-
-      <div css={leaderboardWrapperStyle}>
-        {districtRankData.slice(0, 10).map((district) => {
-          return (
-            <TopDistrictRow
-              key={district.name2}
-              rank={district.rank}
-              cityName={district.name1}
-              districtName={district.name2}
-              playerCount={district.playerCount}
-              // participant={district.participant}
-              score={district.score}
-            />
-          );
-        })}
-
-        {districtRankData.slice(10).map((district) => {
-          return (
-            <DefaultDistrictRow
-              key={district.name2}
-              rank={district.rank}
-              cityName={district.name1}
-              districtName={district.name2}
-              playerCount={district.playerCount}
-              score={district.score}
-            />
-          );
-        })}
-      </div>
-    </div>
-  );
-};
