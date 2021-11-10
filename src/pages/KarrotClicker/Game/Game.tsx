@@ -91,6 +91,19 @@ export const Game = () => {
     }
   }, [analytics, score]);
 
+  useEffect(() => {
+    if (isTop) {
+      analytics.logEvent('view_game_page', { game_type: 'karrot-clicker' });
+    }
+  }, [analytics, isTop]);
+
+  // const unblock = history.block((location, action) => {
+  //   if (action === 'POP') {
+  //     setIsPaused(true);
+  //     return false;
+  //   }
+  //   return undefined;
+  // });
   // useEffect(() => {
   //   console.log('aaaaasasfasfas');
   //   if (isTop) {

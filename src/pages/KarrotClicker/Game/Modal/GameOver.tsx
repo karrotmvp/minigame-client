@@ -5,6 +5,7 @@ import { ReactComponent as Karrot } from 'assets/svg/KarrotClicker/small_circle_
 import { useEffect, useState } from 'react';
 import ReactModal from 'react-modal';
 import { commafy } from 'utils/functions/numberFunctions';
+import { useAnalytics } from 'services/analytics';
 import useClickCounter from 'pages/KarrotClicker/hooks/useClickCounter';
 import { OldButton } from 'components/Button';
 import { CommentModal } from './CommentModal';
@@ -20,6 +21,7 @@ type Props = {
 };
 export const GameOver: React.FC<Props> = (props) => {
   const { isTop } = useCurrentScreen();
+  const analytics = useAnalytics();
   const minigameApi = useMinigameApi();
   const { push } = useNavigator();
   const { isInWebEnvironment } = useMini();
@@ -50,11 +52,43 @@ export const GameOver: React.FC<Props> = (props) => {
     if (data) {
       updateMyKarrotClickerData(data.score, data.rank, data.comment);
       if (data.rank <= 10) {
+        analytics.logEvent('click_game_end_button', {
+          game_type: 'karrot-clicker',
+          score: clickCount,
+          rank: data.rank,
+          is_top_user: true,
+          button_type: 'game_over',
+        });
+        console.log(
+          `${analytics.logEvent('click_game_end_button', {
+            game_type: 'karrot-clicker',
+            score: clickCount,
+            rank: data.rank,
+            is_top_user: true,
+            button_type: 'game_over',
+          })}`
+        );
         // close game-over-modal
         props.setIsGameOver(false);
         // open-comment-modal
         setShouldModalOpen(true);
       } else {
+        analytics.logEvent('click_game_end_button', {
+          game_type: 'karrot-clicker',
+          score: clickCount,
+          rank: data.rank,
+          is_top_user: false,
+          button_type: 'game_over',
+        });
+        console.log(
+          `${analytics.logEvent('click_game_end_button', {
+            game_type: 'karrot-clicker',
+            score: clickCount,
+            rank: data.rank,
+            is_top_user: false,
+            button_type: 'game_over',
+          })}`
+        );
         // close-game-over-modal
         props.setIsGameOver(false);
         //
@@ -65,6 +99,18 @@ export const GameOver: React.FC<Props> = (props) => {
     }
   };
 
+  useEffect(() => {
+    if (isTop) {
+      analytics.logEvent('view_game_over_modal', {
+        game_type: 'karrot-clicker',
+      });
+      console.log(
+        `${analytics.logEvent('view_game_over_modal', {
+          game_type: 'karrot-clicker',
+        })}`
+      );
+    }
+  }, [analytics, isTop]);
   return (
     <>
       <Karrot />

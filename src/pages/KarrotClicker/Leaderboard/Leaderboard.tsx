@@ -51,6 +51,13 @@ export const Leaderboard = () => {
     const text =
       '우리동네에서 나는 몇 등? 당근모아를 플레이 하고 동네 이웃들에게 한 마디를 남겨보세요!';
     karrotMarketMini.shareApp(url, text);
+    analytics.logEvent('click_share_button', {
+      game_type: 'karrot-clicker',
+    });
+    console.log(
+      `${analytics.logEvent('click_share_button', {
+        game_type: 'karrot-clicker',
+      })}`
     );
   };
 
@@ -64,10 +71,18 @@ export const Leaderboard = () => {
   }, [gameType, minigameApi.gameUserApi, updateMyKarrotClickerData]);
 
   useEffect(() => {
-    analytics.logEvent('view_leaderboard_page');
-    getUserData(karrotRaiseApi, cookies.accessToken);
-  }, [analytics, cookies.accessToken, getUserData, karrotRaiseApi]);
-
+    if (isTop) {
+      getMyData();
+      analytics.logEvent('view_leaderboard_page', {
+        game_type: 'karrot-clicker',
+      });
+      console.log(
+        `${analytics.logEvent('view_leaderboard_page', {
+          game_type: 'karrot-clicker',
+        })}`
+      );
+    }
+  }, []);
   return (
     <Page className="">
       <Nav appendLeft={<CloseIcon />} onClickLeft={leaveMiniApp} />

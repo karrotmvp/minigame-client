@@ -74,15 +74,38 @@ export const Home = () => {
     } else {
       if (accessToken) {
         // if access token exists, user is not new
+        analytics.logEvent('click_game_start_button', {
+          game_type: 'karrot-clicker',
+          is_new_user: false,
+        });
+        console.log(
+          `${analytics.logEvent('click_game_start_button', {
+            game_type: 'karrot-clicker',
+            is_new_user: false,
+          })}`
+        );
         goToGamePage();
       } else {
         // if user is new, open third-party agreement preset
+        analytics.logEvent('click_game_start_button', {
+          game_type: 'karrot-clicker',
+          is_new_user: true,
+        });
+        console.log(
+          `${analytics.logEvent('click_game_start_button', {
+            game_type: 'karrot-clicker',
+            is_new_user: true,
+          })}`
+        );
         handleThirdPartyAgreement();
         // executes if user agrees third-party agreement
         analytics.logEvent('click_karrot_mini_preset_agree_button', {
           game_type: 'karrot-clicker',
         });
         console.log(
+          `${analytics.logEvent('click_karrot_mini_preset_agree_button', {
+            game_type: 'karrot-clicker',
+          })}`
         );
         goToGamePage();
       }
@@ -92,6 +115,7 @@ export const Home = () => {
   // =================================================================================================
   const leaveMiniApp = () => {
     karrotMarketMini.ejectApp();
+    analytics.logEvent('click_leave_mini_app_button');
   };
   const goToKarrotClicker = useCallback(async () => {
     setGameTypeToKarrotClicker();
@@ -109,8 +133,20 @@ export const Home = () => {
     updateMyKarrotClickerData,
   ]);
 
-  // leave mini app
-  const leaveMiniApp = () => {};
+  useEffect(() => {
+    if (isTop) {
+      analytics.logEvent('view_home_page', {
+        game_type: 'karrot-clicker',
+      });
+      console.log(
+        `${analytics.logEvent('view_home_page', {
+          game_type: 'karrot-clicker',
+        })}`
+      );
+      goToKarrotClicker();
+    }
+  }, [isTop, analytics]);
+  // =================================================================================================
   return (
     <Page className="karrot-clicker-home-page">
       <Nav appendLeft={<CloseIcon />} onClickLeft={leaveMiniApp} />

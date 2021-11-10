@@ -8,6 +8,7 @@ import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
 import { useUserData } from 'hooks';
 import { useMyKarrotClickerData } from 'pages/KarrotClicker/hooks';
 import { useMinigameApi } from 'services/api/minigameApi';
+import { useAnalytics } from 'services/analytics';
 
 type Props = {
   rank: number;
@@ -18,6 +19,7 @@ export const CommentModal: React.FC<Props> = (props) => {
   const { isTop } = useCurrentScreen();
   const { push } = useNavigator();
   const minigameApi = useMinigameApi();
+  const analytics = useAnalytics();
   const { score, rank, updateMyKarrotClickerData } = useMyKarrotClickerData();
   const [currentComment, setCurrentComment] = useState({
     comment: props.comment,
@@ -42,10 +44,34 @@ export const CommentModal: React.FC<Props> = (props) => {
       comment: currentComment.comment,
     });
     updateMyKarrotClickerData(score, rank, currentComment.comment);
+    analytics.logEvent('click_submit_comment_button', {
+      game_type: 'karrot-clicker',
+      score: score,
+      rank: rank,
+    });
+    console.log(
+      `${analytics.logEvent('click_submit_comment_button', {
+        game_type: 'karrot-clicker',
+        score: score,
+        rank: rank,
+      })}`
+    );
     // close comment modal
     props.setShouldModalOpen(false);
     goToLeaderboardPage();
   };
+  useEffect(() => {
+    if (isTop) {
+      analytics.logEvent('view_comment_modal', {
+        game_type: 'karrot-clicker',
+      });
+      console.log(
+        `${analytics.logEvent('view_comment_modal', {
+          game_type: 'karrot-clicker',
+        })}`
+      );
+    }
+  }, [analytics, isTop]);
 
   return (
     <>

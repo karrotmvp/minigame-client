@@ -5,6 +5,7 @@ import { ReactComponent as Karrot } from 'assets/svg/KarrotClicker/small_circle_
 import React, { useEffect, useState } from 'react';
 import ReactModal from 'react-modal';
 import { commafy } from 'utils/functions/numberFunctions';
+import { useAnalytics } from 'services/analytics';
 import useClickCounter from 'pages/KarrotClicker/hooks/useClickCounter';
 import { OldButton } from 'components/Button';
 import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
@@ -20,6 +21,7 @@ interface GamePauseProps {
 }
 export const GamePause: React.FC<GamePauseProps> = (props) => {
   const { isTop } = useCurrentScreen();
+  const analytics = useAnalytics();
   const minigameApi = useMinigameApi();
   const { push } = useNavigator();
   const { clickCount } = useClickCounter();
@@ -59,11 +61,43 @@ export const GamePause: React.FC<GamePauseProps> = (props) => {
       if (data) {
         updateMyKarrotClickerData(data.score, data.rank, data.comment);
         if (data.rank <= 10) {
+          analytics.logEvent('click_game_end_button', {
+            game_type: 'karrot-clicker',
+            score: clickCount,
+            rank: data.rank,
+            is_top_user: true,
+            button_type: 'game_end',
+          });
+          console.log(
+            `${analytics.logEvent('click_game_end_button', {
+              game_type: 'karrot-clicker',
+              score: clickCount,
+              rank: data.rank,
+              is_top_user: true,
+              button_type: 'game_end',
+            })}`
+          );
           // close pause-modal
           props.setIsPaused(false);
           // open comment-modal
           setShouldModalOpen(true);
         } else {
+          analytics.logEvent('click_game_end_button', {
+            game_type: 'karrot-clicker',
+            score: clickCount,
+            rank: data.rank,
+            is_top_user: false,
+            button_type: 'game_end',
+          });
+          console.log(
+            `${analytics.logEvent('click_game_end_button', {
+              game_type: 'karrot-clicker',
+              score: clickCount,
+              rank: data.rank,
+              is_top_user: false,
+              button_type: 'game_end',
+            })}`
+          );
           // close pause-modal
           props.setIsPaused(false);
           //
@@ -75,6 +109,18 @@ export const GamePause: React.FC<GamePauseProps> = (props) => {
     }
   };
 
+  useEffect(() => {
+    if (isTop) {
+      analytics.logEvent('view_game_pause_modal', {
+        game_type: 'karrot-clicker',
+      });
+      console.log(
+        `${analytics.logEvent('view_game_pause_modal', {
+          game_type: 'karrot-clicker',
+        })}`
+      );
+    }
+  }, [analytics, isTop]);
   return (
     <>
       <Karrot />
