@@ -11,9 +11,9 @@ export const ActiveUserCount: React.FC<Props> = (props) => {
   const { isTop } = useCurrentScreen();
   const minigameApi = useMinigameApi();
   const [dailyUserCount, setDailyUserCount] = useState<number>(0);
-
+  console.log(props.gameType);
   const getDailyUserCount = useCallback(async () => {
-    const { data } = await minigameApi.gamePlayApi.getUserCountByDailyUsingGET(
+    const { data } = await minigameApi.gameUserApi.getUserCountByDailyUsingGET(
       props.gameType
     );
     if (data.data) {

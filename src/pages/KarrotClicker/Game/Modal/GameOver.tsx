@@ -6,15 +6,15 @@ import { useEffect, useState } from 'react';
 import ReactModal from 'react-modal';
 import { commafy } from 'utils/functions/numberFunctions';
 import { useAnalytics } from 'services/analytics';
-import useClickCounter from 'pages/KarrotClicker/hooks/useClickCounter';
 import { OldButton } from 'components/Button';
 import { CommentModal } from './CommentModal';
 import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
 import { useMyKarrotClickerData } from 'pages/KarrotClicker/hooks';
 import { useMinigameApi } from 'services/api/minigameApi';
 import { useMini } from 'hooks';
+import useClickCounter from '../hooks/useClickCounter';
 
-// Modal.setAppElement(document.createElement('div'));
+ReactModal.setAppElement(document.createElement('div'));
 
 type Props = {
   setIsGameOver: React.Dispatch<React.SetStateAction<boolean>>;
@@ -23,16 +23,22 @@ export const GameOver: React.FC<Props> = (props) => {
   const { isTop } = useCurrentScreen();
   const analytics = useAnalytics();
   const minigameApi = useMinigameApi();
-  const { push } = useNavigator();
+  const { push, replace } = useNavigator();
   const { isInWebEnvironment } = useMini();
   const { clickCount } = useClickCounter();
-  const { gameType, score, rank, comment, updateMyKarrotClickerData } =
-    useMyKarrotClickerData();
+  const {
+    gameType,
+    score,
+    rank,
+    comment,
+    updateMyKarrotClickerData,
+    updateMyComment,
+  } = useMyKarrotClickerData();
   const [shouldModalOpen, setShouldModalOpen] = useState<boolean>(false);
 
   // Page navigation
   const goToLeaderboardPage = () => {
-    push(`/karrot-clicker/leaderboard`);
+    replace(`/karrot-clicker/leaderboard`);
   };
 
   const handleViewLeaderboard = async () => {
@@ -43,59 +49,52 @@ export const GameOver: React.FC<Props> = (props) => {
       props.setIsGameOver(false);
       goToLeaderboardPage();
     }
-    await minigameApi.gamePlayApi.updateScoreUsingPATCH(gameType, {
-      score: clickCount,
-    });
-    const {
-      data: { data },
-    } = await minigameApi.gameUserApi.getMyRankInfoUsingGET(gameType);
-    if (data) {
-      updateMyKarrotClickerData(data.score, data.rank, data.comment);
-      if (data.rank <= 10) {
-        analytics.logEvent('click_game_end_button', {
-          game_type: 'karrot-clicker',
-          score: clickCount,
-          rank: data.rank,
-          is_top_user: true,
-          button_type: 'game_over',
-        });
-        console.log(
-          `${analytics.logEvent('click_game_end_button', {
-            game_type: 'karrot-clicker',
-            score: clickCount,
-            rank: data.rank,
-            is_top_user: true,
-            button_type: 'game_over',
-          })}`
-        );
-        // close game-over-modal
-        props.setIsGameOver(false);
-        // open-comment-modal
-        setShouldModalOpen(true);
-      } else {
-        analytics.logEvent('click_game_end_button', {
-          game_type: 'karrot-clicker',
-          score: clickCount,
-          rank: data.rank,
-          is_top_user: false,
-          button_type: 'game_over',
-        });
-        console.log(
-          `${analytics.logEvent('click_game_end_button', {
-            game_type: 'karrot-clicker',
-            score: clickCount,
-            rank: data.rank,
-            is_top_user: false,
-            button_type: 'game_over',
-          })}`
-        );
-        // close-game-over-modal
-        props.setIsGameOver(false);
-        //
-        goToLeaderboardPage();
+    try {
+      await minigameApi.gamePlayApi.updateScoreUsingPATCH('GAME_KARROT', {
+        score: clickCount,
+      });
+      const {
+        data: { data },
+      } = await minigameApi.gameUserApi.getMyRankInfoUsingGET('GAME_KARROT');
+      console.log(data);
+      // close game-over-modal
+      props.setIsGameOver(false);
+      if (data) {
+        if (data.score && data.rank) {
+          updateMyKarrotClickerData(data.score, data.rank);
+          console.log(data);
+          if (data.rank <= 10 && data.rank > 0) {
+            analytics.logEvent('click_game_end_button', {
+              game_type: 'karrot-clicker',
+              score: clickCount,
+              rank: data.rank,
+              is_top_user: true,
+              button_type: 'game_over',
+            });
+            console.log('comment modal should open');
+            // open-comment-modal
+            setShouldModalOpen(true);
+          } else {
+            analytics.logEvent('click_game_end_button', {
+              game_type: 'karrot-clicker',
+              score: clickCount,
+              rank: data.rank,
+              is_top_user: false,
+              button_type: 'game_over',
+            });
+
+            // close-game-over-modal
+            // props.setIsGameOver(false);
+            //
+            goToLeaderboardPage();
+          }
+        } else {
+          alert('warning. no data');
+          // handle what if response data from db deson't exist?
+        }
       }
-    } else {
-      // handle what if response data from db deson't exist?
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -155,8 +154,8 @@ export const GameOver: React.FC<Props> = (props) => {
         }}
       >
         <CommentModal
-          rank={rank}
-          comment={comment}
+          // rank={rank}
+          // comment={comment}
           setShouldModalOpen={setShouldModalOpen}
         />
       </ReactModal>

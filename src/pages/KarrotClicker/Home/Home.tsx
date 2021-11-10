@@ -21,7 +21,6 @@ interface UserScoreExistsProps {
   districtName: string;
 }
 const UserScoreExists: React.FC<UserScoreExistsProps> = (props) => {
-  console.log(props.rank, 's');
   return (
     <>
       {props.rank === 0 ? null : props.rank <= 10 ? (
@@ -58,6 +57,7 @@ export const Home = () => {
     comment,
     setGameTypeToKarrotClicker,
     updateMyKarrotClickerData,
+    updateMyComment,
   } = useMyKarrotClickerData();
   const { isInWebEnvironment, handleThirdPartyAgreement } = useMini();
   const minigameApi = useMinigameApi();
@@ -78,12 +78,6 @@ export const Home = () => {
           game_type: 'karrot-clicker',
           is_new_user: false,
         });
-        console.log(
-          `${analytics.logEvent('click_game_start_button', {
-            game_type: 'karrot-clicker',
-            is_new_user: false,
-          })}`
-        );
         goToGamePage();
       } else {
         // if user is new, open third-party agreement preset
@@ -91,22 +85,13 @@ export const Home = () => {
           game_type: 'karrot-clicker',
           is_new_user: true,
         });
-        console.log(
-          `${analytics.logEvent('click_game_start_button', {
-            game_type: 'karrot-clicker',
-            is_new_user: true,
-          })}`
-        );
+
         handleThirdPartyAgreement();
         // executes if user agrees third-party agreement
         analytics.logEvent('click_karrot_mini_preset_agree_button', {
           game_type: 'karrot-clicker',
         });
-        console.log(
-          `${analytics.logEvent('click_karrot_mini_preset_agree_button', {
-            game_type: 'karrot-clicker',
-          })}`
-        );
+
         goToGamePage();
       }
     }
@@ -123,27 +108,29 @@ export const Home = () => {
       data: { data },
     } = await minigameApi.gameUserApi.getMyRankInfoUsingGET('GAME_KARROT');
     if (data) {
-      setUserInfo(data.id, data.nickname);
-      updateMyKarrotClickerData(data.score, data.rank, data.comment);
+      if (data.score && data.rank) {
+        updateMyKarrotClickerData(data.score, data.rank);
+        console.log(score);
+      }
+      if (data.comment) {
+        updateMyComment(data.comment);
+      }
     }
   }, [
     minigameApi.gameUserApi,
+    score,
     setGameTypeToKarrotClicker,
-    setUserInfo,
+    updateMyComment,
     updateMyKarrotClickerData,
   ]);
 
   useEffect(() => {
     if (isTop) {
+      goToKarrotClicker();
+
       analytics.logEvent('view_home_page', {
         game_type: 'karrot-clicker',
       });
-      console.log(
-        `${analytics.logEvent('view_home_page', {
-          game_type: 'karrot-clicker',
-        })}`
-      );
-      goToKarrotClicker();
     }
   }, [isTop, analytics]);
   // =================================================================================================
@@ -155,15 +142,22 @@ export const Home = () => {
         {/* <img src={BannerImage} /> */}
       </Banner>
       <MyRow>
-        {rank !== null ? (
+        <UserScoreExists
+          userName={userName}
+          rank={rank}
+          score={score}
+          comment={comment}
+          districtName={districtName}
+        />
+        {score === 0 ? null : (
           <UserScoreExists
-            userName={userName!}
-            rank={rank!}
-            score={score!}
-            comment={comment!}
-            districtName={districtName!}
+            userName={userName}
+            rank={rank}
+            score={score}
+            comment={comment}
+            districtName={districtName}
           />
-        ) : null}
+        )}
       </MyRow>
       <LeaderboardTabs />
       <div

@@ -6,15 +6,16 @@ import React, { useEffect, useState } from 'react';
 import ReactModal from 'react-modal';
 import { commafy } from 'utils/functions/numberFunctions';
 import { useAnalytics } from 'services/analytics';
-import useClickCounter from 'pages/KarrotClicker/hooks/useClickCounter';
 import { OldButton } from 'components/Button';
 import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
 import { useMyKarrotClickerData } from 'pages/KarrotClicker/hooks';
 import { useMini } from 'hooks';
 import { useMinigameApi } from 'services/api/minigameApi';
 import { CommentModal } from '.';
+import useClickCounter from '../hooks/useClickCounter';
+import { useGame } from '../hooks';
 
-// Modal.setAppElement(document.createElement('div'));
+ReactModal.setAppElement(document.createElement('div'));
 
 interface GamePauseProps {
   setIsPaused: React.Dispatch<React.SetStateAction<boolean>>;
@@ -23,27 +24,32 @@ export const GamePause: React.FC<GamePauseProps> = (props) => {
   const { isTop } = useCurrentScreen();
   const analytics = useAnalytics();
   const minigameApi = useMinigameApi();
-  const { push } = useNavigator();
+  const { push, replace } = useNavigator();
+  // const { push } = useHistory();
   const { clickCount } = useClickCounter();
   const { isInWebEnvironment } = useMini();
   const { gameType, score, rank, comment, updateMyKarrotClickerData } =
     useMyKarrotClickerData();
   const [shouldModalOpen, setShouldModalOpen] = useState<boolean>(false);
+  const { pauseGame } = useGame();
 
   // Page navigation
   const goToLeaderboardPage = () => {
-    push(`/karrot-clicker/leaderboard`);
+    replace(`/karrot-clicker/leaderboard`);
   };
 
   // Button handler
   const handleContinue = () => {
     props.setIsPaused(false);
+    console.log('continue');
     analytics.logEvent('click_game_continue_button', {
       game_type: 'karrot-clicker',
     });
   };
 
   const handleGameEnd = async () => {
+    // pauseGame();
+    console.log(isInWebEnvironment);
     if (isInWebEnvironment) {
       console.log(
         'bypass in web environment: game-pause-modal to leaderboard-page'
@@ -51,16 +57,23 @@ export const GamePause: React.FC<GamePauseProps> = (props) => {
       props.setIsPaused(false);
 
       goToLeaderboardPage();
-    } else {
-      await minigameApi.gamePlayApi.updateScoreUsingPATCH(gameType, {
+      return;
+    }
+    try {
+      minigameApi.gamePlayApi.updateScoreUsingPATCH('GAME_KARROT', {
         score: clickCount,
       });
       const {
         data: { data },
-      } = await minigameApi.gameUserApi.getMyRankInfoUsingGET(gameType);
-      if (data) {
-        updateMyKarrotClickerData(data.score, data.rank, data.comment);
-        if (data.rank <= 10) {
+      } = await minigameApi.gameUserApi.getMyRankInfoUsingGET('GAME_KARROT');
+      console.log(data);
+
+      props.setIsPaused(false);
+
+      if (data && data.rank && data.score) {
+        console.log(data, data.score, data.rank);
+        updateMyKarrotClickerData(data.score, data.rank);
+        if (data.rank > 0 && data.rank <= 10) {
           analytics.logEvent('click_game_end_button', {
             game_type: 'karrot-clicker',
             score: clickCount,
@@ -68,49 +81,30 @@ export const GamePause: React.FC<GamePauseProps> = (props) => {
             is_top_user: true,
             button_type: 'game_end',
           });
-          console.log(
-            `${analytics.logEvent('click_game_end_button', {
-              game_type: 'karrot-clicker',
-              score: clickCount,
-              rank: data.rank,
-              is_top_user: true,
-              button_type: 'game_end',
-            })}`
-          );
+
           // close pause-modal
-          props.setIsPaused(false);
+          // props.setIsPaused(false);
           // open comment-modal
           setShouldModalOpen(true);
         } else {
-          analytics.logEvent('click_game_end_button', {
-            game_type: 'karrot-clicker',
-            score: clickCount,
-            rank: data.rank,
-            is_top_user: false,
-            button_type: 'game_end',
-          });
-          console.log(
-            `${analytics.logEvent('click_game_end_button', {
-              game_type: 'karrot-clicker',
-              score: clickCount,
-              rank: data.rank,
-              is_top_user: false,
-              button_type: 'game_end',
-            })}`
-          );
           // close pause-modal
-          props.setIsPaused(false);
+          console.log('success');
+          // props.setIsPaused(false);
           //
+
           goToLeaderboardPage();
         }
       } else {
         // handle what if response data from db deson't exist?
       }
+    } catch (error) {
+      console.error(error);
     }
   };
 
   useEffect(() => {
     if (isTop) {
+      console.log('istop');
       analytics.logEvent('view_game_pause_modal', {
         game_type: 'karrot-clicker',
       });
@@ -120,7 +114,17 @@ export const GamePause: React.FC<GamePauseProps> = (props) => {
         })}`
       );
     }
-  }, [analytics, isTop]);
+    // return () => {
+    //   if (rank <= 10 && rank > 0) {
+    //     props.setIsPaused(true);
+    //   } else {
+    //     console.log('1');
+    //     props.setIsPaused(false);
+    //     console.log('2');
+    //     goToLeaderboardPage();
+    //   }
+    // };
+  }, [analytics, goToLeaderboardPage, isTop, props, rank]);
   return (
     <>
       <Karrot />
@@ -171,8 +175,8 @@ export const GamePause: React.FC<GamePauseProps> = (props) => {
         }}
       >
         <CommentModal
-          rank={rank}
-          comment={comment}
+          // rank={rank}
+          // comment={comment}
           setShouldModalOpen={setShouldModalOpen}
         />
       </ReactModal>

@@ -11,25 +11,31 @@ import { useMinigameApi } from 'services/api/minigameApi';
 import { useAnalytics } from 'services/analytics';
 
 type Props = {
-  rank: number;
-  comment: string;
+  // rank: number;
+  // comment: string;
   setShouldModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 export const CommentModal: React.FC<Props> = (props) => {
   const { isTop } = useCurrentScreen();
-  const { push } = useNavigator();
+  const { push, replace } = useNavigator();
   const minigameApi = useMinigameApi();
   const analytics = useAnalytics();
-  const { score, rank, updateMyKarrotClickerData } = useMyKarrotClickerData();
+  const {
+    score,
+    rank,
+    comment: prevComment,
+    updateMyKarrotClickerData,
+    updateMyComment,
+  } = useMyKarrotClickerData();
   const [currentComment, setCurrentComment] = useState({
-    comment: props.comment,
-    length: props.comment.length,
+    comment: prevComment,
+    length: prevComment.length,
   });
-  const { gameType } = useMyKarrotClickerData();
+  // const { gameType } = useMyKarrotClickerData();
   const { districtName } = useUserData();
   // Page navigation
   const goToLeaderboardPage = () => {
-    push(`/karrot-clicker/leaderboard`);
+    replace(`/karrot-clicker/leaderboard`);
   };
 
   const handleCommentInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -40,36 +46,26 @@ export const CommentModal: React.FC<Props> = (props) => {
   };
 
   const handleUpdateComment = () => {
-    minigameApi.gamePlayApi.addCommentUsingPATCH(gameType, {
+    minigameApi.gamePlayApi.addCommentUsingPATCH('GAME_KARROT', {
       comment: currentComment.comment,
     });
-    updateMyKarrotClickerData(score, rank, currentComment.comment);
+    updateMyKarrotClickerData(score, rank);
+    updateMyComment(currentComment.comment);
     analytics.logEvent('click_submit_comment_button', {
       game_type: 'karrot-clicker',
       score: score,
       rank: rank,
     });
-    console.log(
-      `${analytics.logEvent('click_submit_comment_button', {
-        game_type: 'karrot-clicker',
-        score: score,
-        rank: rank,
-      })}`
-    );
     // close comment modal
     props.setShouldModalOpen(false);
     goToLeaderboardPage();
   };
   useEffect(() => {
     if (isTop) {
+      console.log(rank, prevComment);
       analytics.logEvent('view_comment_modal', {
         game_type: 'karrot-clicker',
       });
-      console.log(
-        `${analytics.logEvent('view_comment_modal', {
-          game_type: 'karrot-clicker',
-        })}`
-      );
     }
   }, [analytics, isTop]);
 
@@ -82,8 +78,7 @@ export const CommentModal: React.FC<Props> = (props) => {
       >
         <span css={emphasizedTextStyle}>축하해요!</span>
         <br />
-        <span css={emphasizedTextStyle}>{props.rank}위</span>로 순위권에
-        들었어요!
+        <span css={emphasizedTextStyle}>{rank}위</span>로 순위권에 들었어요!
       </h1>
       <hr css={horizontalLine} />
       <p css={infoText}>

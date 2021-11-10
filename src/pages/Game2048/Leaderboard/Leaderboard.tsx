@@ -8,7 +8,6 @@ import { Nav } from 'components/Navigation/Nav';
 import { CloseIcon } from 'assets/Icon';
 import { MyInfo } from './MyInfo';
 import { useMinigameApi } from 'services/api/minigameApi';
-import { TownRankResponseDto } from 'services/openapi_generator';
 import { useMyGame2048Data } from '../hooks';
 import { useMini } from 'hooks';
 import { Refresh } from './Refresh';
@@ -42,7 +41,7 @@ export const Leaderboard = () => {
     const {
       data: { data },
     } = await minigameApi.gameUserApi.getMyRankInfoUsingGET(gameType);
-    if (data) {
+    if (data && data.score && data.rank && data.comment) {
       updateMyGame2048Data(data.score, data.rank!, data.comment);
     }
   };
@@ -71,12 +70,10 @@ export const Leaderboard = () => {
       data: { data },
     } = await minigameApi.gameTownApi.getLeaderBoardByTownUsingGET(gameType);
     if (data) {
-      const indexedDistrictRankData = data.map(
-        (item: TownRankResponseDto, index: number) => ({
-          rank: index + 1,
-          ...item,
-        })
-      );
+      const indexedDistrictRankData = data.map((item: any, index: number) => ({
+        rank: index + 1,
+        ...item,
+      }));
       setDistrictLeaderboardData(indexedDistrictRankData);
     }
   }, [gameType, minigameApi]);

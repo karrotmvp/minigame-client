@@ -18,7 +18,9 @@ export const IndividualLeaderboard: React.FC = () => {
       data: { data },
     } = await minigameApi.gameUserApi.getMyRankInfoUsingGET(gameType);
     if (data) {
-      updateMyKarrotClickerData(data.score, data.rank, data.comment);
+      if (data.score && data.rank) {
+        updateMyKarrotClickerData(data.score, data.rank);
+      }
     }
     //
     console.log('update my data');

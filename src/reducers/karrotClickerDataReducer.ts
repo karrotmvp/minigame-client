@@ -1,16 +1,18 @@
 export const UPDATE_GAME_DATA = 'karrotClickerData/UPDATE_GAME_DATA' as const;
 export const SET_GAME_TYPE = 'karrotClickerData/SET_GAME_TYPE' as const;
-export const updateUserGameDataAction = (
-  score: number,
-  rank: number,
-  comment: string
-) => ({
+export const UPDATE_COMMENT = 'karrotClickerData/UPDATE_COMMENT' as const;
+
+export const updateUserGameDataAction = (score: number, rank: number) => ({
   type: UPDATE_GAME_DATA,
   payload: {
     score,
     rank,
-    comment,
   },
+});
+
+export const updateUserCommentAction = (comment: string) => ({
+  type: UPDATE_COMMENT,
+  payload: { comment },
 });
 
 export const setGameTypeAction = (gameType: string) => ({
@@ -20,7 +22,8 @@ export const setGameTypeAction = (gameType: string) => ({
 
 type KarrotClickerDataAction =
   | ReturnType<typeof updateUserGameDataAction>
-  | ReturnType<typeof setGameTypeAction>;
+  | ReturnType<typeof setGameTypeAction>
+  | ReturnType<typeof updateUserCommentAction>;
 
 type KarrotClickerDataState = {
   score: number;
@@ -46,6 +49,10 @@ const KarrotClickerDataReducer = (
         ...state,
         score: action.payload.score,
         rank: action.payload.rank,
+      };
+    case UPDATE_COMMENT:
+      return {
+        ...state,
         comment: action.payload.comment,
       };
     case SET_GAME_TYPE:

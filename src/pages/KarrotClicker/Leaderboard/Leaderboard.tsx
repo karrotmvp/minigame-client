@@ -2,7 +2,6 @@ import styled from '@emotion/styled';
 import { useCallback, useEffect } from 'react';
 import { useAnalytics } from 'services/analytics';
 import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
-import useClickCounter from 'pages/KarrotClicker/hooks/useClickCounter';
 import { OldButton } from 'components/Button';
 import { DefaultUserRow, TopUserRow } from './LeaderboardTabs/Row';
 import { LeaderboardTabs } from './LeaderboardTabs';
@@ -11,9 +10,11 @@ import { useMyKarrotClickerData } from '../hooks';
 import { useMinigameApi } from 'services/api/minigameApi';
 import { Nav } from 'components/Navigation/Nav';
 import { CloseIcon } from 'assets/Icon';
+import useClickCounter from '../Game/hooks/useClickCounter';
+import { useGame } from '../Game/hooks';
 
 export const Leaderboard = () => {
-  const { push, pop } = useNavigator();
+  const { push, pop, replace } = useNavigator();
   const { isTop } = useCurrentScreen();
   const analytics = useAnalytics();
   const minigameApi = useMinigameApi();
@@ -22,10 +23,11 @@ export const Leaderboard = () => {
   const { gameType, score, rank, comment, updateMyKarrotClickerData } =
     useMyKarrotClickerData();
   const { onResetCount } = useClickCounter();
+  const { startGame } = useGame();
 
   // Page navigation
   const goToGamePage = () => {
-    pop();
+    replace(`/karrot-clicker/game`);
   };
   const leaveMiniApp = () => {
     karrotMarketMini.ejectApp();
@@ -42,8 +44,9 @@ export const Leaderboard = () => {
         game_type: 'karrot-clicker',
       })}`
     );
-    // onResetCount();
+
     goToGamePage();
+    startGame();
   };
 
   const handleShare = () => {
@@ -66,7 +69,9 @@ export const Leaderboard = () => {
       data: { data },
     } = await minigameApi.gameUserApi.getMyRankInfoUsingGET(gameType);
     if (data) {
-      updateMyKarrotClickerData(data.score, data.rank, data.comment);
+      if (data.score && data.rank) {
+        updateMyKarrotClickerData(data.score, data.rank);
+      }
     }
   }, [gameType, minigameApi.gameUserApi, updateMyKarrotClickerData]);
 
