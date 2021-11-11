@@ -1,6 +1,4 @@
-import { useNavigator } from '@karrotframe/navigator';
 import { useAccessToken, useSignAccessToken, useUserData } from 'hooks';
-import { useCallback } from 'react';
 import { useAnalytics } from 'services/analytics';
 import { useMinigameApi } from 'services/api/minigameApi';
 import {

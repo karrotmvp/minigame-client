@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Modal from 'react-modal';
 import { commafy } from 'utils/functions/numberFunctions';
 import { useAnalytics } from 'services/analytics';
@@ -13,18 +13,13 @@ import { useCurrentScreen } from '@karrotframe/navigator';
 import { useMyKarrotClickerData } from '../hooks';
 import { GameOver, GamePause } from './Modal';
 import { useGame } from './hooks';
-import { useHistory } from 'react-router';
-import { useMinigameApi } from 'services/api/minigameApi';
-import { useAccessToken, useUserData } from 'hooks';
 
 Modal.setAppElement(document.createElement('div'));
 
 export const Game = () => {
   const { isTop } = useCurrentScreen();
   const analytics = useAnalytics();
-  const minigameApi = useMinigameApi();
-  const { accessToken } = useAccessToken();
-  const { setUserInfo } = useUserData();
+
   const { score } = useMyKarrotClickerData();
   const {
     clickCount,

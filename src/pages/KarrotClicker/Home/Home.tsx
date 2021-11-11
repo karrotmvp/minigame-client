@@ -54,7 +54,7 @@ export const Home = () => {
   const analytics = useAnalytics();
   const { accessToken } = useAccessToken();
   const { ejectApp, isInWebEnvironment, handleThirdPartyAgreement } = useMini();
-  const { nickname, districtName, setUserInfo } = useUserData();
+  const { nickname, districtName } = useUserData();
   const {
     rank,
     score,

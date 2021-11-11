@@ -1,6 +1,5 @@
-import { useUserData } from 'hooks';
 import { useCookies } from 'react-cookie';
-import { useAnalytics } from 'services/analytics';
+
 import { useMinigameApi } from 'services/api/minigameApi';
 
 export const useAccessToken = () => {
