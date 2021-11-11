@@ -29,7 +29,7 @@ export const ActiveUserCount: React.FC<Props> = (props) => {
   }, [getDailyUserCount, isTop, props.gameType]);
   return (
     <SpeechBalloon gameType={props.gameType}>
-      <span>{dailyUserCount}</span>명이 플레이 중!
+      <span>{dailyUserCount}명</span>이 플레이 중!
     </SpeechBalloon>
   );
 };
@@ -78,5 +78,7 @@ const SpeechBalloon = styled.div<{ gameType: 'GAME_KARROT' | 'GAME_2048' }>`
   span {
     font-family: Cafe24Ssurround;
     font-weight: bold;
+    font-size: ${rem(10)};
+    line-height: 161.7%;
   }
 `;

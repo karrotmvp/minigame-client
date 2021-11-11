@@ -13,6 +13,7 @@ import { useMyKarrotClickerData } from 'pages/KarrotClicker/hooks';
 import { useMinigameApi } from 'services/api/minigameApi';
 import { useMini } from 'hooks';
 import { useGame } from '../hooks';
+import { rem } from 'polished';
 
 ReactModal.setAppElement(document.createElement('div'));
 
@@ -41,6 +42,7 @@ export const GameOver: React.FC<Props> = (props) => {
       );
       props.setIsGameOver(false);
       goToLeaderboardPage();
+      return;
     }
     try {
       await minigameApi.gamePlayApi.updateScoreUsingPATCH('GAME_KARROT', {
@@ -98,13 +100,15 @@ export const GameOver: React.FC<Props> = (props) => {
         css={[largeTextStyle, largeText]}
         style={{ textAlign: 'center', flex: '0 1 auto' }}
       >
-        <span css={emphasizedTextStyle}>{commafy(clickCount)}개</span>
+        <span css={[emphasizedTextStyle, largeText]}>
+          {commafy(clickCount)}개
+        </span>
         의 당근을
         <br />
         수확했어요!
       </h1>
       <hr css={horizontalLine} />
-      <p css={totalKarrotText}>총 당근 {commafy(score! + clickCount)}개</p>
+      <p css={totalKarrotText}>총 당근 {commafy(score + clickCount)}개</p>
       <div
         style={{
           width: `100%`,
@@ -165,6 +169,14 @@ const modalStyle = css`
 `;
 const largeText = css`
   margin: 15px 0;
+  font-style: normal;
+  font-weight: bold;
+  font-size: ${rem(22)};
+  line-height: 161.7%;
+  /* or 36px */
+
+  text-align: center;
+  letter-spacing: -0.03em;
 `;
 const horizontalLine = css`
   display: block;

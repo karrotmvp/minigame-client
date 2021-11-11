@@ -20,8 +20,6 @@ const oldButtonStyle = ({ size, color }: any) => css`
   border: none;
   border-radius: 10px;
   padding: 10px 10px;
-  // position: relative
-  // z-index: 100;
 
   font-style: normal;
   font-weight: bold;
@@ -59,9 +57,20 @@ const oldButtonStyle = ({ size, color }: any) => css`
 
         `
       : null
-  }
+  };
 
-  
+  //  padding: 0;
+  //   font: inherit;
+  //   outline: none;
+  //   user-select: none;
+  //   display: flex;
+  //   justify-content: center;
+  //   align-items: center;
+
+  &:active {
+    // outline: none;
+
+   -moz-user-select
   }
 `;
 

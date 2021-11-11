@@ -1,6 +1,18 @@
 import styled from '@emotion/styled';
-// import { RefreshIcon } from 'assets/Icon';
-import { ReactComponent as RefreshIcon } from 'assets/svg/refresh_icon.svg';
+import RefreshIconUrl from 'assets/svg/refresh_icon.svg';
+
+interface RefreshButtonProps {
+  handleRefresh: () => void;
+}
+
+export const RefreshButton: React.FC<RefreshButtonProps> = (props) => {
+  return (
+    <Button onClick={props.handleRefresh}>
+      <img src={RefreshIconUrl} alt="" />
+    </Button>
+  );
+};
+
 const Button = styled.button`
   border: none;
   background: none;
@@ -21,15 +33,3 @@ const Button = styled.button`
     -webkit-tap-highlight-color: transparent;
   }
 `;
-
-interface RefreshButtonProps {
-  handleRefresh: () => void;
-}
-
-export const RefreshButton: React.FC<RefreshButtonProps> = (props) => {
-  return (
-    <Button onClick={props.handleRefresh}>
-      <RefreshIcon />
-    </Button>
-  );
-};

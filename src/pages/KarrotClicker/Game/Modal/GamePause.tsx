@@ -116,7 +116,7 @@ export const GamePause: React.FC<GamePauseProps> = (props) => {
         수확했어요!
       </h1>
       <hr css={horizontalLine} />
-      <p css={totalKarrotText}>총 당근 {commafy(score! + clickCount)}개</p>
+      <p css={totalKarrotText}>총 당근 {commafy(score + clickCount)}개</p>
       <div
         style={{
           width: `100%`,
