@@ -1,7 +1,9 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { emphasizedTextStyle, largeTextStyle } from 'styles/textStyle';
-import { ReactComponent as Karrot } from 'assets/svg/KarrotClicker/small_circle_karrot.svg';
+// import { ReactComponent as Karrot } from 'assets/svg/KarrotClicker/small_circle_karrot.svg';
+import karrotImageUrl from 'assets/svg/KarrotClicker/small_circle_karrot.svg';
+
 import React, { useEffect, useState } from 'react';
 import ReactModal from 'react-modal';
 import { commafy } from 'utils/functions/numberFunctions';
@@ -14,6 +16,7 @@ import { useMinigameApi } from 'services/api/minigameApi';
 import { CommentModal } from '.';
 
 import { useGame } from '../hooks';
+import { rem } from 'polished';
 
 ReactModal.setAppElement(document.createElement('div'));
 
@@ -53,7 +56,6 @@ export const GamePause: React.FC<GamePauseProps> = (props) => {
       console.log(
         'bypass in web environment: game-pause-modal to leaderboard-page'
       );
-
       goToLeaderboardPage();
       return;
     }
@@ -100,12 +102,15 @@ export const GamePause: React.FC<GamePauseProps> = (props) => {
   }, [analytics, isTop]);
   return (
     <>
-      <Karrot />
+      {/* <Karrot /> */}
+      <img src={karrotImageUrl} alt="" />
       <h1
         css={[largeTextStyle, largeText]}
         style={{ textAlign: 'center', flex: '0 1 auto' }}
       >
-        <span css={emphasizedTextStyle}>{commafy(clickCount)}개</span>
+        <span css={[emphasizedTextStyle, largeText]}>
+          {commafy(clickCount)}개
+        </span>
         의 당근을
         <br />
         수확했어요!
@@ -178,6 +183,14 @@ const modalStyle = css`
 `;
 const largeText = css`
   margin: 15px 0;
+  font-style: normal;
+  font-weight: bold;
+  font-size: ${rem(22)};
+  line-height: 161.7%;
+  /* or 36px */
+
+  text-align: center;
+  letter-spacing: -0.03em;
 `;
 const horizontalLine = css`
   display: block;

@@ -13,6 +13,7 @@ import { useGame } from '../Game/hooks';
 import { useMyKarrotClickerData } from '../hooks';
 import { LeaderboardTabs } from '../Leaderboard/LeaderboardTabs';
 import { DefaultUserRow, TopUserRow } from '../Leaderboard/LeaderboardTabs/Row';
+import { ReactComponent as BannerImage } from 'assets/svg/KarrotClicker/top.svg';
 
 interface UserScoreExistsProps {
   nickname: string;
@@ -144,8 +145,11 @@ export const Home = () => {
     <Page className="karrot-clicker-home-page">
       <Nav appendLeft={<CloseIcon />} onClickLeft={leaveMiniApp} />
       <Banner className="banner">
-        {/* <BannerImage /> */}
-        {/* <img src={BannerImage} /> */}
+        <BannerImage
+          style={{
+            backgroundSize: `100% 100%`,
+          }}
+        />
       </Banner>
       <MyRow>
         {score === 0 ? null : (
@@ -188,12 +192,8 @@ const Page = styled.div`
   background: #faf5f4;
 `;
 const Banner = styled.div`
-  display: flex;
-  flex-flow: column;
-  justify-content: center;
-  align-items: center;
-  padding-bottom: 1rem;
-  // width: 100px;
+  margin-top: -5rem;
+  margin-bottom: -1rem;
 `;
 
 const MyRow = styled.div`

@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
-import { RefreshIcon } from 'assets/Icon';
-
+// import { RefreshIcon } from 'assets/Icon';
+import { ReactComponent as RefreshIcon } from 'assets/svg/refresh_icon.svg';
 const Button = styled.button`
   border: none;
   background: none;

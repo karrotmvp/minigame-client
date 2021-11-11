@@ -1,7 +1,9 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { emphasizedTextStyle, largeTextStyle } from 'styles/textStyle';
-import { ReactComponent as Karrot } from 'assets/svg/KarrotClicker/small_circle_karrot.svg';
+// import { ReactComponent as Karrot } from 'assets/svg/KarrotClicker/small_circle_karrot.svg';
+import karrotImageUrl from 'assets/svg/KarrotClicker/small_circle_karrot.svg';
+
 import React, { useEffect, useState } from 'react';
 import { OldButton, OldDisabledButton } from 'components/Button';
 import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
@@ -9,6 +11,7 @@ import { useUserData } from 'hooks';
 import { useMyKarrotClickerData } from 'pages/KarrotClicker/hooks';
 import { useMinigameApi } from 'services/api/minigameApi';
 import { useAnalytics } from 'services/analytics';
+import { rem } from 'polished';
 
 type Props = {
   setShouldModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -68,14 +71,16 @@ export const CommentModal: React.FC<Props> = (props) => {
 
   return (
     <>
-      <Karrot />
+      {/* <Karrot /> */}
+      <img src={karrotImageUrl} alt="" />
       <h1
         css={[largeTextStyle, largeText]}
         style={{ textAlign: 'center', flex: '0 1 auto' }}
       >
-        <span css={emphasizedTextStyle}>축하해요!</span>
+        <span css={[emphasizedTextStyle, largeText]}>축하해요!</span>
         <br />
-        <span css={emphasizedTextStyle}>{rank}위</span>로 순위권에 들었어요!
+        <span css={[emphasizedTextStyle, largeText]}>{rank}위</span>로 순위권에
+        들었어요!
       </h1>
       <hr css={horizontalLine} />
       <p css={infoText}>
@@ -113,6 +118,14 @@ export const CommentModal: React.FC<Props> = (props) => {
 
 const largeText = css`
   margin: 15px 0;
+  font-style: normal;
+  font-weight: bold;
+  font-size: ${rem(22)};
+  line-height: 161.7%;
+  /* or 36px */
+
+  text-align: center;
+  letter-spacing: -0.03em;
 `;
 const horizontalLine = css`
   display: block;

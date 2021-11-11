@@ -11,6 +11,7 @@ import { useMinigameApi } from 'services/api/minigameApi';
 import { Nav } from 'components/Navigation/Nav';
 import { CloseIcon } from 'assets/Icon';
 import { useGame } from '../Game/hooks';
+import { rem } from 'polished';
 
 export const Leaderboard = () => {
   const { replace } = useNavigator();
@@ -137,9 +138,8 @@ const Page = styled.div`
 `;
 const Heading = styled.div`
   margin: 0 26px 20px;
-
   font-family: Cafe24SsurroundAir;
-  font-size: 22px;
+  font-size: ${rem(22)};
   font-style: normal;
   line-height: 161.7%;
   /* or 36px */
@@ -151,7 +151,13 @@ const Heading = styled.div`
 
 const EmphasizedSpan = styled.span`
   font-family: Cafe24Ssurround;
+  font-style: normal;
   font-weight: bold;
+  font-size: ${rem(22)};
+  line-height: 161.7%;
+  /* or 36px */
+
+  letter-spacing: -0.02em;
 
   color: #eb5d0e;
 `;
