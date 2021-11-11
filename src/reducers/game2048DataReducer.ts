@@ -16,7 +16,9 @@ export const updateUserGameDataAction = (
 
 export const setGameTypeAction = (gameType: 'GAME_KARROT' | 'GAME_2048') => ({
   type: SET_GAME_TYPE,
-  payload: { gameType },
+  payload: {
+    gameType,
+  },
 });
 
 type Game2048DataAction =

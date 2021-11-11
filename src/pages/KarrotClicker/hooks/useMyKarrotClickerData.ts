@@ -9,10 +9,10 @@ import { RootState } from 'reducers/rootReducer';
 export const useMyKarrotClickerData = () => {
   const { score, rank, comment, gameType } = useSelector(
     (state: RootState) => ({
-      score: state.game2048DataReducer.score,
-      rank: state.game2048DataReducer.rank,
-      comment: state.game2048DataReducer.comment,
-      gameType: state.game2048DataReducer.gameType,
+      score: state.karrotClickerDataReducer.score,
+      rank: state.karrotClickerDataReducer.rank,
+      comment: state.karrotClickerDataReducer.comment,
+      gameType: state.karrotClickerDataReducer.gameType,
     })
   );
   const dispatch = useDispatch();

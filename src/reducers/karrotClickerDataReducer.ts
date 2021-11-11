@@ -15,9 +15,11 @@ export const updateUserCommentAction = (comment: string) => ({
   payload: { comment },
 });
 
-export const setGameTypeAction = (gameType: string) => ({
+export const setGameTypeAction = (gameType: 'GAME_KARROT' | 'GAME_2048') => ({
   type: SET_GAME_TYPE,
-  payload: { gameType },
+  payload: {
+    gameType,
+  },
 });
 
 type KarrotClickerDataAction =
@@ -29,14 +31,14 @@ type KarrotClickerDataState = {
   score: number;
   rank: number;
   comment: string;
-  gameType: string;
+  gameType: 'GAME_KARROT' | 'GAME_2048';
 };
 
 const initialState: KarrotClickerDataState = {
   score: 0,
   rank: 0,
   comment: '',
-  gameType: '',
+  gameType: 'GAME_KARROT',
 };
 
 const KarrotClickerDataReducer = (
