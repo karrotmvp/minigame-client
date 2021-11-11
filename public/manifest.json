@@ -1,6 +1,6 @@
 {
-  "short_name": "Karrot Raise",
-  "name": "Minigame: Karrot Raise",
+  "short_name": "Minigame",
+  "name": "Minigame",
   "start_url": ".",
   "display": "standalone",
   "theme_color": "#ffffff",
