@@ -14,17 +14,23 @@ export const DistrictLeaderboard: React.FC = () => {
   const [districtRankData, setDistrictRankData] = useState<any[]>([]);
 
   const updateDistrictLeaderboard = useCallback(async () => {
-    const {
-      data: { data },
-    } = await minigameApi.gameTownApi.getLeaderBoardByTownUsingGET(gameType);
-    if (data) {
-      const indexedDistrictRankData = data.map((item: any, index: number) => ({
-        rank: index + 1,
-        ...item,
-      }));
-      setDistrictRankData(indexedDistrictRankData);
+    try {
+      const {
+        data: { data },
+      } = await minigameApi.gameTownApi.getLeaderBoardByTownUsingGET(gameType);
+      if (data) {
+        const indexedDistrictRankData = data.map(
+          (item: any, index: number) => ({
+            rank: index + 1,
+            ...item,
+          })
+        );
+        setDistrictRankData(indexedDistrictRankData);
+      }
+      console.log('update district leaderboard');
+    } catch (error) {
+      console.error(error);
     }
-    console.log('update district leaderboard');
   }, [gameType, minigameApi.gameTownApi]);
 
   useEffect(() => {

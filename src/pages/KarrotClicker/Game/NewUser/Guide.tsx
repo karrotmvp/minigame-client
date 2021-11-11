@@ -2,6 +2,9 @@
 import { css } from '@emotion/react';
 import { ReactComponent as PointingFinger } from 'assets/svg/KarrotClicker/pointing_finger.svg';
 import { OldButton } from 'components/Button/Button';
+import { useUserData } from 'hooks';
+import { useAnalytics } from 'services/analytics';
+import { useMinigameApi } from 'services/api/minigameApi';
 import { useGame } from '../hooks';
 
 const directionText = css`
@@ -20,9 +23,25 @@ type Props = {
   setIsUserNew: React.Dispatch<React.SetStateAction<boolean>>;
 };
 export const Guide: React.FC<Props> = (props) => {
+  const analytics = useAnalytics();
+  const minigameApi = useMinigameApi();
+  const { setUserInfo } = useUserData();
   const { updateAnimationPlayState, isPaused } = useGame();
 
+  const updateUserInfo = async () => {
+    const {
+      data: { data },
+    } = await minigameApi.userApi.getUserInfoUsingGET();
+    if (data) {
+      setUserInfo(data.id, data.nickname);
+      // FA: track user with set user id
+      analytics.setUserId(data.id);
+      console.log('setuserinfo', data.id, data.nickname);
+    }
+  };
+
   const handleCloseGuide = () => {
+    updateUserInfo();
     props.setIsUserNew(false);
     console.log(isPaused);
     updateAnimationPlayState('running');

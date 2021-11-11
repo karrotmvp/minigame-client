@@ -38,18 +38,6 @@ export const Game = () => {
   const [isGameOver, setIsGameOver] = useState<boolean>(false);
   const [isUserNew, setIsUserNew] = useState<boolean>(false);
 
-  const updateUserInfo = useCallback(async () => {
-    const {
-      data: { data },
-    } = await minigameApi.userApi.getUserInfoUsingGET();
-    if (data) {
-      setUserInfo(data.id, data.nickname);
-      // FA: track user with set user id
-      analytics.setUserId(data.id);
-      console.log('setuserinfo', data.id, data.nickname);
-    }
-  }, [analytics, minigameApi.userApi, setUserInfo]);
-
   // User clicks pause button
   const handlePause = () => {
     shouldPause(true);
@@ -76,10 +64,7 @@ export const Game = () => {
       console.log('is top?', isTop);
       analytics.logEvent('view_game_page', { game_type: 'karrot-clicker' });
     }
-    if (!accessToken) {
-      updateUserInfo();
-    }
-  }, [analytics, isTop, accessToken]);
+  }, [analytics, isTop]);
 
   return (
     <>

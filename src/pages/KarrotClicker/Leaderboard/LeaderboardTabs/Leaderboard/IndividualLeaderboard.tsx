@@ -14,33 +14,43 @@ export const IndividualLeaderboard: React.FC = () => {
   const { gameType, updateMyKarrotClickerData } = useMyKarrotClickerData();
 
   const updateMyData = useCallback(async () => {
-    const {
-      data: { data },
-    } = await minigameApi.gameUserApi.getMyRankInfoUsingGET(gameType);
-    if (data) {
-      if (data.score && data.rank) {
-        updateMyKarrotClickerData(data.score, data.rank);
+    try {
+      const {
+        data: { data },
+      } = await minigameApi.gameUserApi.getMyRankInfoUsingGET(gameType);
+      if (data) {
+        if (data.score && data.rank) {
+          updateMyKarrotClickerData(data.score, data.rank);
+        }
       }
+      console.log('update my data');
+    } catch (error) {
+      console.log('no access token');
+      console.error(error);
     }
+
     //
-    console.log('update my data');
   }, [gameType, minigameApi.gameUserApi, updateMyKarrotClickerData]);
   const updateIndividualLeaderboard = useCallback(async () => {
-    const {
-      data: { data },
-    } = await minigameApi.gameUserApi.getLeaderBoardByUserUsingGET(gameType);
-    if (data) {
-      const indexedindividualRankData = data.map(
-        (item: any, index: number) => ({
-          rank: index + 1,
-          ...item,
-        })
-      );
-      setIndividualRankData(() => indexedindividualRankData);
-      console.log(indexedindividualRankData);
+    try {
+      const {
+        data: { data },
+      } = await minigameApi.gameUserApi.getLeaderBoardByUserUsingGET(gameType);
+      if (data) {
+        const indexedindividualRankData = data.map(
+          (item: any, index: number) => ({
+            rank: index + 1,
+            ...item,
+          })
+        );
+        setIndividualRankData(() => indexedindividualRankData);
+        console.log(indexedindividualRankData);
+      }
+      //
+      console.log('update individual leaderboard');
+    } catch (error) {
+      console.error(error);
     }
-    //
-    console.log('update individual leaderboard');
   }, [gameType, minigameApi.gameUserApi]);
 
   const refreshLeaderboard = useCallback(() => {

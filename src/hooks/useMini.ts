@@ -1,6 +1,8 @@
 import { useNavigator } from '@karrotframe/navigator';
 import { useAccessToken, useSignAccessToken, useUserData } from 'hooks';
+import { useCallback } from 'react';
 import { useAnalytics } from 'services/analytics';
+import { useMinigameApi } from 'services/api/minigameApi';
 import {
   getMini,
   loadFromEnv as karrotMarketMiniConfig,
@@ -9,12 +11,25 @@ import {
 export const useMini = () => {
   const mini = getMini();
   const analytics = useAnalytics();
-  const { regionId } = useUserData();
-
+  const minigameApi = useMinigameApi();
+  const { regionId, setUserInfo } = useUserData();
+  const { accessToken } = useAccessToken();
   const { signAccessToken } = useSignAccessToken();
   const presetUrl = karrotMarketMiniConfig().presetUrl;
   const appId = karrotMarketMiniConfig().appId;
-  const { push } = useNavigator();
+
+  const updateUserInfo = async () => {
+    const {
+      data: { data },
+    } = await minigameApi.userApi.getUserInfoUsingGET();
+    if (data) {
+      setUserInfo(data.id, data.nickname);
+      // FA: track user with set user id
+      analytics.setUserId(data.id);
+      console.log('setuserinfo', data.id, data.nickname);
+    }
+  };
+
   const isInWebEnvironment = (() => {
     if (mini.environment === 'Web') {
       return true;
@@ -27,7 +42,7 @@ export const useMini = () => {
     mini.close();
   };
 
-  const handleThirdPartyAgreement = (runOnSuccess: () => void) => {
+  const handleThirdPartyAgreement = async (runOnSuccess: () => void) => {
     mini.startPreset({
       preset: presetUrl!,
       params: {
@@ -50,7 +65,10 @@ export const useMini = () => {
           runOnSuccess();
         }
       },
-      onClose: function () {},
+      onClose: function () {
+        console.log('accesstoken from preset', accessToken);
+        updateUserInfo();
+      },
       onFailure: function () {},
     });
   };

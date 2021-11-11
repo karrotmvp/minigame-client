@@ -67,7 +67,8 @@ export const Home = () => {
   const goToGamePage = () => {
     push(`/karrot-clicker/game`);
   };
-  // const updateUserInfo = async () => {
+
+  // const updateUserInfo = useCallback(async () => {
   //   const {
   //     data: { data },
   //   } = await minigameApi.userApi.getUserInfoUsingGET();
@@ -77,7 +78,8 @@ export const Home = () => {
   //     analytics.setUserId(data.id);
   //     console.log('setuserinfo', data.id, data.nickname);
   //   }
-  // };
+  // }, [analytics, minigameApi.userApi, setUserInfo]);
+
   const handleReturningUser = () => {
     // if access token exists, user is not new
     analytics.logEvent('click_game_start_button', {
@@ -118,6 +120,7 @@ export const Home = () => {
       handleNewUser();
       // updateUserInfo();
       // goToGamePage();
+      // updateUserInfo();
     }
   };
   // =================================================================================================

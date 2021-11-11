@@ -24,7 +24,7 @@ function CreateMinigameApi({
       apiKey: `Bearer ${accessToken}`,
       basePath: env.baseUrl,
     });
-    console.log(configuration);
+
     const oauth2Api = new Oauth2Api(configuration);
     const userApi = new UserApi(configuration);
     const gameUserApi = new GameUserApi(configuration);

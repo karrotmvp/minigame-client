@@ -27,9 +27,9 @@ export const useAccessToken = () => {
 // }, [analytics, minigameApi.userApi, setUserInfo]);
 
 export const useSignAccessToken = () => {
-  const analytics = useAnalytics();
+  // const analytics = useAnalytics();
   const minigameApi = useMinigameApi();
-  const { setUserInfo } = useUserData();
+  // const { setUserInfo } = useUserData();
   const [, setCookies] = useCookies(['accessToken']);
 
   const signAccessToken = async (code: string, regionId: string) => {
