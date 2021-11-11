@@ -22,7 +22,7 @@ function CreateMinigameApi({
   if (accessToken) {
     const configuration = new Configuration({
       apiKey: `Bearer ${accessToken}`,
-      basePath: env.baseUrl || `${process.env.REACT_APP_BASE_URL}`,
+      basePath: env.baseUrl,
     });
     console.log(configuration);
     const oauth2Api = new Oauth2Api(configuration);
