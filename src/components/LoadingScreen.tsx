@@ -38,15 +38,17 @@ const mainText = css`
   margin-bottom: 18px;
 `;
 
-const LoadingScreen = () => {
+export const LoadingScreen = () => {
   return (
     <>
       <div css={backgroundStyle}>
         <WaitSvg css={svgStyle} />
-        <h1 css={mainText}>로딩 중...</h1>
+        <h1 css={mainText}>점검중 이에요</h1>
+        <p>
+          보다 재밌는 서비스를 제공하기 위해
+          <br /> 점검을 진행하고 있어요...
+        </p>
       </div>
     </>
   );
 };
-
-export default LoadingScreen;
