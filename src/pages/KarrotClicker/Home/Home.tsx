@@ -14,7 +14,7 @@ import { LeaderboardTabs } from '../Leaderboard/LeaderboardTabs';
 import { DefaultUserRow, TopUserRow } from '../Leaderboard/LeaderboardTabs/Row';
 
 interface UserScoreExistsProps {
-  userName: string;
+  nickname: string;
   rank: number;
   score: number;
   comment: string;
@@ -27,7 +27,7 @@ const UserScoreExists: React.FC<UserScoreExistsProps> = (props) => {
         <TopUserRow
           me={true}
           rank={props.rank}
-          userName={props.userName}
+          nickname={props.nickname}
           score={props.score}
           comment={props.comment}
           districtName={props.districtName}
@@ -36,7 +36,7 @@ const UserScoreExists: React.FC<UserScoreExistsProps> = (props) => {
         <DefaultUserRow
           me={true}
           rank={props.rank}
-          userName={props.userName}
+          nickname={props.nickname}
           score={props.score}
           districtName={props.districtName}
         />
@@ -50,7 +50,7 @@ export const Home = () => {
   const { isTop } = useCurrentScreen();
   const analytics = useAnalytics();
   const karrotMarketMini = useMini();
-  const { userName, districtName, setUserInfo } = useUserData();
+  const { nickname, districtName, setUserInfo } = useUserData();
   const {
     rank,
     score,
@@ -144,7 +144,7 @@ export const Home = () => {
       <MyRow>
         {score === 0 ? null : (
           <UserScoreExists
-            userName={userName}
+            nickname={nickname}
             rank={rank}
             score={score}
             comment={comment}

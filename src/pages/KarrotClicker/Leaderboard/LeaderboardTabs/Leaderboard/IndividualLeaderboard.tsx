@@ -36,7 +36,8 @@ export const IndividualLeaderboard: React.FC = () => {
           ...item,
         })
       );
-      setIndividualRankData(indexedindividualRankData);
+      setIndividualRankData(() => indexedindividualRankData);
+      console.log(indexedindividualRankData);
     }
     //
     console.log('update individual leaderboard');
@@ -76,7 +77,7 @@ export const IndividualLeaderboard: React.FC = () => {
             <TopUserRow
               key={user.userId}
               rank={user.rank}
-              userName={user.userName}
+              nickname={user.nickname}
               comment={user.comment}
               score={user.score}
               districtName={user.town.name2}
@@ -93,7 +94,7 @@ export const IndividualLeaderboard: React.FC = () => {
             <DefaultUserRow
               key={user.userId}
               rank={user.rank}
-              userName={user.userName}
+              nickname={user.nickname}
               score={user.score}
               districtName={user.town.name2}
             />

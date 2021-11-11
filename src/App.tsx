@@ -85,6 +85,8 @@ const App: React.FC = () => {
       } = await minigameApi.userApi.getUserInfoUsingGET();
       if (data) {
         setUserInfo(data.id, data.nickname);
+        // FA: track user with set user id
+        analytics.setUserId(data.id);
       }
     } catch (error) {
       console.error(error);

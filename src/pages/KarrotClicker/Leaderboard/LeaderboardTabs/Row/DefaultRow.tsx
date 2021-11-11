@@ -2,6 +2,21 @@ import styled from '@emotion/styled';
 import { commafy } from 'utils/functions/numberFunctions';
 import React from 'react';
 
+interface DefaultUserRowProps {
+  me?: boolean;
+  rank: number;
+  nickname: string;
+  score: number;
+  districtName: string;
+}
+
+interface DefaultDistrictRowProps {
+  rank: number;
+  cityName: string;
+  districtName: string;
+  playerCount: number;
+  score: number;
+}
 export const DefaultUserRow: React.FC<DefaultUserRowProps> = (props) => {
   return (
     <Container me={props.me}>
@@ -12,7 +27,7 @@ export const DefaultUserRow: React.FC<DefaultUserRowProps> = (props) => {
             <DistrictName districtName={props.districtName}>
               {props.districtName.slice(0, -1)}
             </DistrictName>
-            {props.userName}
+            {props.nickname}
           </Name>
           <Score>{commafy(props.score)}</Score>
         </Info>
@@ -39,22 +54,6 @@ export const DefaultDistrictRow: React.FC<DefaultDistrictRowProps> = (
     </Container>
   );
 };
-
-interface DefaultUserRowProps {
-  me?: boolean;
-  rank: number;
-  userName: string;
-  score: number;
-  districtName: string;
-}
-
-interface DefaultDistrictRowProps {
-  rank: number;
-  cityName: string;
-  districtName: string;
-  playerCount: number;
-  score: number;
-}
 
 const Container = styled.div<{ me?: boolean }>`
   display: flex;

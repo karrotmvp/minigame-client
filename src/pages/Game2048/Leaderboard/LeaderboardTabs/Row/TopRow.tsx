@@ -155,7 +155,7 @@ const PlayerCount = styled.div`
 interface TopUserRowProps {
   me?: boolean;
   rank: number;
-  userName: string;
+  nickname: string;
   score: number;
   comment: string | null;
   cityName: string;
@@ -174,7 +174,7 @@ export const TopUserRow: React.FC<TopUserRowProps> = (props) => {
       <ContentsWrapper>
         <Info>
           <Name rank={props.rank}>
-            {props.userName}
+            {props.nickname}
             <DistrictName districtName={props.districtName}>
               {props.cityName.slice(0, 2)} {props.districtName}
             </DistrictName>

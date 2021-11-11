@@ -19,7 +19,7 @@ export const Leaderboard = () => {
   const analytics = useAnalytics();
   const minigameApi = useMinigameApi();
   const karrotMarketMini = useMini();
-  const { userName, districtName } = useUserData();
+  const { nickname, districtName } = useUserData();
   const { gameType, score, rank, comment, updateMyKarrotClickerData } =
     useMyKarrotClickerData();
   const { onResetCount } = useClickCounter();
@@ -92,7 +92,7 @@ export const Leaderboard = () => {
     <Page className="">
       <Nav appendLeft={<CloseIcon />} onClickLeft={leaveMiniApp} />
       <Heading>
-        <EmphasizedSpan>{userName}</EmphasizedSpan>님은
+        <EmphasizedSpan>{nickname}</EmphasizedSpan>님은
         <EmphasizedSpan> {rank}위</EmphasizedSpan>
         에요!
       </Heading>
@@ -102,7 +102,7 @@ export const Leaderboard = () => {
           <TopUserRow
             me={true}
             rank={rank}
-            userName={userName}
+            nickname={nickname}
             score={score}
             comment={comment}
             districtName={districtName!}
@@ -111,7 +111,7 @@ export const Leaderboard = () => {
           <DefaultUserRow
             me={true}
             rank={rank}
-            userName={userName}
+            nickname={nickname}
             score={score}
             districtName={districtName}
           />
