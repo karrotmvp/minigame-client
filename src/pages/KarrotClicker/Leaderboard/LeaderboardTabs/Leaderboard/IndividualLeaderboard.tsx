@@ -77,7 +77,6 @@ export const IndividualLeaderboard: React.FC = () => {
           }}
         >
           <p>이번 주 랭킹</p>
-
           {/* <WeeklyCountdown /> */}
         </div>
         <RefreshButton handleRefresh={refreshLeaderboard} />
