@@ -42,7 +42,7 @@ export const Leaderboard = () => {
       data: { data },
     } = await minigameApi.gameUserApi.getMyRankInfoUsingGET(gameType);
     if (data && data.score && data.rank && data.comment) {
-      updateMyGame2048Data(data.score, data.rank!, data.comment);
+      updateMyGame2048Data(data.score, data.rank, data.comment);
     }
   };
 

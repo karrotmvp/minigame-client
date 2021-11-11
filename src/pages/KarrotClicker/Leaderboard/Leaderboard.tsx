@@ -29,20 +29,14 @@ export const Leaderboard = () => {
     replace(`/karrot-clicker/game`);
   };
   const leaveMiniApp = () => {
-    karrotMarketMini.ejectApp();
     analytics.logEvent('click_leave_mini_app_button');
-    console.log(`${analytics.logEvent('click_leave_mini_app_button')}`);
+    karrotMarketMini.ejectApp();
   };
 
   const handlePlayAgain = async () => {
     analytics.logEvent('click_game_play_again_button', {
       game_type: 'karrot-clicker',
     });
-    console.log(
-      `${analytics.logEvent('click_game_play_again_button', {
-        game_type: 'karrot-clicker',
-      })}`
-    );
 
     goToGamePage();
     onResetCount();
@@ -60,13 +54,17 @@ export const Leaderboard = () => {
   };
 
   const getMyData = useCallback(async () => {
-    const {
-      data: { data },
-    } = await minigameApi.gameUserApi.getMyRankInfoUsingGET(gameType);
-    if (data) {
-      if (data.score && data.rank) {
-        updateMyKarrotClickerData(data.score, data.rank);
+    try {
+      const {
+        data: { data },
+      } = await minigameApi.gameUserApi.getMyRankInfoUsingGET(gameType);
+      if (data) {
+        if (data.score && data.rank) {
+          updateMyKarrotClickerData(data.score, data.rank);
+        }
       }
+    } catch (error) {
+      console.error(error);
     }
   }, [gameType, minigameApi.gameUserApi, updateMyKarrotClickerData]);
 
@@ -89,7 +87,7 @@ export const Leaderboard = () => {
       </Heading>
 
       <MyRow>
-        {rank! <= 10 ? (
+        {rank > 0 && rank <= 10 ? (
           <TopUserRow
             me={true}
             rank={rank}

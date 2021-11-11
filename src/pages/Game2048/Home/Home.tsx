@@ -46,8 +46,8 @@ export const Home = () => {
       if (accessToken) {
         goToGamePage();
       } else {
-        handleThirdPartyAgreement();
-        goToGamePage();
+        handleThirdPartyAgreement(goToGamePage);
+        // goToGamePage();
       }
     }
   };

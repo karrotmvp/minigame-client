@@ -54,7 +54,7 @@ export const Home = () => {
   const analytics = useAnalytics();
   const { accessToken } = useAccessToken();
   const { ejectApp, isInWebEnvironment, handleThirdPartyAgreement } = useMini();
-  const { nickname, districtName } = useUserData();
+  const { nickname, districtName, setUserInfo } = useUserData();
   const {
     rank,
     score,
@@ -63,9 +63,44 @@ export const Home = () => {
     updateMyKarrotClickerData,
     updateMyComment,
   } = useMyKarrotClickerData();
-  const { onResetCount, resumeGame } = useGame();
+  const { resumeGame, onResetCount } = useGame();
   const goToGamePage = () => {
     push(`/karrot-clicker/game`);
+  };
+  // const updateUserInfo = async () => {
+  //   const {
+  //     data: { data },
+  //   } = await minigameApi.userApi.getUserInfoUsingGET();
+  //   if (data) {
+  //     setUserInfo(data.id, data.nickname);
+  //     // FA: track user with set user id
+  //     analytics.setUserId(data.id);
+  //     console.log('setuserinfo', data.id, data.nickname);
+  //   }
+  // };
+  const handleReturningUser = () => {
+    // if access token exists, user is not new
+    analytics.logEvent('click_game_start_button', {
+      game_type: 'karrot-clicker',
+      is_new_user: false,
+    });
+
+    onResetCount();
+    resumeGame();
+  };
+
+  const handleNewUser = () => {
+    // if user is new, open third-party agreement preset
+    analytics.logEvent('click_game_start_button', {
+      game_type: 'karrot-clicker',
+      is_new_user: true,
+    });
+
+    handleThirdPartyAgreement(goToGamePage);
+    // await goToGamePage();
+
+    // onResetCount();
+    // resumeGame();
   };
 
   const handleGameStart = () => {
@@ -73,54 +108,40 @@ export const Home = () => {
     if (isInWebEnvironment) {
       console.log('bypass in web environment: home-page to game-page');
       goToGamePage();
+      return;
+    }
+    if (accessToken) {
+      handleReturningUser();
+      // updateUserInfo();
+      goToGamePage();
     } else {
-      if (accessToken) {
-        // if access token exists, user is not new
-        analytics.logEvent('click_game_start_button', {
-          game_type: 'karrot-clicker',
-          is_new_user: false,
-        });
-        goToGamePage();
-        onResetCount();
-        resumeGame();
-      } else {
-        // if user is new, open third-party agreement preset
-        analytics.logEvent('click_game_start_button', {
-          game_type: 'karrot-clicker',
-          is_new_user: true,
-        });
-
-        handleThirdPartyAgreement();
-        // executes if user agrees third-party agreement
-        analytics.logEvent('click_karrot_mini_preset_agree_button', {
-          game_type: 'karrot-clicker',
-        });
-
-        goToGamePage();
-        onResetCount();
-        resumeGame();
-      }
+      handleNewUser();
+      // updateUserInfo();
+      // goToGamePage();
     }
   };
-
   // =================================================================================================
   const leaveMiniApp = () => {
-    ejectApp();
     analytics.logEvent('click_leave_mini_app_button');
+    ejectApp();
   };
   const goToKarrotClicker = useCallback(async () => {
     setGameTypeToKarrotClicker();
-    const {
-      data: { data },
-    } = await minigameApi.gameUserApi.getMyRankInfoUsingGET('GAME_KARROT');
-    if (data) {
-      if (data.score && data.rank) {
-        updateMyKarrotClickerData(data.score, data.rank);
-        console.log(score);
+    try {
+      const {
+        data: { data },
+      } = await minigameApi.gameUserApi.getMyRankInfoUsingGET('GAME_KARROT');
+      if (data) {
+        if (data.score && data.rank) {
+          updateMyKarrotClickerData(data.score, data.rank);
+          console.log(score);
+        }
+        if (data.comment) {
+          updateMyComment(data.comment);
+        }
       }
-      if (data.comment) {
-        updateMyComment(data.comment);
-      }
+    } catch (error) {
+      console.error(error);
     }
   }, [
     minigameApi.gameUserApi,

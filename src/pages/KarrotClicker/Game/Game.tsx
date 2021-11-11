@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Modal from 'react-modal';
 import { commafy } from 'utils/functions/numberFunctions';
 import { useAnalytics } from 'services/analytics';
@@ -13,12 +13,18 @@ import { useCurrentScreen } from '@karrotframe/navigator';
 import { useMyKarrotClickerData } from '../hooks';
 import { GameOver, GamePause } from './Modal';
 import { useGame } from './hooks';
+import { useHistory } from 'react-router';
+import { useMinigameApi } from 'services/api/minigameApi';
+import { useAccessToken, useUserData } from 'hooks';
 
 Modal.setAppElement(document.createElement('div'));
 
 export const Game = () => {
   const { isTop } = useCurrentScreen();
   const analytics = useAnalytics();
+  const minigameApi = useMinigameApi();
+  const { accessToken } = useAccessToken();
+  const { setUserInfo } = useUserData();
   const { score } = useMyKarrotClickerData();
   const {
     clickCount,
@@ -31,6 +37,18 @@ export const Game = () => {
   const [isPaused, setIsPaused] = useState<boolean>(false);
   const [isGameOver, setIsGameOver] = useState<boolean>(false);
   const [isUserNew, setIsUserNew] = useState<boolean>(false);
+
+  const updateUserInfo = useCallback(async () => {
+    const {
+      data: { data },
+    } = await minigameApi.userApi.getUserInfoUsingGET();
+    if (data) {
+      setUserInfo(data.id, data.nickname);
+      // FA: track user with set user id
+      analytics.setUserId(data.id);
+      console.log('setuserinfo', data.id, data.nickname);
+    }
+  }, [analytics, minigameApi.userApi, setUserInfo]);
 
   // User clicks pause button
   const handlePause = () => {
@@ -58,7 +76,10 @@ export const Game = () => {
       console.log('is top?', isTop);
       analytics.logEvent('view_game_page', { game_type: 'karrot-clicker' });
     }
-  }, [analytics, isTop]);
+    if (!accessToken) {
+      updateUserInfo();
+    }
+  }, [analytics, isTop, accessToken]);
 
   return (
     <>

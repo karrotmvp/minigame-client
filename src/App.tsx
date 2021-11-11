@@ -81,37 +81,54 @@ const App: React.FC = () => {
     [minigameApi, setDistrictInfo]
   );
 
-  const getMyInfo = useCallback(async () => {
-    try {
-      const {
-        data: { data },
-      } = await minigameApi.userApi.getUserInfoUsingGET();
-      if (data) {
-        setUserInfo(data.id, data.nickname);
-        // FA: track user with set user id
-        analytics.setUserId(data.id);
-      }
-    } catch (error) {
-      console.error(error);
+  // const getMyInfo = useCallback(async () => {
+  //   try {
+  //     const {
+  //       data: { data },
+  //     } = await minigameApi.userApi.getUserInfoUsingGET();
+  //     if (data) {
+  //       setUserInfo(data.id, data.nickname);
+  //       // FA: track user with set user id
+  //       analytics.setUserId(data.id);
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // }, [analytics, minigameApi.userApi, setUserInfo]);
+
+  const updateUserInfo = async () => {
+    const {
+      data: { data },
+    } = await minigameApi.userApi.getUserInfoUsingGET();
+    if (data) {
+      setUserInfo(data.id, data.nickname);
+      // FA: track user with set user id
+      analytics.setUserId(data.id);
+      console.log('setuserinfo', data.id, data.nickname);
     }
-  }, [analytics, minigameApi.userApi, setUserInfo]);
+  };
+
   useEffect(() => {
-    try {
-      const [code, regionId] = getQueryParams();
-      analytics.logEvent('launch_app');
-      console.log(code, regionId);
-      // handle if code and/or region id does not exist
-      if (regionId) {
-        setRegionInfo(regionId);
-        getDistrictInfo(regionId);
-        if (code) {
-          signAccessToken(code, regionId);
-          getMyInfo();
+    async function fireOnLaunch() {
+      try {
+        const [code, regionId] = getQueryParams();
+        analytics.logEvent('launch_app');
+        console.log(code, regionId);
+        // handle if code and/or region id does not exist
+        if (regionId) {
+          setRegionInfo(regionId);
+          getDistrictInfo(regionId);
+          if (code) {
+            await signAccessToken(code, regionId);
+            await updateUserInfo();
+            // getMyInfo();
+          }
         }
+      } catch (error) {
+        console.error(error);
       }
-    } catch (error) {
-      console.error(error);
     }
+    fireOnLaunch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [analytics]);
 
