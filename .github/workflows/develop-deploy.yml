@@ -34,12 +34,8 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build
-        env:
-          SWAGGER_URL: 'https://api-alpha.daangn-ourapt.com/v2/api-docs'
-        run: | 
-          npm run codegen
-          run: npm run build
+      - name: Build    
+        run: npm run build
 
       - name: Deploy to S3
         uses: jakejarvis/s3-sync-action@master
@@ -51,6 +47,7 @@ jobs:
           AWS_REGION: 'ap-northeast-2'
           AWS_S3_BUCKET: ${{secrets.AWS_S3_BUCKET}}
           SOURCE_DIR: 'build'
+          
       - name: invalidate
         uses: chetan/invalidate-cloudfront-action@v2
         env:
