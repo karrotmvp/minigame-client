@@ -42,13 +42,13 @@ export const GameOver: React.FC<Props> = (props) => {
   };
 
   const handleViewLeaderboard = async () => {
-    if (isInWebEnvironment) {
-      console.log(
-        'bypass in web environment: game-pause-modal to leaderboard-page'
-      );
-      props.setIsGameOver(false);
-      goToLeaderboardPage();
-    }
+    // if (isInWebEnvironment) {
+    //   console.log(
+    //     'bypass in web environment: game-pause-modal to leaderboard-page'
+    //   );
+    //   props.setIsGameOver(false);
+    //   goToLeaderboardPage();
+    // }
     try {
       await minigameApi.gamePlayApi.updateScoreUsingPATCH('GAME_KARROT', {
         score: clickCount,
@@ -56,13 +56,9 @@ export const GameOver: React.FC<Props> = (props) => {
       const {
         data: { data },
       } = await minigameApi.gameUserApi.getMyRankInfoUsingGET('GAME_KARROT');
-      console.log(data);
-      // close game-over-modal
-      props.setIsGameOver(false);
       if (data) {
         if (data.score && data.rank) {
           updateMyKarrotClickerData(data.score, data.rank);
-          console.log(data);
           if (data.rank <= 10 && data.rank > 0) {
             analytics.logEvent('click_game_end_button', {
               game_type: 'karrot-clicker',
@@ -82,14 +78,10 @@ export const GameOver: React.FC<Props> = (props) => {
               is_top_user: false,
               button_type: 'game_over',
             });
-
             // close-game-over-modal
-            // props.setIsGameOver(false);
-            //
             goToLeaderboardPage();
           }
         } else {
-          alert('warning. no data');
           // handle what if response data from db deson't exist?
         }
       }
@@ -103,11 +95,6 @@ export const GameOver: React.FC<Props> = (props) => {
       analytics.logEvent('view_game_over_modal', {
         game_type: 'karrot-clicker',
       });
-      console.log(
-        `${analytics.logEvent('view_game_over_modal', {
-          game_type: 'karrot-clicker',
-        })}`
-      );
     }
   }, [analytics, isTop]);
   return (

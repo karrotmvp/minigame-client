@@ -142,13 +142,6 @@ export const Home = () => {
         {/* <img src={BannerImage} /> */}
       </Banner>
       <MyRow>
-        <UserScoreExists
-          userName={userName}
-          rank={rank}
-          score={score}
-          comment={comment}
-          districtName={districtName}
-        />
         {score === 0 ? null : (
           <UserScoreExists
             userName={userName}

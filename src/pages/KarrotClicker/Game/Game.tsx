@@ -54,6 +54,9 @@ export const Game = () => {
     }
   }, [analytics, isTop]);
 
+  useEffect(() => {
+    console.log(isPaused);
+  });
   return (
     <>
       <PageContainer>

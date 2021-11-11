@@ -48,27 +48,23 @@ export const GamePause: React.FC<GamePauseProps> = (props) => {
   };
 
   const handleGameEnd = async () => {
-    // pauseGame();
-    console.log(isInWebEnvironment);
+    pauseGame();
     if (isInWebEnvironment) {
       console.log(
         'bypass in web environment: game-pause-modal to leaderboard-page'
       );
-      props.setIsPaused(false);
 
       goToLeaderboardPage();
       return;
     }
     try {
-      minigameApi.gamePlayApi.updateScoreUsingPATCH('GAME_KARROT', {
+      await minigameApi.gamePlayApi.updateScoreUsingPATCH('GAME_KARROT', {
         score: clickCount,
       });
       const {
         data: { data },
       } = await minigameApi.gameUserApi.getMyRankInfoUsingGET('GAME_KARROT');
       console.log(data);
-
-      props.setIsPaused(false);
 
       if (data && data.rank && data.score) {
         console.log(data, data.score, data.rank);
@@ -81,17 +77,9 @@ export const GamePause: React.FC<GamePauseProps> = (props) => {
             is_top_user: true,
             button_type: 'game_end',
           });
-
-          // close pause-modal
-          // props.setIsPaused(false);
           // open comment-modal
           setShouldModalOpen(true);
         } else {
-          // close pause-modal
-          console.log('success');
-          // props.setIsPaused(false);
-          //
-
           goToLeaderboardPage();
         }
       } else {
@@ -108,23 +96,8 @@ export const GamePause: React.FC<GamePauseProps> = (props) => {
       analytics.logEvent('view_game_pause_modal', {
         game_type: 'karrot-clicker',
       });
-      console.log(
-        `${analytics.logEvent('view_game_pause_modal', {
-          game_type: 'karrot-clicker',
-        })}`
-      );
     }
-    // return () => {
-    //   if (rank <= 10 && rank > 0) {
-    //     props.setIsPaused(true);
-    //   } else {
-    //     console.log('1');
-    //     props.setIsPaused(false);
-    //     console.log('2');
-    //     goToLeaderboardPage();
-    //   }
-    // };
-  }, [analytics, goToLeaderboardPage, isTop, props, rank]);
+  }, [analytics, isTop]);
   return (
     <>
       <Karrot />
