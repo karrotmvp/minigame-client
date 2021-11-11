@@ -12,7 +12,7 @@ import { useMyKarrotClickerData } from 'pages/KarrotClicker/hooks';
 import { useMini } from 'hooks';
 import { useMinigameApi } from 'services/api/minigameApi';
 import { CommentModal } from '.';
-import useClickCounter from '../hooks/useClickCounter';
+
 import { useGame } from '../hooks';
 
 ReactModal.setAppElement(document.createElement('div'));
@@ -24,14 +24,11 @@ export const GamePause: React.FC<GamePauseProps> = (props) => {
   const { isTop } = useCurrentScreen();
   const analytics = useAnalytics();
   const minigameApi = useMinigameApi();
-  const { push, replace } = useNavigator();
-  // const { push } = useHistory();
-  const { clickCount } = useClickCounter();
+  const { replace } = useNavigator();
   const { isInWebEnvironment } = useMini();
-  const { gameType, score, rank, comment, updateMyKarrotClickerData } =
-    useMyKarrotClickerData();
+  const { score, updateMyKarrotClickerData } = useMyKarrotClickerData();
   const [shouldModalOpen, setShouldModalOpen] = useState<boolean>(false);
-  const { pauseGame } = useGame();
+  const { clickCount, pauseGame, resumeGame, shouldPause } = useGame();
 
   // Page navigation
   const goToLeaderboardPage = () => {
@@ -42,6 +39,8 @@ export const GamePause: React.FC<GamePauseProps> = (props) => {
   const handleContinue = () => {
     props.setIsPaused(false);
     console.log('continue');
+    shouldPause(false);
+    resumeGame();
     analytics.logEvent('click_game_continue_button', {
       game_type: 'karrot-clicker',
     });
@@ -49,6 +48,7 @@ export const GamePause: React.FC<GamePauseProps> = (props) => {
 
   const handleGameEnd = async () => {
     pauseGame();
+
     if (isInWebEnvironment) {
       console.log(
         'bypass in web environment: game-pause-modal to leaderboard-page'

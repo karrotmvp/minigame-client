@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import '@karrotframe/navigator/index.css';
 import { Navigator, Screen } from '@karrotframe/navigator';
 // import { Home } from 'pages/Home';
@@ -65,20 +65,23 @@ const App: React.FC = () => {
     const regionId: string | null = searchParams.get('region_id');
     return [code, regionId];
   };
-  const getDistrictInfo = async (regionId: string) => {
-    try {
-      const {
-        data: { data },
-      } = await minigameApi.townApi().getTownInfoUsingGET(regionId);
-      if (data) {
-        setDistrictInfo(data.id, data.name1, data.name2);
+  const getDistrictInfo = useCallback(
+    async (regionId: string) => {
+      try {
+        const {
+          data: { data },
+        } = await minigameApi.townApi().getTownInfoUsingGET(regionId);
+        if (data) {
+          setDistrictInfo(data.id, data.name1, data.name2);
+        }
+      } catch (error) {
+        console.error(error);
       }
-    } catch (error) {
-      console.error(error);
-    }
-  };
+    },
+    [minigameApi, setDistrictInfo]
+  );
 
-  const getMyInfo = async () => {
+  const getMyInfo = useCallback(async () => {
     try {
       const {
         data: { data },
@@ -91,7 +94,7 @@ const App: React.FC = () => {
     } catch (error) {
       console.error(error);
     }
-  };
+  }, [analytics, minigameApi.userApi, setUserInfo]);
   useEffect(() => {
     try {
       const [code, regionId] = getQueryParams();
@@ -109,7 +112,8 @@ const App: React.FC = () => {
     } catch (error) {
       console.error(error);
     }
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [analytics]);
 
   return (
     <AnalyticsContext.Provider value={analytics}>

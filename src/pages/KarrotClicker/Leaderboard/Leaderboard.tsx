@@ -10,11 +10,10 @@ import { useMyKarrotClickerData } from '../hooks';
 import { useMinigameApi } from 'services/api/minigameApi';
 import { Nav } from 'components/Navigation/Nav';
 import { CloseIcon } from 'assets/Icon';
-import useClickCounter from '../Game/hooks/useClickCounter';
 import { useGame } from '../Game/hooks';
 
 export const Leaderboard = () => {
-  const { push, pop, replace } = useNavigator();
+  const { replace } = useNavigator();
   const { isTop } = useCurrentScreen();
   const analytics = useAnalytics();
   const minigameApi = useMinigameApi();
@@ -22,8 +21,7 @@ export const Leaderboard = () => {
   const { nickname, districtName } = useUserData();
   const { gameType, score, rank, comment, updateMyKarrotClickerData } =
     useMyKarrotClickerData();
-  const { onResetCount } = useClickCounter();
-  const { startGame } = useGame();
+  const { onResetCount, resumeGame } = useGame();
 
   // Page navigation
   const goToGamePage = () => {
@@ -46,7 +44,8 @@ export const Leaderboard = () => {
     );
 
     goToGamePage();
-    startGame();
+    onResetCount();
+    resumeGame();
   };
 
   const handleShare = () => {
@@ -57,11 +56,6 @@ export const Leaderboard = () => {
     analytics.logEvent('click_share_button', {
       game_type: 'karrot-clicker',
     });
-    console.log(
-      `${analytics.logEvent('click_share_button', {
-        game_type: 'karrot-clicker',
-      })}`
-    );
   };
 
   const getMyData = useCallback(async () => {
@@ -81,13 +75,9 @@ export const Leaderboard = () => {
       analytics.logEvent('view_leaderboard_page', {
         game_type: 'karrot-clicker',
       });
-      console.log(
-        `${analytics.logEvent('view_leaderboard_page', {
-          game_type: 'karrot-clicker',
-        })}`
-      );
     }
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [analytics, isTop]);
   return (
     <Page className="">
       <Nav appendLeft={<CloseIcon />} onClickLeft={leaveMiniApp} />

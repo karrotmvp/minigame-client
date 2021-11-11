@@ -20,17 +20,23 @@ export const Game = () => {
   const { isTop } = useCurrentScreen();
   const analytics = useAnalytics();
   const { score } = useMyKarrotClickerData();
-  const { clickCount, isPaused, setIsPaused, pauseGame } = useGame();
-  // const bigKarrotRef = useRef<HTMLImageElement>(null);
+  const {
+    clickCount,
+
+    updateAnimationPlayState,
+    animationPlayState,
+    shouldPause,
+  } = useGame();
+
+  const [isPaused, setIsPaused] = useState<boolean>(false);
   const [isGameOver, setIsGameOver] = useState<boolean>(false);
   const [isUserNew, setIsUserNew] = useState<boolean>(false);
-  const [isNewGame, setIsNewGame] = useState<boolean>(false);
 
   // User clicks pause button
   const handlePause = () => {
-    pauseGame();
+    shouldPause(true);
     setIsPaused(true);
-    console.log('paused');
+    console.log('paused?', animationPlayState);
     analytics.logEvent('click_game_pause_button', {
       game_type: 'karrot-clicker',
     });
@@ -38,25 +44,22 @@ export const Game = () => {
 
   // Popup modal if user is new
   useEffect(() => {
-    analytics.logEvent('view_game_page');
     if (score === 0) {
       console.log('score zero');
-      pauseGame();
+      updateAnimationPlayState('paused');
       setIsUserNew(true);
+    } else {
+      shouldPause(false);
     }
-  }, [analytics, score]);
+  }, [analytics, score, updateAnimationPlayState, shouldPause]);
 
   useEffect(() => {
     if (isTop) {
       console.log('is top?', isTop);
-      setIsNewGame(true);
       analytics.logEvent('view_game_page', { game_type: 'karrot-clicker' });
     }
   }, [analytics, isTop]);
 
-  useEffect(() => {
-    console.log(isPaused);
-  });
   return (
     <>
       <PageContainer>
@@ -95,17 +98,7 @@ export const Game = () => {
           <ClickCount>{commafy(clickCount)}</ClickCount>
         </ScoreWrapper>
         <BigKarrotContainer>
-          <BigKarrot
-            isPaused={isPaused}
-            // handleKarrotTouch={handleKarrotTouch}
-            isNewGame={isNewGame}
-            setIsGameOver={setIsGameOver}
-            // handleGameOver={handleGameOver}
-            // handlePause={handlePause}
-            // animationPlayState={animationPlayState}
-            // handleParticleDestroy={handleParticleDestroy}
-            // state={state}
-          />
+          <BigKarrot setIsGameOver={setIsGameOver} />
         </BigKarrotContainer>
       </PageContainer>
       {/* pause */}

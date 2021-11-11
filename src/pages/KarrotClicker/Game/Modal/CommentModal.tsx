@@ -11,13 +11,11 @@ import { useMinigameApi } from 'services/api/minigameApi';
 import { useAnalytics } from 'services/analytics';
 
 type Props = {
-  // rank: number;
-  // comment: string;
   setShouldModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 export const CommentModal: React.FC<Props> = (props) => {
   const { isTop } = useCurrentScreen();
-  const { push, replace } = useNavigator();
+  const { replace } = useNavigator();
   const minigameApi = useMinigameApi();
   const analytics = useAnalytics();
   const {
@@ -31,7 +29,7 @@ export const CommentModal: React.FC<Props> = (props) => {
     comment: prevComment,
     length: prevComment.length,
   });
-  // const { gameType } = useMyKarrotClickerData();
+
   const { districtName } = useUserData();
   // Page navigation
   const goToLeaderboardPage = () => {
@@ -62,12 +60,11 @@ export const CommentModal: React.FC<Props> = (props) => {
   };
   useEffect(() => {
     if (isTop) {
-      console.log(rank, prevComment);
       analytics.logEvent('view_comment_modal', {
         game_type: 'karrot-clicker',
       });
     }
-  }, [analytics, isTop]);
+  }, [analytics, isTop, prevComment, rank]);
 
   return (
     <>

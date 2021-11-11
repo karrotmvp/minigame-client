@@ -20,11 +20,12 @@ type Props = {
   setIsUserNew: React.Dispatch<React.SetStateAction<boolean>>;
 };
 export const Guide: React.FC<Props> = (props) => {
-  const { startGame } = useGame();
+  const { updateAnimationPlayState, isPaused } = useGame();
 
   const handleCloseGuide = () => {
     props.setIsUserNew(false);
-    startGame();
+    console.log(isPaused);
+    updateAnimationPlayState('running');
     console.log('start game');
   };
   return (

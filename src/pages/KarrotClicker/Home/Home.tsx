@@ -9,6 +9,7 @@ import { rem } from 'polished';
 import { useCallback, useEffect } from 'react';
 import { useAnalytics } from 'services/analytics';
 import { useMinigameApi } from 'services/api/minigameApi';
+import { useGame } from '../Game/hooks';
 import { useMyKarrotClickerData } from '../hooks';
 import { LeaderboardTabs } from '../Leaderboard/LeaderboardTabs';
 import { DefaultUserRow, TopUserRow } from '../Leaderboard/LeaderboardTabs/Row';
@@ -48,9 +49,11 @@ const UserScoreExists: React.FC<UserScoreExistsProps> = (props) => {
 export const Home = () => {
   const { push } = useNavigator();
   const { isTop } = useCurrentScreen();
+  const minigameApi = useMinigameApi();
   const analytics = useAnalytics();
-  const karrotMarketMini = useMini();
-  const { nickname, districtName, setUserInfo } = useUserData();
+  const { accessToken } = useAccessToken();
+  const { ejectApp, isInWebEnvironment, handleThirdPartyAgreement } = useMini();
+  const { nickname, districtName } = useUserData();
   const {
     rank,
     score,
@@ -59,9 +62,7 @@ export const Home = () => {
     updateMyKarrotClickerData,
     updateMyComment,
   } = useMyKarrotClickerData();
-  const { isInWebEnvironment, handleThirdPartyAgreement } = useMini();
-  const minigameApi = useMinigameApi();
-  const { accessToken } = useAccessToken();
+  const { onResetCount, resumeGame } = useGame();
   const goToGamePage = () => {
     push(`/karrot-clicker/game`);
   };
@@ -79,6 +80,8 @@ export const Home = () => {
           is_new_user: false,
         });
         goToGamePage();
+        onResetCount();
+        resumeGame();
       } else {
         // if user is new, open third-party agreement preset
         analytics.logEvent('click_game_start_button', {
@@ -93,13 +96,15 @@ export const Home = () => {
         });
 
         goToGamePage();
+        onResetCount();
+        resumeGame();
       }
     }
   };
 
   // =================================================================================================
   const leaveMiniApp = () => {
-    karrotMarketMini.ejectApp();
+    ejectApp();
     analytics.logEvent('click_leave_mini_app_button');
   };
   const goToKarrotClicker = useCallback(async () => {
@@ -132,6 +137,7 @@ export const Home = () => {
         game_type: 'karrot-clicker',
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isTop, analytics]);
   // =================================================================================================
   return (

@@ -12,7 +12,7 @@ import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
 import { useMyKarrotClickerData } from 'pages/KarrotClicker/hooks';
 import { useMinigameApi } from 'services/api/minigameApi';
 import { useMini } from 'hooks';
-import useClickCounter from '../hooks/useClickCounter';
+import { useGame } from '../hooks';
 
 ReactModal.setAppElement(document.createElement('div'));
 
@@ -23,17 +23,10 @@ export const GameOver: React.FC<Props> = (props) => {
   const { isTop } = useCurrentScreen();
   const analytics = useAnalytics();
   const minigameApi = useMinigameApi();
-  const { push, replace } = useNavigator();
+  const { replace } = useNavigator();
   const { isInWebEnvironment } = useMini();
-  const { clickCount } = useClickCounter();
-  const {
-    gameType,
-    score,
-    rank,
-    comment,
-    updateMyKarrotClickerData,
-    updateMyComment,
-  } = useMyKarrotClickerData();
+  const { clickCount, shouldPause } = useGame();
+  const { score, updateMyKarrotClickerData } = useMyKarrotClickerData();
   const [shouldModalOpen, setShouldModalOpen] = useState<boolean>(false);
 
   // Page navigation
@@ -42,13 +35,13 @@ export const GameOver: React.FC<Props> = (props) => {
   };
 
   const handleViewLeaderboard = async () => {
-    // if (isInWebEnvironment) {
-    //   console.log(
-    //     'bypass in web environment: game-pause-modal to leaderboard-page'
-    //   );
-    //   props.setIsGameOver(false);
-    //   goToLeaderboardPage();
-    // }
+    if (isInWebEnvironment) {
+      console.log(
+        'bypass in web environment: game-pause-modal to leaderboard-page'
+      );
+      props.setIsGameOver(false);
+      goToLeaderboardPage();
+    }
     try {
       await minigameApi.gamePlayApi.updateScoreUsingPATCH('GAME_KARROT', {
         score: clickCount,
@@ -92,11 +85,12 @@ export const GameOver: React.FC<Props> = (props) => {
 
   useEffect(() => {
     if (isTop) {
+      shouldPause(true);
       analytics.logEvent('view_game_over_modal', {
         game_type: 'karrot-clicker',
       });
     }
-  }, [analytics, isTop]);
+  }, [analytics, isTop, shouldPause]);
   return (
     <>
       <Karrot />

@@ -46,12 +46,14 @@ export const IndividualLeaderboard: React.FC = () => {
   const refreshLeaderboard = useCallback(() => {
     updateMyData();
     updateIndividualLeaderboard();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     refreshLeaderboard();
     console.log('leaderboard refreshed');
-  }, [refreshLeaderboard]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return (
     <div css={divStyle}>
       <Refresh>

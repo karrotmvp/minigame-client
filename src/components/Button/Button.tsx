@@ -4,17 +4,17 @@ import styled from '@emotion/styled';
 import { rem } from 'polished';
 
 const oldButtonStyle = ({ size, color }: any) => css`
-  background: ${color === `primary`
-    ? `#EB5D0E`
-    : `secondary`
-    ? `#F39E6E`
-    : `#F39E6E`};
+  background: ${
+    color === `primary` ? `#EB5D0E` : `secondary` ? `#F39E6E` : `#F39E6E`
+  };
 
-  box-shadow: ${color === `primary`
-    ? `0px 6px 0px 0px #C64F0C`
-    : `secondary`
-    ? `0px 6px 0px 0px #DF814B`
-    : `0px 6px 0px 0px #DF814B`};
+  box-shadow: ${
+    color === `primary`
+      ? `0px 6px 0px 0px #C64F0C`
+      : `secondary`
+      ? `0px 6px 0px 0px #DF814B`
+      : `0px 6px 0px 0px #DF814B`
+  };
 
   text-align: center;
   border: none;
@@ -28,36 +28,41 @@ const oldButtonStyle = ({ size, color }: any) => css`
   line-height: 161.7%;
   /* identical to box height, or 26px */
   color: #ffffff;
-  ${size === `fullWidth`
-    ? `
+  ${
+    size === `fullWidth`
+      ? `
         padding-top: 20px;
         padding-bottom: 30px;
         width: 100%;
         border-radius: 0;
         font-size: 20px;
       `
-    : size === `large`
-    ? `
+      : size === `large`
+      ? `
      
         width: 100%;
         border-radius: 10px;
         font-size: 16px;
       `
-    : size === `medium`
-    ? `
+      : size === `medium`
+      ? `
         width: 100%;
         padding: 10px 20px;
         font-size: 16px;
 
 
         `
-    : size === `small`
-    ? `
+      : size === `small`
+      ? `
         width: 100px;
         padding: 10px 20px;
 
         `
-    : null}
+      : null
+  }
+
+  
+  }
 `;
 
 interface ButtonProps {
