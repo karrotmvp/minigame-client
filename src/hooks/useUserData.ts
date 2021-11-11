@@ -1,71 +1,48 @@
-import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'reducers/rootReducer';
 import {
-  updateRegionData,
-  updateAccessToken,
-  updateUserData,
+  setUserInfoAction,
+  setRegionInfoAction,
+  setDistrictInfoAction,
 } from 'reducers/userDataReducer';
 
-export default function useUserData() {
-  const {
-    accessToken,
-    regionId: userRegionId,
-    townId: userDistrictId,
-    townName: userDistrictName,
-    id: userId,
-    nickname: userNickname,
-    score: userScore,
-    rank: userRank,
-    comment: userComment,
-  } = useSelector((state: RootState) => ({
-    accessToken: state.userDataReducer.accessToken,
-    regionId: state.userDataReducer.regionId,
-    townId: state.userDataReducer.townId,
-    townName: state.userDataReducer.townName,
-    id: state.userDataReducer.id,
-    nickname: state.userDataReducer.nickname,
-    score: state.userDataReducer.score,
-    rank: state.userDataReducer.rank,
-    comment: state.userDataReducer.comment,
-  }));
+export const useUserData = () => {
+  const { userId, nickname, regionId, districtId, districtName } = useSelector(
+    (state: RootState) => ({
+      userId: state.userDataReducer.userId,
+      nickname: state.userDataReducer.nickname,
+      regionId: state.userDataReducer.regionId,
+      districtId: state.userDataReducer.districtId,
+      cityName: state.userDataReducer.cityName,
+      districtName: state.userDataReducer.districtName,
+    })
+  );
   const dispatch = useDispatch();
 
-  const onUpdateAccessToken = useCallback(
-    (accessToken: string) => dispatch(updateAccessToken(accessToken)),
-    [dispatch]
-  );
+  const setRegionInfo = (regionId: string) => {
+    dispatch(setRegionInfoAction(regionId));
+  };
 
-  const onUpdateRegionData = useCallback(
-    (regionId: string, townId: string, townName: string) => {
-      console.log(regionId);
-      return dispatch(updateRegionData(regionId, townId, townName));
-    },
-    [dispatch]
-  );
-  const onUpdateUserData = useCallback(
-    (
-      id: string,
-      nickname: string,
-      score: number,
-      rank: number,
-      comment: string
-    ) => dispatch(updateUserData(id, nickname, score, rank, comment)),
-    [dispatch]
-  );
+  const setDistrictInfo = (
+    districtId: string,
+    cityName: string,
+    districtName: string
+  ) => {
+    dispatch(setDistrictInfoAction(districtId, cityName, districtName));
+  };
+
+  const setUserInfo = (userId: string, nickname: string) => {
+    dispatch(setUserInfoAction(userId, nickname));
+  };
 
   return {
-    accessToken,
-    userRegionId,
-    userDistrictId,
-    userDistrictName,
     userId,
-    userNickname,
-    userScore,
-    userRank,
-    userComment,
-    onUpdateAccessToken,
-    onUpdateRegionData,
-    onUpdateUserData,
+    nickname,
+    regionId,
+    districtId,
+    districtName,
+    setRegionInfo,
+    setDistrictInfo,
+    setUserInfo,
   };
-}
+};

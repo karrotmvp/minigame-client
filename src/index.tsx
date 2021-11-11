@@ -1,15 +1,20 @@
 import React from 'react';
+import { CookiesProvider } from 'react-cookie';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-import 'index.css';
+import { MinigameApiProvider } from 'services/api/minigameApi';
+import store from 'store';
 import App from './App';
-import store from './store';
-
+import './index.css';
 ReactDOM.render(
-  <Provider store={store}>
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>
-  </Provider>,
+  <React.StrictMode>
+    <CookiesProvider>
+      <Provider store={store}>
+        <MinigameApiProvider>
+          <App />
+        </MinigameApiProvider>
+      </Provider>
+    </CookiesProvider>
+  </React.StrictMode>,
   document.getElementById('root')
 );

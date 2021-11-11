@@ -1,17 +1,21 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { ReactComponent as WaitSvg } from 'assets/svg/wait.svg';
-import { AppEjectionButton } from 'components/buttons/AppEjectionButton';
-import Button, { DisabledButton } from 'components/buttons/Button';
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Analytics, useAnalytics } from 'services/analytics';
 import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
 // import { useKarrotMarketMini } from 'services/karrotMarketMini';
-import useUserData from 'hooks/useUserData';
 import {
   getMini,
   loadFromEnv as KarrotMiniPreset,
 } from 'services/karrotMarket/mini';
+import {
+  AppEjectionButton,
+  OldButton,
+  OldDisabledButton,
+} from 'components/Button';
+import { useUserData } from 'hooks';
+import { useCookies } from 'react-cookie';
 
 const customNav = css`
   left: 0;
@@ -94,22 +98,13 @@ const coloredText = css`
   color: #eb5d0e;
 `;
 
-interface NonServiceAreaProps {
-  location: {
-    state: {
-      isNonServiceUserBack: boolean;
-      districtName: string;
-    };
-  };
-}
-
-const NonServiceArea: React.FC<NonServiceAreaProps> = (props) => {
+export const NonServiceArea = () => {
   const [isClicked, setIsClicked] = useState<boolean>(false);
   const analytics = useAnalytics();
   const karrotRaiseApi = useKarrotRaiseApi();
   // const karrotMarketMini = useKarrotMarketMini();
-  const { userRegionId, onUpdateAccessToken } = useUserData();
-
+  const { regionId } = useUserData();
+  const [, setCookies] = useCookies();
   const trackUser = useCallback(
     async (
       karrotRaiseApi: KarrotRaiseApi,
@@ -139,8 +134,6 @@ const NonServiceArea: React.FC<NonServiceAreaProps> = (props) => {
           const { data } = await karrotRaiseApi.postOauth2(code, regionId);
           if (data) {
             const { accessToken } = data;
-            // window.localStorage.setItem('ACCESS_TOKEN', accessToken);
-            onUpdateAccessToken(accessToken);
             return accessToken;
           }
         } else {
@@ -150,7 +143,7 @@ const NonServiceArea: React.FC<NonServiceAreaProps> = (props) => {
         console.error(error);
       }
     },
-    [onUpdateAccessToken]
+    []
   );
 
   const mini = getMini();
@@ -178,6 +171,7 @@ const NonServiceArea: React.FC<NonServiceAreaProps> = (props) => {
               userRegionId
             );
             if (accessToken) {
+              setCookies(`accessToken`, accessToken);
               await trackUser(karrotRaiseApi, accessToken, analytics);
               const data = await karrotRaiseApi.postDemand(accessToken);
               if (data.success === true) {
@@ -193,13 +187,6 @@ const NonServiceArea: React.FC<NonServiceAreaProps> = (props) => {
     });
   };
 
-  useEffect(() => {
-    analytics.logEvent('view_non_service_area_page');
-    if (props.location.state.isNonServiceUserBack === true) {
-      setIsClicked(true);
-    }
-  }, [analytics, props.location.state.isNonServiceUserBack]);
-
   return (
     <>
       <div css={customNav}>
@@ -210,7 +197,7 @@ const NonServiceArea: React.FC<NonServiceAreaProps> = (props) => {
       <div css={backgroundStyle}>
         <WaitSvg css={svgStyle} />
         <h1 css={mainText}>
-          <span css={coloredText}>{props.location.state.districtName}</span>
+          <span css={coloredText}>non_service_area_districtName</span>
           지역은
           <br />
           아직 준비 중이에요
@@ -223,20 +210,16 @@ const NonServiceArea: React.FC<NonServiceAreaProps> = (props) => {
       </div>
       <div css={actionItemWraper}>
         {isClicked ? (
-          <DisabledButton size={`large`} text={`오픈 알림 신청 완료`} />
+          <OldDisabledButton size={`large`} text={`오픈 알림 신청 완료`} />
         ) : (
-          <Button
+          <OldButton
             size={`medium`}
             color={`primary`}
             text={`오픈 알림 받기`}
-            onClick={() =>
-              handleDemand(karrotRaiseApi, userRegionId, analytics)
-            }
+            onClick={() => handleDemand(karrotRaiseApi, regionId!, analytics)}
           />
         )}
       </div>
     </>
   );
 };
-
-export default NonServiceArea;
