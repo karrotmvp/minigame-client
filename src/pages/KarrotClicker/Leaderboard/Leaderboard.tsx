@@ -12,6 +12,37 @@ import { Nav } from 'components/Navigation/Nav';
 import { CloseIcon } from 'assets/Icon';
 import { useGame } from '../Game/hooks';
 import { rem } from 'polished';
+interface UserScoreExistsProps {
+  nickname: string;
+  rank: number;
+  score: number;
+  comment: string;
+  districtName: string;
+}
+const UserScoreExists: React.FC<UserScoreExistsProps> = (props) => {
+  return (
+    <>
+      {props.rank === 0 ? null : props.rank <= 10 ? (
+        <TopUserRow
+          me={true}
+          rank={props.rank}
+          nickname={props.nickname}
+          score={props.score}
+          comment={props.comment}
+          districtName={props.districtName}
+        />
+      ) : (
+        <DefaultUserRow
+          me={true}
+          rank={props.rank}
+          nickname={props.nickname}
+          score={props.score}
+          districtName={props.districtName}
+        />
+      )}
+    </>
+  );
+};
 
 export const Leaderboard = () => {
   const { replace } = useNavigator();
@@ -81,14 +112,16 @@ export const Leaderboard = () => {
   return (
     <Page className="">
       <Nav appendLeft={<CloseIcon />} onClickLeft={leaveMiniApp} />
-      <Heading>
-        <EmphasizedSpan>{nickname}</EmphasizedSpan>님은
-        <EmphasizedSpan> {rank}위</EmphasizedSpan>
-        에요!
-      </Heading>
+      {score === 0 ? null : (
+        <Heading>
+          <EmphasizedSpan>{nickname}</EmphasizedSpan>님은
+          <EmphasizedSpan> {rank}위</EmphasizedSpan>
+          에요!
+        </Heading>
+      )}
 
       <MyRow>
-        {rank > 0 && rank <= 10 ? (
+        {/* {rank > 0 && rank <= 10 ? (
           <TopUserRow
             me={true}
             rank={rank}
@@ -103,6 +136,15 @@ export const Leaderboard = () => {
             rank={rank}
             nickname={nickname}
             score={score}
+            districtName={districtName}
+          />
+        )} */}
+        {score === 0 ? null : (
+          <UserScoreExists
+            nickname={nickname}
+            rank={rank}
+            score={score}
+            comment={comment}
             districtName={districtName}
           />
         )}
