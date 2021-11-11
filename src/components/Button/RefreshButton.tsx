@@ -1,13 +1,16 @@
 import styled from '@emotion/styled';
 import RefreshIconUrl from 'assets/svg/refresh_icon.svg';
+import { useThrottledCallback } from 'use-debounce/lib';
 
 interface RefreshButtonProps {
   handleRefresh: () => void;
 }
 
 export const RefreshButton: React.FC<RefreshButtonProps> = (props) => {
+  const refresh = useThrottledCallback(props.handleRefresh, 3000);
+
   return (
-    <Button onClick={props.handleRefresh}>
+    <Button onClick={refresh}>
       <img src={RefreshIconUrl} alt="" />
     </Button>
   );

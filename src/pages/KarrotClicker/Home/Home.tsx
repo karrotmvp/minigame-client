@@ -156,9 +156,12 @@ export const Home = () => {
       console.error(error);
     }
   }, [
+    analytics,
     minigameApi.gameUserApi,
+    minigameApi.userApi,
     score,
     setGameTypeToKarrotClicker,
+    setUserInfo,
     updateMyComment,
     updateMyKarrotClickerData,
   ]);

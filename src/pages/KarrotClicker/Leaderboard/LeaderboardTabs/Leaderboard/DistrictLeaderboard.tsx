@@ -7,8 +7,10 @@ import { DefaultDistrictRow, TopDistrictRow } from '../Row';
 // import { WeeklyCountdown } from 'components/Timer';
 import { useMinigameApi } from 'services/api/minigameApi';
 import { useMyKarrotClickerData } from 'pages/KarrotClicker/hooks';
+import { useAnalytics } from 'services/analytics';
 
 export const DistrictLeaderboard: React.FC = () => {
+  const analytics = useAnalytics();
   const minigameApi = useMinigameApi();
   const { gameType } = useMyKarrotClickerData();
   const [districtRankData, setDistrictRankData] = useState<any[]>([]);
@@ -33,8 +35,17 @@ export const DistrictLeaderboard: React.FC = () => {
     }
   }, [gameType, minigameApi.gameTownApi]);
 
-  useEffect(() => {
+  const refreshLeaderboard = useCallback(() => {
+    analytics.logEvent('click_refresh_button', {
+      game_type: 'karrot-clicker',
+      button_type: 'town_leaderboard',
+    });
+
     updateDistrictLeaderboard();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  useEffect(() => {
+    refreshLeaderboard();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -53,7 +64,7 @@ export const DistrictLeaderboard: React.FC = () => {
           <p>이번 주 랭킹</p>
           {/* <WeeklyCountdown /> */}
         </div>
-        <RefreshButton handleRefresh={updateDistrictLeaderboard} />
+        <RefreshButton handleRefresh={refreshLeaderboard} />
       </Refresh>
 
       <div css={leaderboardWrapperStyle}>

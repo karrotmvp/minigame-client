@@ -6,9 +6,11 @@ import { RefreshButton } from 'components/Button';
 import { DefaultUserRow, TopUserRow } from '../Row';
 import { useMyKarrotClickerData } from 'pages/KarrotClicker/hooks';
 import { useMinigameApi } from 'services/api/minigameApi';
+import { useAnalytics } from 'services/analytics';
 // import { WeeklyCountdown } from 'components/Timer';
 
 export const IndividualLeaderboard: React.FC = () => {
+  const analytics = useAnalytics();
   const [individualRankData, setIndividualRankData] = useState<any[]>([]);
   const minigameApi = useMinigameApi();
   const { gameType, updateMyKarrotClickerData } = useMyKarrotClickerData();
@@ -54,6 +56,10 @@ export const IndividualLeaderboard: React.FC = () => {
   }, [gameType, minigameApi.gameUserApi]);
 
   const refreshLeaderboard = useCallback(() => {
+    analytics.logEvent('click_refresh_button', {
+      game_type: 'karrot-clicker',
+      button_type: 'user_leaderboard',
+    });
     updateMyData();
     updateIndividualLeaderboard();
     // eslint-disable-next-line react-hooks/exhaustive-deps
