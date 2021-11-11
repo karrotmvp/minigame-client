@@ -17,8 +17,11 @@ export const Home: React.FC = () => {
   const { isInWebEnvironment, ejectApp } = useMini();
   const [userCount, setUserCount] = useState<number>(0);
   const { updateMyGame2048Data, setGameTypeToGame2048 } = useMyGame2048Data();
-  const { updateMyKarrotClickerData, setGameTypeToKarrotClicker } =
-    useMyKarrotClickerData();
+  const {
+    updateMyKarrotClickerData,
+    updateMyComment,
+    setGameTypeToKarrotClicker,
+  } = useMyKarrotClickerData();
   const exitApp = () => {
     console.log('Ejected from the app. Now back to Karrot Market');
     ejectApp();
@@ -30,14 +33,20 @@ export const Home: React.FC = () => {
     if (isInWebEnvironment) {
       console.log('bypass in web environment: main to game-2048');
       push(`/game-2048`);
-    } else {
+      return;
+    }
+    try {
       const {
         data: { data },
       } = await minigameApi.gameUserApi.getMyRankInfoUsingGET('GAME_2048');
       if (data) {
-        updateMyGame2048Data(data.score, data.rank!, data.comment);
+        if (data && data.score && data.rank && data.comment) {
+          updateMyGame2048Data(data.score, data.rank, data.comment);
+        }
       }
       push(`/game-2048`);
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -46,14 +55,23 @@ export const Home: React.FC = () => {
     if (isInWebEnvironment) {
       console.log('bypass in web environment: main to karrot-clicker');
       push(`/karrot-clicker`);
-    } else {
+      return;
+    }
+    try {
       const {
         data: { data },
       } = await minigameApi.gameUserApi.getMyRankInfoUsingGET('GAME_KARROT');
       if (data) {
-        updateMyKarrotClickerData(data.score, data.rank!, data.comment);
+        if (data.score && data.rank) {
+          updateMyKarrotClickerData(data.score, data.rank);
+        }
+        if (data.comment) {
+          updateMyComment(data.comment);
+        }
       }
       push(`/karrot-clicker`);
+    } catch (error) {
+      console.error(error);
     }
   };
 

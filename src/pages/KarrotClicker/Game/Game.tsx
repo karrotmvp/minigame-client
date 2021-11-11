@@ -1,117 +1,64 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Modal from 'react-modal';
 import { commafy } from 'utils/functions/numberFunctions';
 import { useAnalytics } from 'services/analytics';
-import useClickCounter from 'pages/KarrotClicker/hooks/useClickCounter';
 import gameBackgroundUrl from 'assets/images/KarrotClicker/game_background.png';
-import { useIdleTimer } from 'react-idle-timer';
 import { Guide } from './NewUser';
-import { useClickAnimation } from './hooks/useClickAnimation';
-import ClickAnimation from './Animation/ClickAnimation';
-import { BigKarrot } from './Animation/BigKarrot';
+import BigKarrot from './Animation/BigKarrot';
 import { PauseIcon } from 'assets/Icon';
 import { useCurrentScreen } from '@karrotframe/navigator';
 import { useMyKarrotClickerData } from '../hooks';
 import { GameOver, GamePause } from './Modal';
-import { useHistory } from 'react-router';
+import { useGame } from './hooks';
 
 Modal.setAppElement(document.createElement('div'));
 
 export const Game = () => {
-  const history = useHistory();
   const { isTop } = useCurrentScreen();
   const analytics = useAnalytics();
   const { score } = useMyKarrotClickerData();
-  const { clickCount, onIncrementClickCount, onResetCount } = useClickCounter();
-  const { handleParticleSpawn, handleParticleDestroy, state } =
-    useClickAnimation();
-  const bigKarrotRef = useRef<HTMLImageElement>(null);
+  const {
+    clickCount,
+
+    updateAnimationPlayState,
+    animationPlayState,
+    shouldPause,
+  } = useGame();
+
   const [isPaused, setIsPaused] = useState<boolean>(false);
   const [isGameOver, setIsGameOver] = useState<boolean>(false);
   const [isUserNew, setIsUserNew] = useState<boolean>(false);
-  const [animationPlayState, setAnimationPlayState] =
-    useState<string>('paused');
 
-  const activateAnimation = (e: React.PointerEvent) => {
-    const clientX = e.clientX;
-    const clientY = e.clientY;
-    const posX = clientX - 25,
-      posY = clientY - 50;
-    handleParticleSpawn(posX, posY);
-  };
-  function handleKarrotTouch(e: React.PointerEvent) {
-    e.stopPropagation();
-    activateAnimation(e);
-    onIncrementClickCount();
-    // setAnimationPlayState('paused');
-    // pause();
-  }
   // User clicks pause button
-  const handlePauseGame = () => {
-    pause();
-    setAnimationPlayState('paused');
+  const handlePause = () => {
+    shouldPause(true);
     setIsPaused(true);
+    console.log('paused?', animationPlayState);
     analytics.logEvent('click_game_pause_button', {
       game_type: 'karrot-clicker',
     });
   };
-  const handleGameOver = () => {
-    // handlePauseGame();
-    setIsGameOver(true);
-  };
-  const handleOnIdle = (event: any) => {
-    console.log('user is idle', event);
-    // console.log('last active', getLastActiveTime())
-    setAnimationPlayState('running');
-  };
-  const handleOnAction = (event: any) => {
-    console.log('user did something', event);
-    setAnimationPlayState('paused');
-  };
-  const resetGame = () => {
-    start();
-  };
-  const { start, resume, pause } = useIdleTimer({
-    timeout: 2000,
-    startManually: true,
-    onIdle: handleOnIdle,
-    // onActive: handleOnActive,
-    onAction: handleOnAction,
-  });
 
   // Popup modal if user is new
   useEffect(() => {
-    analytics.logEvent('view_game_page');
     if (score === 0) {
       console.log('score zero');
+      updateAnimationPlayState('paused');
       setIsUserNew(true);
+    } else {
+      shouldPause(false);
     }
-  }, [analytics, score]);
+  }, [analytics, score, updateAnimationPlayState, shouldPause]);
 
   useEffect(() => {
     if (isTop) {
+      console.log('is top?', isTop);
       analytics.logEvent('view_game_page', { game_type: 'karrot-clicker' });
     }
   }, [analytics, isTop]);
-
-  // const unblock = history.block((location, action) => {
-  //   if (action === 'POP') {
-  //     setIsPaused(true);
-  //     return false;
-  //   }
-  //   return undefined;
-  // });
-  // useEffect(() => {
-  //   console.log('aaaaasasfasfas');
-  //   if (isTop) {
-  //     unblock();
-  //   }
-
-  //   return () => unblock();
-  // }, [isTop, unblock]);
 
   return (
     <>
@@ -130,10 +77,10 @@ export const Game = () => {
                 color: '#EB5D0E',
               }}
             >
-              {commafy(score! + clickCount)}
+              {commafy(score + clickCount)}
             </p>
           </TotalKarrotCount>
-          <button onClick={handlePauseGame}>
+          <button onClick={handlePause}>
             <PauseIcon />
           </button>
         </div>
@@ -151,20 +98,8 @@ export const Game = () => {
           <ClickCount>{commafy(clickCount)}</ClickCount>
         </ScoreWrapper>
         <BigKarrotContainer>
-          <BigKarrot
-            handleKarrotTouch={handleKarrotTouch}
-            handleGameOver={handleGameOver}
-            animationPlayState={animationPlayState}
-          />
+          <BigKarrot setIsGameOver={setIsGameOver} />
         </BigKarrotContainer>
-
-        {state.particles.map((item) => (
-          <ClickAnimation
-            key={item.id}
-            {...item}
-            onDestroy={handleParticleDestroy}
-          />
-        ))}
       </PageContainer>
       {/* pause */}
       <Modal
@@ -316,3 +251,19 @@ const popupModalStyle = css`
   padding: 55px 20px 25px;
   border-radius: 21px;
 `;
+
+// useEffect(() => {
+//   console.log('aaaaasasfasfas');
+//   const unblock = history.block((location, action) => {
+//     if (action === 'POP') {
+//       setIsPaused(true);
+//       return false;
+//     }
+//     return undefined;
+//   });
+//   if (isTop) {
+//     unblock();
+//   }
+
+//   return () => unblock();
+// }, [isTop]);

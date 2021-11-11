@@ -14,7 +14,7 @@ export const UserLeaderboard: React.FC<Props> = (props) => {
             <TopUserRow
               key={user.userId}
               rank={user.rank}
-              userName={user.nickname}
+              nickname={user.nickname}
               comment={user.comment}
               score={user.score}
               cityName={user.town.name1}
@@ -32,7 +32,7 @@ export const UserLeaderboard: React.FC<Props> = (props) => {
             <DefaultUserRow
               key={user.userId}
               rank={user.rank}
-              userName={user.nickname}
+              nickname={user.nickname}
               score={user.score}
               cityName={user.town.name1}
               districtName={user.town.name2}

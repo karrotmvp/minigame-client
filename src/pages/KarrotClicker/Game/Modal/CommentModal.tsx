@@ -1,7 +1,9 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { emphasizedTextStyle, largeTextStyle } from 'styles/textStyle';
-import { ReactComponent as Karrot } from 'assets/svg/KarrotClicker/small_circle_karrot.svg';
+// import { ReactComponent as Karrot } from 'assets/svg/KarrotClicker/small_circle_karrot.svg';
+import karrotImageUrl from 'assets/svg/KarrotClicker/small_circle_karrot.svg';
+
 import React, { useEffect, useState } from 'react';
 import { OldButton, OldDisabledButton } from 'components/Button';
 import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
@@ -9,27 +11,32 @@ import { useUserData } from 'hooks';
 import { useMyKarrotClickerData } from 'pages/KarrotClicker/hooks';
 import { useMinigameApi } from 'services/api/minigameApi';
 import { useAnalytics } from 'services/analytics';
+import { rem } from 'polished';
 
 type Props = {
-  rank: number;
-  comment: string;
   setShouldModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 export const CommentModal: React.FC<Props> = (props) => {
   const { isTop } = useCurrentScreen();
-  const { push } = useNavigator();
+  const { replace } = useNavigator();
   const minigameApi = useMinigameApi();
   const analytics = useAnalytics();
-  const { score, rank, updateMyKarrotClickerData } = useMyKarrotClickerData();
+  const {
+    score,
+    rank,
+    comment: prevComment,
+    updateMyKarrotClickerData,
+    updateMyComment,
+  } = useMyKarrotClickerData();
   const [currentComment, setCurrentComment] = useState({
-    comment: props.comment,
-    length: props.comment.length,
+    comment: prevComment,
+    length: prevComment.length,
   });
-  const { gameType } = useMyKarrotClickerData();
+
   const { districtName } = useUserData();
   // Page navigation
   const goToLeaderboardPage = () => {
-    push(`/karrot-clicker/leaderboard`);
+    replace(`/karrot-clicker/leaderboard`);
   };
 
   const handleCommentInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -40,22 +47,16 @@ export const CommentModal: React.FC<Props> = (props) => {
   };
 
   const handleUpdateComment = () => {
-    minigameApi.gamePlayApi.addCommentUsingPATCH(gameType, {
+    minigameApi.gamePlayApi.addCommentUsingPATCH('GAME_KARROT', {
       comment: currentComment.comment,
     });
-    updateMyKarrotClickerData(score, rank, currentComment.comment);
+    updateMyKarrotClickerData(score, rank);
+    updateMyComment(currentComment.comment);
     analytics.logEvent('click_submit_comment_button', {
       game_type: 'karrot-clicker',
       score: score,
       rank: rank,
     });
-    console.log(
-      `${analytics.logEvent('click_submit_comment_button', {
-        game_type: 'karrot-clicker',
-        score: score,
-        rank: rank,
-      })}`
-    );
     // close comment modal
     props.setShouldModalOpen(false);
     goToLeaderboardPage();
@@ -65,24 +66,20 @@ export const CommentModal: React.FC<Props> = (props) => {
       analytics.logEvent('view_comment_modal', {
         game_type: 'karrot-clicker',
       });
-      console.log(
-        `${analytics.logEvent('view_comment_modal', {
-          game_type: 'karrot-clicker',
-        })}`
-      );
     }
-  }, [analytics, isTop]);
+  }, [analytics, isTop, prevComment, rank]);
 
   return (
     <>
-      <Karrot />
+      {/* <Karrot /> */}
+      <img src={karrotImageUrl} alt="" />
       <h1
         css={[largeTextStyle, largeText]}
         style={{ textAlign: 'center', flex: '0 1 auto' }}
       >
-        <span css={emphasizedTextStyle}>축하해요!</span>
+        <span css={[emphasizedTextStyle, largeText]}>축하해요!</span>
         <br />
-        <span css={emphasizedTextStyle}>{props.rank}위</span>로 순위권에
+        <span css={[emphasizedTextStyle, largeText]}>{rank}위</span>로 순위권에
         들었어요!
       </h1>
       <hr css={horizontalLine} />
@@ -121,6 +118,14 @@ export const CommentModal: React.FC<Props> = (props) => {
 
 const largeText = css`
   margin: 15px 0;
+  font-style: normal;
+  font-weight: bold;
+  font-size: ${rem(22)};
+  line-height: 161.7%;
+  /* or 36px */
+
+  text-align: center;
+  letter-spacing: -0.03em;
 `;
 const horizontalLine = css`
   display: block;

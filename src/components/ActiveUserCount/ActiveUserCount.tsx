@@ -13,7 +13,7 @@ export const ActiveUserCount: React.FC<Props> = (props) => {
   const [dailyUserCount, setDailyUserCount] = useState<number>(0);
 
   const getDailyUserCount = useCallback(async () => {
-    const { data } = await minigameApi.gamePlayApi.getUserCountByDailyUsingGET(
+    const { data } = await minigameApi.gameUserApi.getUserCountByDailyUsingGET(
       props.gameType
     );
     if (data.data) {
@@ -22,6 +22,7 @@ export const ActiveUserCount: React.FC<Props> = (props) => {
   }, [minigameApi, props.gameType]);
 
   useEffect(() => {
+    console.log('Is active user count on top?', isTop);
     if (isTop) {
       getDailyUserCount();
     }
@@ -40,7 +41,7 @@ const SpeechBalloon = styled.div<{ gameType: 'GAME_KARROT' | 'GAME_2048' }>`
       ? `#82B6FF`
       : props.gameType === `GAME_KARROT`
       ? `#F39E6E`
-      : `#F39E6E`}
+      : `#F39E6E`};
   border-radius: 5px;
 
   font-family: Cafe24SsurroundAir;
@@ -67,9 +68,9 @@ const SpeechBalloon = styled.div<{ gameType: 'GAME_KARROT' | 'GAME_2048' }>`
         ? `#82B6FF`
         : props.gameType === `GAME_KARROT`
         ? `#F39E6E`
-        : `transparent`};
+        : `#F39E6E`};
     border-bottom: 0;
-    // background: black;
+
     margin-left: -10px;
     margin-bottom: -8px;
   }

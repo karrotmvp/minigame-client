@@ -2,7 +2,6 @@ import styled from '@emotion/styled';
 import { useCallback, useEffect } from 'react';
 import { useAnalytics } from 'services/analytics';
 import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
-import useClickCounter from 'pages/KarrotClicker/hooks/useClickCounter';
 import { OldButton } from 'components/Button';
 import { DefaultUserRow, TopUserRow } from './LeaderboardTabs/Row';
 import { LeaderboardTabs } from './LeaderboardTabs';
@@ -11,21 +10,23 @@ import { useMyKarrotClickerData } from '../hooks';
 import { useMinigameApi } from 'services/api/minigameApi';
 import { Nav } from 'components/Navigation/Nav';
 import { CloseIcon } from 'assets/Icon';
+import { useGame } from '../Game/hooks';
+import { rem } from 'polished';
 
 export const Leaderboard = () => {
-  const { push, pop } = useNavigator();
+  const { replace } = useNavigator();
   const { isTop } = useCurrentScreen();
   const analytics = useAnalytics();
   const minigameApi = useMinigameApi();
   const karrotMarketMini = useMini();
-  const { userName, districtName } = useUserData();
+  const { nickname, districtName } = useUserData();
   const { gameType, score, rank, comment, updateMyKarrotClickerData } =
     useMyKarrotClickerData();
-  const { onResetCount } = useClickCounter();
+  const { onResetCount, resumeGame } = useGame();
 
   // Page navigation
   const goToGamePage = () => {
-    pop();
+    replace(`/karrot-clicker/game`);
   };
   const leaveMiniApp = () => {
     karrotMarketMini.ejectApp();
@@ -42,8 +43,10 @@ export const Leaderboard = () => {
         game_type: 'karrot-clicker',
       })}`
     );
-    // onResetCount();
+
     goToGamePage();
+    onResetCount();
+    resumeGame();
   };
 
   const handleShare = () => {
@@ -54,11 +57,6 @@ export const Leaderboard = () => {
     analytics.logEvent('click_share_button', {
       game_type: 'karrot-clicker',
     });
-    console.log(
-      `${analytics.logEvent('click_share_button', {
-        game_type: 'karrot-clicker',
-      })}`
-    );
   };
 
   const getMyData = useCallback(async () => {
@@ -66,7 +64,9 @@ export const Leaderboard = () => {
       data: { data },
     } = await minigameApi.gameUserApi.getMyRankInfoUsingGET(gameType);
     if (data) {
-      updateMyKarrotClickerData(data.score, data.rank, data.comment);
+      if (data.score && data.rank) {
+        updateMyKarrotClickerData(data.score, data.rank);
+      }
     }
   }, [gameType, minigameApi.gameUserApi, updateMyKarrotClickerData]);
 
@@ -76,18 +76,14 @@ export const Leaderboard = () => {
       analytics.logEvent('view_leaderboard_page', {
         game_type: 'karrot-clicker',
       });
-      console.log(
-        `${analytics.logEvent('view_leaderboard_page', {
-          game_type: 'karrot-clicker',
-        })}`
-      );
     }
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [analytics, isTop]);
   return (
     <Page className="">
       <Nav appendLeft={<CloseIcon />} onClickLeft={leaveMiniApp} />
       <Heading>
-        <EmphasizedSpan>{userName}</EmphasizedSpan>님은
+        <EmphasizedSpan>{nickname}</EmphasizedSpan>님은
         <EmphasizedSpan> {rank}위</EmphasizedSpan>
         에요!
       </Heading>
@@ -97,7 +93,7 @@ export const Leaderboard = () => {
           <TopUserRow
             me={true}
             rank={rank}
-            userName={userName}
+            nickname={nickname}
             score={score}
             comment={comment}
             districtName={districtName!}
@@ -106,7 +102,7 @@ export const Leaderboard = () => {
           <DefaultUserRow
             me={true}
             rank={rank}
-            userName={userName}
+            nickname={nickname}
             score={score}
             districtName={districtName}
           />
@@ -142,9 +138,8 @@ const Page = styled.div`
 `;
 const Heading = styled.div`
   margin: 0 26px 20px;
-
   font-family: Cafe24SsurroundAir;
-  font-size: 22px;
+  font-size: ${rem(22)};
   font-style: normal;
   line-height: 161.7%;
   /* or 36px */
@@ -156,7 +151,13 @@ const Heading = styled.div`
 
 const EmphasizedSpan = styled.span`
   font-family: Cafe24Ssurround;
+  font-style: normal;
   font-weight: bold;
+  font-size: ${rem(22)};
+  line-height: 161.7%;
+  /* or 36px */
+
+  letter-spacing: -0.02em;
 
   color: #eb5d0e;
 `;

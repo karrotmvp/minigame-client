@@ -18,7 +18,9 @@ export const IndividualLeaderboard: React.FC = () => {
       data: { data },
     } = await minigameApi.gameUserApi.getMyRankInfoUsingGET(gameType);
     if (data) {
-      updateMyKarrotClickerData(data.score, data.rank, data.comment);
+      if (data.score && data.rank) {
+        updateMyKarrotClickerData(data.score, data.rank);
+      }
     }
     //
     console.log('update my data');
@@ -34,7 +36,8 @@ export const IndividualLeaderboard: React.FC = () => {
           ...item,
         })
       );
-      setIndividualRankData(indexedindividualRankData);
+      setIndividualRankData(() => indexedindividualRankData);
+      console.log(indexedindividualRankData);
     }
     //
     console.log('update individual leaderboard');
@@ -43,12 +46,14 @@ export const IndividualLeaderboard: React.FC = () => {
   const refreshLeaderboard = useCallback(() => {
     updateMyData();
     updateIndividualLeaderboard();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     refreshLeaderboard();
     console.log('leaderboard refreshed');
-  }, [refreshLeaderboard]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return (
     <div css={divStyle}>
       <Refresh>
@@ -74,7 +79,7 @@ export const IndividualLeaderboard: React.FC = () => {
             <TopUserRow
               key={user.userId}
               rank={user.rank}
-              userName={user.userName}
+              nickname={user.nickname}
               comment={user.comment}
               score={user.score}
               districtName={user.town.name2}
@@ -91,7 +96,7 @@ export const IndividualLeaderboard: React.FC = () => {
             <DefaultUserRow
               key={user.userId}
               rank={user.rank}
-              userName={user.userName}
+              nickname={user.nickname}
               score={user.score}
               districtName={user.town.name2}
             />

@@ -1,12 +1,11 @@
 import { combineReducers } from 'redux';
-import counterReducer from './counterReducer';
 import userDataReducer from './userDataReducer';
 import game2048DataReducer from './game2048DataReducer';
 import karrotClickerDataReducer from './karrotClickerDataReducer';
 import game2048Reducer from 'pages/Game2048/Game/Game/reducers/game2048Reducer';
-
+import gameKarrotClickerReducer from '../pages/KarrotClicker/Game/reducers/gameKarrotClickerReducer';
 const rootReducer = combineReducers({
-  counterReducer,
+  gameKarrotClickerReducer,
   userDataReducer,
   game2048DataReducer,
   karrotClickerDataReducer,

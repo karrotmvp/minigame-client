@@ -1,10 +1,68 @@
 /** @jsxImportSource @emotion/react */
 import { css, keyframes } from '@emotion/react';
 import BigKarrotImageUrl from 'assets/images/KarrotClicker/big_karrot.png';
+import React, { useCallback } from 'react';
+import { useClickAnimation, useGame } from '../hooks';
+
+import ClickAnimation from './ClickAnimation';
+
+interface BigKarrotProps {
+  setIsGameOver: React.Dispatch<React.SetStateAction<boolean>>;
+}
+const BigKarrot: React.FC<BigKarrotProps> = (props) => {
+  const { handleKarrotTouch, animationPlayState, pauseGame } = useGame();
+  const { state, handleParticleSpawn, handleParticleDestroy } =
+    useClickAnimation();
+  const activateAnimation = useCallback(
+    (e: React.PointerEvent) => {
+      const clientX = e.clientX;
+      const clientY = e.clientY;
+      const posX = clientX - 25,
+        posY = clientY - 50;
+      handleParticleSpawn(posX, posY);
+    },
+    [handleParticleSpawn]
+  );
+
+  const handleOnPointerDown = (e: React.PointerEvent) => {
+    e.stopPropagation();
+    handleKarrotTouch();
+    activateAnimation(e);
+  };
+  const handleGameOver = () => {
+    pauseGame();
+    props.setIsGameOver(true);
+  };
+  return (
+    <>
+      <img
+        src={BigKarrotImageUrl}
+        alt=""
+        onPointerDown={handleOnPointerDown}
+        onAnimationEnd={handleGameOver}
+        css={animation(animationPlayState)}
+        style={{
+          height: '20rem',
+          width: 'auto',
+          transform: `rotate(45deg)`,
+        }}
+      />
+      {state.particles.map((item) => (
+        <ClickAnimation
+          key={item.id}
+          {...item}
+          onDestroy={handleParticleDestroy}
+        />
+      ))}
+    </>
+  );
+};
+
+export default BigKarrot;
+
 const animationKeyframes = keyframes`
   100% {
     transform: scale(0.05);
-    // transform: rotate(45deg);
   }
 }
 `;
@@ -19,27 +77,3 @@ const animation = (animationPlayState: string) => css`
   animation-play-state: ${animationPlayState};
   // pointer-events: none;
 `;
-
-interface BigKarrotProps {
-  handleKarrotTouch: React.PointerEventHandler;
-  handleGameOver: () => void;
-  animationPlayState: string;
-}
-export const BigKarrot: React.FC<BigKarrotProps> = (props) => {
-  console.log(props.animationPlayState);
-  return (
-    <img
-      src={BigKarrotImageUrl}
-      alt=""
-      // ref={BigKarrotRef as any}
-      onPointerDown={props.handleKarrotTouch}
-      onAnimationEnd={props.handleGameOver}
-      css={animation(props.animationPlayState)}
-      style={{
-        height: '20rem',
-        width: 'auto',
-        transform: 'rotate(45deg)',
-      }}
-    />
-  );
-};

@@ -1,12 +1,13 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { emphasizedTextStyle, largeTextStyle } from 'styles/textStyle';
-import { ReactComponent as Karrot } from 'assets/svg/KarrotClicker/small_circle_karrot.svg';
+// import { ReactComponent as Karrot } from 'assets/svg/KarrotClicker/small_circle_karrot.svg';
+import karrotImageUrl from 'assets/svg/KarrotClicker/small_circle_karrot.svg';
+
 import React, { useEffect, useState } from 'react';
 import ReactModal from 'react-modal';
 import { commafy } from 'utils/functions/numberFunctions';
 import { useAnalytics } from 'services/analytics';
-import useClickCounter from 'pages/KarrotClicker/hooks/useClickCounter';
 import { OldButton } from 'components/Button';
 import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
 import { useMyKarrotClickerData } from 'pages/KarrotClicker/hooks';
@@ -14,7 +15,10 @@ import { useMini } from 'hooks';
 import { useMinigameApi } from 'services/api/minigameApi';
 import { CommentModal } from '.';
 
-// Modal.setAppElement(document.createElement('div'));
+import { useGame } from '../hooks';
+import { rem } from 'polished';
+
+ReactModal.setAppElement(document.createElement('div'));
 
 interface GamePauseProps {
   setIsPaused: React.Dispatch<React.SetStateAction<boolean>>;
@@ -23,44 +27,51 @@ export const GamePause: React.FC<GamePauseProps> = (props) => {
   const { isTop } = useCurrentScreen();
   const analytics = useAnalytics();
   const minigameApi = useMinigameApi();
-  const { push } = useNavigator();
-  const { clickCount } = useClickCounter();
+  const { replace } = useNavigator();
   const { isInWebEnvironment } = useMini();
-  const { gameType, score, rank, comment, updateMyKarrotClickerData } =
-    useMyKarrotClickerData();
+  const { score, updateMyKarrotClickerData } = useMyKarrotClickerData();
   const [shouldModalOpen, setShouldModalOpen] = useState<boolean>(false);
+  const { clickCount, pauseGame, resumeGame, shouldPause } = useGame();
 
   // Page navigation
   const goToLeaderboardPage = () => {
-    push(`/karrot-clicker/leaderboard`);
+    replace(`/karrot-clicker/leaderboard`);
   };
 
   // Button handler
   const handleContinue = () => {
     props.setIsPaused(false);
+    console.log('continue');
+    shouldPause(false);
+    resumeGame();
     analytics.logEvent('click_game_continue_button', {
       game_type: 'karrot-clicker',
     });
   };
 
   const handleGameEnd = async () => {
+    pauseGame();
+
     if (isInWebEnvironment) {
       console.log(
         'bypass in web environment: game-pause-modal to leaderboard-page'
       );
-      props.setIsPaused(false);
-
       goToLeaderboardPage();
-    } else {
-      await minigameApi.gamePlayApi.updateScoreUsingPATCH(gameType, {
+      return;
+    }
+    try {
+      await minigameApi.gamePlayApi.updateScoreUsingPATCH('GAME_KARROT', {
         score: clickCount,
       });
       const {
         data: { data },
-      } = await minigameApi.gameUserApi.getMyRankInfoUsingGET(gameType);
-      if (data) {
-        updateMyKarrotClickerData(data.score, data.rank, data.comment);
-        if (data.rank <= 10) {
+      } = await minigameApi.gameUserApi.getMyRankInfoUsingGET('GAME_KARROT');
+      console.log(data);
+
+      if (data && data.rank && data.score) {
+        console.log(data, data.score, data.rank);
+        updateMyKarrotClickerData(data.score, data.rank);
+        if (data.rank > 0 && data.rank <= 10) {
           analytics.logEvent('click_game_end_button', {
             game_type: 'karrot-clicker',
             score: clickCount,
@@ -68,67 +79,38 @@ export const GamePause: React.FC<GamePauseProps> = (props) => {
             is_top_user: true,
             button_type: 'game_end',
           });
-          console.log(
-            `${analytics.logEvent('click_game_end_button', {
-              game_type: 'karrot-clicker',
-              score: clickCount,
-              rank: data.rank,
-              is_top_user: true,
-              button_type: 'game_end',
-            })}`
-          );
-          // close pause-modal
-          props.setIsPaused(false);
           // open comment-modal
           setShouldModalOpen(true);
         } else {
-          analytics.logEvent('click_game_end_button', {
-            game_type: 'karrot-clicker',
-            score: clickCount,
-            rank: data.rank,
-            is_top_user: false,
-            button_type: 'game_end',
-          });
-          console.log(
-            `${analytics.logEvent('click_game_end_button', {
-              game_type: 'karrot-clicker',
-              score: clickCount,
-              rank: data.rank,
-              is_top_user: false,
-              button_type: 'game_end',
-            })}`
-          );
-          // close pause-modal
-          props.setIsPaused(false);
-          //
           goToLeaderboardPage();
         }
       } else {
         // handle what if response data from db deson't exist?
       }
+    } catch (error) {
+      console.error(error);
     }
   };
 
   useEffect(() => {
     if (isTop) {
+      console.log('istop');
       analytics.logEvent('view_game_pause_modal', {
         game_type: 'karrot-clicker',
       });
-      console.log(
-        `${analytics.logEvent('view_game_pause_modal', {
-          game_type: 'karrot-clicker',
-        })}`
-      );
     }
   }, [analytics, isTop]);
   return (
     <>
-      <Karrot />
+      {/* <Karrot /> */}
+      <img src={karrotImageUrl} alt="" />
       <h1
         css={[largeTextStyle, largeText]}
         style={{ textAlign: 'center', flex: '0 1 auto' }}
       >
-        <span css={emphasizedTextStyle}>{commafy(clickCount)}개</span>
+        <span css={[emphasizedTextStyle, largeText]}>
+          {commafy(clickCount)}개
+        </span>
         의 당근을
         <br />
         수확했어요!
@@ -171,8 +153,8 @@ export const GamePause: React.FC<GamePauseProps> = (props) => {
         }}
       >
         <CommentModal
-          rank={rank}
-          comment={comment}
+          // rank={rank}
+          // comment={comment}
           setShouldModalOpen={setShouldModalOpen}
         />
       </ReactModal>
@@ -201,6 +183,14 @@ const modalStyle = css`
 `;
 const largeText = css`
   margin: 15px 0;
+  font-style: normal;
+  font-weight: bold;
+  font-size: ${rem(22)};
+  line-height: 161.7%;
+  /* or 36px */
+
+  text-align: center;
+  letter-spacing: -0.03em;
 `;
 const horizontalLine = css`
   display: block;

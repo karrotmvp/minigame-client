@@ -9,26 +9,27 @@ import { rem } from 'polished';
 import { useCallback, useEffect } from 'react';
 import { useAnalytics } from 'services/analytics';
 import { useMinigameApi } from 'services/api/minigameApi';
+import { useGame } from '../Game/hooks';
 import { useMyKarrotClickerData } from '../hooks';
 import { LeaderboardTabs } from '../Leaderboard/LeaderboardTabs';
 import { DefaultUserRow, TopUserRow } from '../Leaderboard/LeaderboardTabs/Row';
+import { ReactComponent as BannerImage } from 'assets/svg/KarrotClicker/top.svg';
 
 interface UserScoreExistsProps {
-  userName: string;
+  nickname: string;
   rank: number;
   score: number;
   comment: string;
   districtName: string;
 }
 const UserScoreExists: React.FC<UserScoreExistsProps> = (props) => {
-  console.log(props.rank, 's');
   return (
     <>
       {props.rank === 0 ? null : props.rank <= 10 ? (
         <TopUserRow
           me={true}
           rank={props.rank}
-          userName={props.userName}
+          nickname={props.nickname}
           score={props.score}
           comment={props.comment}
           districtName={props.districtName}
@@ -37,7 +38,7 @@ const UserScoreExists: React.FC<UserScoreExistsProps> = (props) => {
         <DefaultUserRow
           me={true}
           rank={props.rank}
-          userName={props.userName}
+          nickname={props.nickname}
           score={props.score}
           districtName={props.districtName}
         />
@@ -49,19 +50,20 @@ const UserScoreExists: React.FC<UserScoreExistsProps> = (props) => {
 export const Home = () => {
   const { push } = useNavigator();
   const { isTop } = useCurrentScreen();
+  const minigameApi = useMinigameApi();
   const analytics = useAnalytics();
-  const karrotMarketMini = useMini();
-  const { userName, districtName, setUserInfo } = useUserData();
+  const { accessToken } = useAccessToken();
+  const { ejectApp, isInWebEnvironment, handleThirdPartyAgreement } = useMini();
+  const { nickname, districtName } = useUserData();
   const {
     rank,
     score,
     comment,
     setGameTypeToKarrotClicker,
     updateMyKarrotClickerData,
+    updateMyComment,
   } = useMyKarrotClickerData();
-  const { isInWebEnvironment, handleThirdPartyAgreement } = useMini();
-  const minigameApi = useMinigameApi();
-  const { accessToken } = useAccessToken();
+  const { onResetCount, resumeGame } = useGame();
   const goToGamePage = () => {
     push(`/karrot-clicker/game`);
   };
@@ -78,43 +80,32 @@ export const Home = () => {
           game_type: 'karrot-clicker',
           is_new_user: false,
         });
-        console.log(
-          `${analytics.logEvent('click_game_start_button', {
-            game_type: 'karrot-clicker',
-            is_new_user: false,
-          })}`
-        );
         goToGamePage();
+        onResetCount();
+        resumeGame();
       } else {
         // if user is new, open third-party agreement preset
         analytics.logEvent('click_game_start_button', {
           game_type: 'karrot-clicker',
           is_new_user: true,
         });
-        console.log(
-          `${analytics.logEvent('click_game_start_button', {
-            game_type: 'karrot-clicker',
-            is_new_user: true,
-          })}`
-        );
+
         handleThirdPartyAgreement();
         // executes if user agrees third-party agreement
         analytics.logEvent('click_karrot_mini_preset_agree_button', {
           game_type: 'karrot-clicker',
         });
-        console.log(
-          `${analytics.logEvent('click_karrot_mini_preset_agree_button', {
-            game_type: 'karrot-clicker',
-          })}`
-        );
+
         goToGamePage();
+        onResetCount();
+        resumeGame();
       }
     }
   };
 
   // =================================================================================================
   const leaveMiniApp = () => {
-    karrotMarketMini.ejectApp();
+    ejectApp();
     analytics.logEvent('click_leave_mini_app_button');
   };
   const goToKarrotClicker = useCallback(async () => {
@@ -123,47 +114,53 @@ export const Home = () => {
       data: { data },
     } = await minigameApi.gameUserApi.getMyRankInfoUsingGET('GAME_KARROT');
     if (data) {
-      setUserInfo(data.id, data.nickname);
-      updateMyKarrotClickerData(data.score, data.rank, data.comment);
+      if (data.score && data.rank) {
+        updateMyKarrotClickerData(data.score, data.rank);
+        console.log(score);
+      }
+      if (data.comment) {
+        updateMyComment(data.comment);
+      }
     }
   }, [
     minigameApi.gameUserApi,
+    score,
     setGameTypeToKarrotClicker,
-    setUserInfo,
+    updateMyComment,
     updateMyKarrotClickerData,
   ]);
 
   useEffect(() => {
     if (isTop) {
+      goToKarrotClicker();
+
       analytics.logEvent('view_home_page', {
         game_type: 'karrot-clicker',
       });
-      console.log(
-        `${analytics.logEvent('view_home_page', {
-          game_type: 'karrot-clicker',
-        })}`
-      );
-      goToKarrotClicker();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isTop, analytics]);
   // =================================================================================================
   return (
     <Page className="karrot-clicker-home-page">
       <Nav appendLeft={<CloseIcon />} onClickLeft={leaveMiniApp} />
       <Banner className="banner">
-        {/* <BannerImage /> */}
-        {/* <img src={BannerImage} /> */}
+        <BannerImage
+          style={{
+            backgroundSize: `100% 100%`,
+          }}
+        />
       </Banner>
       <MyRow>
-        {rank !== null ? (
+        {score === 0 ? null : (
           <UserScoreExists
-            userName={userName!}
-            rank={rank!}
-            score={score!}
-            comment={comment!}
-            districtName={districtName!}
+            nickname={nickname}
+            rank={rank}
+            score={score}
+            comment={comment}
+            districtName={districtName}
           />
-        ) : null}
+        )}
       </MyRow>
       <LeaderboardTabs />
       <div
@@ -195,12 +192,8 @@ const Page = styled.div`
   background: #faf5f4;
 `;
 const Banner = styled.div`
-  display: flex;
-  flex-flow: column;
-  justify-content: center;
-  align-items: center;
-  padding-bottom: 1rem;
-  // width: 100px;
+  margin-top: -5rem;
+  margin-bottom: -1rem;
 `;
 
 const MyRow = styled.div`

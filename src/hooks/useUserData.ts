@@ -7,10 +7,10 @@ import {
 } from 'reducers/userDataReducer';
 
 export const useUserData = () => {
-  const { userId, userName, regionId, districtId, districtName } = useSelector(
+  const { userId, nickname, regionId, districtId, districtName } = useSelector(
     (state: RootState) => ({
       userId: state.userDataReducer.userId,
-      userName: state.userDataReducer.userName,
+      nickname: state.userDataReducer.nickname,
       regionId: state.userDataReducer.regionId,
       districtId: state.userDataReducer.districtId,
       cityName: state.userDataReducer.cityName,
@@ -31,13 +31,13 @@ export const useUserData = () => {
     dispatch(setDistrictInfoAction(districtId, cityName, districtName));
   };
 
-  const setUserInfo = (userId: string, userName: string) => {
-    dispatch(setUserInfoAction(userId, userName));
+  const setUserInfo = (userId: string, nickname: string) => {
+    dispatch(setUserInfoAction(userId, nickname));
   };
 
   return {
     userId,
-    userName,
+    nickname,
     regionId,
     districtId,
     districtName,

@@ -7,7 +7,7 @@ import { DistrictLeaderboard, IndividualLeaderboard } from './Leaderboard';
 
 export const LeaderboardTabs = () => {
   const [activeTabKey, setActiveTabKey] = useState<string>('district');
-  // console.log('leaderboard tabs');
+
   return (
     <LeaderboardContainer>
       <Tabs

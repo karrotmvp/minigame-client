@@ -49,8 +49,8 @@ export const Game: React.FC = () => {
       const {
         data: { data },
       } = await minigameApi.gameUserApi.getMyRankInfoUsingGET(gameType);
-      if (data) {
-        updateMyGame2048Data(data.score, data.rank!, data.comment);
+      if (data && data.score && data.rank && data.comment) {
+        updateMyGame2048Data(data.score, data.rank, data.comment);
       }
     }
   };

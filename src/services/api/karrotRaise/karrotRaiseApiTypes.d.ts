@@ -24,7 +24,7 @@ export interface PatchUserCommmentResponse {
 export interface GetUserRankResponse {
   data: {
     comment: string;
-    userName: string;
+    nickname: string;
     score: number;
     town: {
       id: string;
@@ -72,7 +72,7 @@ export interface GetUserInfoResponse {
   data: {
     id: string;
     comment: string;
-    userName: string;
+    nickname: string;
     rank: number;
     score: number;
     town: {

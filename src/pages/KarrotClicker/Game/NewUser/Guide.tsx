@@ -2,6 +2,7 @@
 import { css } from '@emotion/react';
 import { ReactComponent as PointingFinger } from 'assets/svg/KarrotClicker/pointing_finger.svg';
 import { OldButton } from 'components/Button/Button';
+import { useGame } from '../hooks';
 
 const directionText = css`
   font-style: normal;
@@ -19,8 +20,13 @@ type Props = {
   setIsUserNew: React.Dispatch<React.SetStateAction<boolean>>;
 };
 export const Guide: React.FC<Props> = (props) => {
+  const { updateAnimationPlayState, isPaused } = useGame();
+
   const handleCloseGuide = () => {
     props.setIsUserNew(false);
+    console.log(isPaused);
+    updateAnimationPlayState('running');
+    console.log('start game');
   };
   return (
     <>

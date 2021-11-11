@@ -12,7 +12,6 @@ import { Refresh } from '../Leaderboard/Refresh';
 import { MyInfo } from '../Leaderboard/MyInfo';
 import { useMinigameApi } from 'services/api/minigameApi';
 import { ActiveUserCount } from 'components/ActiveUserCount';
-import { TownRankResponseDto } from 'services/openapi_generator';
 import { useAccessToken } from 'hooks/useAccessToken';
 import { useMyGame2048Data } from '../hooks';
 import { useMini } from 'hooks';
@@ -60,8 +59,8 @@ export const Home = () => {
     const {
       data: { data },
     } = await minigameApi.gameUserApi.getMyRankInfoUsingGET(gameType);
-    if (data) {
-      updateMyGame2048Data(data.score, data.rank!, data.comment);
+    if (data && data.score && data.rank && data.comment) {
+      updateMyGame2048Data(data.score, data.rank, data.comment);
     }
   };
 
@@ -83,12 +82,10 @@ export const Home = () => {
       data: { data },
     } = await minigameApi.gameTownApi.getLeaderBoardByTownUsingGET(gameType);
     if (data) {
-      const indexedDistrictRankData = data.map(
-        (item: TownRankResponseDto, index: number) => ({
-          rank: index + 1,
-          ...item,
-        })
-      );
+      const indexedDistrictRankData = data.map((item: any, index: number) => ({
+        rank: index + 1,
+        ...item,
+      }));
       setDistrictLeaderboardData(indexedDistrictRankData);
     }
   }, [gameType, minigameApi]);

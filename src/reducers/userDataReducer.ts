@@ -4,11 +4,11 @@ export const SET_REGION_INFO = 'userData/SET_REGION_INFO' as const;
 export const SET_DISTRICT_INFO = 'userData/SET_DISTRICT_INFO' as const;
 
 // actions,
-export const setUserInfoAction = (userId: string, userName: string) => ({
+export const setUserInfoAction = (userId: string, nickname: string) => ({
   type: SET_USER_INFO,
   payload: {
     userId,
-    userName,
+    nickname,
   },
 });
 
@@ -40,7 +40,7 @@ type UserDataAction =
 // initial state
 type UserDataState = {
   userId: string;
-  userName: string;
+  nickname: string;
   regionId: string;
   districtId: string;
   cityName: string;
@@ -48,7 +48,7 @@ type UserDataState = {
 };
 const initialState: UserDataState = {
   userId: '',
-  userName: '',
+  nickname: '',
   regionId: '',
   districtId: '',
   cityName: '',
@@ -65,7 +65,7 @@ const userDataReducer = (
       return {
         ...state,
         userId: action.payload.userId,
-        userName: action.payload.userName,
+        nickname: action.payload.nickname,
       };
     case SET_REGION_INFO:
       return {

@@ -29,7 +29,8 @@ export const DistrictLeaderboard: React.FC = () => {
 
   useEffect(() => {
     updateDistrictLeaderboard();
-  }, [updateDistrictLeaderboard]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div css={divStyle}>

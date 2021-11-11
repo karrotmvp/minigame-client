@@ -4,6 +4,24 @@ import Medal1Url from 'assets/svg/KarrotClicker/medal1.svg';
 import Medal2Url from 'assets/svg/KarrotClicker/medal2.svg';
 import Medal3Url from 'assets/svg/KarrotClicker/medal3.svg';
 
+interface TopUserRowProps {
+  me?: boolean;
+  rank: number;
+  nickname: string;
+  score: number;
+  comment: string;
+  districtName: string;
+}
+
+interface TopDistrictTowProps {
+  rank: number;
+  cityName: string;
+  districtName: string;
+  playerCount: number;
+  score: number;
+  // comment: string;
+}
+
 export const TopUserRow: React.FC<TopUserRowProps> = (props) => {
   let userComment;
   if (props.comment === '' || props.comment === null) {
@@ -20,7 +38,7 @@ export const TopUserRow: React.FC<TopUserRowProps> = (props) => {
             <DistrictName districtName={props.districtName}>
               {props.districtName.slice(0, -1)}
             </DistrictName>
-            {props.userName}
+            {props.nickname}
           </Name>
           <Score>{commafy(props.score)}</Score>
         </Info>
@@ -46,24 +64,6 @@ export const TopDistrictRow: React.FC<TopDistrictTowProps> = (props) => {
     </Container>
   );
 };
-
-interface TopUserRowProps {
-  me?: boolean;
-  rank: number;
-  userName: string;
-  score: number;
-  comment: string;
-  districtName: string;
-}
-
-interface TopDistrictTowProps {
-  rank: number;
-  cityName: string;
-  districtName: string;
-  playerCount: number;
-  score: number;
-  // comment: string;
-}
 
 const Container = styled.div<{ me?: boolean; rank?: number }>`
   display: flex;

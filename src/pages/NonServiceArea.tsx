@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { ReactComponent as WaitSvg } from 'assets/svg/wait.svg';
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Analytics, useAnalytics } from 'services/analytics';
 import { KarrotRaiseApi, useKarrotRaiseApi } from 'services/karrotRaiseApi';
 // import { useKarrotMarketMini } from 'services/karrotMarketMini';
@@ -104,7 +104,7 @@ export const NonServiceArea = () => {
   const karrotRaiseApi = useKarrotRaiseApi();
   // const karrotMarketMini = useKarrotMarketMini();
   const { regionId } = useUserData();
-  const [cookies, setCookies] = useCookies();
+  const [, setCookies] = useCookies();
   const trackUser = useCallback(
     async (
       karrotRaiseApi: KarrotRaiseApi,

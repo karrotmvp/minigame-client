@@ -7,7 +7,7 @@ type Particle = {
   posY: number;
 };
 
-type GameState = {
+export type GameState = {
   particles: Particle[];
 };
 
@@ -51,11 +51,16 @@ export const useClickAnimation = () => {
   });
 
   const handleParticleSpawn = useCallback((posX, posY) => {
+    console.log(posX, posY);
     dispatch({ type: 'spawn', posX, posY });
   }, []);
   const handleParticleDestroy = useCallback<ParticleDestroyHandler>((id) => {
     dispatch({ type: 'remove', id });
   }, []);
 
-  return { handleParticleSpawn, handleParticleDestroy, state };
+  return {
+    handleParticleSpawn,
+    handleParticleDestroy,
+    state,
+  };
 };
