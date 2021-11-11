@@ -54,7 +54,7 @@ export const Home = () => {
   const analytics = useAnalytics();
   const { accessToken } = useAccessToken();
   const { ejectApp, isInWebEnvironment, handleThirdPartyAgreement } = useMini();
-  const { nickname, districtName } = useUserData();
+  const { nickname, districtName, setUserInfo } = useUserData();
   const {
     rank,
     score,
@@ -132,15 +132,24 @@ export const Home = () => {
     setGameTypeToKarrotClicker();
     try {
       const {
-        data: { data },
+        data: { data: data1 },
+      } = await minigameApi.userApi.getUserInfoUsingGET();
+      if (data1) {
+        setUserInfo(data1.id, data1.nickname);
+        // FA: track user with set user id
+        analytics.setUserId(data1.id);
+        console.log('setuserinfo', data1.id, data1.nickname);
+      }
+      const {
+        data: { data: data2 },
       } = await minigameApi.gameUserApi.getMyRankInfoUsingGET('GAME_KARROT');
-      if (data) {
-        if (data.score && data.rank) {
-          updateMyKarrotClickerData(data.score, data.rank);
+      if (data2) {
+        if (data2.score && data2.rank) {
+          updateMyKarrotClickerData(data2.score, data2.rank);
           console.log(score);
         }
-        if (data.comment) {
-          updateMyComment(data.comment);
+        if (data2.comment) {
+          updateMyComment(data2.comment);
         }
       }
     } catch (error) {
