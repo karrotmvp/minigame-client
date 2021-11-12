@@ -26,13 +26,19 @@ export const Home = () => {
   const minigameApi = useMinigameApi();
   const { accessToken } = useAccessToken();
   const { isInWebEnvironment, handleThirdPartyAgreement } = useMini();
-  const { rank, gameType, updateMyScore, updateMyComment } =
-    useMyGame2048Data();
+  const {
+    rank,
+    gameType,
+    updateMyScore,
+    updateMyComment,
+    updateMyHighestScore,
+  } = useMyGame2048Data();
   const [isRanked, setIsRanked] = useState<boolean>(false);
   const [userLeaderboardData, setUserLeaderboardData] = useState<any[]>([]);
   const [districtLeaderboardData, setDistrictLeaderboardData] = useState<any[]>(
     []
   );
+  // const [townieBestScore, setTownieBestScore] = useState<number>(0);
 
   const goToPlatformPage = () => {
     pop();
@@ -99,6 +105,15 @@ export const Home = () => {
       }
     }
   };
+  const getMyBestScoreEver = async () => {
+    const {
+      data: { data },
+    } = await minigameApi.gameUserApi.getMyRankInfoUsingGET(gameType, 'BEST');
+    if (data) {
+      updateMyHighestScore(data.score, data.rank);
+    }
+  };
+
   const getUserLeaderboardData = useCallback(async () => {
     const {
       data: { data },
@@ -111,7 +126,6 @@ export const Home = () => {
       setUserLeaderboardData(indexedDistrictRankData);
     }
   }, [gameType, minigameApi]);
-
   const getDistrictLeaderboardData = useCallback(async () => {
     const {
       data: { data },
@@ -127,6 +141,7 @@ export const Home = () => {
   // Throttle refresh for 5 seconds
   const handleRefresh = () => {
     updateMyGameData();
+    getMyBestScoreEver();
     getUserLeaderboardData();
     getDistrictLeaderboardData();
   };

@@ -21,17 +21,17 @@ const Text = styled.p`
   margin-left: 8px;
 `;
 
-const Countdown = styled.span`
-  display: inline;
-  margin-left: 5px;
-  font-weight: normal;
-  color: #5b5b5b;
-  font-size: ${rem(10)};
-  span {
-    color: #0e74ff;
-    font-size: ${rem(10)};
-  }
-`;
+// const Countdown = styled.span`
+//   display: inline;
+//   margin-left: 5px;
+//   font-weight: normal;
+//   color: #5b5b5b;
+//   font-size: ${rem(10)};
+//   span {
+//     color: #0e74ff;
+//     font-size: ${rem(10)};
+//   }
+// `;
 
 type Props = {
   handleRefresh: () => void;

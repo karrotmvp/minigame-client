@@ -86,6 +86,7 @@ const App: React.FC = () => {
       const [code, regionId] = getQueryParams();
       analytics.logEvent('launch_app');
       console.log(code, regionId);
+
       // handle if code and/or region id does not exist
       if (regionId) {
         setRegionInfo(regionId);
@@ -97,6 +98,7 @@ const App: React.FC = () => {
     } catch (error) {
       console.error(error);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [analytics]);
 
   return (

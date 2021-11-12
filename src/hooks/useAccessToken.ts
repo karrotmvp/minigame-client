@@ -10,21 +10,6 @@ export const useAccessToken = () => {
   };
 };
 
-// const getMyInfo = useCallback(async () => {
-//   try {
-//     const {
-//       data: { data },
-//     } = await minigameApi.userApi.getUserInfoUsingGET();
-//     if (data) {
-//       setUserInfo(data.id, data.nickname);
-//       // FA: track user with set user id
-//       analytics.setUserId(data.id);
-//     }
-//   } catch (error) {
-//     console.error(error);
-//   }
-// }, [analytics, minigameApi.userApi, setUserInfo]);
-
 export const useSignAccessToken = () => {
   // const analytics = useAnalytics();
   const minigameApi = useMinigameApi();

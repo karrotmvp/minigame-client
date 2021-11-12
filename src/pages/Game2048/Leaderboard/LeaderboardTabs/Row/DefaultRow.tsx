@@ -3,6 +3,59 @@ import { commafy } from 'utils/functions/numberFunctions';
 import React from 'react';
 import { rem } from 'polished';
 
+interface DefaultUserRowProps {
+  me?: boolean;
+  rank: number;
+  nickname: string;
+  score: number;
+  cityName: string;
+  districtName: string;
+}
+
+export const DefaultUserRow: React.FC<DefaultUserRowProps> = (props) => {
+  return (
+    <Container me={props.me}>
+      <Rank>{commafy(props.rank)}</Rank>
+      <ContentsWrapper>
+        <Info>
+          <Name>
+            {props.nickname}
+            <DistrictName districtName={props.districtName}>
+              {props.cityName.slice(0, 2)} {props.districtName}
+            </DistrictName>
+          </Name>
+          <Score>{commafy(props.score)}</Score>
+        </Info>
+      </ContentsWrapper>
+    </Container>
+  );
+};
+
+interface DefaultDistrictRowProps {
+  rank: number;
+  cityName: string;
+  districtName: string;
+  playerCount: number;
+  score: number;
+}
+export const DefaultDistrictRow: React.FC<DefaultDistrictRowProps> = (
+  props
+) => {
+  return (
+    <Container>
+      <Rank>{commafy(props.rank)}</Rank>
+      <ContentsWrapper>
+        <Info>
+          <Name>
+            {props.cityName.slice(0, -3)} {props.districtName}
+          </Name>
+          <Score>{commafy(props.score)}</Score>
+        </Info>
+        <PlayerCount>{commafy(props.playerCount)}명 참여</PlayerCount>
+      </ContentsWrapper>
+    </Container>
+  );
+};
 const Container = styled.div<{ me?: boolean }>`
   display: flex;
   flex-flow: row;
@@ -97,57 +150,3 @@ const PlayerCount = styled.div`
 
   color: #7c7c7c;
 `;
-
-interface DefaultUserRowProps {
-  me?: boolean;
-  rank: number;
-  nickname: string;
-  score: number;
-  cityName: string;
-  districtName: string;
-}
-
-export const DefaultUserRow: React.FC<DefaultUserRowProps> = (props) => {
-  return (
-    <Container me={props.me}>
-      <Rank>{commafy(props.rank)}</Rank>
-      <ContentsWrapper>
-        <Info>
-          <Name>
-            {props.nickname}
-            <DistrictName districtName={props.districtName}>
-              {props.cityName.slice(0, 2)} {props.districtName}
-            </DistrictName>
-          </Name>
-          <Score>{commafy(props.score)}</Score>
-        </Info>
-      </ContentsWrapper>
-    </Container>
-  );
-};
-
-interface DefaultDistrictRowProps {
-  rank: number;
-  cityName: string;
-  districtName: string;
-  playerCount: number;
-  score: number;
-}
-export const DefaultDistrictRow: React.FC<DefaultDistrictRowProps> = (
-  props
-) => {
-  return (
-    <Container>
-      <Rank>{commafy(props.rank)}</Rank>
-      <ContentsWrapper>
-        <Info>
-          <Name>
-            {props.cityName.slice(0, -3)} {props.districtName}
-          </Name>
-          <Score>{commafy(props.score)}</Score>
-        </Info>
-        <PlayerCount>{commafy(props.playerCount)}명 참여</PlayerCount>
-      </ContentsWrapper>
-    </Container>
-  );
-};

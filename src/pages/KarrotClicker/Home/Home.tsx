@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
+import { useNavigator } from '@karrotframe/navigator';
 import { BackIcon } from 'assets/Icon';
 import { ActiveUserCount } from 'components/ActiveUserCount';
 import { OldButton } from 'components/Button';
@@ -7,7 +7,7 @@ import { Nav } from 'components/Navigation/Nav';
 import { useAccessToken, useMini, useUserData } from 'hooks';
 import { rem } from 'polished';
 import { useAnalytics } from 'services/analytics';
-import { useMinigameApi } from 'services/api/minigameApi';
+// import { useMinigameApi } from 'services/api/minigameApi';
 import { useGame } from '../Game/hooks';
 import { useMyKarrotClickerData } from '../hooks';
 import { LeaderboardTabs } from '../Leaderboard/LeaderboardTabs';

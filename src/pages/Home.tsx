@@ -4,13 +4,14 @@ import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
 import { useMinigameApi } from 'services/api/minigameApi';
 import { useAccessToken, useMini, useUserData } from 'hooks';
 import { Nav } from 'components/Navigation/Nav';
-import { BackIcon, CloseIcon } from 'assets/Icon';
+import { CloseIcon } from 'assets/Icon';
 import { rem } from 'polished';
 import { useMyGame2048Data } from './Game2048/hooks';
 import { useMyKarrotClickerData } from './KarrotClicker/hooks';
 import { useAnalytics } from 'services/analytics';
 import Game2048CardImgUrl from 'assets/svg/game2048/game_2048_card_img.svg';
 import KarrotClickerCardImgUrl from 'assets/svg/KarrotClicker/karrot_clicker_card_img.svg';
+import { getMini } from 'services/karrotMarket/mini';
 
 export const Home: React.FC = () => {
   const analytics = useAnalytics();
@@ -110,8 +111,20 @@ export const Home: React.FC = () => {
       console.log('is platform page on top?', isTop);
       updateUserInfo();
     }
-  }, [accessToken, isTop, updateUserInfo]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [accessToken, isTop]);
 
+  const install = () => {
+    const mini = getMini();
+    mini.startPreset({
+      preset: `https://mini-assets.kr.karrotmarket.com/presets/mvp-game-recommend-installation/alpha.html`,
+      onSuccess: async function (result) {
+        if (result.ok) {
+          console.log('즐겨찾기 성공');
+        }
+      },
+    });
+  };
   return (
     <Page className="game-platform-page">
       <Nav appendLeft={<CloseIcon />} onClickLeft={leaveMiniApp} />
@@ -143,6 +156,7 @@ export const Home: React.FC = () => {
         </Card>
       </Games>
       <Break />
+      <button onClick={install}>button</button>
     </Page>
   );
 };
@@ -215,13 +229,13 @@ const CardImg2 = styled.img`
   bottom: 0;
   left: 23px;
 `;
-const Arrow = styled.span`
-  height: 25px;
-  width: 25px;
-  background-color: #fff;
-  border-radius: 50%;
-  display: inline-block;
-`;
+// const Arrow = styled.span`
+//   height: 25px;
+//   width: 25px;
+//   background-color: #fff;
+//   border-radius: 50%;
+//   display: inline-block;
+// `;
 
 const Title = styled.h1`
   font-family: Cafe24Ssurround;

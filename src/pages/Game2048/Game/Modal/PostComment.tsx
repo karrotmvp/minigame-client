@@ -5,7 +5,7 @@ import { useNavigator } from '@karrotframe/navigator';
 import { useUserData } from 'hooks';
 import { useMyGame2048Data } from 'pages/Game2048/hooks';
 import { rem } from 'polished';
-import { useMinigameApi } from 'services/api/minigameApi';
+// import { useMinigameApi } from 'services/api/minigameApi';
 
 type CommentType = {
   comment: string;
@@ -18,10 +18,9 @@ type Props = {
 
 export const PostComment: React.FC<Props> = (props) => {
   const { push } = useNavigator();
-  const minigameApi = useMinigameApi();
+  // const minigameApi = useMinigameApi();
   const { townName2: districtName } = useUserData();
-  const { score, rank, comment, gameType, updateMyComment } =
-    useMyGame2048Data();
+  const { rank, comment, updateMyComment } = useMyGame2048Data();
   const [newComment, setNewComment] = useState<CommentType>({
     comment: comment,
     length: comment.length,

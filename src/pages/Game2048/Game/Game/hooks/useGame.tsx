@@ -286,6 +286,7 @@ export const useGame = () => {
     generateRandomTile();
 
     console.log('reset');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch]);
   const checkGameOver = () => {
     const emptyTiles = findEmptyTiles();

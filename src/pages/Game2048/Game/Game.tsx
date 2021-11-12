@@ -13,7 +13,7 @@ import { Board } from './Game/Board';
 import { useGame } from './Game/hooks';
 import { animationDuration } from './Game/styles';
 import { PostComment } from './Modal';
-import { CurrentScore, MyHighScore, TownieHighScore } from './Score';
+import { CurrentScore, MyBestScore, TownieBestScore } from './Score';
 
 export const Game: React.FC = () => {
   const { isTop } = useCurrentScreen();
@@ -21,7 +21,8 @@ export const Game: React.FC = () => {
   const minigameApi = useMinigameApi();
   const { isInWebEnvironment } = useMini();
   const {
-    score: bestScore,
+    score: myBestScore,
+    highestScore,
     gameType,
     updateMyScore,
     updateMyComment,
@@ -37,54 +38,9 @@ export const Game: React.FC = () => {
   } = useGame();
   const [isUserNew, setIsUserNew] = useState<boolean>(false);
   const [isUserInTopTen, setIsUserInTopTen] = useState<boolean>(false);
-
-  const goToLeaderboardPage = () => {
-    replace(`/game-2048/leaderboard`);
-  };
-  const handlePlayAgain = () => {
-    resetGame();
-    console.log('handle play again');
-  };
-
-  const updateMyBestScore = async () => {
-    await minigameApi.gamePlayApi.updateScoreUsingPATCH(gameType, {
-      score: currentScore,
-    });
-  };
-  const updateMyData = async () => {
-    const {
-      data: { data },
-    } = await minigameApi.gameUserApi.getMyRankInfoUsingGET(gameType);
-    if (data) {
-      if (data.score && data.rank) {
-        updateMyScore(data.score, data.rank);
-      }
-      if (data.comment) {
-        updateMyComment(data.comment);
-      }
-      return data;
-    }
-  };
-
-  const handleGameOver = async () => {
-    // resetGame();
-    if (isInWebEnvironment) {
-      goToLeaderboardPage();
-    }
-    // only patch score to db if current score is higher than the best score
-    if (currentScore > bestScore) {
-      await updateMyBestScore().then((response) => response);
-    } else {
-      await updateMyData().then((response) => {
-        if (response?.rank! <= 10 && response?.rank! > 0) {
-          // open post-comment modal if user is in top ten
-          setIsUserInTopTen(true);
-        }
-      });
-      goToLeaderboardPage();
-    }
-  };
-
+  // const [townieBestScore, setTownieBestScore] = useState<number>(0);
+  // game controller
+  // =================================================================
   // mobile(touch) friendly
   const handlers = useSwipeable({
     onSwiped: (eventData) => console.log('User Swiped!', eventData),
@@ -130,23 +86,101 @@ export const Game: React.FC = () => {
     animationDuration,
     { leading: true, trailing: false }
   );
-
+  // =================================================================
   useEffect(() => {
+    console.log(highestScore);
     if (isTop) {
-      if (bestScore === 0 && currentScore === 0) {
+      if (highestScore === 0) {
         setIsUserNew(true);
         console.log('guide is on for new user');
       }
     }
-  }, [bestScore, currentScore, isTop]);
+  }, [highestScore, isTop]);
+
+  // page navigation
+  // =================================================================
+  const goToLeaderboardPage = () => {
+    replace(`/game-2048/leaderboard`);
+  };
+  const handlePlayAgain = () => {
+    resetGame();
+    console.log('handle play again');
+  };
+
+  // const getTownieBestScoreEver = async () => {
+  //   const {
+  //     data: { data },
+  //   } = await minigameApi.gameTownApi.getLeaderBoardByTownUsingGET(
+  //     gameType,
+  //     undefined,
+  //     1
+  //   );
+  //   if (data) {
+  //     setTownieBestScore(data[0].score);
+  //   }
+  // };
+
+  //
+  const updateMyBestScore = async () => {
+    await minigameApi.gamePlayApi.updateScoreUsingPATCH(gameType, {
+      score: currentScore,
+    });
+  };
+  const updateMyData = async () => {
+    const {
+      data: { data },
+    } = await minigameApi.gameUserApi.getMyRankInfoUsingGET(gameType);
+    if (data) {
+      if (data.score && data.rank) {
+        updateMyScore(data.score, data.rank);
+      }
+      if (data.comment) {
+        updateMyComment(data.comment);
+      }
+      return data;
+    }
+  };
+
+  const handleGameOver = async () => {
+    // resetGame();
+    if (isInWebEnvironment) {
+      console.log(`bypass in web environment: go from game to leaderboard`);
+      goToLeaderboardPage();
+    }
+    // only patch score to db if current score is higher than the best score
+    console.log(myBestScore, currentScore);
+    if (currentScore > myBestScore) {
+      updateMyBestScore().then((response) => {
+        console.log(response);
+        updateMyData().then((response) => {
+          if (response?.rank! <= 10 && response?.rank! > 0) {
+            // open post-comment modal if user is in top ten
+            setIsUserInTopTen(true);
+          }
+        });
+        goToLeaderboardPage();
+      });
+    } else {
+      updateMyData().then((response) => {
+        console.log(response);
+
+        if (response?.rank! <= 10 && response?.rank! > 0) {
+          // open post-comment modal if user is in top ten
+          setIsUserInTopTen(true);
+        }
+      });
+      goToLeaderboardPage();
+    }
+  };
+
   // useEffect(() => {
   //   setIsUserInTopTen(true);
   // }, []);
   return (
     <Page className="game-page">
       <HighScoreContainer>
-        <MyHighScore />
-        <TownieHighScore />
+        <MyBestScore myBestScore={myBestScore} />
+        <TownieBestScore />
       </HighScoreContainer>
       <CurrentScore score={currentScore} />
       <Board
