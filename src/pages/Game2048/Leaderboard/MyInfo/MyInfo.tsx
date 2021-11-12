@@ -6,7 +6,7 @@ import { useUserData } from 'hooks';
 import { useMyGame2048Data } from 'pages/Game2048/hooks';
 
 export const MyInfo: React.FC = () => {
-  const { nickname, districtName } = useUserData();
+  const { nickname, townName2: districtName } = useUserData();
   const { score, rank } = useMyGame2048Data();
 
   const highestRank = 1;

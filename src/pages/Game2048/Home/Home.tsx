@@ -16,54 +16,89 @@ import { useAccessToken } from 'hooks/useAccessToken';
 import { useMyGame2048Data } from '../hooks';
 import { useMini } from 'hooks';
 import { useThrottledCallback } from 'use-debounce/lib';
+import { useAnalytics } from 'services/analytics';
+import { motion } from 'framer-motion';
 
 export const Home = () => {
   const { isTop } = useCurrentScreen();
   const { push, pop } = useNavigator();
+  const analytics = useAnalytics();
   const minigameApi = useMinigameApi();
   const { accessToken } = useAccessToken();
   const { isInWebEnvironment, handleThirdPartyAgreement } = useMini();
-  const { rank, gameType, updateMyGame2048Data } = useMyGame2048Data();
+  const { rank, gameType, updateMyScore, updateMyComment } =
+    useMyGame2048Data();
   const [isRanked, setIsRanked] = useState<boolean>(false);
   const [userLeaderboardData, setUserLeaderboardData] = useState<any[]>([]);
   const [districtLeaderboardData, setDistrictLeaderboardData] = useState<any[]>(
     []
   );
 
-  const goToMainPage = () => {
+  const goToPlatformPage = () => {
     pop();
   };
   const goToGamePage = () => {
     push(`/game-2048/game`);
   };
 
+  // game start button handler
+  // =================================================================
+  const handleReturningUser = () => {
+    // if access token exists, user is not new
+    analytics.logEvent('click_game_start_button', {
+      game_type: 'karrot-clicker',
+      is_new_user: false,
+    });
+  };
+  const handleNewUser = () => {
+    // if user is new, open third-party agreement preset
+    analytics.logEvent('click_game_start_button', {
+      game_type: 'karrot-clicker',
+      is_new_user: true,
+    });
+    handleThirdPartyAgreement(goToGamePage);
+  };
   const handleGameStart = () => {
     // bypass in web environment
     if (isInWebEnvironment) {
       console.log('bypass in web environment: home-page to game-page');
       goToGamePage();
+      return;
+    }
+    if (accessToken) {
+      handleReturningUser();
+      goToGamePage();
     } else {
-      if (accessToken) {
-        goToGamePage();
-      } else {
-        handleThirdPartyAgreement(goToGamePage);
-        // goToGamePage();
-      }
+      handleNewUser();
     }
   };
-  const getLastWeekTopTownie = () => {};
+  // =================================================================
+
+  // last week winner handler
+  // =================================================================
+  const getLastWeekTopTownie = async () => {
+    // try {
+    //   const {data:data} = await minigameApi.gameUserApi.getLeaderBoardByUserUsingGET(gameType, month, size, week, year, options)
+    // }
+  };
 
   const getLastWeekTopDistrict = () => {};
 
+  // refresh button handler
+  // =================================================================
   const updateMyGameData = async () => {
     const {
       data: { data },
     } = await minigameApi.gameUserApi.getMyRankInfoUsingGET(gameType);
-    if (data && data.score && data.rank && data.comment) {
-      updateMyGame2048Data(data.score, data.rank, data.comment);
+    if (data) {
+      if (data.score && data.rank) {
+        updateMyScore(data.score, data.rank);
+      }
+      if (data.comment) {
+        updateMyComment(data.comment);
+      }
     }
   };
-
   const getUserLeaderboardData = useCallback(async () => {
     const {
       data: { data },
@@ -89,14 +124,14 @@ export const Home = () => {
       setDistrictLeaderboardData(indexedDistrictRankData);
     }
   }, [gameType, minigameApi]);
-
   // Throttle refresh for 5 seconds
-  const handleRefresh = useThrottledCallback(() => {
+  const handleRefresh = () => {
     updateMyGameData();
     getUserLeaderboardData();
     getDistrictLeaderboardData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, 5000);
+  };
+  const throttledRefresh = useThrottledCallback(handleRefresh, 3000);
+  // =================================================================
 
   useEffect(() => {
     if (isTop) {
@@ -109,7 +144,7 @@ export const Home = () => {
   }, [isTop]);
   return (
     <Page>
-      <Nav appendLeft={<BackIcon />} onClickLeft={goToMainPage} />
+      <Nav appendLeft={<BackIcon />} onClickLeft={goToPlatformPage} />
       <Banner className="banner">
         <BannerImage />
       </Banner>
@@ -117,12 +152,14 @@ export const Home = () => {
         <LastWeekTopDistrict getLastWeekTopDistrict={getLastWeekTopDistrict} />
         <LastWeekTopTownie getLastWeekTopTownie={getLastWeekTopTownie} />
       </Container>
-      <Refresh handleRefresh={handleRefresh} />
-      <Container>{isRanked ? <MyInfo /> : null}</Container>
-      <LeaderboardTabs
-        districtLeaderboardData={districtLeaderboardData}
-        userLeaderboardData={userLeaderboardData}
-      />
+      <DraggableDiv drag="y">
+        <Refresh handleRefresh={throttledRefresh} />
+        <Container>{isRanked ? <MyInfo /> : null}</Container>
+        <LeaderboardTabs
+          districtLeaderboardData={districtLeaderboardData}
+          userLeaderboardData={userLeaderboardData}
+        />
+      </DraggableDiv>
       <div
         style={{
           position: 'absolute',
@@ -175,4 +212,9 @@ const ActionItems = styled.div`
   background: #ffffff;
   box-sizing: border-box;
   box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+`;
+
+const DraggableDiv = styled(motion.div)`
+  background: #fff;
+  flex: 1;
 `;

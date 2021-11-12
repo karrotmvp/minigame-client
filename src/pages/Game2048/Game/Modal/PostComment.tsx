@@ -19,8 +19,8 @@ type Props = {
 export const PostComment: React.FC<Props> = (props) => {
   const { push } = useNavigator();
   const minigameApi = useMinigameApi();
-  const { districtName } = useUserData();
-  const { score, rank, comment, gameType, updateMyGame2048Data } =
+  const { townName2: districtName } = useUserData();
+  const { score, rank, comment, gameType, updateMyComment } =
     useMyGame2048Data();
   const [newComment, setNewComment] = useState<CommentType>({
     comment: comment,
@@ -42,7 +42,8 @@ export const PostComment: React.FC<Props> = (props) => {
     // minigameApi
     //   .gamePlayApi()
     //   .addCommentUsingPATCH(gameType, newComment.comment);
-    updateMyGame2048Data(score, rank, newComment.comment);
+    // updateMyScore(score, rank, newComment.comment);
+    updateMyComment(newComment.comment);
     props.setIsUserInTopTen(false);
     goToLeaderboardPage();
   };

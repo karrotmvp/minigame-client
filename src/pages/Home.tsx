@@ -1,30 +1,38 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import styled from '@emotion/styled';
 import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
 import { useMinigameApi } from 'services/api/minigameApi';
-import { useMini } from 'hooks';
+import { useAccessToken, useMini, useUserData } from 'hooks';
 import { Nav } from 'components/Navigation/Nav';
 import { BackIcon, CloseIcon } from 'assets/Icon';
 import { rem } from 'polished';
 import { useMyGame2048Data } from './Game2048/hooks';
 import { useMyKarrotClickerData } from './KarrotClicker/hooks';
+import { useAnalytics } from 'services/analytics';
 import Game2048CardImgUrl from 'assets/svg/game2048/game_2048_card_img.svg';
 import KarrotClickerCardImgUrl from 'assets/svg/KarrotClicker/karrot_clicker_card_img.svg';
 
 export const Home: React.FC = () => {
+  const analytics = useAnalytics();
   const minigameApi = useMinigameApi();
-  const { push } = useNavigator();
   const { isTop } = useCurrentScreen();
+  const { push } = useNavigator();
   const { isInWebEnvironment, ejectApp } = useMini();
-  const [userCount, setUserCount] = useState<number>(0);
-  const { updateMyGame2048Data, setGameTypeToGame2048 } = useMyGame2048Data();
+  const { accessToken } = useAccessToken();
+  const { setUserInfo, townName3 } = useUserData();
+  const {
+    updateMyScore: updateMyGame2048Score,
+    updateMyComment: updateMyGame2048Comment,
+    setGameTypeToGame2048,
+  } = useMyGame2048Data();
   const {
     updateMyKarrotClickerData,
-    updateMyComment,
+    updateMyComment: updateMyKarrotClickerComment,
     setGameTypeToKarrotClicker,
   } = useMyKarrotClickerData();
-  const exitApp = () => {
-    console.log('Ejected from the app. Now back to Karrot Market');
+
+  const leaveMiniApp = () => {
+    analytics.logEvent('click_leave_mini_app_button');
     ejectApp();
   };
 
@@ -37,12 +45,18 @@ export const Home: React.FC = () => {
       return;
     }
     try {
+      analytics.logEvent('click_game_enter_button', {
+        game_type: 'game-2048',
+      });
       const {
         data: { data },
       } = await minigameApi.gameUserApi.getMyRankInfoUsingGET('GAME_2048');
       if (data) {
-        if (data && data.score && data.rank && data.comment) {
-          updateMyGame2048Data(data.score, data.rank, data.comment);
+        if (data.score && data.rank) {
+          updateMyGame2048Score(data.score, data.rank);
+        }
+        if (data.comment) {
+          updateMyGame2048Comment(data.comment);
         }
       }
       push(`/game-2048`);
@@ -59,6 +73,9 @@ export const Home: React.FC = () => {
       return;
     }
     try {
+      analytics.logEvent('click_game_enter_button', {
+        game_type: 'karrot-clicker',
+      });
       const {
         data: { data },
       } = await minigameApi.gameUserApi.getMyRankInfoUsingGET('GAME_KARROT');
@@ -67,7 +84,7 @@ export const Home: React.FC = () => {
           updateMyKarrotClickerData(data.score, data.rank);
         }
         if (data.comment) {
-          updateMyComment(data.comment);
+          updateMyKarrotClickerComment(data.comment);
         }
       }
       push(`/karrot-clicker`);
@@ -76,18 +93,24 @@ export const Home: React.FC = () => {
     }
   };
 
-  const getUserCount = useCallback(async () => {
-    const { data } = await minigameApi.userApi.getUserCountUsingGET();
-    if (data.data) {
-      setUserCount(data.data);
+  const updateUserInfo = useCallback(async () => {
+    const {
+      data: { data },
+    } = await minigameApi.userApi.getUserInfoUsingGET();
+    if (data) {
+      setUserInfo(data.id, data.nickname);
+      // FA: track user with set user id
+      analytics.setUserId(data.id);
+      console.log('setuserinfo', data.id, data.nickname);
     }
-  }, [minigameApi]);
+  }, [analytics, minigameApi.userApi, setUserInfo]);
 
   useEffect(() => {
-    if (isTop) {
-      getUserCount();
+    if (isTop && accessToken) {
+      console.log('is platform page on top?', isTop);
+      updateUserInfo();
     }
-  }, [getUserCount, isTop]);
+  }, [accessToken, isTop, updateUserInfo]);
 
   return (
     <Page className="game-platform-page">
@@ -98,7 +121,8 @@ export const Home: React.FC = () => {
         같이 게임해요!
       </Greetings>
       <Games>
-        <Card color={`blue`} onClick={goToGame2048}>
+        <Card game={`game-2048`} onClick={goToGame2048}>
+          <CardImg1 src={Game2048CardImgUrl} />
           <Title>2048 퍼즐</Title>
           {/* <Arrow /> */}
 
@@ -112,7 +136,7 @@ export const Home: React.FC = () => {
           <CardImg2 src={KarrotClickerCardImgUrl} />
           <Title>당근모아</Title>
           <Text>
-            남는 게 시간이라면?
+            한 번 누르면 멈추기 어려운
             <br />
             귀여운 클리커 게임
           </Text>
@@ -158,7 +182,7 @@ const Card = styled.a<{ game: string }>`
   background-color: ${(props) =>
     props.game === `game-2048`
       ? `#0E74FF`
-      : props.color === `orange`
+      : props.game === `karrot-clicker`
       ? `#FF8845`
       : `#EFEFEF`};
   box-shadow: ${(props) =>

@@ -5,7 +5,9 @@ import {
   GameUserApi,
   GameTownApi,
   GamePlayApi,
-  TownApiFactory,
+  SurveyApiFactory,
+  NotificationApiFactory,
+  RegionApiFactory,
 } from '../../openapi_generator/api';
 import { Configuration } from '../../openapi_generator/configuration';
 import { useAccessToken } from 'hooks';
@@ -24,13 +26,15 @@ function CreateMinigameApi({
       apiKey: `Bearer ${accessToken}`,
       basePath: env.baseUrl,
     });
-
-    const oauth2Api = new Oauth2Api(configuration);
-    const userApi = new UserApi(configuration);
-    const gameUserApi = new GameUserApi(configuration);
-    const gameTownApi = new GameTownApi(configuration);
     const gamePlayApi = new GamePlayApi(configuration);
-    const townApi = () => TownApiFactory(configuration);
+    const gameTownApi = new GameTownApi(configuration);
+    const gameUserApi = new GameUserApi(configuration);
+    const notificationApi = () => NotificationApiFactory(configuration);
+    const oauth2Api = new Oauth2Api(configuration);
+    const regionApi = () => RegionApiFactory(configuration);
+    const surveyApi = () => SurveyApiFactory(configuration);
+    const userApi = new UserApi(configuration);
+
     console.log(gameUserApi);
     return {
       oauth2Api,
@@ -38,7 +42,9 @@ function CreateMinigameApi({
       gameUserApi,
       gameTownApi,
       gamePlayApi,
-      townApi,
+      regionApi,
+      surveyApi,
+      notificationApi,
     };
   } else {
     console.log('no access token');
@@ -47,7 +53,9 @@ function CreateMinigameApi({
     const gameUserApi = new GameUserApi();
     const gameTownApi = new GameTownApi();
     const gamePlayApi = new GamePlayApi();
-    const townApi = () => TownApiFactory();
+    const regionApi = () => RegionApiFactory();
+    const surveyApi = () => SurveyApiFactory();
+    const notificationApi = () => NotificationApiFactory();
 
     return {
       oauth2Api,
@@ -55,7 +63,9 @@ function CreateMinigameApi({
       gameUserApi,
       gameTownApi,
       gamePlayApi,
-      townApi,
+      regionApi,
+      surveyApi,
+      notificationApi,
     };
   }
 }

@@ -12,37 +12,54 @@ import { useMyGame2048Data } from '../hooks';
 import { useMini } from 'hooks';
 import { Refresh } from './Refresh';
 import { useThrottledCallback } from 'use-debounce/lib';
+import { useAnalytics } from 'services/analytics';
+import { useGame } from '../Game/Game/hooks';
 
 export const Leaderboard = () => {
   const { isTop } = useCurrentScreen();
-  const { pop } = useNavigator();
+  const { replace, push } = useNavigator();
   const minigameApi = useMinigameApi();
-  const { ejectApp, shareApp } = useMini();
-  const { rank, gameType, updateMyGame2048Data } = useMyGame2048Data();
+  const analytics = useAnalytics();
+  const { shareApp } = useMini();
+  const { resetGame } = useGame();
+  const { rank, gameType, updateMyScore, updateMyComment } =
+    useMyGame2048Data();
   const [isRanked, setIsRanked] = useState<boolean>(false);
   const [userLeaderboardData, setUserLeaderboardData] = useState<any[]>([]);
   const [districtLeaderboardData, setDistrictLeaderboardData] = useState<any[]>(
     []
   );
 
-  const exitApp = () => {
-    console.log('Ejected from the app. Now back to Karrot Market');
-    ejectApp();
+  // page navigation
+  const goBackToPlatform = () => {
+    analytics.logEvent('click_leave_game_button', {
+      game_type: 'game-2048',
+      from: 'leaderboard_page',
+    });
+    push(`/`);
   };
   const goToGamePage = () => {
-    // push(`/game-2048/game`);
-    pop();
+    replace(`/game-2048/game`);
   };
 
   const handlePlayAgain = () => {
+    analytics.logEvent('click_game_play_again_button', {
+      game_type: 'game-2048',
+    });
+    resetGame();
     goToGamePage();
   };
   const updateMyGameData = async () => {
     const {
       data: { data },
     } = await minigameApi.gameUserApi.getMyRankInfoUsingGET(gameType);
-    if (data && data.score && data.rank && data.comment) {
-      updateMyGame2048Data(data.score, data.rank, data.comment);
+    if (data) {
+      if (data.score && data.rank) {
+        updateMyScore(data.score, data.rank);
+      }
+      if (data.comment) {
+        updateMyComment(data.comment);
+      }
     }
   };
 
@@ -50,6 +67,9 @@ export const Leaderboard = () => {
     const url = 'https://daangn.onelink.me/HhUa/3a219555';
     const text = '2048 퍼즐을 플레이 하고 이웃들에게 한 마디를 남겨보세요!';
     shareApp(url, text);
+    analytics.logEvent('click_share_button', {
+      game_type: 'game-2048',
+    });
   };
 
   const getUserLeaderboardData = useCallback(async () => {
@@ -79,27 +99,27 @@ export const Leaderboard = () => {
   }, [gameType, minigameApi]);
 
   // Throttle refresh for 5 seconds
-  const handleRefresh = useThrottledCallback(() => {
+  const handleRefresh = () => {
     updateMyGameData();
     getUserLeaderboardData();
     getDistrictLeaderboardData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, 5000);
+  };
+  const throttledRefresh = useThrottledCallback(handleRefresh, 3000);
 
   useEffect(() => {
     if (isTop) {
       handleRefresh();
     }
     if (rank !== 0) {
-      setIsRanked(true);
+      setIsRanked(() => true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isTop]);
   return (
     <Page>
-      <Nav appendLeft={<CloseIcon />} onClickLeft={exitApp} />
+      <Nav appendLeft={<CloseIcon />} onClickLeft={goBackToPlatform} />
 
-      <Refresh handleRefresh={handleRefresh} />
+      <Refresh handleRefresh={throttledRefresh} />
       <Container>{isRanked ? <MyInfo /> : null}</Container>
       <LeaderboardTabs
         districtLeaderboardData={districtLeaderboardData}

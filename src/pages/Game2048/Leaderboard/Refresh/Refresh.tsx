@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
 import { RefreshButton } from 'components/Button';
-import { WeeklyCountdown } from 'components/Timer';
+// import { WeeklyCountdown } from 'components/Timer';
 import { rem } from 'polished';
 import React from 'react';
 

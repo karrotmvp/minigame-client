@@ -1,7 +1,7 @@
 // action types
 export const SET_USER_INFO = 'userData/SET_USER_INFO' as const;
 export const SET_REGION_INFO = 'userData/SET_REGION_INFO' as const;
-export const SET_DISTRICT_INFO = 'userData/SET_DISTRICT_INFO' as const;
+export const SET_TOWN_INFO = 'userData/SET_TOWN_INFO' as const;
 
 // actions,
 export const setUserInfoAction = (userId: string, nickname: string) => ({
@@ -19,40 +19,44 @@ export const setRegionInfoAction = (regionId: string) => ({
   },
 });
 
-export const setDistrictInfoAction = (
-  districtId: string, //id
-  cityName: string, //name1
-  districtName: string //name2
+export const setTownInfoAction = (
+  townId: string,
+  townName1: string,
+  townName2: string,
+  townName3: string
 ) => ({
-  type: SET_DISTRICT_INFO,
+  type: SET_TOWN_INFO,
   payload: {
-    districtId,
-    cityName,
-    districtName,
+    townId,
+    townName1,
+    townName2,
+    townName3,
   },
 });
 
 type UserDataAction =
   | ReturnType<typeof setUserInfoAction>
   | ReturnType<typeof setRegionInfoAction>
-  | ReturnType<typeof setDistrictInfoAction>;
+  | ReturnType<typeof setTownInfoAction>;
 
 // initial state
 type UserDataState = {
   userId: string;
   nickname: string;
   regionId: string;
-  districtId: string;
-  cityName: string;
-  districtName: string;
+  townId: string;
+  townName1: string;
+  townName2: string;
+  townName3: string;
 };
 const initialState: UserDataState = {
   userId: '',
   nickname: '',
   regionId: '',
-  districtId: '',
-  cityName: '',
-  districtName: '',
+  townId: '',
+  townName1: '',
+  townName2: '',
+  townName3: '',
 };
 
 // reducer
@@ -73,12 +77,13 @@ const userDataReducer = (
         regionId: action.payload.regionId,
       };
 
-    case SET_DISTRICT_INFO:
+    case SET_TOWN_INFO:
       return {
         ...state,
-        districtId: action.payload.districtId,
-        cityName: action.payload.cityName,
-        districtName: action.payload.districtName,
+        townId: action.payload.townId,
+        townName1: action.payload.townName1,
+        townName2: action.payload.townName2,
+        townName3: action.payload.townName3,
       };
     default:
       return state;

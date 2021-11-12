@@ -33,7 +33,7 @@ export const CommentModal: React.FC<Props> = (props) => {
     length: prevComment.length,
   });
 
-  const { districtName } = useUserData();
+  const { townName2: districtName } = useUserData();
   // Page navigation
   const goToLeaderboardPage = () => {
     replace(`/karrot-clicker/leaderboard`);

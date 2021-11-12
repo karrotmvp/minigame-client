@@ -1,6 +1,7 @@
 import styled from '@emotion/styled';
-import { useCurrentScreen } from '@karrotframe/navigator';
+import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
 import { Button } from 'components/Button';
+import { useMini } from 'hooks';
 import { rem } from 'polished';
 import { useEffect, useState } from 'react';
 import ReactModal from 'react-modal';
@@ -16,11 +17,14 @@ import { CurrentScore, MyHighScore, TownieHighScore } from './Score';
 
 export const Game: React.FC = () => {
   const { isTop } = useCurrentScreen();
+  const { replace } = useNavigator();
   const minigameApi = useMinigameApi();
+  const { isInWebEnvironment } = useMini();
   const {
     score: bestScore,
     gameType,
-    updateMyGame2048Data,
+    updateMyScore,
+    updateMyComment,
   } = useMyGame2048Data();
   const {
     score: currentScore,
@@ -34,24 +38,50 @@ export const Game: React.FC = () => {
   const [isUserNew, setIsUserNew] = useState<boolean>(false);
   const [isUserInTopTen, setIsUserInTopTen] = useState<boolean>(false);
 
+  const goToLeaderboardPage = () => {
+    replace(`/game-2048/leaderboard`);
+  };
   const handlePlayAgain = () => {
     resetGame();
     console.log('handle play again');
   };
-  const handleGameOver = async () => {
-    resetGame();
-    // open post-comment modal if user is in top ten
-    setIsUserInTopTen(true);
 
+  const updateMyBestScore = async () => {
+    await minigameApi.gamePlayApi.updateScoreUsingPATCH(gameType, {
+      score: currentScore,
+    });
+  };
+  const updateMyData = async () => {
+    const {
+      data: { data },
+    } = await minigameApi.gameUserApi.getMyRankInfoUsingGET(gameType);
+    if (data) {
+      if (data.score && data.rank) {
+        updateMyScore(data.score, data.rank);
+      }
+      if (data.comment) {
+        updateMyComment(data.comment);
+      }
+      return data;
+    }
+  };
+
+  const handleGameOver = async () => {
+    // resetGame();
+    if (isInWebEnvironment) {
+      goToLeaderboardPage();
+    }
     // only patch score to db if current score is higher than the best score
     if (currentScore > bestScore) {
-      // minigameApi.gamePlayApi().updateScoreUsingPATCH(gameType, currentScore);
-      const {
-        data: { data },
-      } = await minigameApi.gameUserApi.getMyRankInfoUsingGET(gameType);
-      if (data && data.score && data.rank && data.comment) {
-        updateMyGame2048Data(data.score, data.rank, data.comment);
-      }
+      await updateMyBestScore().then((response) => response);
+    } else {
+      await updateMyData().then((response) => {
+        if (response?.rank! <= 10 && response?.rank! > 0) {
+          // open post-comment modal if user is in top ten
+          setIsUserInTopTen(true);
+        }
+      });
+      goToLeaderboardPage();
     }
   };
 
@@ -103,12 +133,12 @@ export const Game: React.FC = () => {
 
   useEffect(() => {
     if (isTop) {
-      if (bestScore === 0) {
+      if (bestScore === 0 && currentScore === 0) {
         setIsUserNew(true);
         console.log('guide is on for new user');
       }
     }
-  }, [bestScore, isTop]);
+  }, [bestScore, currentScore, isTop]);
   // useEffect(() => {
   //   setIsUserInTopTen(true);
   // }, []);

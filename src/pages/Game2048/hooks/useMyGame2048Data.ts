@@ -2,6 +2,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   setGameTypeAction,
   updateUserGameDataAction,
+  updateMyCommentAction,
 } from 'reducers/game2048DataReducer';
 import { RootState } from 'reducers/rootReducer';
 
@@ -16,14 +17,13 @@ export const useMyGame2048Data = () => {
   );
   const dispatch = useDispatch();
 
-  const updateMyGame2048Data = (
-    score: number,
-    rank: number,
-    comment: string
-  ) => {
-    dispatch(updateUserGameDataAction(score, rank, comment));
+  const updateMyScore = (score: number, rank: number) => {
+    dispatch(updateUserGameDataAction(score, rank));
   };
 
+  const updateMyComment = (comment: string) => {
+    dispatch(updateMyCommentAction(comment));
+  };
   const setGameTypeToGame2048 = () => {
     dispatch(setGameTypeAction('GAME_2048'));
   };
@@ -32,7 +32,8 @@ export const useMyGame2048Data = () => {
     rank,
     comment,
     gameType,
-    updateMyGame2048Data,
+    updateMyScore,
+    updateMyComment,
     setGameTypeToGame2048,
   };
 };

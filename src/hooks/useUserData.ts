@@ -3,32 +3,40 @@ import { RootState } from 'reducers/rootReducer';
 import {
   setUserInfoAction,
   setRegionInfoAction,
-  setDistrictInfoAction,
+  setTownInfoAction,
 } from 'reducers/userDataReducer';
 
 export const useUserData = () => {
-  const { userId, nickname, regionId, districtId, districtName } = useSelector(
-    (state: RootState) => ({
-      userId: state.userDataReducer.userId,
-      nickname: state.userDataReducer.nickname,
-      regionId: state.userDataReducer.regionId,
-      districtId: state.userDataReducer.districtId,
-      cityName: state.userDataReducer.cityName,
-      districtName: state.userDataReducer.districtName,
-    })
-  );
+  const {
+    userId,
+    nickname,
+    regionId,
+    townId,
+    townName1,
+    townName2,
+    townName3,
+  } = useSelector((state: RootState) => ({
+    userId: state.userDataReducer.userId,
+    nickname: state.userDataReducer.nickname,
+    regionId: state.userDataReducer.regionId,
+    townId: state.userDataReducer.townId,
+    townName1: state.userDataReducer.townName1,
+    townName2: state.userDataReducer.townName2,
+    townName3: state.userDataReducer.townName3,
+  }));
   const dispatch = useDispatch();
 
   const setRegionInfo = (regionId: string) => {
     dispatch(setRegionInfoAction(regionId));
   };
 
-  const setDistrictInfo = (
-    districtId: string,
-    cityName: string,
-    districtName: string
+  const setTownInfo = (
+    townId: string,
+    townName1: string,
+    townName2: string,
+    townName3: string
   ) => {
-    dispatch(setDistrictInfoAction(districtId, cityName, districtName));
+    dispatch(setTownInfoAction(townId, townName1, townName2, townName3));
   };
 
   const setUserInfo = (userId: string, nickname: string) => {
@@ -39,10 +47,12 @@ export const useUserData = () => {
     userId,
     nickname,
     regionId,
-    districtId,
-    districtName,
+    townId,
+    townName1,
+    townName2,
+    townName3,
     setRegionInfo,
-    setDistrictInfo,
+    setTownInfo,
     setUserInfo,
   };
 };
