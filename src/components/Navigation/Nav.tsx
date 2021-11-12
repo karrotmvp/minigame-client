@@ -9,8 +9,8 @@ const Wrapper = styled.div`
   flex-flow: row;
   align-items: center;
   justify-content: space-between;
-  height: ${rem(60)};
-  padding: 0 1.5rem;
+  // height: ${rem(60)};
+  padding: ${rem(50)} ${rem(25)} ${rem(25)};
   background: transparent;
 `;
 

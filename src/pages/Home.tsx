@@ -4,11 +4,12 @@ import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
 import { useMinigameApi } from 'services/api/minigameApi';
 import { useMini } from 'hooks';
 import { Nav } from 'components/Navigation/Nav';
-import { CloseIcon } from 'assets/Icon';
+import { BackIcon, CloseIcon } from 'assets/Icon';
 import { rem } from 'polished';
-import { commafy } from 'utils/functions/numberFunctions';
 import { useMyGame2048Data } from './Game2048/hooks';
 import { useMyKarrotClickerData } from './KarrotClicker/hooks';
+import Game2048CardImgUrl from 'assets/svg/game2048/game_2048_card_img.svg';
+import KarrotClickerCardImgUrl from 'assets/svg/KarrotClicker/karrot_clicker_card_img.svg';
 
 export const Home: React.FC = () => {
   const minigameApi = useMinigameApi();
@@ -89,23 +90,26 @@ export const Home: React.FC = () => {
   }, [getUserCount, isTop]);
 
   return (
-    <Page className="main-page">
-      <Nav appendLeft={<CloseIcon />} onClickLeft={exitApp} />
+    <Page className="game-platform-page">
+      <Nav appendLeft={<CloseIcon />} onClickLeft={leaveMiniApp} />
       <Greetings>
-        <span>{commafy(userCount)}</span>명의
+        <span>{townName3}</span> 이웃들과
         <br />
-        이웃들과 같이 게임해요!
+        같이 게임해요!
       </Greetings>
       <Games>
         <Card color={`blue`} onClick={goToGame2048}>
           <Title>2048 퍼즐</Title>
+          {/* <Arrow /> */}
+
           <Text>
             동네 천재 타이틀을 원한다면?
             <br />
             중독성 갑 퍼즐 게임
           </Text>
         </Card>
-        <Card color={`orange`} onClick={goToKarrotClicker}>
+        <Card game={`karrot-clicker`} onClick={goToKarrotClicker}>
+          <CardImg2 src={KarrotClickerCardImgUrl} />
           <Title>당근모아</Title>
           <Text>
             남는 게 시간이라면?
@@ -128,7 +132,7 @@ const Page = styled.div`
 `;
 
 const Greetings = styled.div`
-  padding: 0 ${rem(26)};
+  padding: ${rem(5)} ${rem(40)};
   color: #3f3f3f;
   font-size: ${rem(24)};
   font-weight: bold;
@@ -136,34 +140,65 @@ const Greetings = styled.div`
 
   span {
     color: #0e74ff;
-    font-size: ${rem(40)};
+    font-size: ${rem(34)};
   }
 `;
 
 const Games = styled.div`
   display: flex;
   flex-flow: column;
-  gap: ${rem(25)};
-  padding: ${rem(25)} ${rem(20)} ${rem(35)};
+  gap: ${rem(30)};
+  padding: ${rem(30)} ${rem(20)} ${rem(35)};
 `;
-const Card = styled.a<{ color: string }>`
+const Card = styled.a<{ game: string }>`
   width: 100%;
   padding: ${rem(18)} 0 ${rem(18)} ${rem(106)};
   border: none;
   border-radius: 10px;
   background-color: ${(props) =>
-    props.color === `blue`
+    props.game === `game-2048`
       ? `#0E74FF`
       : props.color === `orange`
       ? `#FF8845`
       : `#EFEFEF`};
   box-shadow: ${(props) =>
-    props.color === `blue`
+    props.game === `game-2048`
       ? `0px 8px 0px 0px #0D5AC4`
-      : `orange`
+      : `karrot-clicker`
       ? `0px 8px 0px 0px #D96726`
       : `0px 8px 0px 0px #BABABA`};
+
+  position: relative;
 `;
+
+const CardImg1 = styled.img`
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  width: ${rem(80)};
+  height: ${rem(115)};
+  position: absolute;
+  bottom: 10px;
+  left: 0;
+`;
+const CardImg2 = styled.img`
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  width: ${rem(60)};
+  height: ${rem(130)};
+  position: absolute;
+  bottom: 0;
+  left: 23px;
+`;
+const Arrow = styled.span`
+  height: 25px;
+  width: 25px;
+  background-color: #fff;
+  border-radius: 50%;
+  display: inline-block;
+`;
+
 const Title = styled.h1`
   font-family: Cafe24Ssurround;
   font-weight: bold;
