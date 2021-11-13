@@ -64,7 +64,7 @@ const Container = styled.div<{ me?: boolean }>`
   padding: 12px 14px;
   margin: 4px 0;
   width: 100%;
-  border-radius: ${(props) => (props.me === true ? '10px' : '5px')};
+  border-radius: 10px;
   border: 1px solid #ececec;
   background-color: #fff;
 `;

@@ -62,13 +62,14 @@ export const LeaderboardTabs: React.FC<Props> = (props) => {
 
 const LeaderboardContainer = styled.div`
   flex: 1;
+
   overflow: auto;
-  padding: 18px 18px 0;
-  margin: 0 18px;
+  padding: 0 18px;
+
   max-height: inherit;
   background: #ffffff;
-  border: 1px solid #ebe0db;
+
   box-sizing: border-box;
-  border-radius: 10px 10px 0 0;
+
   border-bottom-style: none;
 `;

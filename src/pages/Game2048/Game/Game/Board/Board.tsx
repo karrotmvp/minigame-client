@@ -84,6 +84,6 @@ const Grid = styled.div`
 const Cell = styled.div<{ cellWidth: number }>`
   width: ${(props) => props.cellWidth}px;
   height: ${(props) => props.cellWidth}px;
-  background: #f5f8fb;
-  border-radius: 10px;
+  background: #dde7f4;
+  border-radius: 3px;
 `;

@@ -227,7 +227,11 @@ export const Game: React.FC = () => {
             marginRight: '-50%',
             transform: 'translate(-50%, -50%)',
             borderRadius: `21px`,
-            padding: `18px`,
+            padding: `24px 18px`,
+            display: `flex`,
+            flexFlow: `column`,
+            justifyContent: 'center',
+            alignItems: 'center',
           },
         }}
       >

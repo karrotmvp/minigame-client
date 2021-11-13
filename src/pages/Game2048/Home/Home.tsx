@@ -167,8 +167,18 @@ export const Home = () => {
         <LastWeekTopDistrict getLastWeekTopDistrict={getLastWeekTopDistrict} />
         <LastWeekTopTownie getLastWeekTopTownie={getLastWeekTopTownie} />
       </Container>
-      <DraggableDiv drag="y">
-        <Refresh handleRefresh={throttledRefresh} />
+      <DraggableDiv
+        drag="y"
+        dragConstraints={{
+          top: -205,
+          bottom: 0,
+        }}
+        whileTap={{ cursor: 'grabbing' }}
+      >
+        <WeeklyCountdown className="weekly-countdown-refresh">
+          <Refresh handleRefresh={throttledRefresh} />
+        </WeeklyCountdown>
+
         <Container>{isRanked ? <MyInfo /> : null}</Container>
         <LeaderboardTabs
           districtLeaderboardData={districtLeaderboardData}
@@ -227,9 +237,20 @@ const ActionItems = styled.div`
   background: #ffffff;
   box-sizing: border-box;
   box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+  z-index: 100;
 `;
 
 const DraggableDiv = styled(motion.div)`
-  background: #fff;
   flex: 1;
+  background: #fff;
+  padding-top: ${rem(25)};
+`;
+
+const WeeklyCountdown = styled.div`
+  font-style: normal;
+  font-weight: normal;
+  display: flex;
+  flex-flow: row;
+  justify-content: space-between;
+  padding: 0 ${rem(20)} ${rem(15)};
 `;

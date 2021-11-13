@@ -4,15 +4,6 @@ import { RefreshButton } from 'components/Button';
 import { rem } from 'polished';
 import React from 'react';
 
-const Container = styled.div`
-  font-style: normal;
-  font-weight: normal;
-  display: flex;
-  flex-flow: row;
-  justify-content: space-between;
-  padding: ${rem(25)} ${rem(20)} ${rem(15)};
-`;
-
 const Text = styled.p`
   color: #5b5b5b;
   font-weight: bold;
@@ -38,7 +29,7 @@ type Props = {
 };
 export const Refresh: React.FC<Props> = (props) => {
   return (
-    <Container className="refresh">
+    <>
       <Text>
         이번 주 랭킹
         {/* <Countdown>
@@ -50,6 +41,6 @@ export const Refresh: React.FC<Props> = (props) => {
         </Countdown> */}
       </Text>
       <RefreshButton handleRefresh={props.handleRefresh} />
-    </Container>
+    </>
   );
 };

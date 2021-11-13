@@ -5,6 +5,7 @@ import { useNavigator } from '@karrotframe/navigator';
 import { useUserData } from 'hooks';
 import { useMyGame2048Data } from 'pages/Game2048/hooks';
 import { rem } from 'polished';
+import { ReactComponent as Wow } from 'assets/svg/game2048/wow.svg';
 // import { useMinigameApi } from 'services/api/minigameApi';
 
 type CommentType = {
@@ -49,6 +50,14 @@ export const PostComment: React.FC<Props> = (props) => {
 
   return (
     <>
+      <div
+        style={{
+          padding: `6px 0 25px`,
+        }}
+      >
+        <Wow />
+      </div>
+
       <Congrats>
         <span>혹시..천재세요?</span>
         <br />

@@ -117,7 +117,9 @@ export const Home = () => {
           />
         )}
       </MyRow>
+
       <LeaderboardTabs />
+
       <div
         style={{
           position: 'absolute',

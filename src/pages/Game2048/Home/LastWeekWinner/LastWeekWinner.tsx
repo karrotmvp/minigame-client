@@ -1,6 +1,7 @@
 import styled from '@emotion/styled';
 import { rem } from 'polished';
 import { useEffect } from 'react';
+import BadgeUrl from 'assets/svg/game2048/top_badge.svg';
 
 type TownieProps = {
   getLastWeekTopTownie: () => void;
@@ -53,6 +54,21 @@ const Container = styled.div`
   background: #f3f8ff;
   border: 1px solid #5ba1ff;
   border-radius: 10px;
+
+  position: relative;
+
+  &::before {
+    content: '';
+    background-image: url(${BadgeUrl});
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    width: 25px;
+    height: 35px;
+    position: absolute;
+    top: -11px;
+    left: 17px;
+  }
 `;
 const Title = styled.p`
   color: #0e74ff;

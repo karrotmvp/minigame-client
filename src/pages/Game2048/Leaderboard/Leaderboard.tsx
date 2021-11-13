@@ -118,8 +118,10 @@ export const Leaderboard = () => {
   return (
     <Page>
       <Nav appendLeft={<CloseIcon />} onClickLeft={goBackToPlatform} />
+      <WeeklyCountdown className="weekly-countdown-refresh">
+        <Refresh handleRefresh={throttledRefresh} />
+      </WeeklyCountdown>
 
-      <Refresh handleRefresh={throttledRefresh} />
       <Container>{isRanked ? <MyInfo /> : null}</Container>
       <LeaderboardTabs
         districtLeaderboardData={districtLeaderboardData}
@@ -131,17 +133,17 @@ export const Leaderboard = () => {
           size={`large`}
           fontSize={rem(20)}
           color={`secondary1`}
-          onClick={handleShare}
+          onClick={handlePlayAgain}
         >
-          자랑하기
+          다시하기
         </Button>
         <Button
           size={`large`}
           fontSize={rem(20)}
           color={`primary`}
-          onClick={handlePlayAgain}
+          onClick={handleShare}
         >
-          다시하기
+          초대하기
         </Button>
       </ActionItems>
     </Page>
@@ -152,14 +154,21 @@ const Page = styled.div`
   display: flex;
   flex-flow: column;
   height: 100%;
-  background: linear-gradient(180deg, #e3efff ${rem(180)}, #fff 0); ;
 `;
 
+const WeeklyCountdown = styled.div`
+  font-style: normal;
+  font-weight: normal;
+  display: flex;
+  flex-flow: row;
+  justify-content: space-between;
+  padding: 0 ${rem(20)} ${rem(15)};
+`;
 const Container = styled.div`
   display: flex;
   flex-flow: row;
   gap: ${rem(12)};
-  padding: 0 ${rem(20)};
+  padding: 0 ${rem(18)};
 `;
 const ActionItems = styled.div`
   display: flex;

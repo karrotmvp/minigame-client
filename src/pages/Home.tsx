@@ -9,10 +9,14 @@ import { rem } from 'polished';
 import { useMyGame2048Data } from './Game2048/hooks';
 import { useMyKarrotClickerData } from './KarrotClicker/hooks';
 import { useAnalytics } from 'services/analytics';
+import { getMini } from 'services/karrotMarket/mini';
+import { color } from 'styles';
+import BellUrl from 'assets/svg/bell.svg';
 import Game2048CardImgUrl from 'assets/svg/game2048/game_2048_card_img.svg';
 import KarrotClickerCardImgUrl from 'assets/svg/KarrotClicker/karrot_clicker_card_img.svg';
-import { getMini } from 'services/karrotMarket/mini';
-
+import ArrowGame2048Url from 'assets/svg/arrow_game_2048.svg';
+import ArrowKarrotClickerUrl from 'assets/svg/arrow_karrot_clicker.svg';
+import { ReactComponent as Bookmark } from 'assets/svg/bookmark.svg';
 export const Home: React.FC = () => {
   const analytics = useAnalytics();
   const minigameApi = useMinigameApi();
@@ -114,7 +118,7 @@ export const Home: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accessToken, isTop]);
 
-  const install = () => {
+  const handleInstallation = () => {
     const mini = getMini();
     mini.startPreset({
       preset: `https://mini-assets.kr.karrotmarket.com/presets/mvp-game-recommend-installation/alpha.html`,
@@ -125,39 +129,76 @@ export const Home: React.FC = () => {
       },
     });
   };
+  const handleNewGameNotification = () => {};
   return (
-    <Page className="game-platform-page">
-      <Nav appendLeft={<CloseIcon />} onClickLeft={leaveMiniApp} />
-      <Greetings>
-        <span>{townName3}</span> 이웃들과
-        <br />
-        같이 게임해요!
-      </Greetings>
-      <Games>
-        <Card game={`game-2048`} onClick={goToGame2048}>
-          <CardImg1 src={Game2048CardImgUrl} />
-          <Title>2048 퍼즐</Title>
-          {/* <Arrow /> */}
+    <>
+      <Nav
+        appendLeft={<CloseIcon />}
+        onClickLeft={leaveMiniApp}
+        appendRight={<Bookmark />}
+        onClickRight={handleInstallation}
+      />
 
-          <Text>
-            동네 천재 타이틀을 원한다면?
-            <br />
-            중독성 갑 퍼즐 게임
-          </Text>
-        </Card>
-        <Card game={`karrot-clicker`} onClick={goToKarrotClicker}>
-          <CardImg2 src={KarrotClickerCardImgUrl} />
-          <Title>당근모아</Title>
-          <Text>
-            한 번 누르면 멈추기 어려운
-            <br />
-            귀여운 클리커 게임
-          </Text>
-        </Card>
-      </Games>
-      <Break />
-      <button onClick={install}>button</button>
-    </Page>
+      <Page className="game-platform-page">
+        <SectionTitle style={{ marginBottom: `30px` }}>
+          <span>{townName3}</span> 이웃들과
+          <br />
+          같이 게임해요!
+        </SectionTitle>
+        <CardContainer className="container--games">
+          <Card game={`game-2048`} onClick={goToGame2048}>
+            <CardImg1 src={Game2048CardImgUrl} />
+            <Title>2048 퍼즐</Title>
+            <Text>
+              동네 천재 타이틀을 원한다면?
+              <br />
+              중독성 갑 퍼즐 게임
+            </Text>
+            <ActionButton src={ArrowGame2048Url} />
+          </Card>
+          <Card game={`karrot-clicker`} onClick={goToKarrotClicker}>
+            <CardImg2 src={KarrotClickerCardImgUrl} />
+            <Title>당근모아</Title>
+            <Text>
+              한 번 누르면 멈추기 어려운
+              <br />
+              귀여운 클리커 게임
+            </Text>
+            <ActionButton src={ArrowKarrotClickerUrl} />
+          </Card>
+        </CardContainer>
+        <Break />
+        <SectionTitle style={{ marginBottom: `15px` }}>
+          새로운 게임을 준비 중이에요
+        </SectionTitle>
+        <CardContainer>
+          <Card game={`whats-next`} onClick={handleNewGameNotification}>
+            <CardImg1 src={Game2048CardImgUrl} />
+            <Title>What's Next?</Title>
+            <Text>
+              <span>오픈 알림</span>을 신청하면
+              <br />
+              빠르게 대회에 참여할 수 있어요!
+            </Text>
+            <ActionButton src={BellUrl} />
+          </Card>
+          <Card game={`coming-soon`}>
+            <CardImg1 src={Game2048CardImgUrl} />
+            <Title>Coming Soon</Title>
+            <Text>
+              오픈 알림 신청 완료!
+              <br />
+              새로운 게임이 열리면 알려드릴게요
+            </Text>
+          </Card>
+        </CardContainer>
+        <Break />
+        <SectionTitle style={{ marginBottom: `15px` }}>
+          하고 싶은 게임이 있나요?
+        </SectionTitle>
+        <CommentInput />
+      </Page>
+    </>
   );
 };
 
@@ -169,8 +210,8 @@ const Page = styled.div`
   font-weight: normal;
 `;
 
-const Greetings = styled.div`
-  padding: ${rem(5)} ${rem(40)};
+const SectionTitle = styled.div`
+  padding: 0 ${rem(40)};
   color: #3f3f3f;
   font-size: ${rem(24)};
   font-weight: bold;
@@ -182,33 +223,85 @@ const Greetings = styled.div`
   }
 `;
 
-const Games = styled.div`
+const CardContainer = styled.div`
   display: flex;
   flex-flow: column;
   gap: ${rem(30)};
-  padding: ${rem(30)} ${rem(20)} ${rem(35)};
+  padding: 0 ${rem(20)};
 `;
 const Card = styled.a<{ game: string }>`
+  position: relative;
+
   width: 100%;
-  padding: ${rem(18)} 0 ${rem(18)} ${rem(106)};
+  padding: ${rem(18)} 0;
   border: none;
   border-radius: 10px;
+
   background-color: ${(props) =>
     props.game === `game-2048`
-      ? `#0E74FF`
+      ? `${color.blue400}`
       : props.game === `karrot-clicker`
-      ? `#FF8845`
-      : `#EFEFEF`};
+      ? `${color.orange}`
+      : props.game === `whats-next`
+      ? `${color.gray50}`
+      : props.game === `coming-soon`
+      ? `#efefef`
+      : `efefef`};
+
   box-shadow: ${(props) =>
     props.game === `game-2048`
       ? `0px 8px 0px 0px #0D5AC4`
-      : `karrot-clicker`
+      : props.game === `karrot-clicker`
       ? `0px 8px 0px 0px #D96726`
-      : `0px 8px 0px 0px #BABABA`};
+      : props.game === `whats-next`
+      ? `0px 8px 0px 0px #E5E5E5`
+      : `0px 0px 0px 0px #fff`};
 
-  position: relative;
+  h3 {
+    margin: 0 ${rem(50)} 0 ${rem(105)};
+    color: ${(props) =>
+      props.game === `whats-next`
+        ? `${color.orange}`
+        : props.game === `coming-soon`
+        ? `${color.gray300}`
+        : `${color.white}`};
+
+    font-family: ${(props) =>
+      props.game === `game-2048` || props.game === `karrot-clicker`
+        ? `Cafe24Ssurround`
+        : `Pretendard`};
+  }
+
+  p {
+    margin: 0 ${rem(50)} 0 ${rem(105)};
+
+    color: ${(props) =>
+      props.game === `whats-next`
+        ? `${color.gray300}`
+        : props.game === `coming-soon`
+        ? `${color.gray300}`
+        : `${color.white}`};
+
+    span {
+      font-size: inherit;
+      color: ${(props) =>
+        props.game === `whats-next` ? `${color.orange}` : `inherit`};
+    }
+  }
 `;
 
+const Title = styled.h3`
+  font-weight: bold;
+  font-size: ${rem(24)};
+  line-height: 161.7%;
+  /* or 39px */
+`;
+const Text = styled.p`
+  font-weight: normal;
+  font-size: ${rem(12)};
+  line-height: 161.7%;
+  /* or 19px */
+`;
 const CardImg1 = styled.img`
   background-size: cover;
   background-repeat: no-repeat;
@@ -229,36 +322,62 @@ const CardImg2 = styled.img`
   bottom: 0;
   left: 23px;
 `;
-// const Arrow = styled.span`
-//   height: 25px;
-//   width: 25px;
-//   background-color: #fff;
-//   border-radius: 50%;
-//   display: inline-block;
-// `;
-
-const Title = styled.h1`
-  font-family: Cafe24Ssurround;
-  font-weight: bold;
-  font-size: ${rem(24)};
-  line-height: 161.7%;
-  /* or 39px */
-
-  color: #ffffff;
+const ActionButton = styled.img`
+  position: absolute;
+  top: 24px;
+  right: 22px;
+  height: 25px;
+  width: 25px;
+  background-color: #fff;
+  border-radius: 50%;
+  display: inline-block;
 `;
-const Text = styled.p`
-  font-weight: normal;
-  font-size: ${rem(12)};
-  line-height: 161.7%;
-  /* or 19px */
 
-  color: #ffffff;
-`;
 const Break = styled.hr`
   border: 6px solid #f8f8f8;
-  margin-bottom: 25px;
+  margin: 30px 0 22px;
 `;
 
 // const BottomSection = styled.div`
 
 // `
+
+const CommentInput = styled.div`
+  display: flex;
+  border: 1px solid #e5e5e5;
+  border-radius: 10px;
+  width: 100%;
+  height: 40px;
+  padding: 10px;
+
+  input {
+    width: 100%;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 1rem;
+    line-height: 161.7%;
+    /* identical to box height, or 26px */
+    border: none;
+    color: #3f3f3f;
+
+    &::placeholder {
+      font-style: normal;
+      font-weight: bold;
+      font-size: 1rem;
+      line-height: 161.7%;
+      /* identical to box height, or 26px */
+
+      color: #e0e0e0;
+    }
+  }
+  span {
+    position: inline;
+    font-style: normal;
+    font-weight: normal;
+    font-size: ${rem(12)};
+    line-height: 161.7%;
+    /* or 19px */
+
+    color: #a9a9a9;
+  }
+`;

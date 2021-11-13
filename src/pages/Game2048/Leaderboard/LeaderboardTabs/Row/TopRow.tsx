@@ -1,8 +1,8 @@
 import styled from '@emotion/styled';
 import { commafy } from 'utils/functions/numberFunctions';
 import Medal1Url from 'assets/svg/game2048/medal1.svg';
-import Medal2Url from 'assets/svg/game2048/medal1.svg';
-import Medal3Url from 'assets/svg/game2048/medal1.svg';
+import Medal2Url from 'assets/svg/game2048/medal2.svg';
+import Medal3Url from 'assets/svg/game2048/medal3.svg';
 import { rem } from 'polished';
 
 interface TopUserRowProps {
@@ -72,7 +72,7 @@ const Container = styled.div<{ me?: boolean; rank?: number }>`
   padding: 12px 14px;
   margin: 4px 0;
   width: 100%;
-  border-radius: ${(props) => (props.me === true ? '10px' : '5px')};
+  border-radius: 10px;
   border: 1px solid ${(props) => (props.me === true ? '#EBE0DB' : '#ececec')};
   background-color: #fff;
 
