@@ -28,9 +28,9 @@ export const Home: React.FC = () => {
   const minigameApi = useMinigameApi();
   const { isTop } = useCurrentScreen();
   const { push } = useNavigator();
-  const { isInWebEnvironment, ejectApp } = useMini();
+  const { isInWebEnvironment, ejectApp, handleThirdPartyAgreement } = useMini();
   const { accessToken } = useAccessToken();
-  const { setUserInfo, townName3 } = useUserData();
+  const { setUserInfo, townName3, isInstalled } = useUserData();
   const {
     updateMyScore: updateMyGame2048Score,
     updateMyComment: updateMyGame2048Comment,
@@ -41,7 +41,8 @@ export const Home: React.FC = () => {
     updateMyComment: updateMyKarrotClickerComment,
     setGameTypeToKarrotClicker,
   } = useMyKarrotClickerData();
-
+  const [isGameNotificationOn, setIsGameNotificationOn] =
+    useState<boolean>(false);
   const leaveMiniApp = () => {
     analytics.logEvent('click_leave_mini_app_button');
     ejectApp();
@@ -56,26 +57,34 @@ export const Home: React.FC = () => {
       return;
     }
     try {
-      analytics.logEvent('click_game_enter_button', {
-        game_type: 'game-2048',
-      });
-      const {
-        data: { data },
-      } = await minigameApi.gameUserApi.getMyRankInfoUsingGET('GAME_2048');
-      if (data) {
-        if (data.score && data.rank) {
-          updateMyGame2048Score(data.score, data.rank);
+      if (accessToken) {
+        analytics.logEvent('click_game_enter_button', {
+          game_type: 'game-2048',
+          is_new_user: false,
+        });
+        const {
+          data: { data },
+        } = await minigameApi.gameUserApi.getMyRankInfoUsingGET('GAME_2048');
+        if (data) {
+          if (data.score && data.rank) {
+            updateMyGame2048Score(data.score, data.rank);
+          }
+          if (data.comment) {
+            updateMyGame2048Comment(data.comment);
+          }
         }
-        if (data.comment) {
-          updateMyGame2048Comment(data.comment);
-        }
+        push(`/game-2048`);
+      } else {
+        analytics.logEvent('click_game_enter_button', {
+          game_type: 'game-2048',
+          is_new_user: true,
+        });
+        push(`/game-2048`);
       }
-      push(`/game-2048`);
     } catch (error) {
       console.error(error);
     }
   };
-
   const goToKarrotClicker = async () => {
     setGameTypeToKarrotClicker();
     if (isInWebEnvironment) {
@@ -84,21 +93,30 @@ export const Home: React.FC = () => {
       return;
     }
     try {
-      analytics.logEvent('click_game_enter_button', {
-        game_type: 'karrot-clicker',
-      });
-      const {
-        data: { data },
-      } = await minigameApi.gameUserApi.getMyRankInfoUsingGET('GAME_KARROT');
-      if (data) {
-        if (data.score && data.rank) {
-          updateMyKarrotClickerData(data.score, data.rank);
+      if (accessToken) {
+        analytics.logEvent('click_game_enter_button', {
+          game_type: 'karrot-clicker',
+          is_new_user: false,
+        });
+        const {
+          data: { data },
+        } = await minigameApi.gameUserApi.getMyRankInfoUsingGET('GAME_KARROT');
+        if (data) {
+          if (data.score && data.rank) {
+            updateMyKarrotClickerData(data.score, data.rank);
+          }
+          if (data.comment) {
+            updateMyKarrotClickerComment(data.comment);
+          }
         }
-        if (data.comment) {
-          updateMyKarrotClickerComment(data.comment);
-        }
+        push(`/karrot-clicker`);
+      } else {
+        analytics.logEvent('click_game_enter_button', {
+          game_type: 'karrot-clicker',
+          is_new_user: true,
+        });
+        push(`/karrot-clicker`);
       }
-      push(`/karrot-clicker`);
     } catch (error) {
       console.error(error);
     }
@@ -125,24 +143,43 @@ export const Home: React.FC = () => {
   }, [accessToken, isTop]);
 
   const handleInstallation = () => {
-    const mini = getMini();
-    mini.startPreset({
-      preset: `https://mini-assets.kr.karrotmarket.com/presets/mvp-game-recommend-installation/alpha.html`,
-      onSuccess: async function (result) {
-        if (result.ok) {
-          console.log('즐겨찾기 성공');
-        }
-      },
-    });
+    if (accessToken) {
+      const mini = getMini();
+      mini.startPreset({
+        preset: `https://mini-assets.kr.karrotmarket.com/presets/mvp-game-recommend-installation/alpha.html`,
+        onSuccess: async function (result) {
+          if (result.ok) {
+            console.log('즐겨찾기 성공');
+          }
+        },
+      });
+    } else {
+      handleThirdPartyAgreement(() => {
+        const mini = getMini();
+        mini.startPreset({
+          preset: `https://mini-assets.kr.karrotmarket.com/presets/mvp-game-recommend-installation/alpha.html`,
+          onSuccess: async function (result) {
+            if (result.ok) {
+              console.log('즐겨찾기 성공');
+            }
+          },
+        });
+      });
+    }
   };
 
   const handleNewGameNotification = async () => {
-    const { data } =
-      await minigameApi.notificationApi.saveNotificationUsingPOST({
-        type: 'game' as NotificationRequestDtoTypeEnum,
-      });
-    if (data.status === 200) {
-      console.log('notification (game) success');
+    if (accessToken) {
+      const { data } =
+        await minigameApi.notificationApi.saveNotificationUsingPOST({
+          type: 'OPEN_GAME' as NotificationRequestDtoTypeEnum,
+        });
+      if (data.status === 200) {
+        console.log('notification (game) success');
+        setIsGameNotificationOn(true);
+      }
+    } else {
+      handleThirdPartyAgreement(() => setIsGameNotificationOn(true));
     }
   };
 
@@ -151,6 +188,22 @@ export const Home: React.FC = () => {
   const close = () => setModalOpen(false);
   const open = () => setModalOpen(true);
 
+  const checkNotificationStatus = async () => {
+    const {
+      data: { data },
+    } = await minigameApi.notificationApi.checkNotificationUsingGET(
+      'OPEN_GAME'
+    );
+    if (data) {
+      setIsGameNotificationOn(() => data.isAlreadyNotified);
+    }
+  };
+
+  useEffect(() => {
+    if (isTop) {
+      checkNotificationStatus();
+    }
+  }, [isTop]);
   return (
     <>
       <Nav
@@ -193,26 +246,28 @@ export const Home: React.FC = () => {
           새로운 게임을 준비 중이에요
         </SectionTitle>
         <CardContainer>
-          {}
-          <Card game={`whats-next`} onClick={handleNewGameNotification}>
-            <CardImg3 src={WhatsNextCardImgUrl} />
-            <Title>What's Next?</Title>
-            <Text>
-              <span>오픈 알림</span>을 신청하면
-              <br />
-              빠르게 대회에 참여할 수 있어요!
-            </Text>
-            <ActionButton src={BellUrl} />
-          </Card>
-          <Card game={`coming-soon`}>
-            <CardImg3 src={ComingSoonCardImgUrl} />
-            <Title>Coming Soon</Title>
-            <Text>
-              오픈 알림 신청 완료!
-              <br />
-              새로운 게임이 열리면 알려드릴게요
-            </Text>
-          </Card>
+          {isGameNotificationOn ? (
+            <Card game={`coming-soon`}>
+              <CardImg3 src={ComingSoonCardImgUrl} />
+              <Title>Coming Soon</Title>
+              <Text>
+                오픈 알림 신청 완료!
+                <br />
+                새로운 게임이 열리면 알려드릴게요
+              </Text>
+            </Card>
+          ) : (
+            <Card game={`whats-next`} onClick={handleNewGameNotification}>
+              <CardImg3 src={WhatsNextCardImgUrl} />
+              <Title>What's Next?</Title>
+              <Text>
+                <span>오픈 알림</span>을 신청하면
+                <br />
+                빠르게 대회에 참여할 수 있어요!
+              </Text>
+              <ActionButton src={BellUrl} />
+            </Card>
+          )}
         </CardContainer>
         <Break />
         <SectionTitle style={{ marginBottom: `15px` }}>
@@ -251,8 +306,6 @@ const Page = styled.div`
   display: flex;
   flex-flow: column;
   height: 100%;
-  font-style: normal;
-  font-weight: normal;
 `;
 
 const SectionTitle = styled.div`
