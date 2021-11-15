@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
 import { useMinigameApi } from 'services/api/minigameApi';
@@ -19,6 +19,10 @@ import ComingSoonCardImgUrl from 'assets/svg/coming_soon_card_img.svg';
 import ArrowGame2048Url from 'assets/svg/arrow_game_2048.svg';
 import ArrowKarrotClickerUrl from 'assets/svg/arrow_karrot_clicker.svg';
 import { ReactComponent as Bookmark } from 'assets/svg/bookmark.svg';
+import { NotificationRequestDtoTypeEnum } from 'services/openapi_generator';
+import { motion, AnimatePresence } from 'framer-motion';
+import { SuggestNewGame } from './SuggestNewGame';
+
 export const Home: React.FC = () => {
   const analytics = useAnalytics();
   const minigameApi = useMinigameApi();
@@ -131,7 +135,22 @@ export const Home: React.FC = () => {
       },
     });
   };
-  const handleNewGameNotification = () => {};
+
+  const handleNewGameNotification = async () => {
+    const { data } =
+      await minigameApi.notificationApi.saveNotificationUsingPOST({
+        type: 'game' as NotificationRequestDtoTypeEnum,
+      });
+    if (data.status === 200) {
+      console.log('notification (game) success');
+    }
+  };
+
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const close = () => setModalOpen(false);
+  const open = () => setModalOpen(true);
+
   return (
     <>
       <Nav
@@ -174,6 +193,7 @@ export const Home: React.FC = () => {
           새로운 게임을 준비 중이에요
         </SectionTitle>
         <CardContainer>
+          {}
           <Card game={`whats-next`} onClick={handleNewGameNotification}>
             <CardImg3 src={WhatsNextCardImgUrl} />
             <Title>What's Next?</Title>
@@ -378,8 +398,9 @@ const Break = styled.hr`
 
 // `
 
-const CommentInput = styled.div`
+const ModalOpenButton = styled(motion.button)`
   display: flex;
+  box-sizing: border-box;
   border: 1px solid #e5e5e5;
   border-radius: 10px;
   width: 100%;
