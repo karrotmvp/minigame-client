@@ -14,6 +14,8 @@ import { color } from 'styles';
 import BellUrl from 'assets/svg/bell.svg';
 import Game2048CardImgUrl from 'assets/svg/game2048/game_2048_card_img.svg';
 import KarrotClickerCardImgUrl from 'assets/svg/KarrotClicker/karrot_clicker_card_img.svg';
+import WhatsNextCardImgUrl from 'assets/svg/whats_next_card_img.svg';
+import ComingSoonCardImgUrl from 'assets/svg/coming_soon_card_img.svg';
 import ArrowGame2048Url from 'assets/svg/arrow_game_2048.svg';
 import ArrowKarrotClickerUrl from 'assets/svg/arrow_karrot_clicker.svg';
 import { ReactComponent as Bookmark } from 'assets/svg/bookmark.svg';
@@ -173,7 +175,7 @@ export const Home: React.FC = () => {
         </SectionTitle>
         <CardContainer>
           <Card game={`whats-next`} onClick={handleNewGameNotification}>
-            <CardImg1 src={Game2048CardImgUrl} />
+            <CardImg3 src={WhatsNextCardImgUrl} />
             <Title>What's Next?</Title>
             <Text>
               <span>오픈 알림</span>을 신청하면
@@ -183,7 +185,7 @@ export const Home: React.FC = () => {
             <ActionButton src={BellUrl} />
           </Card>
           <Card game={`coming-soon`}>
-            <CardImg1 src={Game2048CardImgUrl} />
+            <CardImg3 src={ComingSoonCardImgUrl} />
             <Title>Coming Soon</Title>
             <Text>
               오픈 알림 신청 완료!
@@ -196,7 +198,30 @@ export const Home: React.FC = () => {
         <SectionTitle style={{ marginBottom: `15px` }}>
           하고 싶은 게임이 있나요?
         </SectionTitle>
-        <CommentInput />
+
+        <div>
+          <ModalOpenButton
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            className="save-button"
+            onClick={() => (modalOpen ? close() : open())}
+          >
+            Launch modal
+          </ModalOpenButton>
+        </div>
+        <AnimatePresence
+          // Disable any initial animations on children that
+          // are present when the component is first rendered
+          initial={false}
+          // Only render one component at a time.
+          // The exiting component will finish its exit
+          // animation before entering component is rendered
+          exitBeforeEnter={true}
+          // Fires when all exiting nodes have completed animating out
+          onExitComplete={() => null}
+        >
+          {modalOpen && <SuggestNewGame handleClose={close} />}
+        </AnimatePresence>
       </Page>
     </>
   );
@@ -322,6 +347,17 @@ const CardImg2 = styled.img`
   bottom: 0;
   left: 23px;
 `;
+const CardImg3 = styled.img`
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  width: ${rem(71)};
+  height: ${rem(93)};
+  position: absolute;
+  bottom: -3px;
+  left: 15px;
+`;
+
 const ActionButton = styled.img`
   position: absolute;
   top: 24px;
