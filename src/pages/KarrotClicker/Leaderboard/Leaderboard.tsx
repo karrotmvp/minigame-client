@@ -45,12 +45,12 @@ const UserScoreExists: React.FC<UserScoreExistsProps> = (props) => {
 };
 
 export const Leaderboard = () => {
-  const { replace } = useNavigator();
+  const { push, replace } = useNavigator();
   const { isTop } = useCurrentScreen();
   const analytics = useAnalytics();
   const minigameApi = useMinigameApi();
   const karrotMarketMini = useMini();
-  const { nickname, districtName } = useUserData();
+  const { nickname, townName2: districtName } = useUserData();
   const { gameType, score, rank, comment, updateMyKarrotClickerData } =
     useMyKarrotClickerData();
   const { onResetCount, resumeGame } = useGame();
@@ -59,9 +59,12 @@ export const Leaderboard = () => {
   const goToGamePage = () => {
     replace(`/karrot-clicker/game`);
   };
-  const leaveMiniApp = () => {
-    analytics.logEvent('click_leave_mini_app_button');
-    karrotMarketMini.ejectApp();
+  const goBackToPlatform = () => {
+    analytics.logEvent('click_leave_game_button', {
+      game_type: 'karrot-clicker',
+      from: 'leaderboard_page',
+    });
+    push(`/`);
   };
 
   const handlePlayAgain = async () => {
@@ -111,7 +114,7 @@ export const Leaderboard = () => {
   }, [analytics, isTop]);
   return (
     <Page className="">
-      <Nav appendLeft={<CloseIcon />} onClickLeft={leaveMiniApp} />
+      <Nav appendLeft={<CloseIcon />} onClickLeft={goBackToPlatform} />
       {score === 0 ? null : (
         <Heading>
           <EmphasizedSpan>{nickname}</EmphasizedSpan>님은
@@ -121,24 +124,6 @@ export const Leaderboard = () => {
       )}
 
       <MyRow>
-        {/* {rank > 0 && rank <= 10 ? (
-          <TopUserRow
-            me={true}
-            rank={rank}
-            nickname={nickname}
-            score={score}
-            comment={comment}
-            districtName={districtName!}
-          />
-        ) : (
-          <DefaultUserRow
-            me={true}
-            rank={rank}
-            nickname={nickname}
-            score={score}
-            districtName={districtName}
-          />
-        )} */}
         {score === 0 ? null : (
           <UserScoreExists
             nickname={nickname}

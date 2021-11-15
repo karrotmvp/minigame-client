@@ -6,7 +6,7 @@ import karrotImageUrl from 'assets/svg/KarrotClicker/small_circle_karrot.svg';
 
 import React, { useEffect, useState } from 'react';
 import ReactModal from 'react-modal';
-import { commafy } from 'utils/functions/numberFunctions';
+import { commafy } from 'utils/numberFunctions';
 import { useAnalytics } from 'services/analytics';
 import { OldButton } from 'components/Button';
 import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';

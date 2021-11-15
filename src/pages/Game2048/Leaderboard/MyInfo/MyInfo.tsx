@@ -1,16 +1,18 @@
 import React from 'react';
 import styled from '@emotion/styled';
 import { rem } from 'polished';
-import { commafy } from 'utils/functions/numberFunctions';
+import { commafy } from 'utils/numberFunctions';
 import { useUserData } from 'hooks';
 import { useMyGame2048Data } from 'pages/Game2048/hooks';
 
 export const MyInfo: React.FC = () => {
-  const { nickname, districtName } = useUserData();
-  const { score, rank } = useMyGame2048Data();
+  const {
+    nickname,
+    townName1: cityName,
+    townName2: districtName,
+  } = useUserData();
+  const { score, rank, highestScore, highestRank } = useMyGame2048Data();
 
-  const highestRank = 1;
-  const highestScore = 999999;
   return (
     <Container className="my-info">
       <Row>
@@ -18,7 +20,9 @@ export const MyInfo: React.FC = () => {
           <Rank>{rank}</Rank>
           <Name>
             {nickname}
-            <District>{districtName}</District>
+            <District>
+              {cityName.slice(0, 2)} {districtName}
+            </District>
           </Name>
         </Info>
         <Score>{commafy(score)}</Score>

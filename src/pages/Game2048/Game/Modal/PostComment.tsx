@@ -5,7 +5,8 @@ import { useNavigator } from '@karrotframe/navigator';
 import { useUserData } from 'hooks';
 import { useMyGame2048Data } from 'pages/Game2048/hooks';
 import { rem } from 'polished';
-import { useMinigameApi } from 'services/api/minigameApi';
+import { ReactComponent as Wow } from 'assets/svg/game2048/wow.svg';
+// import { useMinigameApi } from 'services/api/minigameApi';
 
 type CommentType = {
   comment: string;
@@ -18,10 +19,9 @@ type Props = {
 
 export const PostComment: React.FC<Props> = (props) => {
   const { push } = useNavigator();
-  const minigameApi = useMinigameApi();
-  const { districtName } = useUserData();
-  const { score, rank, comment, gameType, updateMyGame2048Data } =
-    useMyGame2048Data();
+  // const minigameApi = useMinigameApi();
+  const { townName2: districtName } = useUserData();
+  const { rank, comment, updateMyComment } = useMyGame2048Data();
   const [newComment, setNewComment] = useState<CommentType>({
     comment: comment,
     length: comment.length,
@@ -42,13 +42,22 @@ export const PostComment: React.FC<Props> = (props) => {
     // minigameApi
     //   .gamePlayApi()
     //   .addCommentUsingPATCH(gameType, newComment.comment);
-    updateMyGame2048Data(score, rank, newComment.comment);
+    // updateMyScore(score, rank, newComment.comment);
+    updateMyComment(newComment.comment);
     props.setIsUserInTopTen(false);
     goToLeaderboardPage();
   };
 
   return (
     <>
+      <div
+        style={{
+          padding: `6px 0 25px`,
+        }}
+      >
+        <Wow />
+      </div>
+
       <Congrats>
         <span>혹시..천재세요?</span>
         <br />

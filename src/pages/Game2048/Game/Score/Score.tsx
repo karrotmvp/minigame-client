@@ -1,21 +1,25 @@
 import styled from '@emotion/styled';
 
-export const TownieHighScore = () => {
+type BestScore = {
+  myBestScore?: number;
+  townieBestScore?: number;
+};
+export const TownieBestScore: React.FC<BestScore> = (props) => {
   // API GET TOWNIE HIGH SCORE
   return (
     <Container>
       <Text>주민 최고점수</Text>
-      <Score></Score>
+      <Score>{props.townieBestScore}</Score>
     </Container>
   );
 };
-export const MyHighScore = () => {
+export const MyBestScore: React.FC<BestScore> = (props) => {
   // API GET MY HIGH SCORE
 
   return (
     <Container>
       <Text>내 최고점수</Text>
-      <Score></Score>
+      <Score>{props.myBestScore}</Score>
     </Container>
   );
 };

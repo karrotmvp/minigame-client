@@ -12,44 +12,64 @@ import { useMyGame2048Data } from '../hooks';
 import { useMini } from 'hooks';
 import { Refresh } from './Refresh';
 import { useThrottledCallback } from 'use-debounce/lib';
+import { useAnalytics } from 'services/analytics';
+import { useGame } from '../Game/Game/hooks';
 
 export const Leaderboard = () => {
   const { isTop } = useCurrentScreen();
-  const { pop } = useNavigator();
+  const { replace, push } = useNavigator();
   const minigameApi = useMinigameApi();
-  const { ejectApp, shareApp } = useMini();
-  const { rank, gameType, updateMyGame2048Data } = useMyGame2048Data();
-  const [isRanked, setIsRanked] = useState<boolean>(false);
+  const analytics = useAnalytics();
+  const { shareApp } = useMini();
+  const { resetGame } = useGame();
+  const { rank, gameType, updateMyScore, updateMyComment } =
+    useMyGame2048Data();
+  const [isRanked, setIsRanked] = useState<boolean>(true);
   const [userLeaderboardData, setUserLeaderboardData] = useState<any[]>([]);
   const [districtLeaderboardData, setDistrictLeaderboardData] = useState<any[]>(
     []
   );
 
-  const exitApp = () => {
-    console.log('Ejected from the app. Now back to Karrot Market');
-    ejectApp();
+  // page navigation
+  const goBackToPlatform = () => {
+    analytics.logEvent('click_leave_game_button', {
+      game_type: 'game-2048',
+      from: 'leaderboard_page',
+    });
+    push(`/`);
   };
   const goToGamePage = () => {
-    // push(`/game-2048/game`);
-    pop();
+    replace(`/game-2048/game`);
   };
 
   const handlePlayAgain = () => {
+    analytics.logEvent('click_game_play_again_button', {
+      game_type: 'game-2048',
+    });
+    resetGame();
     goToGamePage();
   };
   const updateMyGameData = async () => {
     const {
       data: { data },
     } = await minigameApi.gameUserApi.getMyRankInfoUsingGET(gameType);
-    if (data && data.score && data.rank && data.comment) {
-      updateMyGame2048Data(data.score, data.rank, data.comment);
+    if (data) {
+      if (data.score && data.rank) {
+        updateMyScore(data.score, data.rank);
+      }
+      if (data.comment) {
+        updateMyComment(data.comment);
+      }
     }
   };
 
   const handleShare = () => {
     const url = 'https://daangn.onelink.me/HhUa/3a219555';
-    const text = '2048 퍼즐을 플레이 하고 이웃들에게 한 마디를 남겨보세요!';
+    const text = `${rank}등!! 2048 퍼즐을 플레이 하고 이웃들에게 한 마디를 남겨보세요!`;
     shareApp(url, text);
+    analytics.logEvent('click_share_button', {
+      game_type: 'game-2048',
+    });
   };
 
   const getUserLeaderboardData = useCallback(async () => {
@@ -62,6 +82,7 @@ export const Leaderboard = () => {
         ...item,
       }));
       setUserLeaderboardData(indexedDistrictRankData);
+      console.log(indexedDistrictRankData);
     }
   }, [gameType, minigameApi]);
 
@@ -79,27 +100,29 @@ export const Leaderboard = () => {
   }, [gameType, minigameApi]);
 
   // Throttle refresh for 5 seconds
-  const handleRefresh = useThrottledCallback(() => {
+  const handleRefresh = () => {
     updateMyGameData();
     getUserLeaderboardData();
     getDistrictLeaderboardData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, 5000);
+  };
+  const throttledRefresh = useThrottledCallback(handleRefresh, 3000);
 
   useEffect(() => {
     if (isTop) {
       handleRefresh();
     }
     if (rank !== 0) {
-      setIsRanked(true);
+      setIsRanked(() => true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isTop]);
   return (
     <Page>
-      <Nav appendLeft={<CloseIcon />} onClickLeft={exitApp} />
+      <Nav appendLeft={<CloseIcon />} onClickLeft={goBackToPlatform} />
+      <WeeklyCountdown className="weekly-countdown-refresh">
+        <Refresh handleRefresh={throttledRefresh} />
+      </WeeklyCountdown>
 
-      <Refresh handleRefresh={handleRefresh} />
       <Container>{isRanked ? <MyInfo /> : null}</Container>
       <LeaderboardTabs
         districtLeaderboardData={districtLeaderboardData}
@@ -111,17 +134,17 @@ export const Leaderboard = () => {
           size={`large`}
           fontSize={rem(20)}
           color={`secondary1`}
-          onClick={handleShare}
+          onClick={handlePlayAgain}
         >
-          자랑하기
+          다시하기
         </Button>
         <Button
           size={`large`}
           fontSize={rem(20)}
           color={`primary`}
-          onClick={handlePlayAgain}
+          onClick={handleShare}
         >
-          다시하기
+          초대하기
         </Button>
       </ActionItems>
     </Page>
@@ -132,14 +155,21 @@ const Page = styled.div`
   display: flex;
   flex-flow: column;
   height: 100%;
-  background: linear-gradient(180deg, #e3efff ${rem(180)}, #fff 0); ;
 `;
 
+const WeeklyCountdown = styled.div`
+  font-style: normal;
+  font-weight: normal;
+  display: flex;
+  flex-flow: row;
+  justify-content: space-between;
+  padding: 0 ${rem(20)} ${rem(15)};
+`;
 const Container = styled.div`
   display: flex;
   flex-flow: row;
   gap: ${rem(12)};
-  padding: 0 ${rem(20)};
+  padding: 0 ${rem(18)};
 `;
 const ActionItems = styled.div`
   display: flex;

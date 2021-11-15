@@ -16,51 +16,142 @@ import { useAccessToken } from 'hooks/useAccessToken';
 import { useMyGame2048Data } from '../hooks';
 import { useMini } from 'hooks';
 import { useThrottledCallback } from 'use-debounce/lib';
+import { useAnalytics } from 'services/analytics';
+import { motion } from 'framer-motion';
+import { lastWeek } from 'utils';
 
 export const Home = () => {
   const { isTop } = useCurrentScreen();
   const { push, pop } = useNavigator();
+  const analytics = useAnalytics();
   const minigameApi = useMinigameApi();
   const { accessToken } = useAccessToken();
   const { isInWebEnvironment, handleThirdPartyAgreement } = useMini();
-  const { rank, gameType, updateMyGame2048Data } = useMyGame2048Data();
+  const {
+    rank,
+    gameType,
+    updateMyScore,
+    updateMyComment,
+    updateMyHighestScore,
+  } = useMyGame2048Data();
   const [isRanked, setIsRanked] = useState<boolean>(false);
   const [userLeaderboardData, setUserLeaderboardData] = useState<any[]>([]);
   const [districtLeaderboardData, setDistrictLeaderboardData] = useState<any[]>(
     []
   );
 
-  const goToMainPage = () => {
+  const [lastWeekTopDistrict, setLastWeekTopDistrict] = useState<{
+    name: string;
+    score: number;
+  }>({ name: '', score: 0 });
+  const [lastWeekTopTownie, setLastWeekTopTownie] = useState<{
+    name: string;
+    score: number;
+  }>({ name: '', score: 0 });
+  const goToPlatformPage = () => {
     pop();
   };
   const goToGamePage = () => {
     push(`/game-2048/game`);
   };
 
+  // game start button handler
+  // =================================================================
+  const handleReturningUser = () => {
+    // if access token exists, user is not new
+    analytics.logEvent('click_game_start_button', {
+      game_type: 'karrot-clicker',
+      is_new_user: false,
+    });
+  };
+  const handleNewUser = () => {
+    // if user is new, open third-party agreement preset
+    analytics.logEvent('click_game_start_button', {
+      game_type: 'karrot-clicker',
+      is_new_user: true,
+    });
+    handleThirdPartyAgreement(goToGamePage);
+  };
   const handleGameStart = () => {
     // bypass in web environment
     if (isInWebEnvironment) {
       console.log('bypass in web environment: home-page to game-page');
       goToGamePage();
+      return;
+    }
+    if (accessToken) {
+      handleReturningUser();
+      goToGamePage();
     } else {
-      if (accessToken) {
-        goToGamePage();
-      } else {
-        handleThirdPartyAgreement(goToGamePage);
-        // goToGamePage();
-      }
+      handleNewUser();
     }
   };
-  const getLastWeekTopTownie = () => {};
+  // =================================================================
 
-  const getLastWeekTopDistrict = () => {};
+  // last week winner handler
+  // =================================================================
+  const getLastWeekTopTownie = async () => {
+    try {
+      const {
+        data: { data },
+      } = await minigameApi.gameUserApi.getLeaderBoardByUserUsingGET(
+        gameType,
+        lastWeek.month,
+        1,
+        lastWeek.week,
+        lastWeek.year
+      );
+      if (data) {
+        console.log(data);
+        setLastWeekTopTownie({ name: data[0].nickname, score: data[0].score });
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
+  const getLastWeekTopDistrict = async () => {
+    try {
+      const {
+        data: { data },
+      } = await minigameApi.gameTownApi.getLeaderBoardByTownUsingGET(
+        gameType,
+        lastWeek.month,
+        1,
+        lastWeek.week,
+        lastWeek.year
+      );
+      if (data) {
+        console.log(data);
+
+        setLastWeekTopDistrict({ name: data[0].name2, score: data[0].score });
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // refresh button handler
+  // =================================================================
   const updateMyGameData = async () => {
     const {
       data: { data },
     } = await minigameApi.gameUserApi.getMyRankInfoUsingGET(gameType);
-    if (data && data.score && data.rank && data.comment) {
-      updateMyGame2048Data(data.score, data.rank, data.comment);
+    if (data) {
+      if (data.score && data.rank) {
+        updateMyScore(data.score, data.rank);
+      }
+      if (data.comment) {
+        updateMyComment(data.comment);
+      }
+    }
+  };
+  const getMyBestScoreEver = async () => {
+    const {
+      data: { data },
+    } = await minigameApi.gameUserApi.getMyRankInfoUsingGET(gameType, 'BEST');
+    if (data) {
+      updateMyHighestScore(data.score, data.rank);
     }
   };
 
@@ -76,7 +167,6 @@ export const Home = () => {
       setUserLeaderboardData(indexedDistrictRankData);
     }
   }, [gameType, minigameApi]);
-
   const getDistrictLeaderboardData = useCallback(async () => {
     const {
       data: { data },
@@ -89,18 +179,21 @@ export const Home = () => {
       setDistrictLeaderboardData(indexedDistrictRankData);
     }
   }, [gameType, minigameApi]);
-
   // Throttle refresh for 5 seconds
-  const handleRefresh = useThrottledCallback(() => {
+  const handleRefresh = () => {
     updateMyGameData();
+    getMyBestScoreEver();
     getUserLeaderboardData();
     getDistrictLeaderboardData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, 5000);
+  };
+  const throttledRefresh = useThrottledCallback(handleRefresh, 3000);
+  // =================================================================
 
   useEffect(() => {
     if (isTop) {
       handleRefresh();
+      getLastWeekTopTownie();
+      getLastWeekTopDistrict();
     }
     if (rank !== 0) {
       setIsRanked(true);
@@ -109,20 +202,38 @@ export const Home = () => {
   }, [isTop]);
   return (
     <Page>
-      <Nav appendLeft={<BackIcon />} onClickLeft={goToMainPage} />
+      <Nav appendLeft={<BackIcon />} onClickLeft={goToPlatformPage} />
       <Banner className="banner">
         <BannerImage />
       </Banner>
       <Container className="last-week-winner">
-        <LastWeekTopDistrict getLastWeekTopDistrict={getLastWeekTopDistrict} />
-        <LastWeekTopTownie getLastWeekTopTownie={getLastWeekTopTownie} />
+        <LastWeekTopDistrict
+          name={lastWeekTopDistrict.name}
+          score={lastWeekTopDistrict.score}
+        />
+        <LastWeekTopTownie
+          name={lastWeekTopTownie.name}
+          score={lastWeekTopTownie.score}
+        />
       </Container>
-      <Refresh handleRefresh={handleRefresh} />
-      <Container>{isRanked ? <MyInfo /> : null}</Container>
-      <LeaderboardTabs
-        districtLeaderboardData={districtLeaderboardData}
-        userLeaderboardData={userLeaderboardData}
-      />
+      <DraggableDiv
+        drag="y"
+        dragConstraints={{
+          top: -205,
+          bottom: 0,
+        }}
+        whileTap={{ cursor: 'grabbing' }}
+      >
+        <WeeklyCountdown className="weekly-countdown-refresh">
+          <Refresh handleRefresh={throttledRefresh} />
+        </WeeklyCountdown>
+
+        <Container>{isRanked ? <MyInfo /> : null}</Container>
+        <LeaderboardTabs
+          districtLeaderboardData={districtLeaderboardData}
+          userLeaderboardData={userLeaderboardData}
+        />
+      </DraggableDiv>
       <div
         style={{
           position: 'absolute',
@@ -175,4 +286,20 @@ const ActionItems = styled.div`
   background: #ffffff;
   box-sizing: border-box;
   box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+`;
+
+const DraggableDiv = styled(motion.div)`
+  flex: 1;
+  background: #fff;
+  padding-top: ${rem(25)};
+`;
+
+const WeeklyCountdown = styled.div`
+  font-style: normal;
+  font-weight: normal;
+  display: flex;
+  flex-flow: row;
+  justify-content: space-between;
+  padding: 0 ${rem(20)} ${rem(15)};
 `;

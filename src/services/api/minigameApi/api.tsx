@@ -5,7 +5,9 @@ import {
   GameUserApi,
   GameTownApi,
   GamePlayApi,
-  TownApiFactory,
+  NotificationApi,
+  RegionApi,
+  SurveyApi,
 } from '../../openapi_generator/api';
 import { Configuration } from '../../openapi_generator/configuration';
 import { useAccessToken } from 'hooks';
@@ -24,13 +26,15 @@ function CreateMinigameApi({
       apiKey: `Bearer ${accessToken}`,
       basePath: env.baseUrl,
     });
-
-    const oauth2Api = new Oauth2Api(configuration);
-    const userApi = new UserApi(configuration);
-    const gameUserApi = new GameUserApi(configuration);
-    const gameTownApi = new GameTownApi(configuration);
     const gamePlayApi = new GamePlayApi(configuration);
-    const townApi = () => TownApiFactory(configuration);
+    const gameTownApi = new GameTownApi(configuration);
+    const gameUserApi = new GameUserApi(configuration);
+    const notificationApi = new NotificationApi(configuration);
+    const oauth2Api = new Oauth2Api(configuration);
+    const regionApi = new RegionApi(configuration);
+    const surveyApi = new SurveyApi(configuration);
+    const userApi = new UserApi(configuration);
+
     console.log(gameUserApi);
     return {
       oauth2Api,
@@ -38,16 +42,20 @@ function CreateMinigameApi({
       gameUserApi,
       gameTownApi,
       gamePlayApi,
-      townApi,
+      regionApi,
+      surveyApi,
+      notificationApi,
     };
   } else {
     console.log('no access token');
-    const oauth2Api = new Oauth2Api();
-    const userApi = new UserApi();
-    const gameUserApi = new GameUserApi();
-    const gameTownApi = new GameTownApi();
     const gamePlayApi = new GamePlayApi();
-    const townApi = () => TownApiFactory();
+    const gameTownApi = new GameTownApi();
+    const gameUserApi = new GameUserApi();
+    const notificationApi = new NotificationApi();
+    const oauth2Api = new Oauth2Api();
+    const regionApi = new RegionApi();
+    const surveyApi = new SurveyApi();
+    const userApi = new UserApi();
 
     return {
       oauth2Api,
@@ -55,7 +63,9 @@ function CreateMinigameApi({
       gameUserApi,
       gameTownApi,
       gamePlayApi,
-      townApi,
+      regionApi,
+      surveyApi,
+      notificationApi,
     };
   }
 }

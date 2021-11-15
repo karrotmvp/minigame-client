@@ -3,7 +3,7 @@ import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 import { useEffect, useState } from 'react';
 import Modal from 'react-modal';
-import { commafy } from 'utils/functions/numberFunctions';
+import { commafy } from 'utils/numberFunctions';
 import { useAnalytics } from 'services/analytics';
 import gameBackgroundUrl from 'assets/images/KarrotClicker/game_background.png';
 import { Guide } from './NewUser';

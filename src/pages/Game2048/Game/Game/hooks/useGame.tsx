@@ -13,6 +13,7 @@ import {
 import { TileProps } from '../Tile';
 import { useUniqueId } from './useUniqueId';
 import { animationDuration } from '../styles';
+import { useMyGame2048Data } from 'pages/Game2048/hooks';
 
 type RetrieveTileIdsPerRowOrColumn = (rowOrColumnIndex: number) => number[];
 type CalculateTileIndex = (
@@ -33,6 +34,7 @@ const indexToCoordinate = (index: number) => {
 
 export const useGame = () => {
   const isInitialRender = useRef(true);
+  const { score: bestScore } = useMyGame2048Data();
   const nextId = useUniqueId();
   const dispatch = useDispatch();
   const { score, tiles, byIds, hasChanged, inMotion } = useSelector(
@@ -99,7 +101,7 @@ export const useGame = () => {
 
   const generateRandomTile = useCallback(() => {
     const emptyTiles = findEmptyTiles();
-    console.log(emptyTiles);
+
     if (emptyTiles.length > 0) {
       const randomCoordinate = (() => {
         const randomIndex = Math.floor(Math.random() * emptyTiles.length);
@@ -284,7 +286,8 @@ export const useGame = () => {
     generateRandomTile();
 
     console.log('reset');
-  }, [dispatch, generateRandomTile]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch]);
   const checkGameOver = () => {
     const emptyTiles = findEmptyTiles();
     if (emptyTiles.length <= 0) {
@@ -293,15 +296,18 @@ export const useGame = () => {
   };
   useEffect(() => {
     if (isInitialRender.current) {
-      createTile({ coordinate: [3, 1], value: 2 });
-      createTile({ coordinate: [1, 1], value: 2 });
-      isInitialRender.current = false;
-      return;
+      if (bestScore === 0) {
+        createTile({ coordinate: [3, 1], value: 2 });
+        createTile({ coordinate: [1, 1], value: 2 });
+        isInitialRender.current = false;
+
+        return;
+      }
     }
     if (!inMotion && hasChanged) {
       generateRandomTile();
     }
-  }, [createTile, generateRandomTile, hasChanged, inMotion]);
+  }, [bestScore, createTile, generateRandomTile, hasChanged, inMotion]);
 
   const tileList = byIds.map((tileId) => tiles[tileId]);
 

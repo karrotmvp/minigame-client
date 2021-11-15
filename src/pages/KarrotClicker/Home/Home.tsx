@@ -1,14 +1,13 @@
 import styled from '@emotion/styled';
-import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
-import { CloseIcon } from 'assets/Icon';
+import { useNavigator } from '@karrotframe/navigator';
+import { BackIcon } from 'assets/Icon';
 import { ActiveUserCount } from 'components/ActiveUserCount';
 import { OldButton } from 'components/Button';
 import { Nav } from 'components/Navigation/Nav';
 import { useAccessToken, useMini, useUserData } from 'hooks';
 import { rem } from 'polished';
-import { useCallback, useEffect } from 'react';
 import { useAnalytics } from 'services/analytics';
-import { useMinigameApi } from 'services/api/minigameApi';
+// import { useMinigameApi } from 'services/api/minigameApi';
 import { useGame } from '../Game/hooks';
 import { useMyKarrotClickerData } from '../hooks';
 import { LeaderboardTabs } from '../Leaderboard/LeaderboardTabs';
@@ -48,38 +47,20 @@ const UserScoreExists: React.FC<UserScoreExistsProps> = (props) => {
 };
 
 export const Home = () => {
-  const { push } = useNavigator();
-  const { isTop } = useCurrentScreen();
-  const minigameApi = useMinigameApi();
+  const { push, pop } = useNavigator();
   const analytics = useAnalytics();
   const { accessToken } = useAccessToken();
-  const { ejectApp, isInWebEnvironment, handleThirdPartyAgreement } = useMini();
-  const { nickname, districtName, setUserInfo } = useUserData();
-  const {
-    rank,
-    score,
-    comment,
-    setGameTypeToKarrotClicker,
-    updateMyKarrotClickerData,
-    updateMyComment,
-  } = useMyKarrotClickerData();
+  const { isInWebEnvironment, handleThirdPartyAgreement } = useMini();
+  const { nickname, townName2: districtName } = useUserData();
+  const { rank, score, comment } = useMyKarrotClickerData();
   const { resumeGame, onResetCount } = useGame();
   const goToGamePage = () => {
     push(`/karrot-clicker/game`);
   };
 
-  // const updateUserInfo = useCallback(async () => {
-  //   const {
-  //     data: { data },
-  //   } = await minigameApi.userApi.getUserInfoUsingGET();
-  //   if (data) {
-  //     setUserInfo(data.id, data.nickname);
-  //     // FA: track user with set user id
-  //     analytics.setUserId(data.id);
-  //     console.log('setuserinfo', data.id, data.nickname);
-  //   }
-  // }, [analytics, minigameApi.userApi, setUserInfo]);
-
+  const goToPlatformPage = () => {
+    pop();
+  };
   const handleReturningUser = () => {
     // if access token exists, user is not new
     analytics.logEvent('click_game_start_button', {
@@ -99,10 +80,6 @@ export const Home = () => {
     });
 
     handleThirdPartyAgreement(goToGamePage);
-    // await goToGamePage();
-
-    // onResetCount();
-    // resumeGame();
   };
 
   const handleGameStart = () => {
@@ -114,72 +91,14 @@ export const Home = () => {
     }
     if (accessToken) {
       handleReturningUser();
-      // updateUserInfo();
       goToGamePage();
     } else {
       handleNewUser();
-      // updateUserInfo();
-      // goToGamePage();
-      // updateUserInfo();
     }
   };
-  // =================================================================================================
-  const leaveMiniApp = () => {
-    analytics.logEvent('click_leave_mini_app_button');
-    ejectApp();
-  };
-  const goToKarrotClicker = useCallback(async () => {
-    setGameTypeToKarrotClicker();
-    try {
-      const {
-        data: { data: data1 },
-      } = await minigameApi.userApi.getUserInfoUsingGET();
-      if (data1) {
-        setUserInfo(data1.id, data1.nickname);
-        // FA: track user with set user id
-        analytics.setUserId(data1.id);
-        console.log('setuserinfo', data1.id, data1.nickname);
-      }
-      const {
-        data: { data: data2 },
-      } = await minigameApi.gameUserApi.getMyRankInfoUsingGET('GAME_KARROT');
-      if (data2) {
-        if (data2.score && data2.rank) {
-          updateMyKarrotClickerData(data2.score, data2.rank);
-          console.log(score);
-        }
-        if (data2.comment) {
-          updateMyComment(data2.comment);
-        }
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  }, [
-    analytics,
-    minigameApi.gameUserApi,
-    minigameApi.userApi,
-    score,
-    setGameTypeToKarrotClicker,
-    setUserInfo,
-    updateMyComment,
-    updateMyKarrotClickerData,
-  ]);
-
-  useEffect(() => {
-    if (isTop) {
-      goToKarrotClicker();
-
-      analytics.logEvent('view_home_page', {
-        game_type: 'karrot-clicker',
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isTop, analytics]);
-  // =================================================================================================
   return (
     <Page className="karrot-clicker-home-page">
-      <Nav appendLeft={<CloseIcon />} onClickLeft={leaveMiniApp} />
+      <Nav appendLeft={<BackIcon />} onClickLeft={goToPlatformPage} />
       <Banner className="banner">
         <BannerImage
           style={{
@@ -198,7 +117,9 @@ export const Home = () => {
           />
         )}
       </MyRow>
+
       <LeaderboardTabs />
+
       <div
         style={{
           position: 'absolute',
