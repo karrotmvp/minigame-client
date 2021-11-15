@@ -30,7 +30,7 @@ import { useMinigameApi } from 'services/api/minigameApi';
 
 const App: React.FC = () => {
   const minigameApi = useMinigameApi();
-  const { setRegionInfo, setTownInfo } = useUserData();
+  const { setRegionInfo, setTownInfo, setIsInstalled } = useUserData();
   const { signAccessToken } = useSignAccessToken();
   const [analytics, setAnalytics] = useState(emptyAnalytics);
   const [karrotMarketMini, setKarrotMarketMini] = useState(
@@ -64,14 +64,15 @@ const App: React.FC = () => {
     const searchParams = new URLSearchParams(window.location.search);
     const code: string | null = searchParams.get('code');
     const regionId: string | null = searchParams.get('region_id');
-    return [code, regionId];
+    const isInstalled: string | null = searchParams.get('installed');
+    return [code, regionId, isInstalled];
   };
   const getDistrictInfo = useCallback(
     async (regionId: string) => {
       try {
         const {
           data: { data },
-        } = await minigameApi.regionApi().getTownInfoUsingGET(regionId);
+        } = await minigameApi.regionApi.getTownInfoUsingGET(regionId);
         if (data) {
           setTownInfo(data.townId, data.name1, data.name2, data.name3);
         }
@@ -81,9 +82,10 @@ const App: React.FC = () => {
     },
     [minigameApi, setTownInfo]
   );
+
   useEffect(() => {
     try {
-      const [code, regionId] = getQueryParams();
+      const [code, regionId, isInstalled] = getQueryParams();
       analytics.logEvent('launch_app');
       console.log(code, regionId);
 
@@ -93,6 +95,13 @@ const App: React.FC = () => {
         getDistrictInfo(regionId);
         if (code) {
           signAccessToken(code, regionId);
+        }
+        if (isInstalled) {
+          if (isInstalled === 'true') {
+            setIsInstalled(true);
+          } else if (isInstalled === 'false') {
+            setIsInstalled(false);
+          }
         }
       }
     } catch (error) {

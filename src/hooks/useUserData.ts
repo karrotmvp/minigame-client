@@ -4,6 +4,7 @@ import {
   setUserInfoAction,
   setRegionInfoAction,
   setTownInfoAction,
+  setIsInstalledAction,
 } from 'reducers/userDataReducer';
 
 export const useUserData = () => {
@@ -15,6 +16,7 @@ export const useUserData = () => {
     townName1,
     townName2,
     townName3,
+    isInstalled,
   } = useSelector((state: RootState) => ({
     userId: state.userDataReducer.userId,
     nickname: state.userDataReducer.nickname,
@@ -23,6 +25,7 @@ export const useUserData = () => {
     townName1: state.userDataReducer.townName1,
     townName2: state.userDataReducer.townName2,
     townName3: state.userDataReducer.townName3,
+    isInstalled: state.userDataReducer.isInstalled,
   }));
   const dispatch = useDispatch();
 
@@ -43,6 +46,10 @@ export const useUserData = () => {
     dispatch(setUserInfoAction(userId, nickname));
   };
 
+  const setIsInstalled = (isInstalled: boolean) => {
+    dispatch(setIsInstalledAction(isInstalled));
+  };
+
   return {
     userId,
     nickname,
@@ -51,8 +58,10 @@ export const useUserData = () => {
     townName1,
     townName2,
     townName3,
+    isInstalled,
     setRegionInfo,
     setTownInfo,
     setUserInfo,
+    setIsInstalled,
   };
 };
