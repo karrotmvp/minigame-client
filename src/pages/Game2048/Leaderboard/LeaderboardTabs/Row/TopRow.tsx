@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { commafy } from 'utils/functions/numberFunctions';
+import { commafy } from 'utils/numberFunctions';
 import Medal1Url from 'assets/svg/game2048/medal1.svg';
 import Medal2Url from 'assets/svg/game2048/medal2.svg';
 import Medal3Url from 'assets/svg/game2048/medal3.svg';

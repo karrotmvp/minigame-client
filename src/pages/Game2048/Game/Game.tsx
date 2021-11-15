@@ -38,7 +38,7 @@ export const Game: React.FC = () => {
   } = useGame();
   const [isUserNew, setIsUserNew] = useState<boolean>(false);
   const [isUserInTopTen, setIsUserInTopTen] = useState<boolean>(false);
-  // const [townieBestScore, setTownieBestScore] = useState<number>(0);
+  const [townieBestScore, setTownieBestScore] = useState<number>(0);
   // game controller
   // =================================================================
   // mobile(touch) friendly
@@ -107,18 +107,18 @@ export const Game: React.FC = () => {
     console.log('handle play again');
   };
 
-  // const getTownieBestScoreEver = async () => {
-  //   const {
-  //     data: { data },
-  //   } = await minigameApi.gameTownApi.getLeaderBoardByTownUsingGET(
-  //     gameType,
-  //     undefined,
-  //     1
-  //   );
-  //   if (data) {
-  //     setTownieBestScore(data[0].score);
-  //   }
-  // };
+  const getTownieBestScoreEver = async () => {
+    const {
+      data: { data },
+    } = await minigameApi.gameTownApi.getLeaderBoardByTownUsingGET(
+      gameType,
+      undefined,
+      1
+    );
+    if (data) {
+      setTownieBestScore(data[0].score);
+    }
+  };
 
   //
   const updateMyBestScore = async () => {
@@ -173,14 +173,17 @@ export const Game: React.FC = () => {
     }
   };
 
-  // useEffect(() => {
-  //   setIsUserInTopTen(true);
-  // }, []);
+  useEffect(() => {
+    if (isTop) {
+      getTownieBestScoreEver();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isTop]);
   return (
     <Page className="game-page">
       <HighScoreContainer>
         <MyBestScore myBestScore={myBestScore} />
-        <TownieBestScore />
+        <TownieBestScore townieBestScore={townieBestScore} />
       </HighScoreContainer>
       <CurrentScore score={currentScore} />
       <Board

@@ -1,40 +1,31 @@
 import styled from '@emotion/styled';
 import { rem } from 'polished';
-import { useEffect } from 'react';
 import BadgeUrl from 'assets/svg/game2048/top_badge.svg';
+import { commafy } from 'utils';
 
-type TownieProps = {
-  getLastWeekTopTownie: () => void;
+type Props = {
+  name: string;
+  score: number;
 };
-export const LastWeekTopTownie: React.FC<TownieProps> = (props) => {
-  useEffect(() => {
-    props.getLastWeekTopTownie();
-  }, [props]);
+export const LastWeekTopDistrict: React.FC<Props> = (props) => {
   return (
     <Container>
       <Title>
         지난 주 <Highlight>1등 동네</Highlight>
       </Title>
-      <Name>district_name</Name>
-      <Score>9999</Score>
+      <Name>{props.name}</Name>
+      <Score>{commafy(props.score)}</Score>
     </Container>
   );
 };
-
-type DistrictProps = {
-  getLastWeekTopDistrict: () => void;
-};
-export const LastWeekTopDistrict: React.FC<DistrictProps> = (props) => {
-  useEffect(() => {
-    props.getLastWeekTopDistrict();
-  }, [props]);
+export const LastWeekTopTownie: React.FC<Props> = (props) => {
   return (
     <Container>
       <Title>
         지난 주 <Highlight>1등 주민</Highlight>
       </Title>
-      <Name>townie_name</Name>
-      <Score>99999</Score>
+      <Name>{props.name}</Name>
+      <Score>{commafy(props.score)}</Score>
     </Container>
   );
 };

@@ -18,6 +18,7 @@ import { useMini } from 'hooks';
 import { useThrottledCallback } from 'use-debounce/lib';
 import { useAnalytics } from 'services/analytics';
 import { motion } from 'framer-motion';
+import { lastWeek } from 'utils';
 
 export const Home = () => {
   const { isTop } = useCurrentScreen();
@@ -38,8 +39,15 @@ export const Home = () => {
   const [districtLeaderboardData, setDistrictLeaderboardData] = useState<any[]>(
     []
   );
-  // const [townieBestScore, setTownieBestScore] = useState<number>(0);
 
+  const [lastWeekTopDistrict, setLastWeekTopDistrict] = useState<{
+    name: string;
+    score: number;
+  }>({ name: '', score: 0 });
+  const [lastWeekTopTownie, setLastWeekTopTownie] = useState<{
+    name: string;
+    score: number;
+  }>({ name: '', score: 0 });
   const goToPlatformPage = () => {
     pop();
   };
@@ -83,12 +91,45 @@ export const Home = () => {
   // last week winner handler
   // =================================================================
   const getLastWeekTopTownie = async () => {
-    // try {
-    //   const {data:data} = await minigameApi.gameUserApi.getLeaderBoardByUserUsingGET(gameType, month, size, week, year, options)
-    // }
+    try {
+      const {
+        data: { data },
+      } = await minigameApi.gameUserApi.getLeaderBoardByUserUsingGET(
+        gameType,
+        lastWeek.month,
+        1,
+        lastWeek.week,
+        lastWeek.year
+      );
+      if (data) {
+        console.log(data);
+        setLastWeekTopTownie({ name: data[0].nickname, score: data[0].score });
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
-  const getLastWeekTopDistrict = () => {};
+  const getLastWeekTopDistrict = async () => {
+    try {
+      const {
+        data: { data },
+      } = await minigameApi.gameTownApi.getLeaderBoardByTownUsingGET(
+        gameType,
+        lastWeek.month,
+        1,
+        lastWeek.week,
+        lastWeek.year
+      );
+      if (data) {
+        console.log(data);
+
+        setLastWeekTopDistrict({ name: data[0].name2, score: data[0].score });
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   // refresh button handler
   // =================================================================
@@ -151,6 +192,8 @@ export const Home = () => {
   useEffect(() => {
     if (isTop) {
       handleRefresh();
+      getLastWeekTopTownie();
+      getLastWeekTopDistrict();
     }
     if (rank !== 0) {
       setIsRanked(true);
@@ -164,8 +207,14 @@ export const Home = () => {
         <BannerImage />
       </Banner>
       <Container className="last-week-winner">
-        <LastWeekTopDistrict getLastWeekTopDistrict={getLastWeekTopDistrict} />
-        <LastWeekTopTownie getLastWeekTopTownie={getLastWeekTopTownie} />
+        <LastWeekTopDistrict
+          name={lastWeekTopDistrict.name}
+          score={lastWeekTopDistrict.score}
+        />
+        <LastWeekTopTownie
+          name={lastWeekTopTownie.name}
+          score={lastWeekTopTownie.score}
+        />
       </Container>
       <DraggableDiv
         drag="y"

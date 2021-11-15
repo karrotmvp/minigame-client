@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { commafy } from 'utils/functions/numberFunctions';
+import { commafy } from 'utils/numberFunctions';
 import React from 'react';
 import { rem } from 'polished';
 

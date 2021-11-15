@@ -55,31 +55,31 @@ export interface BaseResponseListTownRankingDto {
 /**
  * 
  * @export
- * @interface BaseResponseListobject
+ * @interface BaseResponseListUserRankingDto
  */
-export interface BaseResponseListobject {
+export interface BaseResponseListUserRankingDto {
     /**
      * 
-     * @type {Array<object>}
-     * @memberof BaseResponseListobject
+     * @type {Array<UserRankingDto>}
+     * @memberof BaseResponseListUserRankingDto
      */
-    'data'?: Array<object>;
+    'data'?: Array<UserRankingDto>;
     /**
      * 
      * @type {string}
-     * @memberof BaseResponseListobject
+     * @memberof BaseResponseListUserRankingDto
      */
     'message'?: string;
     /**
      * 
      * @type {number}
-     * @memberof BaseResponseListobject
+     * @memberof BaseResponseListUserRankingDto
      */
     'status': number;
     /**
      * 
      * @type {string}
-     * @memberof BaseResponseListobject
+     * @memberof BaseResponseListUserRankingDto
      */
     'timestamp': string;
 }
@@ -536,6 +536,43 @@ export interface UserDto {
      * @memberof UserDto
      */
     'town': TownDto;
+}
+/**
+ * 
+ * @export
+ * @interface UserRankingDto
+ */
+export interface UserRankingDto {
+    /**
+     * 
+     * @type {string}
+     * @memberof UserRankingDto
+     */
+    'comment'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof UserRankingDto
+     */
+    'nickname': string;
+    /**
+     * 
+     * @type {number}
+     * @memberof UserRankingDto
+     */
+    'score': number;
+    /**
+     * 
+     * @type {TownDto}
+     * @memberof UserRankingDto
+     */
+    'town': TownDto;
+    /**
+     * 
+     * @type {string}
+     * @memberof UserRankingDto
+     */
+    'userId'?: string;
 }
 
 /**
@@ -1037,7 +1074,7 @@ export const GameUserApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getLeaderBoardByUserUsingGET(gameType: 'GAME_KARROT' | 'GAME_2048', month?: number, size?: number, week?: number, year?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseResponseListobject>> {
+        async getLeaderBoardByUserUsingGET(gameType: 'GAME_KARROT' | 'GAME_2048', month?: number, size?: number, week?: number, year?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseResponseListUserRankingDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getLeaderBoardByUserUsingGET(gameType, month, size, week, year, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -1085,7 +1122,7 @@ export const GameUserApiFactory = function (configuration?: Configuration, baseP
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getLeaderBoardByUserUsingGET(gameType: 'GAME_KARROT' | 'GAME_2048', month?: number, size?: number, week?: number, year?: number, options?: any): AxiosPromise<BaseResponseListobject> {
+        getLeaderBoardByUserUsingGET(gameType: 'GAME_KARROT' | 'GAME_2048', month?: number, size?: number, week?: number, year?: number, options?: any): AxiosPromise<BaseResponseListUserRankingDto> {
             return localVarFp.getLeaderBoardByUserUsingGET(gameType, month, size, week, year, options).then((request) => request(axios, basePath));
         },
         /**

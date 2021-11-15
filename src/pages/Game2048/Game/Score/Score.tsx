@@ -4,12 +4,12 @@ type BestScore = {
   myBestScore?: number;
   townieBestScore?: number;
 };
-export const TownieBestScore = () => {
+export const TownieBestScore: React.FC<BestScore> = (props) => {
   // API GET TOWNIE HIGH SCORE
   return (
     <Container>
       <Text>주민 최고점수</Text>
-      <Score></Score>
+      <Score>{props.townieBestScore}</Score>
     </Container>
   );
 };

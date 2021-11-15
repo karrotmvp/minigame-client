@@ -5,9 +5,9 @@ import {
   GameUserApi,
   GameTownApi,
   GamePlayApi,
-  SurveyApiFactory,
-  NotificationApiFactory,
-  RegionApiFactory,
+  NotificationApi,
+  RegionApi,
+  SurveyApi,
 } from '../../openapi_generator/api';
 import { Configuration } from '../../openapi_generator/configuration';
 import { useAccessToken } from 'hooks';
@@ -29,10 +29,10 @@ function CreateMinigameApi({
     const gamePlayApi = new GamePlayApi(configuration);
     const gameTownApi = new GameTownApi(configuration);
     const gameUserApi = new GameUserApi(configuration);
-    const notificationApi = () => NotificationApiFactory(configuration);
+    const notificationApi = new NotificationApi(configuration);
     const oauth2Api = new Oauth2Api(configuration);
-    const regionApi = () => RegionApiFactory(configuration);
-    const surveyApi = () => SurveyApiFactory(configuration);
+    const regionApi = new RegionApi(configuration);
+    const surveyApi = new SurveyApi(configuration);
     const userApi = new UserApi(configuration);
 
     console.log(gameUserApi);
@@ -48,14 +48,14 @@ function CreateMinigameApi({
     };
   } else {
     console.log('no access token');
-    const oauth2Api = new Oauth2Api();
-    const userApi = new UserApi();
-    const gameUserApi = new GameUserApi();
-    const gameTownApi = new GameTownApi();
     const gamePlayApi = new GamePlayApi();
-    const regionApi = () => RegionApiFactory();
-    const surveyApi = () => SurveyApiFactory();
-    const notificationApi = () => NotificationApiFactory();
+    const gameTownApi = new GameTownApi();
+    const gameUserApi = new GameUserApi();
+    const notificationApi = new NotificationApi();
+    const oauth2Api = new Oauth2Api();
+    const regionApi = new RegionApi();
+    const surveyApi = new SurveyApi();
+    const userApi = new UserApi();
 
     return {
       oauth2Api,

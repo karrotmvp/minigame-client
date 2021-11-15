@@ -24,7 +24,7 @@ export const Leaderboard = () => {
   const { resetGame } = useGame();
   const { rank, gameType, updateMyScore, updateMyComment } =
     useMyGame2048Data();
-  const [isRanked, setIsRanked] = useState<boolean>(false);
+  const [isRanked, setIsRanked] = useState<boolean>(true);
   const [userLeaderboardData, setUserLeaderboardData] = useState<any[]>([]);
   const [districtLeaderboardData, setDistrictLeaderboardData] = useState<any[]>(
     []
@@ -65,7 +65,7 @@ export const Leaderboard = () => {
 
   const handleShare = () => {
     const url = 'https://daangn.onelink.me/HhUa/3a219555';
-    const text = '2048 퍼즐을 플레이 하고 이웃들에게 한 마디를 남겨보세요!';
+    const text = `${rank}등!! 2048 퍼즐을 플레이 하고 이웃들에게 한 마디를 남겨보세요!`;
     shareApp(url, text);
     analytics.logEvent('click_share_button', {
       game_type: 'game-2048',
@@ -82,6 +82,7 @@ export const Leaderboard = () => {
         ...item,
       }));
       setUserLeaderboardData(indexedDistrictRankData);
+      console.log(indexedDistrictRankData);
     }
   }, [gameType, minigameApi]);
 

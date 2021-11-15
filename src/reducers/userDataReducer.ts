@@ -2,13 +2,19 @@
 export const SET_USER_INFO = 'userData/SET_USER_INFO' as const;
 export const SET_REGION_INFO = 'userData/SET_REGION_INFO' as const;
 export const SET_TOWN_INFO = 'userData/SET_TOWN_INFO' as const;
-
+export const SET_IS_INSTALLED = 'userData/SET_IS_INSTALLED' as const;
 // actions,
 export const setUserInfoAction = (userId: string, nickname: string) => ({
   type: SET_USER_INFO,
   payload: {
     userId,
     nickname,
+  },
+});
+export const setIsInstalledAction = (isInstalled: boolean) => ({
+  type: SET_IS_INSTALLED,
+  payload: {
+    isInstalled,
   },
 });
 
@@ -37,10 +43,12 @@ export const setTownInfoAction = (
 type UserDataAction =
   | ReturnType<typeof setUserInfoAction>
   | ReturnType<typeof setRegionInfoAction>
-  | ReturnType<typeof setTownInfoAction>;
+  | ReturnType<typeof setTownInfoAction>
+  | ReturnType<typeof setIsInstalledAction>;
 
 // initial state
 type UserDataState = {
+  isInstalled: boolean;
   userId: string;
   nickname: string;
   regionId: string;
@@ -50,6 +58,7 @@ type UserDataState = {
   townName3: string;
 };
 const initialState: UserDataState = {
+  isInstalled: false,
   userId: '',
   nickname: '',
   regionId: '',
@@ -65,6 +74,11 @@ const userDataReducer = (
   action: UserDataAction
 ) => {
   switch (action.type) {
+    case SET_IS_INSTALLED:
+      return {
+        ...state,
+        isInstalled: action.payload.isInstalled,
+      };
     case SET_USER_INFO:
       return {
         ...state,
