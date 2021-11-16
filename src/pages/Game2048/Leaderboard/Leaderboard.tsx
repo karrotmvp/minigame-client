@@ -3,7 +3,7 @@ import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
 import { LeaderboardTabs } from 'pages/Game2048/Leaderboard/LeaderboardTabs';
 import { rem } from 'polished';
 import { Button } from 'components/Button';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Nav } from 'components/Navigation/Nav';
 import { CloseIcon } from 'assets/Icon';
 import { MyInfo } from './MyInfo';
@@ -123,6 +123,7 @@ export const Leaderboard = () => {
     if (rank !== 0) {
       setIsRanked(() => true);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isTop, rank]);
 
   const handleShare = () => {
@@ -138,7 +139,8 @@ export const Leaderboard = () => {
     if (isInstalled === false) {
       handleInstallation();
     }
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isInstalled]);
   return (
     <Page>
       <Nav appendLeft={<CloseIcon />} onClickLeft={goBackToPlatform} />

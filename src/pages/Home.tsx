@@ -2,19 +2,14 @@ import React, { useCallback, useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
 import { useMinigameApi } from 'services/api/minigameApi';
-import {
-  useAccessToken,
-  useSignAccessToken,
-  useMini,
-  useUserData,
-} from 'hooks';
+import { useAccessToken, useMini, useUserData } from 'hooks';
 import { Nav } from 'components/Navigation/Nav';
 import { CloseIcon } from 'assets/Icon';
 import { rem } from 'polished';
 import { useMyGame2048Data } from './Game2048/hooks';
 import { useMyKarrotClickerData } from './KarrotClicker/hooks';
 import { useAnalytics } from 'services/analytics';
-import { getMini } from 'services/karrotMarket/mini';
+
 import { color } from 'styles';
 import BellUrl from 'assets/svg/bell.svg';
 import Game2048CardImgUrl from 'assets/svg/game2048/game_2048_card_img.svg';
@@ -26,8 +21,6 @@ import ArrowKarrotClickerUrl from 'assets/svg/arrow_karrot_clicker.svg';
 import { ReactComponent as Bookmark } from 'assets/svg/bookmark_icon.svg';
 import { ReactComponent as Share } from 'assets/svg/share_icon.svg';
 import { NotificationRequestDtoTypeEnum } from 'services/openapi_generator';
-import { motion, AnimatePresence } from 'framer-motion';
-import { SuggestNewGame } from './SuggestNewGame';
 
 export const Home: React.FC = () => {
   const analytics = useAnalytics();
@@ -42,13 +35,8 @@ export const Home: React.FC = () => {
     shareApp,
   } = useMini();
   const { accessToken } = useAccessToken();
-  const { signAccessToken } = useSignAccessToken();
-  const {
-    setUserInfo,
 
-    townName3,
-    isInstalled,
-  } = useUserData();
+  const { townName3 } = useUserData();
   const {
     updateMyScore: updateMyGame2048Score,
     updateMyComment: updateMyGame2048Comment,
@@ -144,26 +132,6 @@ export const Home: React.FC = () => {
     }
   };
 
-  // useEffect(() => console.log(townName3));
-  // const updateUserInfo = useCallback(async () => {
-  //   const {
-  //     data: { data },
-  //   } = await minigameApi.userApi.getUserInfoUsingGET();
-  //   if (data) {
-  //     setUserInfo(data.id, data.nickname);
-  //     // FA: track user with set user id
-  //     analytics.setUserId(data.id);
-  //     console.log('setuserinfo', data.id, data.nickname);
-  //   }
-  // }, [analytics, minigameApi.userApi, setUserInfo]);
-
-  // useEffect(() => {
-  //   if (isTop && accessToken) {
-  //     console.log('is platform page on top?', isTop);
-  //     updateUserInfo();
-  //   }
-  // }, [isTop, accessToken]);
-
   // Share handler
   // =================================================================
   const triggerShareHandler = () => {
@@ -230,6 +198,7 @@ export const Home: React.FC = () => {
     if (isTop) {
       checkNotificationStatus();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isTop]);
   // =================================================================
 
@@ -471,10 +440,6 @@ const Break = styled.hr`
   border: 6px solid #f8f8f8;
   margin: 30px 0 22px;
 `;
-
-// const BottomSection = styled.div`
-
-// // `
 
 const GameSurvey = styled.div`
   margin: 0 20px 0 20px;

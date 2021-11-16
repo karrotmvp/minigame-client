@@ -17,7 +17,6 @@ import { useMyGame2048Data } from '../hooks';
 import { useMini } from 'hooks';
 import { useThrottledCallback } from 'use-debounce/lib';
 import { useAnalytics } from 'services/analytics';
-import { motion } from 'framer-motion';
 import { lastWeek } from 'utils';
 import { useGame } from '../Game/Game/hooks';
 

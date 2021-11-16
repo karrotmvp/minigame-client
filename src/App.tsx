@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import '@karrotframe/navigator/index.css';
-import { Navigator, Screen, useCurrentScreen } from '@karrotframe/navigator';
+import { Navigator, Screen } from '@karrotframe/navigator';
 import { Home } from 'pages/Home';
 import { Game2048Home } from 'pages/Game2048/Home';
 import { Game2048Game } from 'pages/Game2048/Game';
@@ -8,7 +8,6 @@ import { Game2048Leaderboard } from 'pages/Game2048/Leaderboard';
 import { KarrotClickerHome } from 'pages/KarrotClicker/Home';
 import { KarrotClickerGame } from 'pages/KarrotClicker/Game';
 import { KarrotClickerLeaderboard } from 'pages/KarrotClicker/Leaderboard';
-
 import { Survey } from 'pages/Survey';
 // import { LoadingScreen } from 'components/LoadingScreen';
 
@@ -71,18 +70,22 @@ const App: React.FC = () => {
     const isInstalled: string | null = searchParams.get('installed');
     return [preload, code, regionId, isInstalled];
   };
-  const getDistrictInfo = useCallback(async (regionId: string) => {
-    try {
-      const {
-        data: { data },
-      } = await minigameApi.regionApi.getTownInfoUsingGET(regionId);
-      if (data) {
-        setTownInfo(data.townId, data.name1, data.name2, data.name3);
+  const getDistrictInfo = useCallback(
+    async (regionId: string) => {
+      try {
+        const {
+          data: { data },
+        } = await minigameApi.regionApi.getTownInfoUsingGET(regionId);
+        if (data) {
+          setTownInfo(data.townId, data.name1, data.name2, data.name3);
+        }
+      } catch (error) {
+        console.error(error);
       }
-    } catch (error) {
-      console.error(error);
-    }
-  }, []);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [minigameApi.regionApi]
+  );
 
   const updateUserInfo = useCallback(async () => {
     const {
@@ -94,6 +97,7 @@ const App: React.FC = () => {
       analytics.setUserId(data.id);
       console.log('setuserinfo', data.id, data.nickname);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [analytics, minigameApi.userApi]);
   useEffect(() => {
     const [preload, code, regionId, isInstalled] = getQueryParams();
@@ -134,6 +138,7 @@ const App: React.FC = () => {
         console.error(error);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'reducers/rootReducer';
 import {
@@ -364,6 +364,7 @@ export const useGame = () => {
       console.log('generate tile');
       generateRandomTile();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inMotion, hasChanged]);
   // useEffect(() => {
   //   if (isInitialRender.current) {
