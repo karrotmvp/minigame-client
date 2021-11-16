@@ -1,4 +1,5 @@
 import styled from '@emotion/styled';
+import { rem } from 'polished';
 
 type BestScore = {
   myBestScore?: number;
@@ -25,11 +26,12 @@ export const MyBestScore: React.FC<BestScore> = (props) => {
 };
 
 const Container = styled.div`
+  width: 100%;
   display: flex;
   flex-flow: column;
   justify-content: center;
   align-items: center;
-  padding: 0.375rem 2.5rem;
+  padding: ${rem(6)} 0;
 
   font-style: normal;
 
