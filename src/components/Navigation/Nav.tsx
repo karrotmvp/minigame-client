@@ -7,27 +7,39 @@ type Props = {
   appendRight?: React.ReactNode;
   onClickLeft?: () => void;
   onClickRight?: () => void;
+  backgroundColor?: string;
+  border?: string;
 };
 export const Nav = (props: Props) => {
   return (
-    <Wrapper className="nav">
+    <Wrapper
+      className="nav"
+      backgroundColor={props.backgroundColor}
+      border={props.border}
+    >
       <Left onClick={props.onClickLeft}>{props.appendLeft}</Left>
       <Right onClick={props.onClickRight}>{props.appendRight}</Right>
     </Wrapper>
   );
 };
 
-const Wrapper = styled.div`
-  width: 100%;
+const Wrapper = styled.div<{
+  backgroundColor: string | undefined;
+  border: string | undefined;
+}>`
   display: flex;
   flex-flow: row;
   align-items: flex-end;
   justify-content: space-between;
   height: ${rem(90)};
   padding: ${rem(50)} ${rem(25)} ${rem(25)};
-  background: inherit;
+  background: ${(props) =>
+    props.backgroundColor ? props.backgroundColor : `inherit`};
+
+  border-bottom: ${(props) => (props.border ? props.border : `none`)};
   z-index: 10;
   position: sticky;
+  // width: 100%;
   top: 0;
   left: 0;
 `;
