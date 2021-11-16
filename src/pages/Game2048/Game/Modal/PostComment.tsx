@@ -6,7 +6,8 @@ import { useUserData } from 'hooks';
 import { useMyGame2048Data } from 'pages/Game2048/hooks';
 import { rem } from 'polished';
 import { ReactComponent as Wow } from 'assets/svg/game2048/wow.svg';
-// import { useMinigameApi } from 'services/api/minigameApi';
+import { useMinigameApi } from 'services/api/minigameApi';
+import { useMini } from 'hooks';
 
 type CommentType = {
   comment: string;
@@ -19,8 +20,9 @@ type Props = {
 
 export const PostComment: React.FC<Props> = (props) => {
   const { push } = useNavigator();
-  // const minigameApi = useMinigameApi();
+  const minigameApi = useMinigameApi();
   const { townName2: districtName } = useUserData();
+  const { isInWebEnvironment } = useMini();
   const { rank, comment, updateMyComment } = useMyGame2048Data();
   const [newComment, setNewComment] = useState<CommentType>({
     comment: comment,
@@ -38,14 +40,23 @@ export const PostComment: React.FC<Props> = (props) => {
     });
   };
 
-  const patchComment = () => {
-    // minigameApi
-    //   .gamePlayApi()
-    //   .addCommentUsingPATCH(gameType, newComment.comment);
-    // updateMyScore(score, rank, newComment.comment);
+  const patchComment = async () => {
+    if (isInWebEnvironment) {
+      updateMyComment(newComment.comment);
+      goToLeaderboardPage();
+      return;
+    }
     updateMyComment(newComment.comment);
-    props.setIsUserInTopTen(false);
-    goToLeaderboardPage();
+    const { data } = await minigameApi.gamePlayApi.addCommentUsingPATCH(
+      'GAME_2048',
+      {
+        comment: newComment.comment,
+      }
+    );
+    if (data.status === 200) {
+      props.setIsUserInTopTen(false);
+      goToLeaderboardPage();
+    }
   };
 
   return (
