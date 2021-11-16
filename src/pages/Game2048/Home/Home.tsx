@@ -17,8 +17,8 @@ import { useMyGame2048Data } from '../hooks';
 import { useMini } from 'hooks';
 import { useThrottledCallback } from 'use-debounce/lib';
 import { useAnalytics } from 'services/analytics';
-import { motion } from 'framer-motion';
 import { lastWeek } from 'utils';
+import { useGame } from '../Game/Game/hooks';
 
 export const Home = () => {
   const { isTop } = useCurrentScreen();
@@ -26,6 +26,7 @@ export const Home = () => {
   const analytics = useAnalytics();
   const minigameApi = useMinigameApi();
   const { accessToken } = useAccessToken();
+  const { resetGame } = useGame();
   const { isInWebEnvironment, handleThirdPartyAgreement } = useMini();
   const {
     rank,
@@ -52,6 +53,7 @@ export const Home = () => {
     pop();
   };
   const goToGamePage = () => {
+    resetGame();
     push(`/game-2048/game`);
   };
 
@@ -60,14 +62,14 @@ export const Home = () => {
   const handleReturningUser = () => {
     // if access token exists, user is not new
     analytics.logEvent('click_game_start_button', {
-      game_type: 'karrot-clicker',
+      game_type: 'game-2048',
       is_new_user: false,
     });
   };
   const handleNewUser = () => {
     // if user is new, open third-party agreement preset
     analytics.logEvent('click_game_start_button', {
-      game_type: 'karrot-clicker',
+      game_type: 'game-2048',
       is_new_user: true,
     });
     handleThirdPartyAgreement(goToGamePage);
@@ -200,51 +202,72 @@ export const Home = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isTop]);
-  return (
-    <Page>
-      <Nav appendLeft={<BackIcon />} onClickLeft={goToPlatformPage} />
-      <Banner className="banner">
-        <BannerImage />
-      </Banner>
-      <Container className="last-week-winner">
-        <LastWeekTopDistrict
-          name={lastWeekTopDistrict.name}
-          score={lastWeekTopDistrict.score}
-        />
-        <LastWeekTopTownie
-          name={lastWeekTopTownie.name}
-          score={lastWeekTopTownie.score}
-        />
-      </Container>
-      <DraggableDiv
-        drag="y"
-        dragConstraints={{
-          top: -205,
-          bottom: 0,
-        }}
-        whileTap={{ cursor: 'grabbing' }}
-      >
-        <WeeklyCountdown className="weekly-countdown-refresh">
-          <Refresh handleRefresh={throttledRefresh} />
-        </WeeklyCountdown>
 
-        <Container>{isRanked ? <MyInfo /> : null}</Container>
-        <LeaderboardTabs
-          districtLeaderboardData={districtLeaderboardData}
-          userLeaderboardData={userLeaderboardData}
-        />
-      </DraggableDiv>
-      <div
-        style={{
-          position: 'absolute',
-          bottom: '90px',
-          right: '24px',
-          zIndex: 101,
-        }}
-      >
-        <ActiveUserCount gameType="GAME_2048" />
-      </div>
+  const [
+    isScrollValueMoreThanHeaderHeight,
+    setIsScrollValueMoreThanHeaderHeight,
+  ] = useState(false);
+
+  //here 96(px) - height of current header
+
+  useEffect(() => {
+    const handleScroll = () => {
+      console.log(window.scrollY);
+      setIsScrollValueMoreThanHeaderHeight(window.scrollY > 90);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  return (
+    <>
+      <Nav
+        appendLeft={<BackIcon />}
+        onClickLeft={goToPlatformPage}
+        backgroundColor={`#e3efff`}
+      />
+      <Page>
+        <TopHalf>
+          <Banner className="banner">
+            <BannerImage />
+          </Banner>
+          <Container className="last-week-winner">
+            <LastWeekTopDistrict
+              name={lastWeekTopDistrict.name}
+              score={lastWeekTopDistrict.score}
+            />
+            <LastWeekTopTownie
+              name={lastWeekTopTownie.name}
+              score={lastWeekTopTownie.score}
+            />
+          </Container>
+        </TopHalf>
+        <BottomHalf
+          className={isScrollValueMoreThanHeaderHeight ? 'class1' : 'class2'}
+        >
+          <WeeklyCountdown className="weekly-countdown-refresh">
+            <Refresh handleRefresh={throttledRefresh} />
+          </WeeklyCountdown>
+
+          <Container>{isRanked ? <MyInfo /> : null}</Container>
+          <LeaderboardTabs
+            districtLeaderboardData={districtLeaderboardData}
+            userLeaderboardData={userLeaderboardData}
+          />
+        </BottomHalf>
+      </Page>
+
       <ActionItems>
+        <div
+          style={{
+            position: 'absolute',
+            bottom: '90px',
+            right: '24px',
+            zIndex: 101,
+          }}
+        >
+          <ActiveUserCount gameType="GAME_2048" />
+        </div>
         <Button
           size={`large`}
           fontSize={rem(20)}
@@ -254,15 +277,30 @@ export const Home = () => {
           게임 시작
         </Button>
       </ActionItems>
-    </Page>
+    </>
   );
 };
 
 const Page = styled.div`
   display: flex;
   flex-flow: column;
-  height: 100%;
-  background: linear-gradient(180deg, #e3efff ${rem(180)}, #fff 0); ;
+  height: calc(100% - ${rem(90)});
+  overflow: auto;
+`;
+const TopHalf = styled.div`
+  background: linear-gradient(180deg, #e3efff ${rem(180)}, #fff 0);
+  margin-bottom: 25px;
+`;
+
+const BottomHalf = styled.div`
+  &.class1 {
+    position: fixed;
+    top: ${rem(90)};
+    width: 100%;
+    overflow: hidden;
+  }
+  &.class2 {
+  }
 `;
 const Banner = styled.div`
   display: flex;
@@ -287,12 +325,10 @@ const ActionItems = styled.div`
   box-sizing: border-box;
   box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
   z-index: 100;
-`;
 
-const DraggableDiv = styled(motion.div)`
-  flex: 1;
-  background: #fff;
-  padding-top: ${rem(25)};
+  position: fixed;
+  bottom: 0;
+  left: 0;
 `;
 
 const WeeklyCountdown = styled.div`

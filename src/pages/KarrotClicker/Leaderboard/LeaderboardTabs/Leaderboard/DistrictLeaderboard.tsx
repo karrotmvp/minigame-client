@@ -64,7 +64,7 @@ export const DistrictLeaderboard: React.FC = () => {
           <p>
             이번 주 랭킹&nbsp;&nbsp;
             <span>
-              초기화 까지
+              | 초기화 까지
               <span>
                 <WeeklyCountdown />
               </span>

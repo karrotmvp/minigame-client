@@ -3,7 +3,7 @@ import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
 import { Button } from 'components/Button';
 import { useMini } from 'hooks';
 import { rem } from 'polished';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import ReactModal from 'react-modal';
 import { useSwipeable } from 'react-swipeable';
 import { useMinigameApi } from 'services/api/minigameApi';
@@ -39,24 +39,26 @@ export const Game: React.FC = () => {
   const [isUserNew, setIsUserNew] = useState<boolean>(false);
   const [isUserInTopTen, setIsUserInTopTen] = useState<boolean>(false);
   const [townieBestScore, setTownieBestScore] = useState<number>(0);
+  const [myBestScoreDisplay, setMyBestScoreDisplay] =
+    useState<number>(myBestScore);
   // game controller
   // =================================================================
   // mobile(touch) friendly
   const handlers = useSwipeable({
     onSwiped: (eventData) => console.log('User Swiped!', eventData),
-    onSwipedLeft: useThrottledCallback(() => moveLeft(), animationDuration, {
+    onSwipedLeft: useThrottledCallback(moveLeft, animationDuration, {
       leading: true,
       trailing: false,
     }),
-    onSwipedRight: useThrottledCallback(() => moveRight(), animationDuration, {
+    onSwipedRight: useThrottledCallback(moveRight(), animationDuration, {
       leading: true,
       trailing: false,
     }),
-    onSwipedUp: useThrottledCallback(() => moveUp(), animationDuration, {
+    onSwipedUp: useThrottledCallback(moveUp(), animationDuration, {
       leading: true,
       trailing: false,
     }),
-    onSwipedDown: useThrottledCallback(() => moveDown(), animationDuration, {
+    onSwipedDown: useThrottledCallback(moveDown(), animationDuration, {
       leading: true,
       trailing: false,
     }),
@@ -104,13 +106,14 @@ export const Game: React.FC = () => {
   };
   const handlePlayAgain = () => {
     resetGame();
+
     console.log('handle play again');
   };
 
-  const getTownieBestScoreEver = async () => {
+  const getTownieBestScoreEver = useCallback(async () => {
     const {
       data: { data },
-    } = await minigameApi.gameTownApi.getLeaderBoardByTownUsingGET(
+    } = await minigameApi.gameUserApi.getLeaderBoardByUserUsingGET(
       gameType,
       undefined,
       1
@@ -118,100 +121,114 @@ export const Game: React.FC = () => {
     if (data) {
       setTownieBestScore(data[0].score);
     }
-  };
+  }, [gameType, minigameApi.gameUserApi]);
 
   //
-  const updateMyBestScore = async () => {
+  const updateMyBestScore = async (score: number) => {
     await minigameApi.gamePlayApi.updateScoreUsingPATCH(gameType, {
-      score: currentScore,
+      score: score,
     });
   };
-  const updateMyData = async () => {
+  const getMyData = async () => {
     const {
       data: { data },
     } = await minigameApi.gameUserApi.getMyRankInfoUsingGET(gameType);
+
     if (data) {
-      if (data.score && data.rank) {
-        updateMyScore(data.score, data.rank);
-      }
       if (data.comment) {
         updateMyComment(data.comment);
       }
-      return data;
+      if (data.score && data.rank) {
+        updateMyScore(data.score, data.rank);
+
+        return data.rank;
+      }
     }
   };
 
+  // const [ isGameOver, setIsGameOver] = useState(KK)
   const handleGameOver = async () => {
     // resetGame();
     if (isInWebEnvironment) {
       console.log(`bypass in web environment: go from game to leaderboard`);
       goToLeaderboardPage();
+      return;
     }
     // only patch score to db if current score is higher than the best score
     console.log(myBestScore, currentScore);
     if (currentScore > myBestScore) {
-      updateMyBestScore().then((response) => {
-        console.log(response);
-        updateMyData().then((response) => {
-          if (response?.rank! <= 10 && response?.rank! > 0) {
-            // open post-comment modal if user is in top ten
-            setIsUserInTopTen(true);
-          }
-        });
-        goToLeaderboardPage();
-      });
-    } else {
-      updateMyData().then((response) => {
-        console.log(response);
-
-        if (response?.rank! <= 10 && response?.rank! > 0) {
-          // open post-comment modal if user is in top ten
+      await updateMyBestScore(currentScore);
+      const newRank = await getMyData();
+      console.log(newRank);
+      if (newRank) {
+        if (newRank > 0 && newRank <= 10) {
           setIsUserInTopTen(true);
+        } else {
+          goToLeaderboardPage();
         }
-      });
-      goToLeaderboardPage();
+      }
+    } else {
+      const newRank = await getMyData();
+      console.log(newRank);
+      if (newRank) {
+        if (newRank > 0 && newRank <= 10) {
+          setIsUserInTopTen(true);
+        } else {
+          goToLeaderboardPage();
+        }
+      }
     }
   };
+
+  // display current score as my best score if current score is greater than best score in db
+  useEffect(() => {
+    if (currentScore > myBestScore) {
+      setMyBestScoreDisplay(currentScore);
+    }
+  }, [currentScore, myBestScore]);
 
   useEffect(() => {
     if (isTop) {
       getTownieBestScoreEver();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isTop]);
+  }, [getTownieBestScoreEver, isTop]);
   return (
-    <Page className="game-page">
-      <HighScoreContainer>
-        <MyBestScore myBestScore={myBestScore} />
-        <TownieBestScore townieBestScore={townieBestScore} />
-      </HighScoreContainer>
-      <CurrentScore score={currentScore} />
-      <Board
-        tileList={tileList}
-        handlers={handlers}
-        handleKeyDown={handleKeyDown}
-        isUserNew={isUserNew}
-        setIsUserNew={setIsUserNew}
-      />
-      <ActionItems>
-        <Button
-          size={`tiny`}
-          fontSize={rem(14)}
-          color={`secondary2`}
-          onClick={handleGameOver}
-        >
-          그만하기
-        </Button>
-        <Button
-          size={`tiny`}
-          fontSize={rem(14)}
-          color={`secondary2`}
-          onClick={handlePlayAgain}
-        >
-          다시하기
-        </Button>
-      </ActionItems>
-
+    <>
+      <Page className="game-page">
+        <div style={{ flex: 1 }}>
+          <HighScoreContainer>
+            <MyBestScore myBestScore={myBestScoreDisplay} />
+            <TownieBestScore townieBestScore={townieBestScore} />
+          </HighScoreContainer>
+          <CurrentScore score={currentScore} />
+          <Board
+            tileList={tileList}
+            handlers={handlers}
+            handleKeyDown={handleKeyDown}
+            isUserNew={isUserNew}
+            setIsUserNew={setIsUserNew}
+          />
+        </div>
+        <ActionItems>
+          <Button
+            size={`tiny`}
+            fontSize={rem(14)}
+            color={`secondary2`}
+            onClick={handleGameOver}
+          >
+            그만하기
+          </Button>
+          <Button
+            size={`tiny`}
+            fontSize={rem(14)}
+            color={`secondary2`}
+            onClick={handlePlayAgain}
+          >
+            다시하기
+          </Button>
+        </ActionItems>
+      </Page>
+      {/* <ReactModa isOpen={isGameOver}l>Game Over</ReactModal> */}
       <ReactModal
         isOpen={isUserInTopTen}
         shouldCloseOnOverlayClick={false}
@@ -223,6 +240,7 @@ export const Game: React.FC = () => {
           },
           content: {
             height: `fit-content`,
+            width: `80%`,
             top: '50%',
             left: '50%',
             right: 'auto',
@@ -240,11 +258,13 @@ export const Game: React.FC = () => {
       >
         <PostComment setIsUserInTopTen={setIsUserInTopTen} />
       </ReactModal>
-    </Page>
+    </>
   );
 };
 
 const Page = styled.div`
+  display: flex;
+  flex-flow: column;
   height: 100%;
   background-color: #f3f8ff;
 `;
@@ -254,13 +274,14 @@ const HighScoreContainer = styled.div`
   flex-flow: row;
   justify-content: center;
   gap: 0.625rem;
-  width: 100%;
+
   padding-top: 3.438rem;
+  margin: 0 20px;
 `;
 
 const ActionItems = styled.div`
   display: flex;
   flex-flow: row;
   justify-content: space-between;
-  margin: 0 1.25rem;
+  margin: 0 ${rem(20)} ${rem(40)};
 `;

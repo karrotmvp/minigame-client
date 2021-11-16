@@ -33,11 +33,10 @@ export const Refresh: React.FC<Props> = (props) => {
       <Text>
         이번 주 랭킹
         <Countdown>
-          (초기화까지
+          | 초기화까지
           <span>
             <WeeklyCountdown />
           </span>
-          )
         </Countdown>
       </Text>
       <RefreshButton handleRefresh={props.handleRefresh} />

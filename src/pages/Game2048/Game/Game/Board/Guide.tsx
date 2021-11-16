@@ -9,11 +9,13 @@ const GuideMotion = styled(motion.div)<{
 }>`
   width: ${(props) => props.cellWidth}px;
   height: ${(props) => props.cellWidth}px;
-  // background: black;
   position: absolute;
   top: ${(props) => props.offsetY}px;
-  left: ${(props) => props.offsetX}px;
+  left: ${(props) => props.offsetX + 5}px;
   z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 type Props = {

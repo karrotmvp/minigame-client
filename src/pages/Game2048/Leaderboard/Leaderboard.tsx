@@ -3,13 +3,13 @@ import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
 import { LeaderboardTabs } from 'pages/Game2048/Leaderboard/LeaderboardTabs';
 import { rem } from 'polished';
 import { Button } from 'components/Button';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Nav } from 'components/Navigation/Nav';
 import { CloseIcon } from 'assets/Icon';
 import { MyInfo } from './MyInfo';
 import { useMinigameApi } from 'services/api/minigameApi';
 import { useMyGame2048Data } from '../hooks';
-import { useMini } from 'hooks';
+import { useMini, useUserData } from 'hooks';
 import { Refresh } from './Refresh';
 import { useThrottledCallback } from 'use-debounce/lib';
 import { useAnalytics } from 'services/analytics';
@@ -20,10 +20,16 @@ export const Leaderboard = () => {
   const { replace, push } = useNavigator();
   const minigameApi = useMinigameApi();
   const analytics = useAnalytics();
-  const { shareApp } = useMini();
+  const { shareApp, handleInstallation } = useMini();
+  const { isInstalled } = useUserData();
   const { resetGame } = useGame();
-  const { rank, gameType, updateMyScore, updateMyComment } =
-    useMyGame2048Data();
+  const {
+    rank,
+    gameType,
+    updateMyScore,
+    updateMyComment,
+    updateMyHighestScore,
+  } = useMyGame2048Data();
   const [isRanked, setIsRanked] = useState<boolean>(true);
   const [userLeaderboardData, setUserLeaderboardData] = useState<any[]>([]);
   const [districtLeaderboardData, setDistrictLeaderboardData] = useState<any[]>(
@@ -47,6 +53,7 @@ export const Leaderboard = () => {
       game_type: 'game-2048',
     });
     resetGame();
+
     goToGamePage();
   };
   const updateMyGameData = async () => {
@@ -63,30 +70,29 @@ export const Leaderboard = () => {
     }
   };
 
-  const handleShare = () => {
-    const url = 'https://daangn.onelink.me/HhUa/3a219555';
-    const text = `${rank}등!! 2048 퍼즐을 플레이 하고 이웃들에게 한 마디를 남겨보세요!`;
-    shareApp(url, text);
-    analytics.logEvent('click_share_button', {
-      game_type: 'game-2048',
-    });
+  const getMyBestScoreEver = async () => {
+    const {
+      data: { data },
+    } = await minigameApi.gameUserApi.getMyRankInfoUsingGET(gameType, 'BEST');
+    if (data) {
+      updateMyHighestScore(data.score, data.rank);
+    }
   };
 
-  const getUserLeaderboardData = useCallback(async () => {
+  const getUserLeaderboardData = async () => {
     const {
       data: { data },
     } = await minigameApi.gameUserApi.getLeaderBoardByUserUsingGET(gameType);
     if (data) {
-      const indexedDistrictRankData = data.map((item: any, index: number) => ({
+      const indexedUserRankData = data.map((item: any, index: number) => ({
         rank: index + 1,
         ...item,
       }));
-      setUserLeaderboardData(indexedDistrictRankData);
-      console.log(indexedDistrictRankData);
+      setUserLeaderboardData(() => indexedUserRankData);
     }
-  }, [gameType, minigameApi]);
+  };
 
-  const getDistrictLeaderboardData = useCallback(async () => {
+  const getDistrictLeaderboardData = async () => {
     const {
       data: { data },
     } = await minigameApi.gameTownApi.getLeaderBoardByTownUsingGET(gameType);
@@ -95,19 +101,22 @@ export const Leaderboard = () => {
         rank: index + 1,
         ...item,
       }));
-      setDistrictLeaderboardData(indexedDistrictRankData);
+
+      setDistrictLeaderboardData(() => indexedDistrictRankData);
     }
-  }, [gameType, minigameApi]);
+  };
 
   // Throttle refresh for 5 seconds
   const handleRefresh = () => {
     updateMyGameData();
+    getMyBestScoreEver();
     getUserLeaderboardData();
     getDistrictLeaderboardData();
   };
   const throttledRefresh = useThrottledCallback(handleRefresh, 3000);
 
   useEffect(() => {
+    console.log(isTop, 'isTop');
     if (isTop) {
       handleRefresh();
     }
@@ -115,7 +124,23 @@ export const Leaderboard = () => {
       setIsRanked(() => true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isTop]);
+  }, [isTop, rank]);
+
+  const handleShare = () => {
+    const url = 'https://daangn.onelink.me/HhUa/3a219555';
+    const text = `2048 퍼즐을 플레이 하고 이웃들에게 한 마디를 남겨보세요!`;
+    shareApp(url, text);
+    analytics.logEvent('click_share_button', {
+      game_type: 'game-2048',
+    });
+  };
+
+  useEffect(() => {
+    if (isInstalled === false) {
+      handleInstallation();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isInstalled]);
   return (
     <Page>
       <Nav appendLeft={<CloseIcon />} onClickLeft={goBackToPlatform} />

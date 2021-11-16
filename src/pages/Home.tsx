@@ -9,7 +9,7 @@ import { rem } from 'polished';
 import { useMyGame2048Data } from './Game2048/hooks';
 import { useMyKarrotClickerData } from './KarrotClicker/hooks';
 import { useAnalytics } from 'services/analytics';
-import { getMini } from 'services/karrotMarket/mini';
+
 import { color } from 'styles';
 import BellUrl from 'assets/svg/bell.svg';
 import Game2048CardImgUrl from 'assets/svg/game2048/game_2048_card_img.svg';
@@ -18,19 +18,25 @@ import WhatsNextCardImgUrl from 'assets/svg/whats_next_card_img.svg';
 import ComingSoonCardImgUrl from 'assets/svg/coming_soon_card_img.svg';
 import ArrowGame2048Url from 'assets/svg/arrow_game_2048.svg';
 import ArrowKarrotClickerUrl from 'assets/svg/arrow_karrot_clicker.svg';
-import { ReactComponent as Bookmark } from 'assets/svg/bookmark.svg';
+import { ReactComponent as Bookmark } from 'assets/svg/bookmark_icon.svg';
+import { ReactComponent as Share } from 'assets/svg/share_icon.svg';
 import { NotificationRequestDtoTypeEnum } from 'services/openapi_generator';
-import { motion, AnimatePresence } from 'framer-motion';
-import { SuggestNewGame } from './SuggestNewGame';
 
 export const Home: React.FC = () => {
   const analytics = useAnalytics();
   const minigameApi = useMinigameApi();
   const { isTop } = useCurrentScreen();
   const { push } = useNavigator();
-  const { isInWebEnvironment, ejectApp, handleThirdPartyAgreement } = useMini();
+  const {
+    isInWebEnvironment,
+    ejectApp,
+    handleThirdPartyAgreement,
+    handleInstallation,
+    shareApp,
+  } = useMini();
   const { accessToken } = useAccessToken();
-  const { setUserInfo, townName3, isInstalled } = useUserData();
+
+  const { townName3 } = useUserData();
   const {
     updateMyScore: updateMyGame2048Score,
     updateMyComment: updateMyGame2048Comment,
@@ -43,11 +49,15 @@ export const Home: React.FC = () => {
   } = useMyKarrotClickerData();
   const [isGameNotificationOn, setIsGameNotificationOn] =
     useState<boolean>(false);
+
   const leaveMiniApp = () => {
     analytics.logEvent('click_leave_mini_app_button');
     ejectApp();
   };
 
+  const goToSurveyPage = () => {
+    push(`/survey`);
+  };
   const goToGame2048 = async () => {
     setGameTypeToGame2048();
     // bypass in web environment
@@ -122,52 +132,42 @@ export const Home: React.FC = () => {
     }
   };
 
-  const updateUserInfo = useCallback(async () => {
-    const {
-      data: { data },
-    } = await minigameApi.userApi.getUserInfoUsingGET();
-    if (data) {
-      setUserInfo(data.id, data.nickname);
-      // FA: track user with set user id
-      analytics.setUserId(data.id);
-      console.log('setuserinfo', data.id, data.nickname);
-    }
-  }, [analytics, minigameApi.userApi, setUserInfo]);
-
-  useEffect(() => {
-    if (isTop && accessToken) {
-      console.log('is platform page on top?', isTop);
-      updateUserInfo();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [accessToken, isTop]);
-
-  const handleInstallation = () => {
+  // Share handler
+  // =================================================================
+  const triggerShareHandler = () => {
+    console.log('trigger share handler');
+    const url = 'https://daangn.onelink.me/HhUa/3a219555';
+    const text = `2048 퍼즐을 플레이 하고 이웃들에게 한 마디를 남겨보세요!`;
     if (accessToken) {
-      const mini = getMini();
-      mini.startPreset({
-        preset: `https://mini-assets.kr.karrotmarket.com/presets/mvp-game-recommend-installation/alpha.html`,
-        onSuccess: async function (result) {
-          if (result.ok) {
-            console.log('즐겨찾기 성공');
-          }
-        },
+      shareApp(url, text);
+      analytics.logEvent('click_share_button', {
+        // game_type: 'game-2048',
       });
     } else {
       handleThirdPartyAgreement(() => {
-        const mini = getMini();
-        mini.startPreset({
-          preset: `https://mini-assets.kr.karrotmarket.com/presets/mvp-game-recommend-installation/alpha.html`,
-          onSuccess: async function (result) {
-            if (result.ok) {
-              console.log('즐겨찾기 성공');
-            }
-          },
+        shareApp(url, text);
+        analytics.logEvent('click_share_button', {
+          // game_type: 'game-2048',
         });
       });
     }
   };
 
+  // Installation handler
+  // =================================================================
+  const triggerInstallationHandler = () => {
+    console.log('trigger installation handler');
+    if (accessToken) {
+      handleInstallation();
+    } else {
+      handleThirdPartyAgreement(() => {
+        handleInstallation();
+      });
+    }
+  };
+
+  // New game notification handler
+  // =================================================================
   const handleNewGameNotification = async () => {
     if (accessToken) {
       const { data } =
@@ -183,12 +183,7 @@ export const Home: React.FC = () => {
     }
   };
 
-  const [modalOpen, setModalOpen] = useState(false);
-
-  const close = () => setModalOpen(false);
-  const open = () => setModalOpen(true);
-
-  const checkNotificationStatus = async () => {
+  const checkNotificationStatus = useCallback(async () => {
     const {
       data: { data },
     } = await minigameApi.notificationApi.checkNotificationUsingGET(
@@ -197,20 +192,35 @@ export const Home: React.FC = () => {
     if (data) {
       setIsGameNotificationOn(() => data.isAlreadyNotified);
     }
-  };
+  }, [minigameApi.notificationApi]);
 
   useEffect(() => {
     if (isTop) {
       checkNotificationStatus();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isTop]);
+  // =================================================================
+
   return (
     <>
       <Nav
+        border={`1px solid #ECECEC`}
         appendLeft={<CloseIcon />}
         onClickLeft={leaveMiniApp}
-        appendRight={<Bookmark />}
-        onClickRight={handleInstallation}
+        appendRight={
+          <div
+            style={{
+              display: `flex`,
+              gap: `15px`,
+              alignItems: `flex-end`,
+            }}
+          >
+            <Share onClick={triggerShareHandler} />
+            <Bookmark onClick={triggerInstallationHandler} />
+          </div>
+        }
+        // onClickRight={handleInstallation}
       />
 
       <Page className="game-platform-page">
@@ -274,29 +284,12 @@ export const Home: React.FC = () => {
           하고 싶은 게임이 있나요?
         </SectionTitle>
 
-        <div>
-          <ModalOpenButton
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            className="save-button"
-            onClick={() => (modalOpen ? close() : open())}
-          >
-            Launch modal
+        <GameSurvey>
+          <ModalOpenButton onClick={goToSurveyPage}>
+            <p className="left-text">예) 테트리스</p>
+            <p className="right-text">보내기</p>
           </ModalOpenButton>
-        </div>
-        <AnimatePresence
-          // Disable any initial animations on children that
-          // are present when the component is first rendered
-          initial={false}
-          // Only render one component at a time.
-          // The exiting component will finish its exit
-          // animation before entering component is rendered
-          exitBeforeEnter={true}
-          // Fires when all exiting nodes have completed animating out
-          onExitComplete={() => null}
-        >
-          {modalOpen && <SuggestNewGame handleClose={close} />}
-        </AnimatePresence>
+        </GameSurvey>
       </Page>
     </>
   );
@@ -305,7 +298,8 @@ export const Home: React.FC = () => {
 const Page = styled.div`
   display: flex;
   flex-flow: column;
-  height: 100%;
+  // height: 100%;
+  margin-top: 20px;
 `;
 
 const SectionTitle = styled.div`
@@ -447,47 +441,42 @@ const Break = styled.hr`
   margin: 30px 0 22px;
 `;
 
-// const BottomSection = styled.div`
-
-// `
-
-const ModalOpenButton = styled(motion.button)`
+const GameSurvey = styled.div`
+  margin: 0 20px 0 20px;
+  padding-bottom: 44px;
+`;
+const ModalOpenButton = styled.button`
   display: flex;
+  flex-flow: row;
+  justify-content: space-between;
+  align-items: center;
   box-sizing: border-box;
   border: 1px solid #e5e5e5;
   border-radius: 10px;
   width: 100%;
-  height: 40px;
-  padding: 10px;
 
-  input {
-    width: 100%;
-    font-style: normal;
-    font-weight: bold;
-    font-size: 1rem;
-    line-height: 161.7%;
-    /* identical to box height, or 26px */
-    border: none;
-    color: #3f3f3f;
+  padding: 10px 20px;
 
-    &::placeholder {
-      font-style: normal;
-      font-weight: bold;
-      font-size: 1rem;
-      line-height: 161.7%;
-      /* identical to box height, or 26px */
-
-      color: #e0e0e0;
-    }
-  }
-  span {
-    position: inline;
+  p.left-text {
+    font-family: Pretendard;
     font-style: normal;
     font-weight: normal;
-    font-size: ${rem(12)};
+    font-size: 12px;
     line-height: 161.7%;
     /* or 19px */
 
     color: #a9a9a9;
+  }
+  p.right-text {
+    font-family: Pretendard;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 12px;
+    line-height: 121.2%;
+    /* identical to box height, or 15px */
+
+    /* blue/blue 400 */
+
+    color: #0e74ff;
   }
 `;
