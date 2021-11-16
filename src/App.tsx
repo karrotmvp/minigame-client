@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import '@karrotframe/navigator/index.css';
-import { Navigator, Screen } from '@karrotframe/navigator';
+import { Navigator, Screen, useCurrentScreen } from '@karrotframe/navigator';
 import { Home } from 'pages/Home';
 import { Game2048Home } from 'pages/Game2048/Home';
 import { Game2048Game } from 'pages/Game2048/Game';
@@ -8,7 +8,8 @@ import { Game2048Leaderboard } from 'pages/Game2048/Leaderboard';
 import { KarrotClickerHome } from 'pages/KarrotClicker/Home';
 import { KarrotClickerGame } from 'pages/KarrotClicker/Game';
 import { KarrotClickerLeaderboard } from 'pages/KarrotClicker/Leaderboard';
-import { NonServiceArea } from 'pages/NonServiceArea';
+
+import { Survey } from 'pages/Survey';
 // import { LoadingScreen } from 'components/LoadingScreen';
 
 import {
@@ -25,12 +26,14 @@ import {
   loadFromEnv as loadKarrotMarketMiniConfig,
 } from 'services/karrotMarket/mini';
 
-import { useSignAccessToken, useUserData } from 'hooks';
+import { useAccessToken, useSignAccessToken, useUserData } from 'hooks';
 import { useMinigameApi } from 'services/api/minigameApi';
 
 const App: React.FC = () => {
   const minigameApi = useMinigameApi();
-  const { setRegionInfo, setTownInfo, setIsInstalled } = useUserData();
+  const { setRegionInfo, setTownInfo, setUserInfo, setIsInstalled } =
+    useUserData();
+  const { accessToken } = useAccessToken();
   const { signAccessToken } = useSignAccessToken();
   const [analytics, setAnalytics] = useState(emptyAnalytics);
   const [karrotMarketMini, setKarrotMarketMini] = useState(
@@ -62,53 +65,76 @@ const App: React.FC = () => {
 
   const getQueryParams = () => {
     const searchParams = new URLSearchParams(window.location.search);
+    const preload = searchParams.get('preload');
     const code: string | null = searchParams.get('code');
     const regionId: string | null = searchParams.get('region_id');
     const isInstalled: string | null = searchParams.get('installed');
-    return [code, regionId, isInstalled];
+    return [preload, code, regionId, isInstalled];
   };
-  const getDistrictInfo = useCallback(
-    async (regionId: string) => {
-      try {
-        const {
-          data: { data },
-        } = await minigameApi.regionApi.getTownInfoUsingGET(regionId);
-        if (data) {
-          setTownInfo(data.townId, data.name1, data.name2, data.name3);
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    },
-    [minigameApi, setTownInfo]
-  );
-
-  useEffect(() => {
+  const getDistrictInfo = useCallback(async (regionId: string) => {
     try {
-      const [code, regionId, isInstalled] = getQueryParams();
-      analytics.logEvent('launch_app');
-      console.log(code, regionId);
-
-      // handle if code and/or region id does not exist
-      if (regionId) {
-        setRegionInfo(regionId);
-        getDistrictInfo(regionId);
-        if (code) {
-          signAccessToken(code, regionId);
-        }
-        if (isInstalled) {
-          if (isInstalled === 'true') {
-            setIsInstalled(true);
-          } else if (isInstalled === 'false') {
-            setIsInstalled(false);
-          }
-        }
+      const {
+        data: { data },
+      } = await minigameApi.regionApi.getTownInfoUsingGET(regionId);
+      if (data) {
+        setTownInfo(data.townId, data.name1, data.name2, data.name3);
       }
     } catch (error) {
       console.error(error);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [analytics]);
+  }, []);
+
+  const updateUserInfo = useCallback(async () => {
+    const {
+      data: { data },
+    } = await minigameApi.userApi.getUserInfoUsingGET();
+    if (data) {
+      setUserInfo(data.id, data.nickname);
+      // FA: track user with set user id
+      analytics.setUserId(data.id);
+      console.log('setuserinfo', data.id, data.nickname);
+    }
+  }, [analytics, minigameApi.userApi]);
+  useEffect(() => {
+    const [preload, code, regionId, isInstalled] = getQueryParams();
+    analytics.logEvent('launch_app');
+    console.log(preload, code, regionId, isInstalled);
+    if (!preload) {
+      try {
+        // const [code, regionId, isInstalled] = getQueryParams();
+
+        // handle if code and/or region id does not exist
+        if (accessToken) {
+          updateUserInfo();
+          setRegionInfo(regionId as string);
+          getDistrictInfo(regionId as string);
+          if (isInstalled) {
+            if (isInstalled === 'true') {
+              setIsInstalled(true);
+            } else if (isInstalled === 'false') {
+              setIsInstalled(false);
+            }
+          }
+        } else {
+          setRegionInfo(regionId as string);
+          getDistrictInfo(regionId as string);
+          if (code) {
+            signAccessToken(code, regionId as string);
+            updateUserInfo();
+            if (isInstalled) {
+              if (isInstalled === 'true') {
+                setIsInstalled(true);
+              } else if (isInstalled === 'false') {
+                setIsInstalled(false);
+              }
+            }
+          }
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  }, []);
 
   return (
     <AnalyticsContext.Provider value={analytics}>
@@ -135,7 +161,7 @@ const App: React.FC = () => {
             path="/karrot-clicker/leaderboard"
             component={KarrotClickerLeaderboard}
           />
-          <Screen path="/non-service-area" component={NonServiceArea} />
+          <Screen path="/survey" component={Survey} />
         </Navigator>
       </KarrotMarketMiniContext.Provider>
     </AnalyticsContext.Provider>
