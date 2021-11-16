@@ -13,8 +13,9 @@ export const useMini = () => {
   const { regionId, setUserInfo } = useUserData();
   const { accessToken } = useAccessToken();
   const { signAccessToken } = useSignAccessToken();
-  const presetUrl = karrotMarketMiniConfig().presetUrl;
   const appId = karrotMarketMiniConfig().appId;
+  const presetUrl = karrotMarketMiniConfig().presetUrl;
+  const installationUrl = karrotMarketMiniConfig().installationUrl;
 
   const updateUserInfo = async () => {
     const {
@@ -52,14 +53,6 @@ export const useMini = () => {
           analytics.logEvent('click_karrot_mini_preset_agree_button', {
             game_type: 'karrot-clicker',
           });
-
-          // return new Promise((resolve, reject) => {
-          //   if (accessToken) {
-          //     resolve('resolved');
-          //   } else {
-          //     reject('rejected');
-          //   }
-          // });
           runOnSuccess();
         }
       },
@@ -68,6 +61,20 @@ export const useMini = () => {
         updateUserInfo();
       },
       onFailure: function () {},
+    });
+  };
+
+  const handleInstallation = async (runOnSuccess?: () => void) => {
+    mini.startPreset({
+      preset: installationUrl!,
+      onSuccess: async function (result) {
+        if (result.ok) {
+          console.log('즐겨찾기 성공');
+        }
+        if (runOnSuccess) {
+          runOnSuccess();
+        }
+      },
     });
   };
 
@@ -82,6 +89,17 @@ export const useMini = () => {
     isInWebEnvironment,
     ejectApp,
     handleThirdPartyAgreement,
+    handleInstallation,
     shareApp,
   };
 };
+
+// const mini = getMini();
+// mini.startPreset({
+//   preset: `https://mini-assets.kr.karrotmarket.com/presets/mvp-game-recommend-installation/alpha.html`,
+//   onSuccess: async function (result) {
+//     if (result.ok) {
+//       console.log('즐겨찾기 성공');
+//     }
+//   },
+// });
