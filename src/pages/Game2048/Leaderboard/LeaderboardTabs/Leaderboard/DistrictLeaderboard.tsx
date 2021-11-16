@@ -5,6 +5,20 @@ type Props = {
   districtLeaderboardData: any[];
 };
 export const DistrictLeaderboard: React.FC<Props> = (props) => {
+  // const getDistrictLeaderboardData = async () => {
+  //   const {
+  //     data: { data },
+  //   } = await minigameApi.gameTownApi.getLeaderBoardByTownUsingGET(gameType);
+  //   if (data) {
+  //     const indexedDistrictRankData = data.map((item: any, index: number) => ({
+  //       rank: index + 1,
+  //       ...item,
+  //     }));
+
+  //     setDistrictLeaderboardData(() => indexedDistrictRankData);
+  //   }
+  // };
+
   return (
     <Container>
       <Wrapper>
