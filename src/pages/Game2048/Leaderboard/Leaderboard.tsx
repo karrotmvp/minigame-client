@@ -13,7 +13,6 @@ import { useMini, useUserData } from 'hooks';
 import { Refresh } from './Refresh';
 import { useThrottledCallback } from 'use-debounce/lib';
 import { useAnalytics } from 'services/analytics';
-import { useGame } from '../Game/Game/hooks';
 
 export const Leaderboard = () => {
   const { isTop } = useCurrentScreen();
@@ -22,7 +21,7 @@ export const Leaderboard = () => {
   const analytics = useAnalytics();
   const { shareApp, handleInstallation } = useMini();
   const { isInstalled } = useUserData();
-  const { resetGame } = useGame();
+
   const {
     rank,
     gameType,
@@ -52,7 +51,7 @@ export const Leaderboard = () => {
     analytics.logEvent('click_game_play_again_button', {
       game_type: 'game-2048',
     });
-    resetGame();
+    // resetGame();
 
     goToGamePage();
   };
