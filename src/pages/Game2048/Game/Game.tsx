@@ -35,32 +35,30 @@ export const Game: React.FC = () => {
     moveUp,
     moveDown,
     resetGame,
+    isGameOver,
   } = useGame();
   const [isUserNew, setIsUserNew] = useState<boolean>(false);
   const [isUserInTopTen, setIsUserInTopTen] = useState<boolean>(false);
   const [townieBestScore, setTownieBestScore] = useState<number>(0);
   const [myBestScoreDisplay, setMyBestScoreDisplay] =
     useState<number>(myBestScore);
+
+  useEffect(() => {
+    if (isGameOver) {
+      console.log('GAME OVE');
+    }
+  });
   // game controller
   // =================================================================
   // mobile(touch) friendly
   const handlers = useSwipeable({
     onSwiped: (eventData) => console.log('User Swiped!', eventData),
-    onSwipedLeft: useThrottledCallback(moveLeft, animationDuration, {
-      leading: true,
-      trailing: false,
-    }),
-    onSwipedRight: useThrottledCallback(moveRight(), animationDuration, {
-      leading: true,
-      trailing: false,
-    }),
-    onSwipedUp: useThrottledCallback(moveUp(), animationDuration, {
-      leading: true,
-      trailing: false,
-    }),
-    onSwipedDown: useThrottledCallback(moveDown(), animationDuration, {
-      leading: true,
-      trailing: false,
+    onSwipedLeft: useThrottledCallback(moveLeft, animationDuration),
+    onSwipedRight: useThrottledCallback(moveRight, animationDuration),
+    onSwipedUp: useThrottledCallback(moveUp, animationDuration),
+    onSwipedDown: useThrottledCallback(moveDown, animationDuration, {
+      // leading: true,
+      // trailing: false,
     }),
     preventDefaultTouchmoveEvent: true,
   });
@@ -92,6 +90,7 @@ export const Game: React.FC = () => {
   useEffect(() => {
     console.log(highestScore);
     if (isTop) {
+      // resetGame();
       if (highestScore === 0) {
         setIsUserNew(true);
         console.log('guide is on for new user');
@@ -179,6 +178,12 @@ export const Game: React.FC = () => {
       }
     }
   };
+  useEffect(() => {
+    if (currentScore > myBestScore) {
+      updateMyBestScore(currentScore);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentScore]);
 
   // display current score as my best score if current score is greater than best score in db
   useEffect(() => {

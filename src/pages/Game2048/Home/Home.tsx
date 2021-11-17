@@ -18,7 +18,6 @@ import { useMini } from 'hooks';
 import { useThrottledCallback } from 'use-debounce/lib';
 import { useAnalytics } from 'services/analytics';
 import { lastWeek } from 'utils';
-import { useGame } from '../Game/Game/hooks';
 
 export const Home = () => {
   const { isTop } = useCurrentScreen();
@@ -26,7 +25,7 @@ export const Home = () => {
   const analytics = useAnalytics();
   const minigameApi = useMinigameApi();
   const { accessToken } = useAccessToken();
-  const { resetGame } = useGame();
+  // const { resetGame } = useGame();
   const { isInWebEnvironment, handleThirdPartyAgreement } = useMini();
   const {
     rank,
@@ -53,7 +52,7 @@ export const Home = () => {
     pop();
   };
   const goToGamePage = () => {
-    resetGame();
+    // resetGame();
     push(`/game-2048/game`);
   };
 
