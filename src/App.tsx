@@ -64,7 +64,7 @@ const App: React.FC = () => {
 
   const getQueryParams = () => {
     const searchParams = new URLSearchParams(window.location.search);
-    const preload = searchParams.get('preload');
+    const preload: string | null = searchParams.get('preload');
     const code: string | null = searchParams.get('code');
     const regionId: string | null = searchParams.get('region_id');
     const isInstalled: string | null = searchParams.get('installed');
@@ -83,8 +83,8 @@ const App: React.FC = () => {
         console.error(error);
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [minigameApi.regionApi]
+
+    [minigameApi.regionApi, setTownInfo]
   );
 
   const updateUserInfo = useCallback(async () => {
@@ -95,23 +95,35 @@ const App: React.FC = () => {
       setUserInfo(data.id, data.nickname);
       // FA: track user with set user id
       analytics.setUserId(data.id);
-      console.log('setuserinfo', data.id, data.nickname);
+      // console.log('setuserinfo', data.id, data.nickname);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [analytics, minigameApi.userApi]);
+  }, [analytics, minigameApi.userApi, setUserInfo]);
   useEffect(() => {
     const [preload, code, regionId, isInstalled] = getQueryParams();
     analytics.logEvent('launch_app');
     console.log(preload, code, regionId, isInstalled);
-    if (!preload) {
-      try {
-        // const [code, regionId, isInstalled] = getQueryParams();
+    // if (!preload) {
+    try {
+      // const [code, regionId, isInstalled] = getQueryParams();
 
-        // handle if code and/or region id does not exist
-        if (accessToken) {
+      // handle if code and/or region id does not exist
+      if (accessToken) {
+        updateUserInfo();
+        setRegionInfo(regionId as string);
+        getDistrictInfo(regionId as string);
+        if (isInstalled) {
+          if (isInstalled === 'true') {
+            setIsInstalled(true);
+          } else if (isInstalled === 'false') {
+            setIsInstalled(false);
+          }
+        }
+      } else {
+        setRegionInfo(regionId as string);
+        getDistrictInfo(regionId as string);
+        if (code) {
+          signAccessToken(code, regionId as string);
           updateUserInfo();
-          setRegionInfo(regionId as string);
-          getDistrictInfo(regionId as string);
           if (isInstalled) {
             if (isInstalled === 'true') {
               setIsInstalled(true);
@@ -119,27 +131,21 @@ const App: React.FC = () => {
               setIsInstalled(false);
             }
           }
-        } else {
-          setRegionInfo(regionId as string);
-          getDistrictInfo(regionId as string);
-          if (code) {
-            signAccessToken(code, regionId as string);
-            updateUserInfo();
-            if (isInstalled) {
-              if (isInstalled === 'true') {
-                setIsInstalled(true);
-              } else if (isInstalled === 'false') {
-                setIsInstalled(false);
-              }
-            }
-          }
         }
-      } catch (error) {
-        console.error(error);
       }
+    } catch (error) {
+      console.error(error);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    // }
+  }, [
+    accessToken,
+    analytics,
+    getDistrictInfo,
+    setIsInstalled,
+    setRegionInfo,
+    signAccessToken,
+    updateUserInfo,
+  ]);
 
   return (
     <AnalyticsContext.Provider value={analytics}>
