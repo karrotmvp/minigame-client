@@ -36,7 +36,16 @@ export const Home: React.FC = () => {
   } = useMini();
   const { accessToken } = useAccessToken();
 
-  const { townName3 } = useUserData();
+  const {
+    userId,
+    nickname,
+    regionId,
+    townId,
+    townName1,
+    townName2,
+    townName3,
+    isInstalled,
+  } = useUserData();
   const {
     updateMyScore: updateMyGame2048Score,
     updateMyComment: updateMyGame2048Comment,
@@ -195,11 +204,32 @@ export const Home: React.FC = () => {
   }, [minigameApi.notificationApi]);
 
   useEffect(() => {
+    console.log(
+      'user data:',
+      userId,
+      nickname,
+      regionId,
+      townId,
+      townName1,
+      townName2,
+      townName3,
+      isInstalled
+    );
+  }, [
+    isInstalled,
+    nickname,
+    regionId,
+    townId,
+    townName1,
+    townName2,
+    townName3,
+    userId,
+  ]);
+  useEffect(() => {
     if (isTop) {
       checkNotificationStatus();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isTop]);
+  }, [isTop, checkNotificationStatus]);
   // =================================================================
 
   return (

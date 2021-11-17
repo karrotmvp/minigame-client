@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'reducers/rootReducer';
 import {
@@ -29,26 +30,38 @@ export const useUserData = () => {
   }));
   const dispatch = useDispatch();
 
-  const setRegionInfo = (regionId: string) => {
-    dispatch(setRegionInfoAction(regionId));
-  };
+  const setRegionInfo = useCallback(
+    (regionId: string) => {
+      dispatch(setRegionInfoAction(regionId));
+    },
+    [dispatch]
+  );
 
-  const setTownInfo = (
-    townId: string,
-    townName1: string,
-    townName2: string,
-    townName3: string
-  ) => {
-    dispatch(setTownInfoAction(townId, townName1, townName2, townName3));
-  };
+  const setTownInfo = useCallback(
+    (
+      townId: string,
+      townName1: string,
+      townName2: string,
+      townName3: string
+    ) => {
+      dispatch(setTownInfoAction(townId, townName1, townName2, townName3));
+    },
+    [dispatch]
+  );
 
-  const setUserInfo = (userId: string, nickname: string) => {
-    dispatch(setUserInfoAction(userId, nickname));
-  };
+  const setUserInfo = useCallback(
+    (userId: string, nickname: string) => {
+      dispatch(setUserInfoAction(userId, nickname));
+    },
+    [dispatch]
+  );
 
-  const setIsInstalled = (isInstalled: boolean) => {
-    dispatch(setIsInstalledAction(isInstalled));
-  };
+  const setIsInstalled = useCallback(
+    (isInstalled: boolean) => {
+      dispatch(setIsInstalledAction(isInstalled));
+    },
+    [dispatch]
+  );
 
   return {
     userId,
