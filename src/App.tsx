@@ -99,31 +99,29 @@ const App: React.FC = () => {
     }
   }, [analytics, minigameApi.userApi, setUserInfo]);
   useEffect(() => {
-    const [preload, code, regionId, isInstalled] = getQueryParams();
-    analytics.logEvent('launch_app');
-    console.log(preload, code, regionId, isInstalled);
-    // if (!preload) {
-    try {
-      // const [code, regionId, isInstalled] = getQueryParams();
+    async function fetchData() {
+      try {
+        //   // const [code, regionId, isInstalled] = getQueryParams();
 
-      // handle if code and/or region id does not exist
-      if (accessToken) {
-        updateUserInfo();
-        setRegionInfo(regionId as string);
-        getDistrictInfo(regionId as string);
-        if (isInstalled) {
-          if (isInstalled === 'true') {
-            setIsInstalled(true);
-          } else if (isInstalled === 'false') {
-            setIsInstalled(false);
-          }
-        }
-      } else {
+        //   // handle if code and/or region id does not exist
+        //   if (accessToken) {
+        //     updateUserInfo();
+        //     setRegionInfo(regionId as string);
+        //     getDistrictInfo(regionId as string);
+        //     if (isInstalled) {
+        //       if (isInstalled === 'true') {
+        //         setIsInstalled(true);
+        //       } else if (isInstalled === 'false') {
+        //         setIsInstalled(false);
+        //       }
+        //     }
+        //   } else {
+        console.log(accessToken);
         setRegionInfo(regionId as string);
         getDistrictInfo(regionId as string);
         if (code) {
-          signAccessToken(code, regionId as string);
-          updateUserInfo();
+          await signAccessToken(code, regionId as string);
+
           if (isInstalled) {
             if (isInstalled === 'true') {
               setIsInstalled(true);
@@ -131,11 +129,18 @@ const App: React.FC = () => {
               setIsInstalled(false);
             }
           }
+          await updateUserInfo();
         }
+        // }
+      } catch (error) {
+        console.error(error);
       }
-    } catch (error) {
-      console.error(error);
     }
+    const [preload, code, regionId, isInstalled] = getQueryParams();
+    analytics.logEvent('launch_app');
+    console.log(preload, code, regionId, isInstalled);
+    // if (!preload) {
+    fetchData();
     // }
   }, [
     accessToken,

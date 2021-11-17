@@ -35,7 +35,6 @@ function CreateMinigameApi({
     const surveyApi = new SurveyApi(configuration);
     const userApi = new UserApi(configuration);
 
-    console.log(gameUserApi);
     return {
       oauth2Api,
       userApi,
