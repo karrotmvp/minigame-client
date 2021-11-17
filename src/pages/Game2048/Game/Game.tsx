@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
+import { useCurrentScreen } from '@karrotframe/navigator';
 import { Button } from 'components/Button';
 import { useMini } from 'hooks';
 import { rem } from 'polished';
@@ -17,15 +17,15 @@ import { CurrentScore, MyBestScore, TownieBestScore } from './Score';
 
 export const Game: React.FC = () => {
   const { isTop } = useCurrentScreen();
-  const { replace } = useNavigator();
+  // const { replace } = useNavigator();
   const minigameApi = useMinigameApi();
   const { isInWebEnvironment } = useMini();
   const {
     score: myBestScore,
     highestScore,
     gameType,
-    updateMyScore,
-    updateMyComment,
+    // updateMyScore,
+    // updateMyComment,
   } = useMyGame2048Data();
   const {
     score: currentScore,
@@ -38,7 +38,7 @@ export const Game: React.FC = () => {
     isGameOver: gameOverStatus,
   } = useGame();
   const [isUserNew, setIsUserNew] = useState<boolean>(false);
-  const [isUserInTopTen, setIsUserInTopTen] = useState<boolean>(false);
+  // const [isUserInTopTen, setIsUserInTopTen] = useState<boolean>(false);
   const [townieBestScore, setTownieBestScore] = useState<number>(0);
   const [myBestScoreDisplay, setMyBestScoreDisplay] =
     useState<number>(myBestScore);
@@ -127,22 +127,22 @@ export const Game: React.FC = () => {
       score: score,
     });
   };
-  const getMyData = async () => {
-    const {
-      data: { data },
-    } = await minigameApi.gameUserApi.getMyRankInfoUsingGET(gameType);
+  // const getMyData = async () => {
+  //   const {
+  //     data: { data },
+  //   } = await minigameApi.gameUserApi.getMyRankInfoUsingGET(gameType);
 
-    if (data) {
-      if (data.comment) {
-        updateMyComment(data.comment);
-      }
-      if (data.score && data.rank) {
-        updateMyScore(data.score, data.rank);
+  //   if (data) {
+  //     if (data.comment) {
+  //       updateMyComment(data.comment);
+  //     }
+  //     if (data.score && data.rank) {
+  //       updateMyScore(data.score, data.rank);
 
-        return data.rank;
-      }
-    }
-  };
+  //       return data.rank;
+  //     }
+  //   }
+  // };
 
   const handleGameOver = async () => {
     // resetGame();
@@ -152,7 +152,7 @@ export const Game: React.FC = () => {
       // setIsUserInTopTen(true);
       return;
     }
-
+    // getMyData();
     // only patch score to db if current score is higher than the best score
     console.log(myBestScore, currentScore);
     // if (currentScore > myBestScore) {
@@ -235,36 +235,6 @@ export const Game: React.FC = () => {
           </Button>
         </ActionItems>
       </Page>
-      {/* 
-      <ReactModal
-        isOpen={isUserInTopTen}
-        shouldCloseOnOverlayClick={false}
-        contentLabel="Post Comment"
-        style={{
-          overlay: {
-            background: 'rgba(40, 40, 40, 0.8)',
-            zIndex: 100,
-          },
-          content: {
-            height: `fit-content`,
-            width: `80%`,
-            top: '50%',
-            left: '50%',
-            right: 'auto',
-            bottom: 'auto',
-            marginRight: '-50%',
-            transform: 'translate(-50%, -50%)',
-            borderRadius: `21px`,
-            padding: `24px 18px`,
-            display: `flex`,
-            flexFlow: `column`,
-            justifyContent: 'center',
-            alignItems: 'center',
-          },
-        }}
-      >
-        <PostComment setIsUserInTopTen={setIsUserInTopTen} />
-      </ReactModal> */}
 
       <ReactModal
         isOpen={isGameOver}
@@ -300,7 +270,7 @@ export const Game: React.FC = () => {
           setIsGameOver={setIsGameOver}
           currentScore={currentScore}
           myBestScore={myBestScore}
-          isUserInTopTen={isUserInTopTen}
+          // isUserInTopTen={isUserInTopTen}
         />
       </ReactModal>
     </>
