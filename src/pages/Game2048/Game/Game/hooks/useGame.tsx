@@ -383,7 +383,7 @@ export const useGame = () => {
         return false;
       } else {
         console.log('gameover');
-        // setIsGameOver(true);
+        setIsGameOver(true);
         return true;
       }
     }

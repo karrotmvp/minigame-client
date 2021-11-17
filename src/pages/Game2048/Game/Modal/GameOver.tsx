@@ -1,7 +1,7 @@
 import { useNavigator } from '@karrotframe/navigator';
 import styled from '@emotion/styled';
-import { useMini } from 'hooks';
-import React, { useEffect, useRef, useState } from 'react';
+// import { useMini } from 'hooks';
+import React, { useState } from 'react';
 import ReactModal from 'react-modal';
 import { PostComment } from './PostComment';
 import { ReactComponent as GameOverSVG } from 'assets/svg/game2048/gameover.svg';
@@ -12,13 +12,12 @@ type Props = {
   setIsGameOver: React.Dispatch<React.SetStateAction<boolean>>;
   currentScore: number;
   myBestScore: number;
-  isUserInTopTen: boolean;
+  // isUserInTopTen: boolean;
 };
 export const GameOver: React.FC<Props> = (props) => {
   const { replace } = useNavigator();
   const minigameApi = useMinigameApi();
-  const { rank, gameType, updateMyComment, updateMyScore } =
-    useMyGame2048Data();
+  const { rank, gameType, updateMyScore } = useMyGame2048Data();
   const [shouldModalOpen, setShouldModalOpen] = useState<boolean>(false);
   // const shouldOpen = useRef(false);
   const goToLeaderboardPage = () => {
@@ -44,7 +43,7 @@ export const GameOver: React.FC<Props> = (props) => {
 
   const handleViewLeaderboard = async () => {
     console.log('try to view leaderboard');
-    console.log(props.isUserInTopTen);
+    // console.log(props.isUserInTopTen);
     try {
       const {
         data: { data },
