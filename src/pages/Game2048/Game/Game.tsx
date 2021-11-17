@@ -12,7 +12,7 @@ import { useMyGame2048Data } from '../hooks';
 import { Board } from './Game/Board';
 import { useGame } from './Game/hooks';
 import { animationDuration } from './Game/styles';
-import { PostComment } from './Modal';
+import { GameOver } from './Modal';
 import { CurrentScore, MyBestScore, TownieBestScore } from './Score';
 
 export const Game: React.FC = () => {
@@ -35,19 +35,20 @@ export const Game: React.FC = () => {
     moveUp,
     moveDown,
     resetGame,
-    isGameOver,
+    isGameOver: gameOverStatus,
   } = useGame();
   const [isUserNew, setIsUserNew] = useState<boolean>(false);
   const [isUserInTopTen, setIsUserInTopTen] = useState<boolean>(false);
   const [townieBestScore, setTownieBestScore] = useState<number>(0);
   const [myBestScoreDisplay, setMyBestScoreDisplay] =
     useState<number>(myBestScore);
+  const [isGameOver, setIsGameOver] = useState(gameOverStatus);
 
-  useEffect(() => {
-    if (isGameOver) {
-      console.log('GAME OVE');
-    }
-  });
+  // useEffect(() => {
+  //   if (isGameOver) {
+  //     console.log('GAME OVE');
+  //   }
+  // });
   // game controller
   // =================================================================
   // mobile(touch) friendly
@@ -100,9 +101,7 @@ export const Game: React.FC = () => {
 
   // page navigation
   // =================================================================
-  const goToLeaderboardPage = () => {
-    replace(`/game-2048/leaderboard`);
-  };
+
   const handlePlayAgain = () => {
     resetGame();
 
@@ -145,38 +144,41 @@ export const Game: React.FC = () => {
     }
   };
 
-  // const [ isGameOver, setIsGameOver] = useState(KK)
   const handleGameOver = async () => {
     // resetGame();
     if (isInWebEnvironment) {
-      console.log(`bypass in web environment: go from game to leaderboard`);
-      goToLeaderboardPage();
+      console.log(`bypass in web environment: open game over modal regardless`);
+      setIsGameOver(true);
+      // setIsUserInTopTen(true);
       return;
     }
+
     // only patch score to db if current score is higher than the best score
     console.log(myBestScore, currentScore);
-    if (currentScore > myBestScore) {
-      await updateMyBestScore(currentScore);
-      const newRank = await getMyData();
-      console.log(newRank);
-      if (newRank) {
-        if (newRank > 0 && newRank <= 10) {
-          setIsUserInTopTen(true);
-        } else {
-          goToLeaderboardPage();
-        }
-      }
-    } else {
-      const newRank = await getMyData();
-      console.log(newRank);
-      if (newRank) {
-        if (newRank > 0 && newRank <= 10) {
-          setIsUserInTopTen(true);
-        } else {
-          goToLeaderboardPage();
-        }
-      }
-    }
+    // if (currentScore > myBestScore) {
+    //   await updateMyBestScore(currentScore);
+    //   const newRank = await getMyData();
+    //   console.log(newRank);
+
+    //   if (newRank) {
+    //     if (newRank > 0 && newRank <= 10) {
+    //       setIsUserInTopTen(true);
+    //     } else {
+    //       setIsUserInTopTen(false);
+    //     }
+    //   }
+    // } else {
+    // const newRank = await getMyData();
+    // console.log(newRank);
+    // if (newRank) {
+    //   if (newRank > 0 && newRank <= 10) {
+    //     setIsUserInTopTen(true);
+    //   } else {
+    //     setIsUserInTopTen(false);
+    //   }
+    //   // }
+    // }
+    setIsGameOver(true);
   };
   useEffect(() => {
     if (currentScore > myBestScore) {
@@ -233,11 +235,11 @@ export const Game: React.FC = () => {
           </Button>
         </ActionItems>
       </Page>
-      {/* <ReactModa isOpen={isGameOver}l>Game Over</ReactModal> */}
+      {/* 
       <ReactModal
         isOpen={isUserInTopTen}
         shouldCloseOnOverlayClick={false}
-        contentLabel="Game Over"
+        contentLabel="Post Comment"
         style={{
           overlay: {
             background: 'rgba(40, 40, 40, 0.8)',
@@ -262,6 +264,44 @@ export const Game: React.FC = () => {
         }}
       >
         <PostComment setIsUserInTopTen={setIsUserInTopTen} />
+      </ReactModal> */}
+
+      <ReactModal
+        isOpen={isGameOver}
+        shouldCloseOnOverlayClick={false}
+        contentLabel="Game Over"
+        style={{
+          overlay: {
+            background: 'rgba(40, 40, 40, 0.8)',
+            zIndex: 100,
+          },
+          content: {
+            height: `fit-content`,
+            width: `80%`,
+            top: '50%',
+            left: '50%',
+            right: 'auto',
+            bottom: 'auto',
+            marginRight: '-50%',
+            transform: 'translate(-50%, -50%)',
+
+            padding: `24px 18px`,
+            display: `flex`,
+            flexFlow: `column`,
+
+            justifyContent: 'center',
+            alignItems: 'center',
+            background: 'transparent',
+            border: `none`,
+          },
+        }}
+      >
+        <GameOver
+          setIsGameOver={setIsGameOver}
+          currentScore={currentScore}
+          myBestScore={myBestScore}
+          isUserInTopTen={isUserInTopTen}
+        />
       </ReactModal>
     </>
   );

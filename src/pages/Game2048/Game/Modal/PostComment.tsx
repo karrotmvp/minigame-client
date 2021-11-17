@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, DisabledButton } from 'components/Button';
-import { useNavigator } from '@karrotframe/navigator';
+import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
 import { useUserData } from 'hooks';
 import { useMyGame2048Data } from 'pages/Game2048/hooks';
 import { rem } from 'polished';
@@ -15,11 +15,13 @@ type CommentType = {
 };
 
 type Props = {
-  setIsUserInTopTen: React.Dispatch<React.SetStateAction<boolean>>;
+  setShouldModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  // shouldOpen: any;
 };
 
 export const PostComment: React.FC<Props> = (props) => {
-  const { push } = useNavigator();
+  const { isTop } = useCurrentScreen();
+  const { replace } = useNavigator();
   const minigameApi = useMinigameApi();
   const { townName2: districtName } = useUserData();
   const { isInWebEnvironment } = useMini();
@@ -30,7 +32,7 @@ export const PostComment: React.FC<Props> = (props) => {
   });
   // Page navigation
   const goToLeaderboardPage = () => {
-    push(`/game-2048/leaderboard`);
+    replace(`/game-2048/leaderboard`);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -54,11 +56,18 @@ export const PostComment: React.FC<Props> = (props) => {
       }
     );
     if (data.status === 200) {
-      props.setIsUserInTopTen(false);
+      props.setShouldModalOpen(false);
       goToLeaderboardPage();
     }
   };
 
+  useEffect(() => {
+    if (isTop) {
+      // analytics.logEvent('view_comment_modal', {
+      //   game_type: 'karrot-clicker',
+      // });
+    }
+  });
   return (
     <>
       <div
