@@ -1,7 +1,16 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from 'reducers/rootReducer';
 import {
+  createContext,
+  useContext,
+  useCallback,
+  useEffect,
+  useReducer,
+  useRef,
+  useState,
+} from 'react';
+
+import {
+  game2048Reducer,
+  initialState,
   createTileAction,
   mergeTileAction,
   moveEndAction,
@@ -9,26 +18,19 @@ import {
   resetGameAction,
   updateScoreAction,
   updateTileAction,
-} from 'pages/Game2048/Game/Game/reducers/game2048Reducer';
-import { TileProps } from '../Tile';
+} from '../reducers';
+import { TileProps } from '../Game/Tile';
 import { useUniqueId } from './useUniqueId';
-import { animationDuration } from '../styles';
+import { animationDuration } from '../Game/styles';
 import { useMyGame2048Data } from 'pages/Game2048/hooks';
 
 export const useGame = () => {
   const isInitialRender = useRef(true);
   const nextId = useUniqueId();
   const tileCountPerRowOrColumn = 4;
-  const dispatch = useDispatch();
-  const { score, tiles, byIds, hasChanged, inMotion } = useSelector(
-    (state: RootState) => ({
-      tiles: state.game2048Reducer.tiles,
-      byIds: state.game2048Reducer.byIds,
-      hasChanged: state.game2048Reducer.hasChanged,
-      inMotion: state.game2048Reducer.inMotion,
-      score: state.game2048Reducer.score,
-    })
-  );
+
+  const [state, dispatch] = useReducer(game2048Reducer, initialState);
+  const { score, tiles, byIds, hasChanged, inMotion } = state;
   const [isGameOver, setIsGameOver] = useState<boolean>(false);
   const { highestScore } = useMyGame2048Data();
 
@@ -174,8 +176,8 @@ export const useGame = () => {
             } as TileProps;
 
             let score = currentTile.value * 2;
-
-            // delays the merge by 250ms, so the sliding animation can be completed.
+            // console.log(score);
+            // delays the merge by 100ms, so the sliding animation can be completed.
             throttledMergeTile(tile, previousTile);
             dispatch(updateScoreAction(score));
 
@@ -342,8 +344,9 @@ export const useGame = () => {
     return move.bind(this, retrieveTileIdsByColumn, calculateFirstFreeIndex);
   };
 
-  const resetGame = useCallback(() => {
+  const resetGame = () => {
     isInitialRender.current = true;
+
     dispatch(resetGameAction());
     if (highestScore === 0) {
       createTile({ coordinate: [1, 1], value: 2 });
@@ -352,7 +355,7 @@ export const useGame = () => {
       generateRandomTile();
       generateRandomTile();
     }
-  }, [createTile, dispatch, generateRandomTile, highestScore]);
+  };
 
   const hasDiff = (
     board: number[] | undefined,
@@ -373,8 +376,8 @@ export const useGame = () => {
     // console.log(currBoard === x());
 
     const currentBoard = retrieveTileMap();
-    console.log('current board', currentBoard);
-    console.log('next board', nextBoard);
+    // console.log('current board', currentBoard);
+    // console.log('next board', nextBoard);
     // const x = moveLeftFactory(retrieveTileMap());
     // const y = x();
     if (emptyTiles.length <= 0) {
@@ -400,6 +403,8 @@ export const useGame = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [findEmptyTiles, retrieveTileMap]);
   useEffect(() => {
+    console.log(score);
+    // console.log(isInitialRender.current);
     // setPrevBoard(retrieveTileMap);
     if (isInitialRender.current) {
       resetGame();
@@ -411,12 +416,12 @@ export const useGame = () => {
       generateRandomTile();
     }
 
-    console.log('is game over?', checkGameOver());
+    // console.log('is game over?', checkGameOver());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasChanged, inMotion, resetGame]);
 
+  // const currentScore = score;
   const tileList = byIds.map((tileId) => tiles[tileId]);
-
   const moveLeft = moveLeftFactory(retrieveTileMap());
   const moveRight = moveRightFactory(retrieveTileMap());
   const moveUp = moveUpFactory(retrieveTileMap());
