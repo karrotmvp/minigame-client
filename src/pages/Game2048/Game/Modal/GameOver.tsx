@@ -8,6 +8,7 @@ import { ReactComponent as GameOverSVG } from 'assets/svg/game2048/gameover.svg'
 import { Button } from 'components/Button';
 import { useMinigameApi } from 'services/api/minigameApi';
 import { useMyGame2048Data } from 'pages/Game2048/hooks';
+import { useMini } from 'hooks';
 type Props = {
   setIsGameOver: React.Dispatch<React.SetStateAction<boolean>>;
   currentScore: number;
@@ -17,6 +18,7 @@ type Props = {
 export const GameOver: React.FC<Props> = (props) => {
   const { replace } = useNavigator();
   const minigameApi = useMinigameApi();
+  const { isInWebEnvironment } = useMini();
   const { rank, gameType, updateMyScore } = useMyGame2048Data();
   const [shouldModalOpen, setShouldModalOpen] = useState<boolean>(false);
   // const shouldOpen = useRef(false);
@@ -43,6 +45,10 @@ export const GameOver: React.FC<Props> = (props) => {
 
   const handleViewLeaderboard = async () => {
     console.log('try to view leaderboard');
+    if (isInWebEnvironment) {
+      goToLeaderboardPage();
+      return;
+    }
     // console.log(props.isUserInTopTen);
     try {
       const {

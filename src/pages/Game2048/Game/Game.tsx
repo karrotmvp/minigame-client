@@ -3,37 +3,23 @@ import { useCurrentScreen } from '@karrotframe/navigator';
 import { Button } from 'components/Button';
 import { useMini } from 'hooks';
 import { rem } from 'polished';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useReducer, useState } from 'react';
 import ReactModal from 'react-modal';
-import { useSwipeable } from 'react-swipeable';
 import { useMinigameApi } from 'services/api/minigameApi';
-import { useThrottledCallback } from 'use-debounce/lib';
 import { useMyGame2048Data } from '../hooks';
 import { Board } from './Game/Board';
-import { useGame } from './Game/hooks';
-import { animationDuration } from './Game/styles';
+import { useGame } from './hooks';
+import { game2048Reducer, initialState } from './reducers';
 import { GameOver } from './Modal';
 import { CurrentScore, MyBestScore, TownieBestScore } from './Score';
 
 export const Game: React.FC = () => {
   const { isTop } = useCurrentScreen();
-  // const { replace } = useNavigator();
   const minigameApi = useMinigameApi();
   const { isInWebEnvironment } = useMini();
-  const {
-    score: myBestScore,
-    highestScore,
-    gameType,
-    // updateMyScore,
-    // updateMyComment,
-  } = useMyGame2048Data();
+  const { score: myBestScore, highestScore, gameType } = useMyGame2048Data();
   const {
     score: currentScore,
-    tileList,
-    moveRight,
-    moveLeft,
-    moveUp,
-    moveDown,
     resetGame,
     isGameOver: gameOverStatus,
   } = useGame();
@@ -44,50 +30,6 @@ export const Game: React.FC = () => {
     useState<number>(myBestScore);
   const [isGameOver, setIsGameOver] = useState(gameOverStatus);
 
-  // useEffect(() => {
-  //   if (isGameOver) {
-  //     console.log('GAME OVE');
-  //   }
-  // });
-  // game controller
-  // =================================================================
-  // mobile(touch) friendly
-  const handlers = useSwipeable({
-    onSwiped: (eventData) => console.log('User Swiped!', eventData),
-    onSwipedLeft: useThrottledCallback(moveLeft, animationDuration),
-    onSwipedRight: useThrottledCallback(moveRight, animationDuration),
-    onSwipedUp: useThrottledCallback(moveUp, animationDuration),
-    onSwipedDown: useThrottledCallback(moveDown, animationDuration, {
-      // leading: true,
-      // trailing: false,
-    }),
-    preventDefaultTouchmoveEvent: true,
-  });
-  // desktop(keyboard) friendly
-  const handleKeyDown = useThrottledCallback(
-    (e: KeyboardEvent) => {
-      // disables page scrolling with keyboard arrows
-      e.preventDefault();
-
-      switch (e.code) {
-        case 'ArrowRight':
-          moveRight();
-          break;
-        case 'ArrowLeft':
-          moveLeft();
-          break;
-        case 'ArrowUp':
-          moveUp();
-          break;
-        case 'ArrowDown':
-          moveDown();
-          break;
-      }
-    },
-    animationDuration,
-    { leading: true, trailing: false }
-  );
-  // =================================================================
   useEffect(() => {
     console.log(highestScore);
     if (isTop) {
@@ -105,7 +47,7 @@ export const Game: React.FC = () => {
   const handlePlayAgain = () => {
     resetGame();
 
-    console.log('handle play again');
+    console.log('handle play again!!!!!!!!!!');
   };
 
   const getTownieBestScoreEver = useCallback(async () => {
@@ -200,6 +142,7 @@ export const Game: React.FC = () => {
     }
   }, [getTownieBestScoreEver, isTop]);
   return (
+    // <ScoreContext.Provider value={{ state, dispatch }}>
     <>
       <Page className="game-page">
         <div style={{ flex: 1 }}>
@@ -208,13 +151,8 @@ export const Game: React.FC = () => {
             <TownieBestScore townieBestScore={townieBestScore} />
           </HighScoreContainer>
           <CurrentScore score={currentScore} />
-          <Board
-            tileList={tileList}
-            handlers={handlers}
-            handleKeyDown={handleKeyDown}
-            isUserNew={isUserNew}
-            setIsUserNew={setIsUserNew}
-          />
+          {/* <p>{contextScore}</p> */}
+          <Board isUserNew={isUserNew} setIsUserNew={setIsUserNew} />
         </div>
         <ActionItems>
           <Button
@@ -273,6 +211,7 @@ export const Game: React.FC = () => {
           // isUserInTopTen={isUserInTopTen}
         />
       </ReactModal>
+      {/* </ScoreContext.Provider> */}
     </>
   );
 };

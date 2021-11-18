@@ -1,4 +1,4 @@
-import { TileProps } from '../Tile';
+import { TileProps } from '../Game/Tile';
 // action types
 export const RESET = 'game2048/RESET' as const;
 export const CREATE_TILE = 'game2048/CREATE_TILE' as const;
@@ -69,7 +69,7 @@ export const initialState: Game2048State = {
   score: 0,
 };
 
-const game2048Reducer = (
+export const game2048Reducer = (
   state: Game2048State = initialState,
   action: Game2048Action
 ) => {
@@ -134,5 +134,3 @@ const game2048Reducer = (
       return state;
   }
 };
-
-export default game2048Reducer;
