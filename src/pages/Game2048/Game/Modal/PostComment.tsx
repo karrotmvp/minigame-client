@@ -81,12 +81,12 @@ export const PostComment: React.FC<Props> = (props) => {
       <Congrats>
         <span>혹시..천재세요?</span>
         <br />
-        <span>{rank}위</span>로 순위권에 들었어요!
+        <span>{rank}위</span>로 Top 10에 들었어요!
       </Congrats>
       <Text>
-        {districtName} 이웃들에게
+        전국 Top 10만 쓸 수 있는 한 마디!
         <br />
-        하고 싶은 말을 남겨보세요
+        이웃들에게 자랑해보세요
       </Text>
       <ActionItems>
         <CommentInput>

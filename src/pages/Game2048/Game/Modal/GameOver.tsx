@@ -4,11 +4,13 @@ import styled from '@emotion/styled';
 import React, { useState } from 'react';
 import ReactModal from 'react-modal';
 import { PostComment } from './PostComment';
-import { ReactComponent as GameOverSVG } from 'assets/svg/game2048/gameover.svg';
+import gameOverSvgUrl from 'assets/svg/game2048/gameover.svg';
 import { Button } from 'components/Button';
 import { useMinigameApi } from 'services/api/minigameApi';
 import { useMyGame2048Data } from 'pages/Game2048/hooks';
 import { useMini } from 'hooks';
+import { rem } from 'polished';
+import xUrl from 'assets/svg/x.svg';
 type Props = {
   setIsGameOver: React.Dispatch<React.SetStateAction<boolean>>;
   currentScore: number;
@@ -104,17 +106,52 @@ export const GameOver: React.FC<Props> = (props) => {
 
   return (
     <>
-      <GameOverSVG />
-      <Text>최종 스코어</Text>
-      <p>{rank}</p>
-      <Score>{props.currentScore}</Score>
+      <img
+        src={xUrl}
+        alt="close"
+        onClick={handleViewLeaderboard}
+        style={{
+          position: 'absolute',
+          top: 39,
+          right: 27,
+        }}
+      />
+      <div
+        style={{
+          flex: 1,
+          display: `flex`,
+          flexFlow: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: '100%',
+          gap: `16px`,
+          marginBottom: `20%`,
+        }}
+      >
+        <img
+          src={gameOverSvgUrl}
+          alt="gameOverSvgUrl"
+          style={{
+            marginBottom: `50px`,
+          }}
+        />
+
+        <Final>
+          <p className="text">최종 스코어</p>
+          <p className="number">{props.currentScore}</p>
+        </Final>
+        <Final>
+          <p className="text">최종 랭킹</p>
+          <p className="number">{rank}</p>
+        </Final>
+      </div>
       <Button
         size={`large`}
         fontSize={`16`}
         color={`primary`}
         onClick={handleViewLeaderboard}
       >
-        랭킹보기
+        자랑하기
       </Button>
 
       <ReactModal
@@ -176,4 +213,27 @@ const Score = styled.p`
   /* basic/white */
 
   color: #ffffff;
+`;
+
+const Final = styled.div`
+  width: 100%;
+  padding: 10px 15px 15px;
+  text-align: center;
+  font-style: normal;
+  background: #ffffff;
+  border-radius: 21px;
+  color: #0e74ff;
+
+  p.text {
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 161.7%;
+    margin-bottom: 7px;
+  }
+
+  p.number {
+    font-weight: bold;
+    font-size: ${rem(30)};
+    line-height: 103.7%;
+  }
 `;

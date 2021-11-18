@@ -69,7 +69,7 @@ const Container = styled.div<{ me?: boolean; rank?: number }>`
   flex-flow: row;
   align-items: center;
 
-  padding: 12px 14px;
+  padding: 12px 20px 14px 26px;
   margin: 4px 0;
   width: 100%;
   border-radius: 10px;
@@ -93,10 +93,9 @@ const Container = styled.div<{ me?: boolean; rank?: number }>`
     background-position: center center;
     width: 15px;
     height: 20px;
-    // transform: scale(1.5);
     position: absolute;
-    top: 16px;
-    left: 20px;
+    top: 15px;
+    left: 22px;
   }
 `;
 
@@ -105,16 +104,15 @@ const Rank = styled.div`
   display: flex;
   align-self: flex-start;
 
-  margin-top: 5px;
-  margin-left: 5px;
+  margin-top: 3px;
+  // margin-left: 5px;
 
-  font-style: normal;
   font-weight: bold;
   font-size: 12px;
   line-height: 161.7%;
   /* or 19px */
 
-  color: #5b5b5b;
+  color: #7c7c7c;
 `;
 const ContentsWrapper = styled.div`
   flex: 1;

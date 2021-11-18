@@ -242,7 +242,7 @@ export const Home: React.FC = () => {
           <div
             style={{
               display: `flex`,
-              gap: `15px`,
+              gap: `14px`,
               alignItems: `flex-end`,
             }}
           >

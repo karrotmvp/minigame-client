@@ -98,7 +98,7 @@ export const Board: React.FC<Props> = (props) => {
   }, []);
 
   return (
-    <>
+    <Grid cellWidth={cellWidth}>
       <TileContainer
         {...handlers}
         ref={refPassthrough}
@@ -110,9 +110,7 @@ export const Board: React.FC<Props> = (props) => {
         ))}
         {props.isUserNew ? <Guide cellWidth={cellWidth} /> : null}
       </TileContainer>
-
-      <Grid cellWidth={cellWidth} />
-    </>
+    </Grid>
   );
 };
 
@@ -120,7 +118,9 @@ const TileContainer = styled.div`
   position: absolute;
   z-index: 2;
   width: calc(100% - ${boardMargin}rem * 2);
-  // height: auto;
+  height: auto;
   padding-top: calc(100% - ${boardMargin}rem * 2);
-  margin: ${boardMargin}rem;
+
+  margin-left: -${boardPadding}rem;
+  margin-top: -${boardPadding}rem;
 `;
