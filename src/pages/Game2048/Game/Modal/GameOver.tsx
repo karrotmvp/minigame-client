@@ -11,6 +11,7 @@ import { useMyGame2048Data } from 'pages/Game2048/hooks';
 import { useMini } from 'hooks';
 import { rem } from 'polished';
 import xUrl from 'assets/svg/x.svg';
+import { useAnalytics } from 'services/analytics';
 type Props = {
   setIsGameOver: React.Dispatch<React.SetStateAction<boolean>>;
   currentScore: number;
@@ -19,8 +20,9 @@ type Props = {
 };
 export const GameOver: React.FC<Props> = (props) => {
   const { replace } = useNavigator();
+  const analytics = useAnalytics();
   const minigameApi = useMinigameApi();
-  const { isInWebEnvironment } = useMini();
+  const { isInWebEnvironment, shareApp } = useMini();
   const { rank, gameType, updateMyScore } = useMyGame2048Data();
   const [shouldModalOpen, setShouldModalOpen] = useState<boolean>(false);
   // const shouldOpen = useRef(false);
@@ -77,32 +79,43 @@ export const GameOver: React.FC<Props> = (props) => {
     } catch (error) {
       console.error(error);
     }
-
-    // console.log(newRank);
-    // if (newRank) {
-    //   if (newRank > 0 && newRank <= 10) {
-    //     // setIsUserInTopTen(true);
-    //     props.setIsGameOver(false);
-    //     setShouldOpen(true);
-    //   } else {
-    //     // setIsUserInTopTen(false);
-    //     props.setIsGameOver(false);
-    //     setShouldOpen(false);
-    //     goToLeaderboardPage();
-    //   }
-    //   // }
-    // }
-
-    // if (props.isUserInTopTen) {
-    //   setShouldOpen(true);
-    //   console.log(shouldOpen);
-
-    //   props.setIsGameOver(false);
-    // } else {
-    //   props.setIsGameOver(false);
-    //   goToLeaderboardPage();
-    // }
   };
+  const handleShare = () => {
+    console.log('trigger share handler');
+    const url = 'https://daangn.onelink.me/HhUa/3a219555';
+    const text = `2048 퍼즐을 플레이 하고 이웃들에게 한 마디를 남겨보세요!`;
+
+    shareApp(url, text);
+    analytics.logEvent('click_share_button', {
+      game_type: 'game-2048',
+    });
+  };
+
+  // console.log(newRank);
+  // if (newRank) {
+  //   if (newRank > 0 && newRank <= 10) {
+  //     // setIsUserInTopTen(true);
+  //     props.setIsGameOver(false);
+  //     setShouldOpen(true);
+  //   } else {
+  //     // setIsUserInTopTen(false);
+  //     props.setIsGameOver(false);
+  //     setShouldOpen(false);
+  //     goToLeaderboardPage();
+  //   }
+  //   // }
+  // }
+
+  // if (props.isUserInTopTen) {
+  //   setShouldOpen(true);
+  //   console.log(shouldOpen);
+
+  //   props.setIsGameOver(false);
+  // } else {
+  //   props.setIsGameOver(false);
+  //   goToLeaderboardPage();
+  // }
+  // };
 
   return (
     <>
@@ -149,7 +162,7 @@ export const GameOver: React.FC<Props> = (props) => {
         size={`large`}
         fontSize={`16`}
         color={`primary`}
-        onClick={handleViewLeaderboard}
+        onClick={handleShare}
       >
         자랑하기
       </Button>
