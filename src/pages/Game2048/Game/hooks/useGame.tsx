@@ -6,6 +6,7 @@ import {
   useReducer,
   useRef,
   useState,
+  useMemo,
 } from 'react';
 
 import {
@@ -111,7 +112,7 @@ export const useGame = () => {
       const coordinate = emptyTiles[index];
       const randomValue = () => {
         const random = Math.random();
-        return random < 0.5 ? 17 : 269;
+        return random < 0.9 ? 2 : 4;
       };
       createTile({ coordinate, value: randomValue() });
     }
@@ -438,3 +439,22 @@ export const useGame = () => {
     isGameOver,
   };
 };
+
+// export const GameContext = createContext(CreateGame());
+
+// export const GameProvider: React.FC = (props) => {
+//   // const [state, dispatch] = useReducer(game2048Reducer, initialState);
+//   // // (**)
+//   // const contextValue = useMemo(() => {
+//   //   return { state, dispatch };
+//   // }, [state, dispatch]);
+
+//   const contextValue = useMemo(() => CreateGame(), []);
+//   return (
+//     <GameContext.Provider value={contextValue}>
+//       {props.children}
+//     </GameContext.Provider>
+//   );
+// };
+
+// export const useGame = () => useContext(GameContext);

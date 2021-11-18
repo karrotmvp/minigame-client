@@ -3,15 +3,18 @@ import { useCurrentScreen } from '@karrotframe/navigator';
 import { Button } from 'components/Button';
 import { useMini } from 'hooks';
 import { rem } from 'polished';
-import { useCallback, useEffect, useReducer, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import ReactModal from 'react-modal';
 import { useMinigameApi } from 'services/api/minigameApi';
 import { useMyGame2048Data } from '../hooks';
 import { Board } from './Game/Board';
 import { useGame } from './hooks';
-import { game2048Reducer, initialState } from './reducers';
 import { GameOver } from './Modal';
-import { CurrentScore, MyBestScore, TownieBestScore } from './Score';
+import {
+  MemoizedCurrentScore as CurrentScore,
+  MemoizedMyBestScore as MyBestScore,
+  MemoizedTownieBestScore as TownieBestScore,
+} from './Score';
 
 export const Game: React.FC = () => {
   const { isTop } = useCurrentScreen();
@@ -20,9 +23,15 @@ export const Game: React.FC = () => {
   const { score: myBestScore, highestScore, gameType } = useMyGame2048Data();
   const {
     score: currentScore,
-    resetGame,
     isGameOver: gameOverStatus,
+    tileList,
+    moveRight,
+    moveLeft,
+    moveUp,
+    moveDown,
+    resetGame,
   } = useGame();
+
   const [isUserNew, setIsUserNew] = useState<boolean>(false);
   // const [isUserInTopTen, setIsUserInTopTen] = useState<boolean>(false);
   const [townieBestScore, setTownieBestScore] = useState<number>(0);
@@ -142,19 +151,43 @@ export const Game: React.FC = () => {
     }
   }, [getTownieBestScoreEver, isTop]);
   return (
-    // <ScoreContext.Provider value={{ state, dispatch }}>
     <>
       <Page className="game-page">
         <div style={{ flex: 1 }}>
-          <HighScoreContainer>
+          <div
+            style={{
+              display: `flex`,
+              flexFlow: `row`,
+              justifyContent: `center`,
+              gap: `0.625rem`,
+
+              paddingTop: `3.438rem`,
+              margin: `0 20px`,
+            }}
+          >
             <MyBestScore myBestScore={myBestScoreDisplay} />
             <TownieBestScore townieBestScore={townieBestScore} />
-          </HighScoreContainer>
+          </div>
           <CurrentScore score={currentScore} />
-          {/* <p>{contextScore}</p> */}
-          <Board isUserNew={isUserNew} setIsUserNew={setIsUserNew} />
+
+          <Board
+            isUserNew={isUserNew}
+            setIsUserNew={setIsUserNew}
+            tileList={tileList}
+            moveRight={moveRight}
+            moveLeft={moveLeft}
+            moveUp={moveUp}
+            moveDown={moveDown}
+          />
         </div>
-        <ActionItems>
+        <div
+          style={{
+            display: `flex`,
+            flexFlow: `row`,
+            justifyContent: `space-between`,
+            margin: `0 ${rem(20)} ${rem(40)}`,
+          }}
+        >
           <Button
             size={`tiny`}
             fontSize={rem(14)}
@@ -171,7 +204,7 @@ export const Game: React.FC = () => {
           >
             다시하기
           </Button>
-        </ActionItems>
+        </div>
       </Page>
 
       <ReactModal
@@ -211,7 +244,6 @@ export const Game: React.FC = () => {
           // isUserInTopTen={isUserInTopTen}
         />
       </ReactModal>
-      {/* </ScoreContext.Provider> */}
     </>
   );
 };
@@ -223,19 +255,20 @@ const Page = styled.div`
   background-color: #f3f8ff;
 `;
 
-const HighScoreContainer = styled.div`
-  display: flex;
-  flex-flow: row;
-  justify-content: center;
-  gap: 0.625rem;
+// const HighScoreContainer = styled.div`
+//   //   display: flex;
+//   //   flex-flow: row;
+//   //   justify-content: center;
+//   //   gap: 0.625rem;
 
-  padding-top: 3.438rem;
-  margin: 0 20px;
-`;
+//   //   padding-top: 3.438rem;
+//   //   margin: 0 20px;
+//   //
+// `
 
-const ActionItems = styled.div`
-  display: flex;
-  flex-flow: row;
-  justify-content: space-between;
-  margin: 0 ${rem(20)} ${rem(40)};
-`;
+// const ActionItems = styled.div`
+//   display: flex;
+//   flex-flow: row;
+//   justify-content: space-between;
+//   margin: 0 ${rem(20)} ${rem(40)};
+// `

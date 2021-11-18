@@ -1,6 +1,6 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import styled from '@emotion/styled';
-import { MemoizedTile as Tile } from '../Tile';
+import { MemoizedTile as Tile, TileProps } from '../Tile';
 import { animationDuration, boardMargin, boardPadding } from '../styles';
 import { useSwipeable } from 'react-swipeable';
 import { Guide } from './Guide';
@@ -11,15 +11,24 @@ import { MemoizedGrid as Grid } from '.';
 type Props = {
   isUserNew: boolean;
   setIsUserNew: React.Dispatch<React.SetStateAction<boolean>>;
+  tileList: TileProps[];
+  moveLeft: () => void;
+  moveRight: () => void;
+  moveUp: () => void;
+  moveDown: () => void;
 };
 export const Board: React.FC<Props> = (props) => {
-  const { score, tileList, moveRight, moveLeft, moveUp, moveDown } = useGame();
+  // const { score, tileList, moveRight, moveLeft, moveUp, moveDown, resetGame } =
+  //   useGame();
   const [cellWidth, setCellWidth] = useState<number>(0);
   const tileContainerRef = useRef() as React.MutableRefObject<HTMLDivElement>;
   const refPassthrough = (el: any) => {
     handlers.ref(el);
     tileContainerRef.current = el;
   };
+
+  // const { tileList, moveRight, moveLeft, moveUp, moveDown, resetGame } =
+  //   useGame();
 
   // =================================================================
   // mobile(touch) friendly
@@ -28,16 +37,16 @@ export const Board: React.FC<Props> = (props) => {
       console.log(eventData);
       switch (eventData.dir) {
         case 'Left':
-          moveLeft();
+          props.moveLeft();
           break;
         case 'Right':
-          moveRight();
+          props.moveRight();
           break;
         case 'Up':
-          moveUp();
+          props.moveUp();
           break;
         case 'Down':
-          moveDown();
+          props.moveDown();
           break;
       }
     },
@@ -46,28 +55,34 @@ export const Board: React.FC<Props> = (props) => {
     trackTouch: true,
   });
   // desktop(keyboard) friendly
-  const handleKeyDown = useThrottledCallback(
-    (e: KeyboardEvent) => {
-      // disables page scrolling with keyboard arrows
-      e.preventDefault();
-      switch (e.code) {
-        case 'ArrowRight':
-          moveRight();
-          break;
-        case 'ArrowLeft':
-          moveLeft();
-          break;
-        case 'ArrowUp':
-          moveUp();
-          break;
-        case 'ArrowDown':
-          moveDown();
-          break;
-      }
-    },
-    animationDuration
-    // { leading: true, trailing: false }
-  );
+  // const handleKeyDown = useThrottledCallback(
+  //   (e: KeyboardEvent) => {
+  //     // disables page scrolling with keyboard arrows
+  //     e.preventDefault();
+  //     switch (e.code) {
+  //       case 'ArrowRight':
+  //         moveRight();
+  //         break;
+  //       case 'ArrowLeft':
+  //         moveLeft();
+  //         break;
+  //       case 'ArrowUp':
+  //         moveUp();
+  //         break;
+  //       case 'ArrowDown':
+  //         moveDown();
+  //         break;
+  //     }
+  //   },
+  //   animationDuration
+  //   // { leading: true, trailing: false }
+  // );
+  // useEffect(() => {
+  //   window.addEventListener('keydown', handleKeyDown);
+  //   return () => {
+  //     window.removeEventListener('keydown', handleKeyDown);
+  //   };
+  // }, [handleKeyDown]);
   // =================================================================
 
   // change board & tile size responsively to window size
@@ -82,13 +97,6 @@ export const Board: React.FC<Props> = (props) => {
     return () => window.removeEventListener('resize', updateSize);
   }, []);
 
-  useEffect(() => {
-    window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [handleKeyDown]);
-
   return (
     <>
       <TileContainer
@@ -97,7 +105,7 @@ export const Board: React.FC<Props> = (props) => {
         className="game-board"
         onPointerDown={() => props.setIsUserNew(false)}
       >
-        {tileList.map(({ id, ...rest }) => (
+        {props.tileList.map(({ id, ...rest }) => (
           <Tile id={id} key={`tile-${id}`} {...rest} cellWidth={cellWidth} />
         ))}
         {props.isUserNew ? <Guide cellWidth={cellWidth} /> : null}

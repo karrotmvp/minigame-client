@@ -1,9 +1,10 @@
+import React from 'react';
 import styled from '@emotion/styled';
 
 type Props = {
   score: number;
 };
-export const CurrentScore: React.FC<Props> = (props) => {
+const CurrentScore: React.FC<Props> = (props) => {
   return (
     <Container>
       <Text>Score</Text>
@@ -11,6 +12,8 @@ export const CurrentScore: React.FC<Props> = (props) => {
     </Container>
   );
 };
+
+export const MemoizedCurrentScore = React.memo(CurrentScore);
 
 const Container = styled.div`
   display: flex;

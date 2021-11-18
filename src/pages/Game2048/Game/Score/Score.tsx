@@ -1,3 +1,4 @@
+import React from 'react';
 import styled from '@emotion/styled';
 import { rem } from 'polished';
 
@@ -5,7 +6,7 @@ type BestScore = {
   myBestScore?: number;
   townieBestScore?: number;
 };
-export const TownieBestScore: React.FC<BestScore> = (props) => {
+const TownieBestScore: React.FC<BestScore> = (props) => {
   // API GET TOWNIE HIGH SCORE
   return (
     <Container>
@@ -14,7 +15,7 @@ export const TownieBestScore: React.FC<BestScore> = (props) => {
     </Container>
   );
 };
-export const MyBestScore: React.FC<BestScore> = (props) => {
+const MyBestScore: React.FC<BestScore> = (props) => {
   // API GET MY HIGH SCORE
 
   return (
@@ -24,6 +25,9 @@ export const MyBestScore: React.FC<BestScore> = (props) => {
     </Container>
   );
 };
+
+export const MemoizedTownieBestScore = React.memo(TownieBestScore);
+export const MemoizedMyBestScore = React.memo(MyBestScore);
 
 const Container = styled.div`
   width: 100%;
