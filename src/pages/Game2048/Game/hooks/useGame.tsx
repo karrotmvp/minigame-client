@@ -113,7 +113,6 @@ export const useGame = () => {
       const coordinate = emptyTiles[index];
       const randomValue = () => {
         const random = Math.random();
-        // return random < 0.9 ? 2 : 4;
         return random < 0.9 ? 2 : 4;
       };
       createTile({ coordinate, value: randomValue() });
