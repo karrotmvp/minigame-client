@@ -46,6 +46,7 @@ export const Home: React.FC = () => {
     townName2,
     townName3,
     isInstalled,
+    setIsInstalled,
   } = useUserData();
   const {
     updateMyScore: updateMyGame2048Score,
@@ -171,7 +172,7 @@ export const Home: React.FC = () => {
       handleInstallation();
     } else {
       handleThirdPartyAgreement(() => {
-        handleInstallation();
+        handleInstallation(() => setIsInstalled(true));
       });
     }
   };
