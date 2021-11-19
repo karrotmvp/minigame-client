@@ -41,9 +41,10 @@ export const Home = () => {
   );
 
   const [lastWeekTopDistrict, setLastWeekTopDistrict] = useState<{
-    name: string;
+    townName1: string;
+    townName2: string;
     score: number;
-  }>({ name: '', score: 0 });
+  }>({ townName1: '', townName2: '', score: 0 });
   const [lastWeekTopTownie, setLastWeekTopTownie] = useState<{
     name: string;
     score: number;
@@ -125,7 +126,11 @@ export const Home = () => {
       if (data) {
         console.log(data);
 
-        setLastWeekTopDistrict({ name: data[0].name2, score: data[0].score });
+        setLastWeekTopDistrict({
+          townName1: data[0].name1,
+          townName2: data[0].name2,
+          score: data[0].score,
+        });
       }
     } catch (error) {
       console.error(error);
@@ -232,7 +237,8 @@ export const Home = () => {
           </Banner>
           <Container className="last-week-winner">
             <LastWeekTopDistrict
-              name={lastWeekTopDistrict.name}
+              townName1={lastWeekTopDistrict.townName1}
+              townName2={lastWeekTopDistrict.townName2}
               score={lastWeekTopDistrict.score}
             />
             <LastWeekTopTownie

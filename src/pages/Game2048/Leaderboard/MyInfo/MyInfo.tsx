@@ -97,11 +97,11 @@ const District = styled.div`
   height: fit-content;
   width: fit-content;
   padding: 1px 5px;
-
   border: 0.5px solid #0e74ff;
   box-sizing: border-box;
   border-radius: 7px;
   font-size: ${rem(8)};
+  font-weight: normal
   color: #0e74ff;
 `;
 

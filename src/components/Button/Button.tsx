@@ -2,6 +2,7 @@
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 import { rem } from 'polished';
+import React from 'react';
 
 const oldButtonStyle = ({ size, color }: any) => css`
   background: ${
@@ -176,7 +177,7 @@ const CustomButton = styled.a<{
   pointer-events: ${(props) => (props.type === `disabled` ? `none` : `auto`)};
 `;
 
-export const Button: React.FC<Props> = (props) => {
+const ButtonComponent: React.FC<Props> = (props) => {
   return (
     <CustomButton
       size={props.size}
@@ -188,6 +189,8 @@ export const Button: React.FC<Props> = (props) => {
     </CustomButton>
   );
 };
+
+export const Button = React.memo(ButtonComponent);
 
 export const DisabledButton: React.FC<Props> = (props) => {
   return (

@@ -61,7 +61,7 @@ const Container = styled.div<{ me?: boolean }>`
   flex-flow: row;
   align-items: center;
 
-  padding: 12px 14px;
+  padding: 12px 20px 14px 26px;
   margin: 4px 0;
   width: 100%;
   border-radius: 10px;
@@ -73,21 +73,19 @@ const ContentsWrapper = styled.div`
   flex: 1;
 `;
 const Rank = styled.div`
-  width: 30px;
-
+  width: 25px;
   display: flex;
   align-self: flex-start;
 
-  margin-top: 2px;
-  margin-left: 5px;
+  margin-top: 3px;
+  // margin-left: 5px;
 
-  font-style: normal;
   font-weight: bold;
   font-size: 12px;
   line-height: 161.7%;
   /* or 19px */
 
-  color: #5b5b5b;
+  color: #7c7c7c;
 `;
 const Info = styled.div`
   display: flex;

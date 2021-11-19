@@ -4,6 +4,7 @@ import { boardMargin, boardPadding } from '../styles';
 
 type Props = {
   cellWidth: number;
+  children: React.ReactNode;
 };
 
 const Grid: React.FC<Props> = (props) => {
@@ -12,6 +13,7 @@ const Grid: React.FC<Props> = (props) => {
       {[...Array(16)].map((x, i) => (
         <Cell key={i} cellWidth={props.cellWidth} />
       ))}
+      {props.children}
     </Container>
   );
 };

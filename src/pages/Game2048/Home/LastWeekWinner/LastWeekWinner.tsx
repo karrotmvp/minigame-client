@@ -3,29 +3,37 @@ import { rem } from 'polished';
 import BadgeUrl from 'assets/svg/game2048/top_badge.svg';
 import { commafy } from 'utils';
 
-type Props = {
-  name: string;
+type DistrictProps = {
+  townName1: string;
+  townName2: string;
   score: number;
 };
-export const LastWeekTopDistrict: React.FC<Props> = (props) => {
+export const LastWeekTopDistrict: React.FC<DistrictProps> = (props) => {
   return (
     <Container>
       <Title>
-        지난 주 <Highlight>1등 동네</Highlight>
+        지난 주 <span>1등 동네</span>
       </Title>
-      <Name>{props.name}</Name>
-      <Score>{commafy(props.score)}</Score>
+      <Name>
+        {props.townName1.slice(0, 2)} {props.townName2}
+      </Name>
+      <Score>{commafy(props.score)}점</Score>
     </Container>
   );
 };
-export const LastWeekTopTownie: React.FC<Props> = (props) => {
+
+type TownieProps = {
+  name: string;
+  score: number;
+};
+export const LastWeekTopTownie: React.FC<TownieProps> = (props) => {
   return (
     <Container>
       <Title>
-        지난 주 <Highlight>1등 주민</Highlight>
+        지난 주 <span>전국 1등</span>
       </Title>
       <Name>{props.name}</Name>
-      <Score>{commafy(props.score)}</Score>
+      <Score>{commafy(props.score)}점</Score>
     </Container>
   );
 };
@@ -54,8 +62,8 @@ const Container = styled.div`
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center center;
-    width: 25px;
-    height: 35px;
+    width: 23px;
+    height: 31px;
     position: absolute;
     top: -11px;
     left: 17px;
@@ -65,6 +73,12 @@ const Title = styled.p`
   color: #0e74ff;
   font-size: ${rem(10)};
   text-align: center;
+
+  span {
+    color: #ec9c00;
+    font-size: ${rem(12)};
+    font-weight: bold;
+  }
 `;
 const Name = styled.h3`
   color: #0e74ff;
@@ -77,8 +91,4 @@ const Score = styled.div`
   font-size: ${rem(10)};
 `;
 
-const Highlight = styled.span`
-  color: #ec9c00;
-  font-size: ${rem(12)};
-  font-weight: bold;
-`;
+const Highlight = styled.span``;
