@@ -19,6 +19,7 @@ import ComingSoonCardImgUrl from 'assets/svg/coming_soon_card_img.svg';
 import ArrowGame2048Url from 'assets/svg/arrow_game_2048.svg';
 import ArrowKarrotClickerUrl from 'assets/svg/arrow_karrot_clicker.svg';
 import { ReactComponent as Bookmark } from 'assets/svg/bookmark_icon.svg';
+import { ReactComponent as BookmarkDone } from 'assets/svg/bookmark_done_icon.svg';
 import { ReactComponent as Share } from 'assets/svg/share_icon.svg';
 import { NotificationRequestDtoTypeEnum } from 'services/openapi_generator';
 
@@ -247,18 +248,21 @@ export const Home: React.FC = () => {
             }}
           >
             <Share onClick={triggerShareHandler} />
-            <Bookmark onClick={triggerInstallationHandler} />
+            {isInstalled ? (
+              <BookmarkDone />
+            ) : (
+              <Bookmark onClick={triggerInstallationHandler} />
+            )}
           </div>
         }
-        // onClickRight={handleInstallation}
       />
 
       <Page className="game-platform-page">
-        <SectionTitle style={{ marginBottom: `30px` }}>
+        <MainText style={{ marginBottom: `30px` }}>
           <span>{townName3}</span> 이웃들과
           <br />
           같이 게임해요!
-        </SectionTitle>
+        </MainText>
         <CardContainer className="container--games">
           <Card game={`game-2048`} onClick={goToGame2048}>
             <CardImg1 src={Game2048CardImgUrl} />
@@ -332,8 +336,8 @@ const Page = styled.div`
   margin-top: 20px;
 `;
 
-const SectionTitle = styled.div`
-  padding: 0 ${rem(40)};
+const MainText = styled.div`
+  padding: 0 ${rem(20)};
   color: #3f3f3f;
   font-size: ${rem(24)};
   font-weight: bold;
@@ -345,6 +349,15 @@ const SectionTitle = styled.div`
   }
 `;
 
+const SectionTitle = styled.h3`
+  font-style: normal;
+  font-weight: bold;
+  font-size: ${rem(20)};
+  line-height: 121.2%;
+  /* or 24px */
+  padding: 0 ${rem(20)};
+  color: #3f3f3f;
+`;
 const CardContainer = styled.div`
   display: flex;
   flex-flow: column;
@@ -466,8 +479,9 @@ const ActionButton = styled.img`
   display: inline-block;
 `;
 
-const Break = styled.hr`
-  border: 6px solid #f8f8f8;
+const Break = styled.div`
+  background: #f8f8f8;
+  height: 6px;
   margin: 30px 0 22px;
 `;
 
