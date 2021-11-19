@@ -15,7 +15,7 @@ export const MyInfo: React.FC = () => {
 
   return (
     <Container className="my-info">
-      <Row>
+      <div className="row">
         <Info>
           <Rank>{rank}</Rank>
           <Name>
@@ -26,21 +26,29 @@ export const MyInfo: React.FC = () => {
           </Name>
         </Info>
         <Score>{commafy(score)}</Score>
-      </Row>
-      <Hr />
-      <Row>
-        <Wrapper>
+      </div>
+      <div
+        style={{
+          borderTop: `1px solid #ebebeb`,
+          margin: `10px 0 5px`,
+        }}
+      />
+      <div className="row">
+        <div className="col">
           역대 최고랭킹
           <Score>{highestRank}</Score>
-        </Wrapper>
-        <Wrapper
+        </div>
+        <div
           style={{
-            marginLeft: '20px',
+            borderLeft: `1px solid #EBEBEB`,
+            height: `24px`,
+            margin: `0 11px`,
           }}
-        >
+        />
+        <div className="col">
           역대 최고기록<Score>{commafy(highestScore)}</Score>
-        </Wrapper>
-      </Row>
+        </div>
+      </div>
     </Container>
   );
 };
@@ -60,16 +68,24 @@ const Container = styled.div`
 
   font-style: normal;
   font-weight: normal;
-`;
-const Hr = styled.hr`
-  border: 0.1px solid #d1deea;
-  margin: 10px 0;
-`;
-const Row = styled.div`
-  display: flex;
-  flex-flow: row;
-  align-items: center;
-  justify-content: space-between;
+
+  div.row {
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+    justify-content: space-between;
+
+    div.col {
+      display: flex;
+      flex-flow: row;
+      justify-content: space-between;
+      align-items: center;
+      font-size: ${rem(10)};
+      text-align: right;
+      flex: 1;
+      color: #7c7c7c;
+    }
+  }
 `;
 
 const Info = styled.div`
@@ -109,15 +125,4 @@ const Score = styled.div`
   font-size: ${rem(12)};
   text-align: right;
   color: #0e74ff;
-`;
-
-const Wrapper = styled.div`
-  display: flex;
-  flex-flow: row;
-  justify-content: space-between;
-  align-items: center;
-  font-size: ${rem(10)};
-  text-align: right;
-  flex: 1;
-  color: #96a8b9;
 `;

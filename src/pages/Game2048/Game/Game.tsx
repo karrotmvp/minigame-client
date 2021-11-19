@@ -163,7 +163,8 @@ export const Game: React.FC = () => {
         contentLabel="Game Over"
         style={{
           overlay: {
-            background: 'rgba(40, 40, 40, 0.8)',
+            background: 'rgba(90, 90, 90, 0.7)',
+            backdropFilter: `blur(5px)`,
             zIndex: 100,
           },
           content: {
