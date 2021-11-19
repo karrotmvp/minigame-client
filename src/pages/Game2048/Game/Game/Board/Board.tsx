@@ -55,34 +55,34 @@ export const Board: React.FC<Props> = (props) => {
     trackTouch: true,
   });
   // desktop(keyboard) friendly
-  // const handleKeyDown = useThrottledCallback(
-  //   (e: KeyboardEvent) => {
-  //     // disables page scrolling with keyboard arrows
-  //     e.preventDefault();
-  //     switch (e.code) {
-  //       case 'ArrowRight':
-  //         moveRight();
-  //         break;
-  //       case 'ArrowLeft':
-  //         moveLeft();
-  //         break;
-  //       case 'ArrowUp':
-  //         moveUp();
-  //         break;
-  //       case 'ArrowDown':
-  //         moveDown();
-  //         break;
-  //     }
-  //   },
-  //   animationDuration
-  //   // { leading: true, trailing: false }
-  // );
-  // useEffect(() => {
-  //   window.addEventListener('keydown', handleKeyDown);
-  //   return () => {
-  //     window.removeEventListener('keydown', handleKeyDown);
-  //   };
-  // }, [handleKeyDown]);
+  const handleKeyDown = useThrottledCallback(
+    (e: KeyboardEvent) => {
+      // disables page scrolling with keyboard arrows
+      e.preventDefault();
+      switch (e.code) {
+        case 'ArrowRight':
+          props.moveRight();
+          break;
+        case 'ArrowLeft':
+          props.moveLeft();
+          break;
+        case 'ArrowUp':
+          props.moveUp();
+          break;
+        case 'ArrowDown':
+          props.moveDown();
+          break;
+      }
+    },
+    animationDuration
+    // { leading: true, trailing: false }
+  );
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [handleKeyDown]);
   // =================================================================
 
   // change board & tile size responsively to window size

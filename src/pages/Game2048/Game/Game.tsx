@@ -1,7 +1,6 @@
 import styled from '@emotion/styled';
 import { useCurrentScreen } from '@karrotframe/navigator';
 import { Button } from 'components/Button';
-import { useMini } from 'hooks';
 import { rem } from 'polished';
 import React, { useCallback, useEffect, useState } from 'react';
 import ReactModal from 'react-modal';
@@ -20,7 +19,6 @@ import refreshGameUrl from 'assets/svg/game2048/refresh_game.svg';
 export const Game: React.FC = () => {
   const { isTop } = useCurrentScreen();
   const minigameApi = useMinigameApi();
-  const { isInWebEnvironment } = useMini();
   const { score: myBestScore, highestScore, gameType } = useMyGame2048Data();
   const {
     score: currentScore,
@@ -32,32 +30,18 @@ export const Game: React.FC = () => {
     moveDown,
     resetGame,
   } = useGame();
-
   const [isUserNew, setIsUserNew] = useState<boolean>(false);
-  // const [isUserInTopTen, setIsUserInTopTen] = useState<boolean>(false);
   const [townieBestScore, setTownieBestScore] = useState<number>(0);
   const [myBestScoreDisplay, setMyBestScoreDisplay] =
     useState<number>(myBestScore);
   const [isGameOver, setIsGameOver] = useState(gameOverStatus);
 
-  useEffect(() => {
-    console.log(highestScore);
-    if (isTop) {
-      // resetGame();
-      if (highestScore === 0) {
-        setIsUserNew(true);
-        console.log('guide is on for new user');
-      }
-    }
-  }, [highestScore, isTop]);
-
-  // page navigation
-  // =================================================================
-
+  // Action buttons
   const handlePlayAgain = () => {
     resetGame();
-
-    console.log('handle play again!!!!!!!!!!');
+  };
+  const handleGameOver = () => {
+    setIsGameOver(true);
   };
 
   const getTownieBestScoreEver = useCallback(async () => {
@@ -73,69 +57,29 @@ export const Game: React.FC = () => {
     }
   }, [gameType, minigameApi.gameUserApi]);
 
-  //
   const updateMyBestScore = async (score: number) => {
     await minigameApi.gamePlayApi.updateScoreUsingPATCH(gameType, {
       score: score,
     });
   };
-  // const getMyData = async () => {
-  //   const {
-  //     data: { data },
-  //   } = await minigameApi.gameUserApi.getMyRankInfoUsingGET(gameType);
 
-  //   if (data) {
-  //     if (data.comment) {
-  //       updateMyComment(data.comment);
-  //     }
-  //     if (data.score && data.rank) {
-  //       updateMyScore(data.score, data.rank);
-
-  //       return data.rank;
-  //     }
-  //   }
-  // };
-
-  const handleGameOver = async () => {
-    // resetGame();
-    if (isInWebEnvironment) {
-      console.log(`bypass in web environment: open game over modal regardless`);
-      setIsGameOver(true);
-      // setIsUserInTopTen(true);
-      return;
+  // new user guide
+  useEffect(() => {
+    console.log(highestScore);
+    if (isTop) {
+      if (highestScore === 0) {
+        setIsUserNew(true);
+        console.log('guide is on for new user');
+      }
     }
-    // getMyData();
-    // only patch score to db if current score is higher than the best score
-    console.log(myBestScore, currentScore);
-    // if (currentScore > myBestScore) {
-    //   await updateMyBestScore(currentScore);
-    //   const newRank = await getMyData();
-    //   console.log(newRank);
+  }, [highestScore, isTop]);
 
-    //   if (newRank) {
-    //     if (newRank > 0 && newRank <= 10) {
-    //       setIsUserInTopTen(true);
-    //     } else {
-    //       setIsUserInTopTen(false);
-    //     }
-    //   }
-    // } else {
-    // const newRank = await getMyData();
-    // console.log(newRank);
-    // if (newRank) {
-    //   if (newRank > 0 && newRank <= 10) {
-    //     setIsUserInTopTen(true);
-    //   } else {
-    //     setIsUserInTopTen(false);
-    //   }
-    //   // }
-    // }
-    setIsGameOver(true);
-  };
+  // constantly patch best score
   useEffect(() => {
     if (currentScore > myBestScore) {
       updateMyBestScore(currentScore);
     }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentScore]);
 
@@ -214,7 +158,7 @@ export const Game: React.FC = () => {
       </Page>
 
       <ReactModal
-        isOpen={isGameOver}
+        isOpen={isGameOver || gameOverStatus}
         shouldCloseOnOverlayClick={false}
         contentLabel="Game Over"
         style={{
@@ -243,12 +187,7 @@ export const Game: React.FC = () => {
           },
         }}
       >
-        <GameOver
-          setIsGameOver={setIsGameOver}
-          currentScore={currentScore}
-          myBestScore={myBestScore}
-          // isUserInTopTen={isUserInTopTen}
-        />
+        <GameOver currentScore={currentScore} myBestScore={myBestScore} />
       </ReactModal>
     </>
   );
@@ -260,24 +199,6 @@ const Page = styled.div`
   height: 100%;
   background-color: #f3f8ff;
 `;
-
-// const HighScoreContainer = styled.div`
-//   //   display: flex;
-//   //   flex-flow: row;
-//   //   justify-content: center;
-//   //   gap: 0.625rem;
-
-//   //   padding-top: 3.438rem;
-//   //   margin: 0 20px;
-//   //
-// `
-
-// const ActionItems = styled.div`
-//   display: flex;
-//   flex-flow: row;
-//   justify-content: space-between;
-//   margin: 0 ${rem(20)} ${rem(40)};
-// `
 
 const CurrentScoreWrapper = styled.div`
   // display: flex;

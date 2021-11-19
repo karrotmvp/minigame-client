@@ -13,10 +13,8 @@ import { rem } from 'polished';
 import xUrl from 'assets/svg/x.svg';
 import { useAnalytics } from 'services/analytics';
 type Props = {
-  setIsGameOver: React.Dispatch<React.SetStateAction<boolean>>;
   currentScore: number;
   myBestScore: number;
-  // isUserInTopTen: boolean;
 };
 export const GameOver: React.FC<Props> = (props) => {
   const { replace } = useNavigator();
@@ -25,27 +23,10 @@ export const GameOver: React.FC<Props> = (props) => {
   const { isInWebEnvironment, shareApp } = useMini();
   const { rank, gameType, updateMyScore } = useMyGame2048Data();
   const [shouldModalOpen, setShouldModalOpen] = useState<boolean>(false);
-  // const shouldOpen = useRef(false);
+
   const goToLeaderboardPage = () => {
     replace(`/game-2048/leaderboard`);
   };
-
-  // const getMyData = async () => {
-  //   const {
-  //     data: { data },
-  //   } = await minigameApi.gameUserApi.getMyRankInfoUsingGET(gameType);
-
-  //   if (data) {
-  //     if (data.comment) {
-  //       updateMyComment(data.comment);
-  //     }
-  //     if (data.score && data.rank) {
-  //       updateMyScore(data.score, data.rank);
-
-  //       return data.rank;
-  //     }
-  //   }
-  // };
 
   const handleViewLeaderboard = async () => {
     console.log('try to view leaderboard');
@@ -53,27 +34,20 @@ export const GameOver: React.FC<Props> = (props) => {
       goToLeaderboardPage();
       return;
     }
-    // console.log(props.isUserInTopTen);
+
     try {
       const {
         data: { data },
       } = await minigameApi.gameUserApi.getMyRankInfoUsingGET(gameType);
 
       if (data) {
-        // if (data.comment) {
-        //   updateMyComment(data.comment);
-        // }
         if (data.score && data.rank) {
           updateMyScore(data.score, data.rank);
           if (data.rank > 0 && data.rank <= 10) {
-            // props.setIsGameOver(false);
             setShouldModalOpen(true);
           } else {
-            // props.setIsGameOver(false);
-            // setShouldModalOpen(true);
             goToLeaderboardPage();
           }
-          // return data.rank;
         }
       }
     } catch (error) {
@@ -90,32 +64,6 @@ export const GameOver: React.FC<Props> = (props) => {
       game_type: 'game-2048',
     });
   };
-
-  // console.log(newRank);
-  // if (newRank) {
-  //   if (newRank > 0 && newRank <= 10) {
-  //     // setIsUserInTopTen(true);
-  //     props.setIsGameOver(false);
-  //     setShouldOpen(true);
-  //   } else {
-  //     // setIsUserInTopTen(false);
-  //     props.setIsGameOver(false);
-  //     setShouldOpen(false);
-  //     goToLeaderboardPage();
-  //   }
-  //   // }
-  // }
-
-  // if (props.isUserInTopTen) {
-  //   setShouldOpen(true);
-  //   console.log(shouldOpen);
-
-  //   props.setIsGameOver(false);
-  // } else {
-  //   props.setIsGameOver(false);
-  //   goToLeaderboardPage();
-  // }
-  // };
 
   return (
     <>
@@ -195,38 +143,11 @@ export const GameOver: React.FC<Props> = (props) => {
           },
         }}
       >
-        {/* <PostComment shouldOpen={shouldOpen} /> */}
         <PostComment setShouldModalOpen={setShouldModalOpen} />
       </ReactModal>
     </>
   );
 };
-
-const Text = styled.p`
-  font-family: Pretendard;
-  font-style: normal;
-  font-weight: normal;
-  font-size: 14px;
-  line-height: 161.7%;
-  /* identical to box height, or 23px */
-
-  /* gray/gray 100 */
-
-  color: #f5f5f5;
-`;
-const Score = styled.p`
-  font-style: normal;
-  font-weight: bold;
-  font-size: 30px;
-  line-height: 103.7%;
-  /* or 31px */
-
-  text-align: center;
-
-  /* basic/white */
-
-  color: #ffffff;
-`;
 
 const Final = styled.div`
   width: 100%;
