@@ -99,29 +99,13 @@ const App: React.FC = () => {
     }
   }, [analytics, minigameApi.userApi, setUserInfo]);
   useEffect(() => {
-    async function fetchData() {
+    function fetchData() {
       try {
-        //   // const [code, regionId, isInstalled] = getQueryParams();
-
-        //   // handle if code and/or region id does not exist
-        //   if (accessToken) {
-        //     updateUserInfo();
-        //     setRegionInfo(regionId as string);
-        //     getDistrictInfo(regionId as string);
-        //     if (isInstalled) {
-        //       if (isInstalled === 'true') {
-        //         setIsInstalled(true);
-        //       } else if (isInstalled === 'false') {
-        //         setIsInstalled(false);
-        //       }
-        //     }
-        //   } else {
         console.log(accessToken);
         setRegionInfo(regionId as string);
         getDistrictInfo(regionId as string);
-        if (code) {
-          await signAccessToken(code, regionId as string);
-
+        if (accessToken) {
+          console.log('alread have access token', accessToken);
           if (isInstalled) {
             if (isInstalled === 'true') {
               setIsInstalled(true);
@@ -129,9 +113,20 @@ const App: React.FC = () => {
               setIsInstalled(false);
             }
           }
-          await updateUserInfo();
+          updateUserInfo();
+          return;
+        } else if (code) {
+          console.log('don`t have access token', accessToken);
+          signAccessToken(code, regionId as string);
+          if (isInstalled) {
+            if (isInstalled === 'true') {
+              setIsInstalled(true);
+            } else if (isInstalled === 'false') {
+              setIsInstalled(false);
+            }
+          }
+          updateUserInfo();
         }
-        // }
       } catch (error) {
         console.error(error);
       }
@@ -139,9 +134,9 @@ const App: React.FC = () => {
     const [preload, code, regionId, isInstalled] = getQueryParams();
     analytics.logEvent('launch_app');
     console.log(preload, code, regionId, isInstalled);
-    // if (!preload) {
-    fetchData();
-    // }
+    if (!preload) {
+      fetchData();
+    }
   }, [
     accessToken,
     analytics,

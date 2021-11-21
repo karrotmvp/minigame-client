@@ -343,7 +343,7 @@ export interface NotificationCheckDto {
      * @type {boolean}
      * @memberof NotificationCheckDto
      */
-    'isAlreadyNotified': boolean;
+    'check': boolean;
 }
 /**
  * 
@@ -364,8 +364,9 @@ export interface NotificationRequestDto {
     * @enum {string}
     */
 export enum NotificationRequestDtoTypeEnum {
-    Region = 'OPEN_REGION',
-    Game = 'OPEN_GAME'
+    OpenRegion = 'OPEN_REGION',
+    OpenGame = 'OPEN_GAME',
+    SubscribeOff = 'SUBSCRIBE_OFF'
 }
 
 /**
@@ -1221,11 +1222,11 @@ export const NotificationApiAxiosParamCreator = function (configuration?: Config
         /**
          * 
          * @summary 알림 신청 여부 확인
-         * @param {'OPEN_REGION' | 'OPEN_GAME'} type type
+         * @param {'OPEN_REGION' | 'OPEN_GAME' | 'SUBSCRIBE_OFF'} type type
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        checkNotificationUsingGET: async (type: 'OPEN_REGION' | 'OPEN_GAME', options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        checkNotificationUsingGET: async (type: 'OPEN_REGION' | 'OPEN_GAME' | 'SUBSCRIBE_OFF', options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'type' is not null or undefined
             assertParamExists('checkNotificationUsingGET', 'type', type)
             const localVarPath = `/api/notifications/check`;
@@ -1310,11 +1311,11 @@ export const NotificationApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @summary 알림 신청 여부 확인
-         * @param {'OPEN_REGION' | 'OPEN_GAME'} type type
+         * @param {'OPEN_REGION' | 'OPEN_GAME' | 'SUBSCRIBE_OFF'} type type
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async checkNotificationUsingGET(type: 'OPEN_REGION' | 'OPEN_GAME', options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseResponseNotificationCheckDto>> {
+        async checkNotificationUsingGET(type: 'OPEN_REGION' | 'OPEN_GAME' | 'SUBSCRIBE_OFF', options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseResponseNotificationCheckDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.checkNotificationUsingGET(type, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -1342,11 +1343,11 @@ export const NotificationApiFactory = function (configuration?: Configuration, b
         /**
          * 
          * @summary 알림 신청 여부 확인
-         * @param {'OPEN_REGION' | 'OPEN_GAME'} type type
+         * @param {'OPEN_REGION' | 'OPEN_GAME' | 'SUBSCRIBE_OFF'} type type
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        checkNotificationUsingGET(type: 'OPEN_REGION' | 'OPEN_GAME', options?: any): AxiosPromise<BaseResponseNotificationCheckDto> {
+        checkNotificationUsingGET(type: 'OPEN_REGION' | 'OPEN_GAME' | 'SUBSCRIBE_OFF', options?: any): AxiosPromise<BaseResponseNotificationCheckDto> {
             return localVarFp.checkNotificationUsingGET(type, options).then((request) => request(axios, basePath));
         },
         /**
@@ -1372,12 +1373,12 @@ export class NotificationApi extends BaseAPI {
     /**
      * 
      * @summary 알림 신청 여부 확인
-     * @param {'OPEN_REGION' | 'OPEN_GAME'} type type
+     * @param {'OPEN_REGION' | 'OPEN_GAME' | 'SUBSCRIBE_OFF'} type type
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof NotificationApi
      */
-    public checkNotificationUsingGET(type: 'OPEN_REGION' | 'OPEN_GAME', options?: AxiosRequestConfig) {
+    public checkNotificationUsingGET(type: 'OPEN_REGION' | 'OPEN_GAME' | 'SUBSCRIBE_OFF', options?: AxiosRequestConfig) {
         return NotificationApiFp(this.configuration).checkNotificationUsingGET(type, options).then((request) => request(this.axios, this.basePath));
     }
 

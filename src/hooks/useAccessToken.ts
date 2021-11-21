@@ -12,9 +12,7 @@ export const useAccessToken = () => {
 };
 
 export const useSignAccessToken = () => {
-  // const analytics = useAnalytics();
   const minigameApi = useMinigameApi();
-  // const { setUserInfo } = useUserData();
   const [, setCookies] = useCookies(['accessToken']);
 
   const signAccessToken = useCallback(

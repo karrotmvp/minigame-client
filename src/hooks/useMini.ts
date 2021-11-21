@@ -36,11 +36,12 @@ export const useMini = () => {
       return false;
     }
   })();
-
+  // Leave miniapp
   const ejectApp = () => {
     mini.close();
   };
 
+  // Third-party agreement handler
   const handleThirdPartyAgreement = async (runOnSuccess: () => void) => {
     mini.startPreset({
       preset: presetUrl!,
@@ -64,20 +65,37 @@ export const useMini = () => {
     });
   };
 
-  const handleInstallation = async (runOnSuccess?: () => void) => {
+  // Installation handler
+  const handleInstallation = async (
+    runOnSuccess?: () => void,
+    runOnClose?: () => void
+  ) => {
+    console.log('installation handler opened');
     mini.startPreset({
       preset: installationUrl!,
       onSuccess: async function (result) {
+        console.log(result);
         if (result.ok) {
           console.log('즐겨찾기 성공');
+
+          if (runOnSuccess) {
+            runOnSuccess();
+          }
         }
-        if (runOnSuccess) {
-          runOnSuccess();
+      },
+      onFailure: async function () {
+        console.log('installation handler failed');
+      },
+      onClose: () => {
+        if (runOnClose) {
+          console.log('installation handler closed');
+          runOnClose();
         }
       },
     });
   };
 
+  // Share handler
   const shareApp = (url: string, text: string) => {
     mini.share({
       url,

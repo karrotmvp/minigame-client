@@ -22,6 +22,10 @@ import { ReactComponent as Bookmark } from 'assets/svg/bookmark_icon.svg';
 import { ReactComponent as BookmarkDone } from 'assets/svg/bookmark_done_icon.svg';
 import { ReactComponent as Share } from 'assets/svg/share_icon.svg';
 import { NotificationRequestDtoTypeEnum } from 'services/openapi_generator';
+import {
+  SubscribeToastContainer,
+  subscribeToastEmitter,
+} from 'components/Toast';
 
 export const Home: React.FC = () => {
   const analytics = useAnalytics();
@@ -166,13 +170,17 @@ export const Home: React.FC = () => {
 
   // Installation handler
   // =================================================================
+  const onInstallationSuccess = () => {
+    setIsInstalled(true);
+    subscribeToastEmitter();
+  };
   const triggerInstallationHandler = () => {
     console.log('trigger installation handler');
     if (accessToken) {
-      handleInstallation();
+      handleInstallation(onInstallationSuccess);
     } else {
       handleThirdPartyAgreement(() => {
-        handleInstallation(() => setIsInstalled(true));
+        handleInstallation(onInstallationSuccess);
       });
     }
   };
@@ -201,7 +209,7 @@ export const Home: React.FC = () => {
       'OPEN_GAME'
     );
     if (data) {
-      setIsGameNotificationOn(() => data.isAlreadyNotified);
+      setIsGameNotificationOn(() => data.check);
     }
   }, [minigameApi.notificationApi]);
 
@@ -326,6 +334,8 @@ export const Home: React.FC = () => {
           </ModalOpenButton>
         </GameSurvey>
       </Page>
+
+      <SubscribeToastContainer />
     </>
   );
 };

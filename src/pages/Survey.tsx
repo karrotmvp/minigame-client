@@ -1,17 +1,17 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import styled from '@emotion/styled';
-import { Nav } from 'components/Navigation/Nav';
+import { Nav, navHeight } from 'components/Navigation/Nav';
 import { BackIcon } from 'assets/Icon';
-import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
+import { useNavigator } from '@karrotframe/navigator';
 import { rem } from 'polished';
 import { color } from 'styles';
 import { Button } from 'components/Button';
 import { useMinigameApi } from 'services/api/minigameApi';
 import { useUserData } from 'hooks';
+import { SurveyToastContainer, surveyToastEmitter } from 'components/Toast';
 
 export const Survey: React.FC = () => {
   const { pop } = useNavigator();
-  const { isTop } = useCurrentScreen();
   const minigameApi = useMinigameApi();
   const { regionId } = useUserData();
   const [gameSurveyInput, setGameSurveyInput] = useState('');
@@ -25,27 +25,26 @@ export const Survey: React.FC = () => {
     setGameSurveyInput(e.target.value);
   };
   const submitGameSurvey = async () => {
+    inputRef.current.focus();
     const { data } = await minigameApi.surveyApi.registerGameSurveyUsingPOST({
       content: gameSurveyInput,
       regionId: regionId,
     });
     if (data.status === 200) {
       setGameSurveyInput('');
+      surveyToastEmitter();
     }
   };
-  useEffect(() => {
-    if (isTop) {
-      inputRef.current.focus();
-    }
-  }, [isTop]);
+
   return (
-    <>
+    <div id="survey-page" style={{ display: `flex`, flexDirection: 'column' }}>
       <Nav appendLeft={<BackIcon />} onClickLeft={goToPlatformPage} />
-      <Page>
+      <Main>
         <GameSurvey>
           <h3>하고 싶은 게임이 있나요?</h3>
           <div>
             <input
+              autoFocus
               ref={inputRef}
               type="text"
               onChange={handleInputChange}
@@ -54,25 +53,26 @@ export const Survey: React.FC = () => {
           </div>
           <p>예) 테트리스, 공룡점프</p>
         </GameSurvey>
-        <ActionItems>
-          <Button
-            size={`large`}
-            fontSize={rem(20)}
-            color={`primary`}
-            onClick={submitGameSurvey}
-          >
-            보내기
-          </Button>
-        </ActionItems>
-      </Page>
-    </>
+      </Main>
+      <ActionItems>
+        <Button
+          size={`large`}
+          fontSize={rem(20)}
+          color={`primary`}
+          onClick={submitGameSurvey}
+        >
+          보내기
+        </Button>
+      </ActionItems>
+      <SurveyToastContainer />
+    </div>
   );
 };
 
-const Page = styled.div`
+const Main = styled.div`
   display: flex;
   flex-flow: column;
-  height: calc(100% - ${rem(90)});
+  height: calc(100vh - ${navHeight}px - 90px);
 `;
 
 const GameSurvey = styled.div`
@@ -127,10 +127,15 @@ const GameSurvey = styled.div`
 `;
 
 const ActionItems = styled.div`
+  width: 100%;
+  height: 90px;
+  padding: 15px 18px 30px;
+
   display: flex;
   justify-content: center;
-  width: 100%;
-  padding: ${rem(15)} ${rem(18)} ${rem(30)};
 
+  background: #ffffff;
   box-sizing: border-box;
+
+  z-index: 100;
 `;

@@ -13,6 +13,11 @@ import { useMini, useUserData } from 'hooks';
 import { Refresh } from './Refresh';
 import { useThrottledCallback } from 'use-debounce/lib';
 import { useAnalytics } from 'services/analytics';
+import { NotificationRequestDtoTypeEnum } from 'services/openapi_generator';
+import {
+  SubscribeToastContainer,
+  subscribeToastEmitter,
+} from 'components/Toast';
 
 export const Leaderboard = () => {
   const { isTop } = useCurrentScreen();
@@ -20,7 +25,7 @@ export const Leaderboard = () => {
   const minigameApi = useMinigameApi();
   const analytics = useAnalytics();
   const { shareApp, handleInstallation } = useMini();
-  const { isInstalled } = useUserData();
+  const { isInstalled, setIsInstalled } = useUserData();
 
   const {
     rank,
@@ -134,12 +139,44 @@ export const Leaderboard = () => {
     });
   };
 
-  useEffect(() => {
-    if (isInstalled === false) {
-      handleInstallation();
+  // show subscribe preset non-subscribed user with notificaiton not turned off
+  const isSubscribeNotificationOff = useCallback(async () => {
+    const {
+      data: { data },
+    } = await minigameApi.notificationApi.checkNotificationUsingGET(
+      'SUBSCRIBE_OFF'
+    );
+    if (data) {
+      return data.check;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isInstalled]);
+  }, [minigameApi.notificationApi]);
+  const onSubscribeSuccess = useCallback(() => {
+    setIsInstalled(true);
+    // toast.success('즐겨찾기 성공', {
+    //   icon: <img src={checkMarkUrl} alt="" />,
+    //   position: 'bottom-center',
+    //   autoClose: 3000,
+    //   hideProgressBar: true,
+    subscribeToastEmitter();
+    // });
+  }, [setIsInstalled]);
+  const turnOffSubscribeNotification = useCallback(async () => {
+    await minigameApi.notificationApi.saveNotificationUsingPOST({
+      type: 'SUBSCRIBE_OFF' as NotificationRequestDtoTypeEnum,
+    });
+  }, [minigameApi.notificationApi]);
+  useEffect(() => {
+    const showSubscribe = async () => {
+      if (isInstalled === false) {
+        const response = await isSubscribeNotificationOff();
+        if (response !== undefined && response === false) {
+          handleInstallation(onSubscribeSuccess, turnOffSubscribeNotification);
+        }
+      }
+    };
+    showSubscribe();
+  }, []);
+
   return (
     <Page>
       <Nav appendLeft={<CloseIcon />} onClickLeft={goBackToPlatform} />
@@ -172,6 +209,7 @@ export const Leaderboard = () => {
         </Button>
       </ActionItems>
     </Page>
+      <SubscribeToastContainer />
   );
 };
 
