@@ -59,6 +59,10 @@ export const Home = () => {
 
   // game start button handler
   // =================================================================
+  const addPlayerCount = () => {
+    minigameApi.gamePlayApi.playGameUsingPOST(gameType);
+  };
+
   const handleReturningUser = () => {
     // if access token exists, user is not new
     analytics.logEvent('click_game_start_button', {
@@ -84,8 +88,10 @@ export const Home = () => {
     if (accessToken) {
       handleReturningUser();
       goToGamePage();
+      addPlayerCount();
     } else {
       handleNewUser();
+      addPlayerCount();
     }
   };
   // =================================================================

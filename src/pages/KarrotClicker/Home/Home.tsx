@@ -13,6 +13,7 @@ import { useMyKarrotClickerData } from '../hooks';
 import { LeaderboardTabs } from '../Leaderboard/LeaderboardTabs';
 import { DefaultUserRow, TopUserRow } from '../Leaderboard/LeaderboardTabs/Row';
 import { ReactComponent as BannerImage } from 'assets/svg/KarrotClicker/top.svg';
+import { useMinigameApi } from 'services/api/minigameApi';
 
 interface UserScoreExistsProps {
   nickname: string;
@@ -50,9 +51,10 @@ export const Home = () => {
   const { push, pop } = useNavigator();
   const analytics = useAnalytics();
   const { accessToken } = useAccessToken();
+  const minigameApi = useMinigameApi();
   const { isInWebEnvironment, handleThirdPartyAgreement } = useMini();
   const { nickname, townName2: districtName } = useUserData();
-  const { rank, score, comment } = useMyKarrotClickerData();
+  const { gameType, rank, score, comment } = useMyKarrotClickerData();
   const { resumeGame, onResetCount } = useGame();
   const goToGamePage = () => {
     push(`/karrot-clicker/game`);
@@ -61,27 +63,28 @@ export const Home = () => {
   const goToPlatformPage = () => {
     pop();
   };
+
+  // Game start button handler
+  const addPlayerCount = () => {
+    minigameApi.gamePlayApi.playGameUsingPOST(gameType);
+  };
   const handleReturningUser = () => {
     // if access token exists, user is not new
     analytics.logEvent('click_game_start_button', {
       game_type: 'karrot-clicker',
       is_new_user: false,
     });
-
     onResetCount();
     resumeGame();
   };
-
   const handleNewUser = () => {
     // if user is new, open third-party agreement preset
     analytics.logEvent('click_game_start_button', {
       game_type: 'karrot-clicker',
       is_new_user: true,
     });
-
     handleThirdPartyAgreement(goToGamePage);
   };
-
   const handleGameStart = () => {
     // bypass in web environment
     if (isInWebEnvironment) {
@@ -92,8 +95,10 @@ export const Home = () => {
     if (accessToken) {
       handleReturningUser();
       goToGamePage();
+      addPlayerCount();
     } else {
       handleNewUser();
+      addPlayerCount();
     }
   };
   return (
