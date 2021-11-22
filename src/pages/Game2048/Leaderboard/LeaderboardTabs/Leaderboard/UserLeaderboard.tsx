@@ -1,14 +1,33 @@
 import styled from '@emotion/styled';
 import { TopUserRow } from '../Row/TopRow';
 import { DefaultUserRow } from '../Row/DefaultRow';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/swiper-bundle.min.css';
+import 'swiper/swiper.min.css';
+
+// import Swiper core and required modules
+import SwiperCore, { Scrollbar, Mousewheel } from 'swiper';
+import FreeMode from 'swiper';
+
+// install Swiper modules
+SwiperCore.use([FreeMode, Scrollbar, Mousewheel]);
 
 type Props = {
   userLeaderboardData: any[];
 };
 export const UserLeaderboard: React.FC<Props> = (props) => {
   return (
-    <Container>
-      <LeaderboardWrapper>
+    <Swiper
+      direction={'vertical'}
+      slidesPerView={'auto'}
+      freeMode={true}
+      mousewheel={true}
+      style={{
+        height: '100%',
+        padding: `0 18px`,
+      }}
+    >
+      <SwiperSlide>
         {props.userLeaderboardData.slice(0, 10).map((user) => {
           return (
             <TopUserRow
@@ -39,35 +58,34 @@ export const UserLeaderboard: React.FC<Props> = (props) => {
             />
           );
         })}
-      </LeaderboardWrapper>
-    </Container>
+      </SwiperSlide>
+    </Swiper>
   );
 };
 
-const Container = styled.div`
-  // max-height: inherit;
-  box-sizing: border-box;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-`;
+// const Container = styled.div`
+//   box-sizing: border-box;
+//   width: 100%;
+//   height: 100%;
+//   // overflow: hidden;
+// `;
 
-const LeaderboardWrapper = styled.div`
-  display: flex;
-  flex-flow: column;
-  align-items: center;
-  width: 100%;
-  height: 100%;
-  overflow-y: scroll;
-  padding-bottom: 60px;
+// const LeaderboardWrapper = styled.div`
+//   display: flex;
+//   flex-flow: column;
+//   align-items: center;
+//   width: 100%;
+//   height: 100%;
+//   overflow-y: auto;
+//   padding-bottom: 60px;
 
-  // Hide scrollbar but keep functionality
-  &::-webkit-scrollbar {
-    display: none;
-  }
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
-`;
+//   // // Hide scrollbar but keep functionality
+//   // &::-webkit-scrollbar {
+//   //   display: none;
+//   // }
+//   // -ms-overflow-style: none; /* IE and Edge */
+//   // scrollbar-width: none; /* Firefox */
+// `;
 
 const Text = styled.p`
   margin: 17px 0 17px;

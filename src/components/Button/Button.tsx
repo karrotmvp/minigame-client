@@ -106,15 +106,6 @@ export const OldButton = ({ size, color, text, onClick }: ButtonProps) => {
   );
 };
 
-type Props = {
-  size: string;
-  fontSize: string;
-  color: string;
-  onClick?: any;
-  children?: React.ReactNode;
-  type?: string;
-};
-
 const CustomButton = styled.a<{
   size: string;
   fontSize: string;
@@ -177,6 +168,16 @@ const CustomButton = styled.a<{
   pointer-events: ${(props) => (props.type === `disabled` ? `none` : `auto`)};
 `;
 
+type Props = {
+  size: string;
+  fontSize: string;
+  color: string;
+  onClick?: any;
+  children?: React.ReactNode;
+  type?: string;
+  style?: React.CSSProperties;
+};
+
 const ButtonComponent: React.FC<Props> = (props) => {
   return (
     <CustomButton
@@ -184,6 +185,7 @@ const ButtonComponent: React.FC<Props> = (props) => {
       fontSize={props.fontSize}
       color={props.color}
       onClick={props.onClick}
+      style={props.style}
     >
       {props.children}
     </CustomButton>

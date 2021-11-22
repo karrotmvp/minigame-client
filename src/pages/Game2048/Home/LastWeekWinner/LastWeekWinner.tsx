@@ -90,5 +90,3 @@ const Score = styled.div`
   color: #0e74ff;
   font-size: ${rem(10)};
 `;
-
-const Highlight = styled.span``;

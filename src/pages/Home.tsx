@@ -1,16 +1,16 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import styled from '@emotion/styled';
 import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
 import { useMinigameApi } from 'services/api/minigameApi';
 import { useAccessToken, useMini, useUserData } from 'hooks';
-import { Nav } from 'components/Navigation/Nav';
+import { Nav, navHeight } from 'components/Navigation/Nav';
 import { CloseIcon } from 'assets/Icon';
 import { rem } from 'polished';
 import { useMyGame2048Data } from './Game2048/hooks';
 import { useMyKarrotClickerData } from './KarrotClicker/hooks';
 import { useAnalytics } from 'services/analytics';
-
 import { color } from 'styles';
+import newUrl from 'assets/svg/new.svg';
 import BellUrl from 'assets/svg/bell.svg';
 import Game2048CardImgUrl from 'assets/svg/game2048/game_2048_card_img.svg';
 import KarrotClickerCardImgUrl from 'assets/svg/KarrotClicker/karrot_clicker_card_img.svg';
@@ -22,6 +22,10 @@ import { ReactComponent as Bookmark } from 'assets/svg/bookmark_icon.svg';
 import { ReactComponent as BookmarkDone } from 'assets/svg/bookmark_done_icon.svg';
 import { ReactComponent as Share } from 'assets/svg/share_icon.svg';
 import { NotificationRequestDtoTypeEnum } from 'services/openapi_generator';
+import {
+  SubscribeToastContainer,
+  subscribeToastEmitter,
+} from 'components/Toast';
 
 export const Home: React.FC = () => {
   const analytics = useAnalytics();
@@ -46,6 +50,9 @@ export const Home: React.FC = () => {
     townName2,
     townName3,
     isInstalled,
+    isNewGameNotificationOn,
+    setIsInstalled,
+    setIsNewGameNotificationOn,
   } = useUserData();
   const {
     updateMyScore: updateMyGame2048Score,
@@ -57,8 +64,6 @@ export const Home: React.FC = () => {
     updateMyComment: updateMyKarrotClickerComment,
     setGameTypeToKarrotClicker,
   } = useMyKarrotClickerData();
-  const [isGameNotificationOn, setIsGameNotificationOn] =
-    useState<boolean>(false);
 
   const leaveMiniApp = () => {
     analytics.logEvent('click_leave_mini_app_button');
@@ -147,17 +152,17 @@ export const Home: React.FC = () => {
   const triggerShareHandler = () => {
     console.log('trigger share handler');
     const url = 'https://daangn.onelink.me/HhUa/3a219555';
-    const text = `2048 퍼즐을 플레이 하고 이웃들에게 한 마디를 남겨보세요!`;
+    const text = `동네대회를 플레이 하고 이웃들에게 한 마디를 남겨보세요!`;
     if (accessToken) {
       shareApp(url, text);
       analytics.logEvent('click_share_button', {
-        // game_type: 'game-2048',
+        location: 'platform_page',
       });
     } else {
       handleThirdPartyAgreement(() => {
         shareApp(url, text);
         analytics.logEvent('click_share_button', {
-          // game_type: 'game-2048',
+          location: 'platform_page',
         });
       });
     }
@@ -165,13 +170,21 @@ export const Home: React.FC = () => {
 
   // Installation handler
   // =================================================================
+  const onInstallationSuccess = () => {
+    setIsInstalled(true);
+    subscribeToastEmitter();
+  };
   const triggerInstallationHandler = () => {
     console.log('trigger installation handler');
+    analytics.logEvent('click_subscribe_button', {
+      location: 'platform_page',
+      is_voluntary: true,
+    });
     if (accessToken) {
-      handleInstallation();
+      handleInstallation(onInstallationSuccess);
     } else {
       handleThirdPartyAgreement(() => {
-        handleInstallation();
+        handleInstallation(onInstallationSuccess);
       });
     }
   };
@@ -186,51 +199,41 @@ export const Home: React.FC = () => {
         });
       if (data.status === 200) {
         console.log('notification (game) success');
-        setIsGameNotificationOn(true);
+        setIsNewGameNotificationOn(true);
       }
     } else {
-      handleThirdPartyAgreement(() => setIsGameNotificationOn(true));
+      handleThirdPartyAgreement(() => setIsNewGameNotificationOn(true));
     }
   };
-
   const checkNotificationStatus = useCallback(async () => {
-    const {
-      data: { data },
-    } = await minigameApi.notificationApi.checkNotificationUsingGET(
-      'OPEN_GAME'
-    );
-    if (data) {
-      setIsGameNotificationOn(() => data.isAlreadyNotified);
+    if (isNewGameNotificationOn) {
+      return;
+    } else {
+      try {
+        const {
+          data: { data },
+        } = await minigameApi.notificationApi.checkNotificationUsingGET(
+          'OPEN_GAME'
+        );
+        if (data && data.check) {
+          setIsNewGameNotificationOn(data.check);
+        }
+      } catch (error) {
+        console.error(error);
+      }
     }
-  }, [minigameApi.notificationApi]);
-
-  useEffect(() => {
-    console.log(
-      'user data:',
-      userId,
-      nickname,
-      regionId,
-      townId,
-      townName1,
-      townName2,
-      townName3,
-      isInstalled
-    );
   }, [
-    isInstalled,
-    nickname,
-    regionId,
-    townId,
-    townName1,
-    townName2,
-    townName3,
-    userId,
+    isNewGameNotificationOn,
+    minigameApi.notificationApi,
+    setIsNewGameNotificationOn,
   ]);
+
   useEffect(() => {
     if (isTop) {
       checkNotificationStatus();
     }
-  }, [isTop, checkNotificationStatus]);
+  }, [checkNotificationStatus, isTop]);
+
   // =================================================================
 
   return (
@@ -255,10 +258,13 @@ export const Home: React.FC = () => {
             )}
           </div>
         }
+        style={{
+          background: `#fff`,
+        }}
       />
 
       <Page className="game-platform-page">
-        <MainText style={{ marginBottom: `30px` }}>
+        <MainText>
           <span>{townName3}</span> 이웃들과
           <br />
           같이 게임해요!
@@ -266,7 +272,19 @@ export const Home: React.FC = () => {
         <CardContainer className="container--games">
           <Card game={`game-2048`} onClick={goToGame2048}>
             <CardImg1 src={Game2048CardImgUrl} />
-            <Title>2048 퍼즐</Title>
+
+            <Title>
+              퍼즐 2048
+              <img
+                src={newUrl}
+                alt=""
+                style={{
+                  display: 'inline-box',
+                  marginLeft: '5px',
+                }}
+              />
+            </Title>
+
             <Text>
               동네 천재 타이틀을 원한다면?
               <br />
@@ -290,7 +308,7 @@ export const Home: React.FC = () => {
           새로운 게임을 준비 중이에요
         </SectionTitle>
         <CardContainer>
-          {isGameNotificationOn ? (
+          {isNewGameNotificationOn ? (
             <Card game={`coming-soon`}>
               <CardImg3 src={ComingSoonCardImgUrl} />
               <Title>Coming Soon</Title>
@@ -301,7 +319,13 @@ export const Home: React.FC = () => {
               </Text>
             </Card>
           ) : (
-            <Card game={`whats-next`} onClick={handleNewGameNotification}>
+            <Card
+              game={`whats-next`}
+              onClick={handleNewGameNotification}
+              style={{
+                border: `1px solid #ECECEC`,
+              }}
+            >
               <CardImg3 src={WhatsNextCardImgUrl} />
               <Title>What's Next?</Title>
               <Text>
@@ -325,6 +349,8 @@ export const Home: React.FC = () => {
           </ModalOpenButton>
         </GameSurvey>
       </Page>
+
+      <SubscribeToastContainer />
     </>
   );
 };
@@ -332,8 +358,7 @@ export const Home: React.FC = () => {
 const Page = styled.div`
   display: flex;
   flex-flow: column;
-  // height: 100%;
-  margin-top: 20px;
+  height: calc(100vh - ${navHeight}px);
 `;
 
 const MainText = styled.div`
@@ -342,7 +367,7 @@ const MainText = styled.div`
   font-size: ${rem(24)};
   font-weight: bold;
   line-height: 162.7%;
-
+  margin: 20px 0 30px;
   span {
     color: #0e74ff;
     font-size: ${rem(34)};

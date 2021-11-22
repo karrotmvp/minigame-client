@@ -15,8 +15,10 @@ import {
   MemoizedTownieBestScore as TownieBestScore,
 } from './Score';
 import refreshGameUrl from 'assets/svg/game2048/refresh_game.svg';
+import { useAnalytics } from 'services/analytics';
 
 export const Game: React.FC = () => {
+  const analytics = useAnalytics();
   const { isTop } = useCurrentScreen();
   const minigameApi = useMinigameApi();
   const { score: myBestScore, highestScore, gameType } = useMyGame2048Data();
@@ -38,9 +40,14 @@ export const Game: React.FC = () => {
 
   // Action buttons
   const handlePlayAgain = () => {
+    // analytics.logEvent('click_play')
     resetGame();
   };
   const handleGameOver = () => {
+    analytics.logEvent('click_game_end_button', {
+      game_type: 'game-2048',
+      button_type: 'game_end',
+    });
     setIsGameOver(true);
   };
 
@@ -52,7 +59,7 @@ export const Game: React.FC = () => {
       undefined,
       1
     );
-    if (data) {
+    if (data && data[0]) {
       setTownieBestScore(data[0].score);
     }
   }, [gameType, minigameApi.gameUserApi]);
@@ -149,6 +156,9 @@ export const Game: React.FC = () => {
               fontSize={rem(14)}
               color={`secondary2`}
               onClick={handleGameOver}
+              style={{
+                border: `1px solid #C8D8EE`,
+              }}
             >
               그만하기
             </Button>
@@ -225,6 +235,7 @@ const CurrentScoreWrapper = styled.div`
   p.score {
     font-size: ${rem(50)};
     color: #0e74ff;
+    font-family: 'Montserrat', sans-serif;
   }
 `;
 

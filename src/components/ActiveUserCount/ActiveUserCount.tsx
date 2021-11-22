@@ -13,7 +13,7 @@ export const ActiveUserCount: React.FC<Props> = (props) => {
   const [dailyUserCount, setDailyUserCount] = useState<number>(0);
 
   const getDailyUserCount = useCallback(async () => {
-    const { data } = await minigameApi.gameUserApi.getUserCountByDailyUsingGET(
+    const { data } = await minigameApi.gamePlayApi.getUserCountByDailyUsingGET(
       props.gameType
     );
     if (data.data) {

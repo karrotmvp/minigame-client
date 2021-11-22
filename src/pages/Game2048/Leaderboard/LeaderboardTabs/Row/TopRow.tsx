@@ -46,11 +46,11 @@ interface TopDistrictTowProps {
   districtName: string;
   playerCount: number;
   score: number;
-  // comment: string;
+  style?: React.CSSProperties;
 }
 export const TopDistrictRow: React.FC<TopDistrictTowProps> = (props) => {
   return (
-    <Container rank={props.rank}>
+    <Container rank={props.rank} style={props.style}>
       <Rank>{props.rank <= 3 ? ' ' : commafy(props.rank)}</Rank>
       <ContentsWrapper>
         <Info>

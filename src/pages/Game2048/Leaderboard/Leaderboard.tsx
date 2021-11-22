@@ -3,8 +3,8 @@ import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
 import { LeaderboardTabs } from 'pages/Game2048/Leaderboard/LeaderboardTabs';
 import { rem } from 'polished';
 import { Button } from 'components/Button';
-import { useEffect, useState } from 'react';
-import { Nav } from 'components/Navigation/Nav';
+import { useCallback, useEffect, useState } from 'react';
+import { Nav, navHeight } from 'components/Navigation/Nav';
 import { CloseIcon } from 'assets/Icon';
 import { MyInfo } from './MyInfo';
 import { useMinigameApi } from 'services/api/minigameApi';
@@ -13,6 +13,11 @@ import { useMini, useUserData } from 'hooks';
 import { Refresh } from './Refresh';
 import { useThrottledCallback } from 'use-debounce/lib';
 import { useAnalytics } from 'services/analytics';
+import { NotificationRequestDtoTypeEnum } from 'services/openapi_generator';
+import {
+  SubscribeToastContainer,
+  subscribeToastEmitter,
+} from 'components/Toast';
 
 export const Leaderboard = () => {
   const { isTop } = useCurrentScreen();
@@ -20,7 +25,7 @@ export const Leaderboard = () => {
   const minigameApi = useMinigameApi();
   const analytics = useAnalytics();
   const { shareApp, handleInstallation } = useMini();
-  const { isInstalled } = useUserData();
+  const { isInstalled, setIsInstalled } = useUserData();
 
   const {
     rank,
@@ -127,32 +132,69 @@ export const Leaderboard = () => {
 
   const handleShare = () => {
     const url = 'https://daangn.onelink.me/HhUa/3a219555';
-    const text = `전국${rank}등!!  2048 퍼즐을 플레이 하고 이웃들에게 한 마디를 남겨보세요!`;
+    const text = `전국에서 ${rank}등!!  2048 퍼즐을 플레이 하고 이웃들에게 한 마디를 남겨보세요!`;
     shareApp(url, text);
     analytics.logEvent('click_share_button', {
       game_type: 'game-2048',
+      location: 'leaderboard_page',
     });
   };
 
-  useEffect(() => {
-    if (isInstalled === false) {
-      handleInstallation();
+  // show subscribe preset non-subscribed user with notificaiton not turned off
+  const isSubscribeNotificationOff = useCallback(async () => {
+    const {
+      data: { data },
+    } = await minigameApi.notificationApi.checkNotificationUsingGET(
+      'SUBSCRIBE_OFF'
+    );
+    if (data) {
+      return data.check;
     }
+  }, [minigameApi.notificationApi]);
+  const onSubscribeSuccess = useCallback(() => {
+    setIsInstalled(true);
+    subscribeToastEmitter();
+  }, [setIsInstalled]);
+  const turnOffSubscribeNotification = useCallback(async () => {
+    await minigameApi.notificationApi.saveNotificationUsingPOST({
+      type: 'SUBSCRIBE_OFF' as NotificationRequestDtoTypeEnum,
+    });
+  }, [minigameApi.notificationApi]);
+  useEffect(() => {
+    const showSubscribe = async () => {
+      if (isInstalled === false) {
+        const response = await isSubscribeNotificationOff();
+        if (response !== undefined && response === false) {
+          analytics.logEvent('click_subscribe_button', {
+            game_type: 'game-2048',
+            location: 'leaderboard_page',
+            is_voluntary: false,
+          });
+          handleInstallation(onSubscribeSuccess, turnOffSubscribeNotification);
+        }
+      }
+    };
+    showSubscribe();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isInstalled]);
+  }, []);
+
   return (
-    <Page>
+    <div
+      id="game-2048-leaderboard-page"
+      style={{ display: `flex`, flexDirection: 'column' }}
+    >
       <Nav appendLeft={<CloseIcon />} onClickLeft={goBackToPlatform} />
-      <WeeklyCountdown className="weekly-countdown-refresh">
-        <Refresh handleRefresh={throttledRefresh} />
-      </WeeklyCountdown>
+      <Main>
+        <WeeklyCountdown className="weekly-countdown-refresh">
+          <Refresh handleRefresh={throttledRefresh} />
+        </WeeklyCountdown>
 
-      <Container>{isRanked ? <MyInfo /> : null}</Container>
-      <LeaderboardTabs
-        districtLeaderboardData={districtLeaderboardData}
-        userLeaderboardData={userLeaderboardData}
-      />
-
+        <Container>{isRanked ? <MyInfo /> : null}</Container>
+        <LeaderboardTabs
+          districtLeaderboardData={districtLeaderboardData}
+          userLeaderboardData={userLeaderboardData}
+        />
+      </Main>
       <ActionItems>
         <Button
           size={`large`}
@@ -171,14 +213,15 @@ export const Leaderboard = () => {
           자랑하기
         </Button>
       </ActionItems>
-    </Page>
+      <SubscribeToastContainer />
+    </div>
   );
 };
 
-const Page = styled.div`
+const Main = styled.div`
   display: flex;
   flex-flow: column;
-  height: 100%;
+  height: calc(100vh - ${navHeight}px - 90px);
 `;
 
 const WeeklyCountdown = styled.div`
@@ -200,10 +243,15 @@ const ActionItems = styled.div`
   flex-flow: row;
   gap: 12px;
   justify-content: center;
+
   width: 100%;
-  padding: ${rem(15)} ${rem(18)} ${rem(30)};
+  height: 90px;
+  padding: 15px 18px 30px;
+
   border-top: 1px solid #ebebeb;
+  box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
   background: #ffffff;
   box-sizing: border-box;
-  box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+
+  z-index: 100;
 `;

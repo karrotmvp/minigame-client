@@ -60,7 +60,7 @@ const SingleTile = styled.div<{
   align-items: center;
   width: ${(props) => props.tileWidth}px;
   height: ${(props) => props.tileWidth - 6}px;
-
+  font-family: 'Montserrat', sans-serif;
   border-radius: 3px;
 
   transition-property: left, top, transform;

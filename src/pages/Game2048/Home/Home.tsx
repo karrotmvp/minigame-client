@@ -5,7 +5,7 @@ import { LastWeekTopDistrict, LastWeekTopTownie } from './LastWeekWinner';
 import { rem } from 'polished';
 import { Button } from 'components/Button';
 import { useCallback, useEffect, useState } from 'react';
-import { Nav } from 'components/Navigation/Nav';
+import { Nav, navHeight } from 'components/Navigation/Nav';
 import { BackIcon } from 'assets/Icon';
 import { ReactComponent as BannerImage } from 'assets/svg/game2048/home_top_banner.svg';
 import { Refresh } from '../Leaderboard/Refresh';
@@ -18,6 +18,19 @@ import { useMini } from 'hooks';
 import { useThrottledCallback } from 'use-debounce/lib';
 import { useAnalytics } from 'services/analytics';
 import { lastWeek } from 'utils';
+import { Swiper, SwiperSlide } from 'swiper/react';
+
+// Import Swiper styles
+import SwiperCore, { Pagination } from 'swiper'; //*
+
+//style
+import 'swiper/swiper.scss';
+import 'swiper/components/pagination/pagination.scss'; // *
+
+// import Swiper core and required modules
+
+// install Swiper modules
+SwiperCore.use([Pagination]);
 
 export const Home = () => {
   const { isTop } = useCurrentScreen();
@@ -59,6 +72,10 @@ export const Home = () => {
 
   // game start button handler
   // =================================================================
+  const addPlayerCount = () => {
+    minigameApi.gamePlayApi.playGameUsingPOST(gameType);
+  };
+
   const handleReturningUser = () => {
     // if access token exists, user is not new
     analytics.logEvent('click_game_start_button', {
@@ -84,8 +101,10 @@ export const Home = () => {
     if (accessToken) {
       handleReturningUser();
       goToGamePage();
+      addPlayerCount();
     } else {
       handleNewUser();
+      addPlayerCount();
     }
   };
   // =================================================================
@@ -103,7 +122,7 @@ export const Home = () => {
         lastWeek.week,
         lastWeek.year
       );
-      if (data) {
+      if (data && data[0]) {
         console.log(data);
         setLastWeekTopTownie({ name: data[0].nickname, score: data[0].score });
       }
@@ -123,7 +142,7 @@ export const Home = () => {
         lastWeek.week,
         lastWeek.year
       );
-      if (data) {
+      if (data && data[0]) {
         console.log(data);
 
         setLastWeekTopDistrict({
@@ -224,45 +243,85 @@ export const Home = () => {
   }, []);
 
   return (
-    <>
+    <div
+      style={{
+        display: `flex`,
+        flexDirection: 'column',
+        background: `linear-gradient(180deg, #e3efff ${rem(180)}, #fff 0)`,
+      }}
+    >
       <Nav
         appendLeft={<BackIcon />}
         onClickLeft={goToPlatformPage}
-        backgroundColor={`#e3efff`}
+        // backgroundColor={`transparent`}
+        style={{ backgroundColor: 'transparent' }}
       />
-      <Page>
-        <TopHalf>
-          <Banner className="banner">
-            <BannerImage />
-          </Banner>
-          <Container className="last-week-winner">
-            <LastWeekTopDistrict
-              townName1={lastWeekTopDistrict.townName1}
-              townName2={lastWeekTopDistrict.townName2}
-              score={lastWeekTopDistrict.score}
-            />
-            <LastWeekTopTownie
-              name={lastWeekTopTownie.name}
-              score={lastWeekTopTownie.score}
-            />
-          </Container>
-        </TopHalf>
-        <BottomHalf
-          className={isScrollValueMoreThanHeaderHeight ? 'class1' : 'class2'}
+
+      <div
+        style={{
+          height: `calc(100vh - ${navHeight}px - 90px)`,
+          width: `100%`,
+        }}
+      >
+        <Swiper
+          direction={'vertical'}
+          // freeMode={true}
+          // freeModeSticky={true}
+          autoHeight={true}
+          // slidesPerView={}
+          // mousewheel={true}
+          // className={css`
+          //   .swiper-container-vertical .swiper-wrapper {
+          //     position: absolute;
+          //     height: 100% !important;
+          //   }
+          // `}
+          style={{
+            height: `100%`,
+          }}
+          onScroll={onScroll}
         >
-          <WeeklyCountdown className="weekly-countdown-refresh">
-            <Refresh handleRefresh={throttledRefresh} />
-          </WeeklyCountdown>
+          <SwiperSlide>
+            <div
+              style={{
+                marginBottom: '25px',
+              }}
+            >
+              <Banner className="banner">
+                <BannerImage />
+              </Banner>
+              <Container className="last-week-winner">
+                <LastWeekTopDistrict
+                  townName1={lastWeekTopDistrict.townName1}
+                  townName2={lastWeekTopDistrict.townName2}
+                  score={lastWeekTopDistrict.score}
+                />
+                <LastWeekTopTownie
+                  name={lastWeekTopTownie.name}
+                  score={lastWeekTopTownie.score}
+                />
+              </Container>
+            </div>
+            <div
+              style={{
+                background: `#fff`,
+              }}
+            >
+              <WeeklyCountdown className="weekly-countdown-refresh">
+                <Refresh handleRefresh={throttledRefresh} />
+              </WeeklyCountdown>
 
-          <Container>{isRanked ? <MyInfo /> : null}</Container>
-          <LeaderboardTabs
-            districtLeaderboardData={districtLeaderboardData}
-            userLeaderboardData={userLeaderboardData}
-          />
-        </BottomHalf>
-      </Page>
-
-      <ActionItems>
+              <Container>{isRanked ? <MyInfo /> : null}</Container>
+              <LeaderboardTabs
+                districtLeaderboardData={districtLeaderboardData}
+                userLeaderboardData={userLeaderboardData}
+                shouldSticky={shouldSticky}
+              />
+            </div>
+          </SwiperSlide>
+        </Swiper>
+      </div>
+      <Bottom>
         <div
           style={{
             position: 'absolute',
@@ -281,32 +340,11 @@ export const Home = () => {
         >
           게임 시작
         </Button>
-      </ActionItems>
-    </>
+      </Bottom>
+    </div>
   );
 };
 
-const Page = styled.div`
-  display: flex;
-  flex-flow: column;
-  height: calc(100% - ${rem(90)});
-  overflow: auto;
-`;
-const TopHalf = styled.div`
-  background: linear-gradient(180deg, #e3efff ${rem(180)}, #fff 0);
-  margin-bottom: 25px;
-`;
-
-const BottomHalf = styled.div`
-  &.class1 {
-    position: fixed;
-    top: ${rem(90)};
-    width: 100%;
-    overflow: hidden;
-  }
-  &.class2 {
-  }
-`;
 const Banner = styled.div`
   display: flex;
   flex-flow: column;
@@ -320,20 +358,19 @@ const Container = styled.div`
   gap: ${rem(12)};
   padding: 0 ${rem(20)};
 `;
-const ActionItems = styled.div`
+const Bottom = styled.div`
+  width: 100%;
+  height: 90px;
+  padding: 15px 18px 30px;
+
   display: flex;
   justify-content: center;
-  width: 100%;
-  padding: ${rem(15)} ${rem(18)} ${rem(30)};
+
   border-top: 1px solid #ebebeb;
   background: #ffffff;
   box-sizing: border-box;
   box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
   z-index: 100;
-
-  position: fixed;
-  bottom: 0;
-  left: 0;
 `;
 
 const WeeklyCountdown = styled.div`

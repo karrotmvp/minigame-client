@@ -1,7 +1,7 @@
 import { useNavigator } from '@karrotframe/navigator';
 import styled from '@emotion/styled';
 // import { useMini } from 'hooks';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactModal from 'react-modal';
 import { PostComment } from './PostComment';
 import gameOverSvgUrl from 'assets/svg/game2048/gameover.svg';
@@ -12,6 +12,8 @@ import { useMini } from 'hooks';
 import { rem } from 'polished';
 import xUrl from 'assets/svg/x.svg';
 import { useAnalytics } from 'services/analytics';
+import { AnimatePresence, motion } from 'framer-motion';
+
 type Props = {
   currentScore: number;
   myBestScore: number;
@@ -62,9 +64,25 @@ export const GameOver: React.FC<Props> = (props) => {
     shareApp(url, text);
     analytics.logEvent('click_share_button', {
       game_type: 'game-2048',
+      location: 'game_over_modal',
     });
   };
 
+  const [showScore, setShowScore] = useState(false);
+  const [showRank, setShowRank] = useState(false);
+  useEffect(() => {
+    const timerId1 = setTimeout(() => {
+      setShowScore(true);
+    }, 300);
+    const timerId2 = setTimeout(() => {
+      setShowRank(true);
+    }, 500);
+
+    return () => {
+      clearTimeout(timerId1);
+      clearTimeout(timerId2);
+    };
+  });
   return (
     <>
       <img
@@ -97,18 +115,32 @@ export const GameOver: React.FC<Props> = (props) => {
           }}
         />
 
-        <Final>
-          <p className="text">최종 스코어</p>
-          <p className="number">{props.currentScore}</p>
-        </Final>
-        <Final>
-          <p className="text">최종 랭킹</p>
-          <p className="number">{rank}</p>
-        </Final>
+        <AnimatePresence>
+          {showScore && (
+            <Final
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1 }}
+            >
+              <p className="text">최종 스코어</p>
+              <p className="number">{props.currentScore}</p>
+            </Final>
+          )}
+          {showRank && (
+            <Final
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1 }}
+            >
+              <p className="text">최종 랭킹</p>
+              <p className="number">{rank}</p>
+            </Final>
+          )}
+        </AnimatePresence>
       </div>
       <Button
         size={`large`}
-        fontSize={`16`}
+        fontSize={rem(16)}
         color={`primary`}
         onClick={handleShare}
       >
@@ -149,7 +181,7 @@ export const GameOver: React.FC<Props> = (props) => {
   );
 };
 
-const Final = styled.div`
+const Final = styled(motion.div)`
   width: 100%;
   padding: 10px 15px 15px;
   text-align: center;
@@ -166,7 +198,8 @@ const Final = styled.div`
   }
 
   p.number {
-    font-weight: bold;
+    font-weight: 700;
+    font-family: 'Montserrat', sans-serif;
     font-size: ${rem(30)};
     line-height: 103.7%;
   }

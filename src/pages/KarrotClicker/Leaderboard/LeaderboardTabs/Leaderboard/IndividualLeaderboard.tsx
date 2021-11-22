@@ -172,7 +172,7 @@ const LeaderboardWrapper = styled.div`
   align-items: center;
   width: 100%;
   height: 100%;
-  overflow-y: scroll;
+  overflow-y: auto;
   padding-bottom: 60px;
 
   // Hide scrollbar but keep functionality

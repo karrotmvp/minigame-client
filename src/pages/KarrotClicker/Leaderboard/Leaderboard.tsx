@@ -84,6 +84,7 @@ export const Leaderboard = () => {
     karrotMarketMini.shareApp(url, text);
     analytics.logEvent('click_share_button', {
       game_type: 'karrot-clicker',
+      location: 'leaderboard_page',
     });
   };
 
