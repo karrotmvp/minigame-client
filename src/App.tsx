@@ -33,7 +33,7 @@ const App: React.FC = () => {
   const { setRegionInfo, setTownInfo, setUserInfo, setIsInstalled } =
     useUserData();
   const { accessToken } = useAccessToken();
-  const { signAccessToken } = useSignAccessToken();
+  const { signAccessToken, removeCookie } = useSignAccessToken();
   const [analytics, setAnalytics] = useState(emptyAnalytics);
   const [karrotMarketMini, setKarrotMarketMini] = useState(
     emptyKarrotMarketMini
@@ -68,6 +68,7 @@ const App: React.FC = () => {
     const code: string | null = searchParams.get('code');
     const regionId: string | null = searchParams.get('region_id');
     const isInstalled: string | null = searchParams.get('installed');
+    console.log(preload, code, regionId, isInstalled);
     return [preload, code, regionId, isInstalled];
   };
   const getDistrictInfo = useCallback(
@@ -105,7 +106,8 @@ const App: React.FC = () => {
         setRegionInfo(regionId as string);
         getDistrictInfo(regionId as string);
         if (accessToken) {
-          console.log('alread have access token', accessToken);
+          removeCookie('accessToken');
+          console.log('already have access token', accessToken);
           if (isInstalled) {
             if (isInstalled === 'true') {
               setIsInstalled(true);
@@ -137,15 +139,7 @@ const App: React.FC = () => {
     if (!preload) {
       fetchData();
     }
-  }, [
-    accessToken,
-    analytics,
-    getDistrictInfo,
-    setIsInstalled,
-    setRegionInfo,
-    signAccessToken,
-    updateUserInfo,
-  ]);
+  }, [analytics]);
 
   return (
     <AnalyticsContext.Provider value={analytics}>
