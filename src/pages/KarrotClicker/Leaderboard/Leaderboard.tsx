@@ -78,9 +78,8 @@ export const Leaderboard = () => {
   };
 
   const handleShare = () => {
-    const url = 'https://daangn.onelink.me/HhUa/3a219555';
-    const text =
-      '우리동네에서 나는 몇 등? 당근모아를 플레이 하고 동네 이웃들에게 한 마디를 남겨보세요!';
+    const url = 'https://daangn.onelink.me/HhUa/31bbbcf';
+    const text = `${nickname}님은 당근모아에서 전국 ${rank}등!`;
     karrotMarketMini.shareApp(url, text);
     analytics.logEvent('click_share_button', {
       game_type: 'karrot-clicker',
