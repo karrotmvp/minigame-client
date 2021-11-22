@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import styled from '@emotion/styled';
 import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
 import { useMinigameApi } from 'services/api/minigameApi';
@@ -235,34 +235,6 @@ export const Home: React.FC = () => {
   }, [checkNotificationStatus, isTop]);
 
   // =================================================================
-  useEffect(() => {
-    console.log(
-      'user data:',
-      userId,
-      nickname,
-      regionId,
-      townId,
-      townName1,
-      townName2,
-      townName3,
-      isInstalled
-    );
-  }, [
-    isInstalled,
-    nickname,
-    regionId,
-    townId,
-    townName1,
-    townName2,
-    townName3,
-    userId,
-  ]);
-  useEffect(() => {
-    if (isTop) {
-      checkNotificationStatus();
-    }
-  }, [isTop, checkNotificationStatus]);
-  // =================================================================
 
   return (
     <>
@@ -286,6 +258,9 @@ export const Home: React.FC = () => {
             )}
           </div>
         }
+        style={{
+          background: `#fff`,
+        }}
       />
 
       <Page className="game-platform-page">

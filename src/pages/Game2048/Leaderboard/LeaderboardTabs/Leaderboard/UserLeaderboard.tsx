@@ -63,29 +63,29 @@ export const UserLeaderboard: React.FC<Props> = (props) => {
   );
 };
 
-const Container = styled.div`
-  box-sizing: border-box;
-  width: 100%;
-  height: 100%;
-  // overflow: hidden;
-`;
+// const Container = styled.div`
+//   box-sizing: border-box;
+//   width: 100%;
+//   height: 100%;
+//   // overflow: hidden;
+// `;
 
-const LeaderboardWrapper = styled.div`
-  display: flex;
-  flex-flow: column;
-  align-items: center;
-  width: 100%;
-  height: 100%;
-  overflow-y: auto;
-  padding-bottom: 60px;
+// const LeaderboardWrapper = styled.div`
+//   display: flex;
+//   flex-flow: column;
+//   align-items: center;
+//   width: 100%;
+//   height: 100%;
+//   overflow-y: auto;
+//   padding-bottom: 60px;
 
-  // // Hide scrollbar but keep functionality
-  // &::-webkit-scrollbar {
-  //   display: none;
-  // }
-  // -ms-overflow-style: none; /* IE and Edge */
-  // scrollbar-width: none; /* Firefox */
-`;
+//   // // Hide scrollbar but keep functionality
+//   // &::-webkit-scrollbar {
+//   //   display: none;
+//   // }
+//   // -ms-overflow-style: none; /* IE and Edge */
+//   // scrollbar-width: none; /* Firefox */
+// `;
 
 const Text = styled.p`
   margin: 17px 0 17px;

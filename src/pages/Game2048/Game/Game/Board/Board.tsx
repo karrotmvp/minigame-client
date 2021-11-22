@@ -4,7 +4,6 @@ import { MemoizedTile as Tile, TileProps } from '../Tile';
 import { animationDuration, boardMargin, boardPadding } from '../styles';
 import { useSwipeable } from 'react-swipeable';
 import { Guide } from './Guide';
-import { useGame } from '../../hooks';
 import { useThrottledCallback } from 'use-debounce/lib';
 import { MemoizedGrid as Grid } from '.';
 

@@ -1,6 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import styled from '@emotion/styled';
-import { rem } from 'polished';
 import React from 'react';
 
 export const navHeight = 68;

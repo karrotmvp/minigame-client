@@ -1,4 +1,4 @@
-import styled from '@emotion/styled';
+// import styled from '@emotion/styled';
 import { DefaultDistrictRow, TopDistrictRow } from '../Row';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/swiper-bundle.min.css';
@@ -81,27 +81,27 @@ export const DistrictLeaderboard: React.FC<Props> = (props) => {
   );
 };
 
-const Container = styled.div`
-  max-height: inherit;
-  box-sizing: border-box;
-  width: 100%;
-  height: 100%;
-  // overflow: hidden;
-`;
+// const Container = styled.div`
+//   max-height: inherit;
+//   box-sizing: border-box;
+//   width: 100%;
+//   height: 100%;
+//   // overflow: hidden;
+// `;
 
-const Wrapper = styled.div`
-  display: flex;
-  flex-flow: column;
-  align-items: center;
-  width: 100%;
-  height: 100%;
-  overflow-y: auto;
-  padding-bottom: 60px;
+// const Wrapper = styled.div`
+//   display: flex;
+//   flex-flow: column;
+//   align-items: center;
+//   width: 100%;
+//   height: 100%;
+//   overflow-y: auto;
+//   padding-bottom: 60px;
 
-  // Hide scrollbar but keep functionality
-  &::-webkit-scrollbar {
-    display: none;
-  }
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
-`;
+//   // Hide scrollbar but keep functionality
+//   &::-webkit-scrollbar {
+//     display: none;
+//   }
+//   -ms-overflow-style: none; /* IE and Edge */
+//   scrollbar-width: none; /* Firefox */
+// `;
