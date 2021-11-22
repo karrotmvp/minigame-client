@@ -50,7 +50,9 @@ export const Home: React.FC = () => {
     townName2,
     townName3,
     isInstalled,
+    isNewGameNotificationOn,
     setIsInstalled,
+    setIsNewGameNotificationOn,
   } = useUserData();
   const {
     updateMyScore: updateMyGame2048Score,
@@ -62,8 +64,6 @@ export const Home: React.FC = () => {
     updateMyComment: updateMyKarrotClickerComment,
     setGameTypeToKarrotClicker,
   } = useMyKarrotClickerData();
-  const [isGameNotificationOn, setIsGameNotificationOn] =
-    useState<boolean>(false);
 
   const leaveMiniApp = () => {
     analytics.logEvent('click_leave_mini_app_button');
@@ -195,24 +195,42 @@ export const Home: React.FC = () => {
         });
       if (data.status === 200) {
         console.log('notification (game) success');
-        setIsGameNotificationOn(true);
+        setIsNewGameNotificationOn(true);
       }
     } else {
-      handleThirdPartyAgreement(() => setIsGameNotificationOn(true));
+      handleThirdPartyAgreement(() => setIsNewGameNotificationOn(true));
     }
   };
-
   const checkNotificationStatus = useCallback(async () => {
-    const {
-      data: { data },
-    } = await minigameApi.notificationApi.checkNotificationUsingGET(
-      'OPEN_GAME'
-    );
-    if (data) {
-      setIsGameNotificationOn(() => data.check);
+    if (isNewGameNotificationOn) {
+      return;
+    } else {
+      try {
+        const {
+          data: { data },
+        } = await minigameApi.notificationApi.checkNotificationUsingGET(
+          'OPEN_GAME'
+        );
+        if (data && data.check) {
+          setIsNewGameNotificationOn(data.check);
+        }
+      } catch (error) {
+        console.error(error);
+      }
     }
-  }, [minigameApi.notificationApi]);
+  }, [
+    isNewGameNotificationOn,
+    minigameApi.notificationApi,
+    setIsNewGameNotificationOn,
+  ]);
 
+  useEffect(() => {
+    if (isTop) {
+      checkNotificationStatus();
+    }
+  }, [checkNotificationStatus, isTop]);
+
+  // =================================================================
   useEffect(() => {
     console.log(
       'user data:',
@@ -311,7 +329,7 @@ export const Home: React.FC = () => {
           새로운 게임을 준비 중이에요
         </SectionTitle>
         <CardContainer>
-          {isGameNotificationOn ? (
+          {isNewGameNotificationOn ? (
             <Card game={`coming-soon`}>
               <CardImg3 src={ComingSoonCardImgUrl} />
               <Title>Coming Soon</Title>
