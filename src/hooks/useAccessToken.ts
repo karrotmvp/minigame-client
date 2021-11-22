@@ -30,8 +30,7 @@ export const useSignAccessToken = () => {
         if (data) {
           setCookie('accessToken', data.accessToken);
           console.log('useSignAccessToken, setCookie:', cookies.accessToken);
-
-          return data.accessToken;
+          return true;
         }
       } catch (error) {
         console.log(error);

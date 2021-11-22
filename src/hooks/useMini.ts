@@ -42,19 +42,25 @@ export const useMini = () => {
   };
 
   // Third-party agreement handler
-  const handleThirdPartyAgreement = async (runOnSuccess: () => void) => {
+  const handleThirdPartyAgreement = async (runOnSuccess?: () => void) => {
     mini.startPreset({
       preset: presetUrl!,
       params: {
         appId: appId!,
       },
-      onSuccess: function (result) {
+      onSuccess: async function (result) {
         if (result && result.code) {
-          signAccessToken(result.code, regionId);
+          const response = await signAccessToken(result.code, regionId);
           analytics.logEvent('click_karrot_mini_preset_agree_button', {
             game_type: 'karrot-clicker',
           });
-          runOnSuccess();
+          console.log(response);
+          if (response === true) {
+            await updateUserInfo();
+            if (runOnSuccess) {
+              runOnSuccess();
+            }
+          }
         }
       },
       onClose: function () {

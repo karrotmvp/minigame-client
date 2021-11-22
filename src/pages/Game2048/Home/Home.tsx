@@ -70,13 +70,17 @@ export const Home = () => {
       is_new_user: false,
     });
   };
+  const onNewUserSuccessHandler = () => {
+    addPlayerCount();
+    goToGamePage();
+  };
   const handleNewUser = () => {
     // if user is new, open third-party agreement preset
     analytics.logEvent('click_game_start_button', {
       game_type: 'game-2048',
       is_new_user: true,
     });
-    handleThirdPartyAgreement(goToGamePage);
+    handleThirdPartyAgreement(onNewUserSuccessHandler);
   };
   const handleGameStart = () => {
     // bypass in web environment
@@ -91,7 +95,6 @@ export const Home = () => {
       addPlayerCount();
     } else {
       handleNewUser();
-      addPlayerCount();
     }
   };
   // =================================================================
@@ -253,6 +256,7 @@ export const Home = () => {
             height: `calc(100vh - ${navHeight}px - 90px)`,
             width: `100%`,
           }}
+          onScroll={onScroll}
         >
           <div
             style={{
