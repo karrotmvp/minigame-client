@@ -45,7 +45,7 @@ export const GameOver: React.FC<Props> = (props) => {
     } catch (error) {
       console.error(error);
     }
-  }, [gameType, minigameApi.gameUserApi]);
+  }, [gameType, minigameApi.gameUserApi, updateMyScore]);
 
   const handleViewLeaderboard = async () => {
     console.log('try to view leaderboard');

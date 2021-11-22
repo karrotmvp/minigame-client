@@ -16,11 +16,13 @@ import {
 } from './Score';
 import refreshGameUrl from 'assets/svg/game2048/refresh_game.svg';
 import { useAnalytics } from 'services/analytics';
+import { useUserData } from 'hooks';
 
 export const Game: React.FC = () => {
   const analytics = useAnalytics();
   const { isTop } = useCurrentScreen();
   const minigameApi = useMinigameApi();
+  const { userId, setUserInfo } = useUserData();
   const { score: myBestScore, highestScore, gameType } = useMyGame2048Data();
   const {
     score: currentScore,
@@ -102,6 +104,38 @@ export const Game: React.FC = () => {
       getTownieBestScoreEver();
     }
   }, [getTownieBestScoreEver, isTop]);
+
+  const updateUserInfo = useCallback(async () => {
+    console.log('update user info attempt, userId:', userId);
+    if (userId) {
+      return;
+    } else {
+      try {
+        const {
+          data: { data },
+        } = await minigameApi.userApi.getUserInfoUsingGET();
+        console.log(data);
+        if (data) {
+          setUserInfo(data.id, data.nickname);
+          // FA: track user with set user id
+          analytics.setUserId(data.id);
+
+          console.log('setuserinfo', data.id, data.nickname);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  }, [analytics, minigameApi.userApi, setUserInfo, userId]);
+
+  useEffect(() => {
+    if (isTop) {
+      if (userId === '') {
+        updateUserInfo();
+      }
+    }
+  }, [isTop, updateUserInfo, userId]);
+
   return (
     <>
       <Page className="game-page">
