@@ -3,8 +3,8 @@ import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
 import { LeaderboardTabs } from 'pages/Game2048/Leaderboard/LeaderboardTabs';
 import { rem } from 'polished';
 import { Button } from 'components/Button';
-import { useEffect, useState } from 'react';
-import { Nav } from 'components/Navigation/Nav';
+import { useCallback, useEffect, useState } from 'react';
+import { Nav, navHeight } from 'components/Navigation/Nav';
 import { CloseIcon } from 'assets/Icon';
 import { MyInfo } from './MyInfo';
 import { useMinigameApi } from 'services/api/minigameApi';
@@ -178,18 +178,22 @@ export const Leaderboard = () => {
   }, []);
 
   return (
-    <Page>
+    <div
+      id="game-2048-leaderboard-page"
+      style={{ display: `flex`, flexDirection: 'column' }}
+    >
       <Nav appendLeft={<CloseIcon />} onClickLeft={goBackToPlatform} />
-      <WeeklyCountdown className="weekly-countdown-refresh">
-        <Refresh handleRefresh={throttledRefresh} />
-      </WeeklyCountdown>
+      <Main>
+        <WeeklyCountdown className="weekly-countdown-refresh">
+          <Refresh handleRefresh={throttledRefresh} />
+        </WeeklyCountdown>
 
-      <Container>{isRanked ? <MyInfo /> : null}</Container>
-      <LeaderboardTabs
-        districtLeaderboardData={districtLeaderboardData}
-        userLeaderboardData={userLeaderboardData}
-      />
-
+        <Container>{isRanked ? <MyInfo /> : null}</Container>
+        <LeaderboardTabs
+          districtLeaderboardData={districtLeaderboardData}
+          userLeaderboardData={userLeaderboardData}
+        />
+      </Main>
       <ActionItems>
         <Button
           size={`large`}
@@ -208,15 +212,15 @@ export const Leaderboard = () => {
           자랑하기
         </Button>
       </ActionItems>
-    </Page>
       <SubscribeToastContainer />
+    </div>
   );
 };
 
-const Page = styled.div`
+const Main = styled.div`
   display: flex;
   flex-flow: column;
-  height: 100%;
+  height: calc(100vh - ${navHeight}px - 90px);
 `;
 
 const WeeklyCountdown = styled.div`
@@ -238,10 +242,15 @@ const ActionItems = styled.div`
   flex-flow: row;
   gap: 12px;
   justify-content: center;
+
   width: 100%;
-  padding: ${rem(15)} ${rem(18)} ${rem(30)};
+  height: 90px;
+  padding: 15px 18px 30px;
+
   border-top: 1px solid #ebebeb;
+  box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
   background: #ffffff;
   box-sizing: border-box;
-  box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+
+  z-index: 100;
 `;

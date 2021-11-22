@@ -149,6 +149,9 @@ export const Game: React.FC = () => {
               fontSize={rem(14)}
               color={`secondary2`}
               onClick={handleGameOver}
+              style={{
+                border: `1px solid #C8D8EE`,
+              }}
             >
               그만하기
             </Button>
@@ -225,6 +228,7 @@ const CurrentScoreWrapper = styled.div`
   p.score {
     font-size: ${rem(50)};
     color: #0e74ff;
+    font-family: 'Montserrat', sans-serif;
   }
 `;
 

@@ -67,6 +67,4 @@ const LeaderboardContainer = styled.div`
   max-height: inherit;
   background: #ffffff;
   box-sizing: border-box;
-  border-bottom-style: none;
-  // padding-bottom: 10000px;
 `;

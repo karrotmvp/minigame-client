@@ -53,5 +53,6 @@ const Container = styled.div`
     font-size: ${rem(14)};
     font-weight: bold;
     line-height: 161.7%;
+    font-family: 'Montserrat', sans-serif;
   }
 `;

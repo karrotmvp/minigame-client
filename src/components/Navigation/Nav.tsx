@@ -3,21 +3,20 @@ import styled from '@emotion/styled';
 import { rem } from 'polished';
 import React from 'react';
 
+export const navHeight = 68;
+
 type Props = {
   appendLeft?: React.ReactNode;
   appendRight?: React.ReactNode;
   onClickLeft?: () => void;
   onClickRight?: () => void;
-  backgroundColor?: string;
+
   border?: string;
+  style?: React.CSSProperties;
 };
 export const Nav = (props: Props) => {
   return (
-    <Wrapper
-      className="nav"
-      backgroundColor={props.backgroundColor}
-      border={props.border}
-    >
+    <Wrapper className="nav" border={props.border} style={props.style}>
       <a onClick={props.onClickLeft}>{props.appendLeft}</a>
       <a onClick={props.onClickRight}>{props.appendRight}</a>
     </Wrapper>
@@ -25,17 +24,14 @@ export const Nav = (props: Props) => {
 };
 
 const Wrapper = styled.div<{
-  backgroundColor: string | undefined;
   border: string | undefined;
 }>`
   display: flex;
   flex-flow: row;
   align-items: flex-end;
   justify-content: space-between;
-  // height: ${rem(68)};
-  padding: ${rem(28)} ${rem(22)} ${rem(16)};
-  background: ${(props) =>
-    props.backgroundColor ? props.backgroundColor : `inherit`};
+  height: ${navHeight}px;
+  padding: 28px 22px 16px;
 
   border-bottom: ${(props) => (props.border ? props.border : `none`)};
   z-index: 10;

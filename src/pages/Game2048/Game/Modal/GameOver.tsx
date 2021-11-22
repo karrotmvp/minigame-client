@@ -197,7 +197,8 @@ const Final = styled(motion.div)`
   }
 
   p.number {
-    font-weight: bold;
+    font-weight: 700;
+    font-family: 'Montserrat', sans-serif;
     font-size: ${rem(30)};
     line-height: 103.7%;
   }

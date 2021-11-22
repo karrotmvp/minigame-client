@@ -5,7 +5,7 @@ import { LastWeekTopDistrict, LastWeekTopTownie } from './LastWeekWinner';
 import { rem } from 'polished';
 import { Button } from 'components/Button';
 import { useCallback, useEffect, useState } from 'react';
-import { Nav } from 'components/Navigation/Nav';
+import { Nav, navHeight } from 'components/Navigation/Nav';
 import { BackIcon } from 'assets/Icon';
 import { ReactComponent as BannerImage } from 'assets/svg/game2048/home_top_banner.svg';
 import { Refresh } from '../Leaderboard/Refresh';
@@ -247,12 +247,14 @@ export const Home = () => {
       style={{
         display: `flex`,
         flexDirection: 'column',
+        background: `linear-gradient(180deg, #e3efff ${rem(180)}, #fff 0)`,
       }}
     >
       <Nav
         appendLeft={<BackIcon />}
         onClickLeft={goToPlatformPage}
-        backgroundColor={`#e3efff`}
+        // backgroundColor={`transparent`}
+        style={{ backgroundColor: 'transparent' }}
       />
 
       <div
@@ -343,27 +345,6 @@ export const Home = () => {
   );
 };
 
-const Page = styled.div`
-  display: flex;
-  flex-flow: column;
-  height: calc(100% - ${rem(90)});
-  overflow: auto;
-`;
-const TopHalf = styled.div`
-  background: linear-gradient(180deg, #e3efff ${rem(180)}, #fff 0);
-  margin-bottom: 25px;
-`;
-
-const BottomHalf = styled.div`
-  &.class1 {
-    position: fixed;
-    top: ${rem(90)};
-    width: 100%;
-    overflow: hidden;
-  }
-  &.class2 {
-  }
-`;
 const Banner = styled.div`
   display: flex;
   flex-flow: column;
@@ -377,20 +358,19 @@ const Container = styled.div`
   gap: ${rem(12)};
   padding: 0 ${rem(20)};
 `;
-const ActionItems = styled.div`
+const Bottom = styled.div`
+  width: 100%;
+  height: 90px;
+  padding: 15px 18px 30px;
+
   display: flex;
   justify-content: center;
-  width: 100%;
-  padding: ${rem(15)} ${rem(18)} ${rem(30)};
+
   border-top: 1px solid #ebebeb;
   background: #ffffff;
   box-sizing: border-box;
   box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
   z-index: 100;
-
-  position: fixed;
-  bottom: 0;
-  left: 0;
 `;
 
 const WeeklyCountdown = styled.div`

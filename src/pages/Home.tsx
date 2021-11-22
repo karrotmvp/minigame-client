@@ -3,14 +3,14 @@ import styled from '@emotion/styled';
 import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
 import { useMinigameApi } from 'services/api/minigameApi';
 import { useAccessToken, useMini, useUserData } from 'hooks';
-import { Nav } from 'components/Navigation/Nav';
+import { Nav, navHeight } from 'components/Navigation/Nav';
 import { CloseIcon } from 'assets/Icon';
 import { rem } from 'polished';
 import { useMyGame2048Data } from './Game2048/hooks';
 import { useMyKarrotClickerData } from './KarrotClicker/hooks';
 import { useAnalytics } from 'services/analytics';
-
 import { color } from 'styles';
+import newUrl from 'assets/svg/new.svg';
 import BellUrl from 'assets/svg/bell.svg';
 import Game2048CardImgUrl from 'assets/svg/game2048/game_2048_card_img.svg';
 import KarrotClickerCardImgUrl from 'assets/svg/KarrotClicker/karrot_clicker_card_img.svg';
@@ -267,7 +267,7 @@ export const Home: React.FC = () => {
       />
 
       <Page className="game-platform-page">
-        <MainText style={{ marginBottom: `30px` }}>
+        <MainText>
           <span>{townName3}</span> 이웃들과
           <br />
           같이 게임해요!
@@ -275,7 +275,19 @@ export const Home: React.FC = () => {
         <CardContainer className="container--games">
           <Card game={`game-2048`} onClick={goToGame2048}>
             <CardImg1 src={Game2048CardImgUrl} />
-            <Title>2048 퍼즐</Title>
+
+            <Title>
+              퍼즐 2048
+              <img
+                src={newUrl}
+                alt=""
+                style={{
+                  display: 'inline-box',
+                  marginLeft: '5px',
+                }}
+              />
+            </Title>
+
             <Text>
               동네 천재 타이틀을 원한다면?
               <br />
@@ -310,7 +322,13 @@ export const Home: React.FC = () => {
               </Text>
             </Card>
           ) : (
-            <Card game={`whats-next`} onClick={handleNewGameNotification}>
+            <Card
+              game={`whats-next`}
+              onClick={handleNewGameNotification}
+              style={{
+                border: `1px solid #ECECEC`,
+              }}
+            >
               <CardImg3 src={WhatsNextCardImgUrl} />
               <Title>What's Next?</Title>
               <Text>
@@ -343,8 +361,7 @@ export const Home: React.FC = () => {
 const Page = styled.div`
   display: flex;
   flex-flow: column;
-  // height: 100%;
-  margin-top: 20px;
+  height: calc(100vh - ${navHeight}px);
 `;
 
 const MainText = styled.div`
@@ -353,7 +370,7 @@ const MainText = styled.div`
   font-size: ${rem(24)};
   font-weight: bold;
   line-height: 162.7%;
-
+  margin: 20px 0 30px;
   span {
     color: #0e74ff;
     font-size: ${rem(34)};

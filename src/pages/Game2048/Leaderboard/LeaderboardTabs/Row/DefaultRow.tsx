@@ -37,12 +37,13 @@ interface DefaultDistrictRowProps {
   districtName: string;
   playerCount: number;
   score: number;
+  style?: React.CSSProperties;
 }
 export const DefaultDistrictRow: React.FC<DefaultDistrictRowProps> = (
   props
 ) => {
   return (
-    <Container>
+    <Container style={props.style}>
       <Rank>{commafy(props.rank)}</Rank>
       <ContentsWrapper>
         <Info>

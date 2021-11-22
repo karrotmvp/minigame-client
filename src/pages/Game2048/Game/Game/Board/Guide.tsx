@@ -11,7 +11,7 @@ const GuideMotion = styled(motion.div)<{
   height: ${(props) => props.cellWidth}px;
   position: absolute;
   top: ${(props) => props.offsetY}px;
-  left: ${(props) => props.offsetX + 5}px;
+  left: ${(props) => props.offsetX}px;
   z-index: 1000;
   display: flex;
   justify-content: center;
@@ -29,10 +29,12 @@ export const Guide: React.FC<Props> = (props) => {
       (props.cellWidth + boardPadding * 16) * coordinate + boardPadding * 16;
     return pixel;
   };
+  const animateDistance = props.cellWidth * 2 + boardPadding * 16 * 2;
+  console.log(animateDistance);
   return (
     <GuideMotion
       animate={{
-        x: -(props.cellWidth * 2),
+        x: -animateDistance,
       }}
       transition={{
         duration: 2,
