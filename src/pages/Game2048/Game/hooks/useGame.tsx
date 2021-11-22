@@ -90,6 +90,20 @@ export const useGame = () => {
     return tileMap;
   }, [byIds, tiles]);
 
+  const retrieveTileMapByValue = useCallback(() => {
+    const tileMap = new Array(
+      tileCountPerRowOrColumn * tileCountPerRowOrColumn
+    ).fill(0) as number[];
+
+    byIds.forEach((id) => {
+      const { coordinate } = tiles[id];
+      const index = coordinateToIndex(coordinate);
+      tileMap[index] = tiles[id].value;
+    });
+
+    return tileMap;
+  }, [byIds, tiles]);
+
   const findEmptyTiles = useCallback(() => {
     const tileMap = retrieveTileMap();
 
@@ -348,21 +362,57 @@ export const useGame = () => {
     }
   };
 
-  const checkGameOver = useCallback(() => {
-    const emptyTiles = findEmptyTiles();
-    if (emptyTiles.length <= 0) {
-      const currentBoard = retrieveTileMap();
-      console.log('currentboard', currentBoard);
-      console.log('previosboard', nextBoard);
-      if (JSON.stringify(currentBoard) === JSON.stringify(nextBoard)) {
-        console.log('gameover');
-        setIsGameOver(true);
-      } else {
-        console.log('continue');
-      }
-    }
-  }, [findEmptyTiles, nextBoard, retrieveTileMap]);
+  // const checkGameOver = useCallback(() => {
+  //   const emptyTiles = findEmptyTiles();
+  //   if (emptyTiles.length <= 0) {
+  //     const currentBoard = retrieveTileMap();
+  //     console.log('currentboard', currentBoard);
+  //     console.log('previosboard', nextBoard);
+  //     if (JSON.stringify(currentBoard) === JSON.stringify(nextBoard)) {
+  //       console.log('gameover');
+  //       setIsGameOver(true);
+  //     } else {
+  //       console.log('continue');
+  //     }
+  //   }
+  // }, [findEmptyTiles, nextBoard, retrieveTileMap]);
+  function transpose(matrix: number[][]) {
+    return matrix[0].map((col, i) => matrix.map((row) => row[i]));
+  }
 
+  const checkGameOver = () => {
+    if (findEmptyTiles().length === 0) {
+      const tileMap = retrieveTileMapByValue();
+      const matrix = [];
+      while (tileMap.length) matrix.push(tileMap.splice(0, 4));
+      console.log(matrix);
+      for (let i = 0; i < matrix.length; i++) {
+        for (let j = 0; j < matrix[i].length; j++) {
+          if (matrix[i][j] === matrix[i][j + 1]) {
+            console.log('possible moves left');
+            return false;
+          }
+        }
+      }
+      const transposedMatrix = transpose(matrix);
+      console.log(transposedMatrix);
+      for (let i = 0; i < transposedMatrix.length; i++) {
+        for (let j = 0; j < transposedMatrix[i].length; j++) {
+          if (transposedMatrix[i][j] === transposedMatrix[i][j + 1]) {
+            console.log('possible moves left');
+
+            return false;
+          }
+        }
+      }
+
+      console.log('gameover');
+      return true;
+    } else {
+      console.log('empty tiles length > 0');
+      return false;
+    }
+  };
   useEffect(() => {
     if (isInitialRender.current) {
       resetGame();
@@ -372,7 +422,8 @@ export const useGame = () => {
     if (!inMotion && hasChanged) {
       generateRandomTile();
     }
-    checkGameOver();
+    setIsGameOver(checkGameOver());
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasChanged, inMotion, resetGame]);
 

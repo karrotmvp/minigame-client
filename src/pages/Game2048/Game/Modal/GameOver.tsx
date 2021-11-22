@@ -7,7 +7,7 @@ import gameOverSvgUrl from 'assets/svg/game2048/gameover.svg';
 import { Button } from 'components/Button';
 import { useMinigameApi } from 'services/api/minigameApi';
 import { useMyGame2048Data } from 'pages/Game2048/hooks';
-import { useMini } from 'hooks';
+import { useMini, useUserData } from 'hooks';
 import { rem } from 'polished';
 import xUrl from 'assets/svg/x.svg';
 import { useAnalytics } from 'services/analytics';
@@ -23,6 +23,7 @@ export const GameOver: React.FC<Props> = (props) => {
   const analytics = useAnalytics();
   const minigameApi = useMinigameApi();
   const { isInWebEnvironment, shareApp } = useMini();
+  const { nickname } = useUserData();
   const { rank, gameType, updateMyScore } = useMyGame2048Data();
   const [shouldModalOpen, setShouldModalOpen] = useState<boolean>(false);
 
@@ -64,10 +65,8 @@ export const GameOver: React.FC<Props> = (props) => {
   };
 
   const handleShare = () => {
-    console.log('trigger share handler');
-    const url = 'https://daangn.onelink.me/HhUa/3a219555';
-    const text = `2048 퍼즐을 플레이 하고 이웃들에게 한 마디를 남겨보세요!`;
-
+    const url = 'https://daangn.onelink.me/HhUa/54499335';
+    const text = `${nickname}님은 2048 퍼즐에서 전국 ${rank}등!`;
     shareApp(url, text);
     analytics.logEvent('click_share_button', {
       game_type: 'game-2048',

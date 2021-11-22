@@ -19,13 +19,6 @@ import { useThrottledCallback } from 'use-debounce/lib';
 import { useAnalytics } from 'services/analytics';
 import { lastWeek } from 'utils';
 
-import { Pagination, FreeMode, Scrollbar, Mousewheel } from 'swiper';
-import { Swiper, SwiperSlide } from 'swiper/react/swiper-react.js';
-import 'swiper/swiper.scss'; // core Swiper
-import 'swiper/modules/free-mode/free-mode.scss';
-import 'swiper/modules/scrollbar/scrollbar.scss';
-import 'swiper/modules/mousewheel/mousewheel.scss';
-
 export const Home = () => {
   const { isTop } = useCurrentScreen();
   const { push, pop } = useNavigator();
@@ -252,7 +245,6 @@ export const Home = () => {
         <Nav
           appendLeft={<BackIcon />}
           onClickLeft={goToPlatformPage}
-          // backgroundColor={`transparent`}
           style={{ backgroundColor: 'transparent' }}
         />
 
