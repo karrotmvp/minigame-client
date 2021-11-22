@@ -7,7 +7,7 @@ import gameOverSvgUrl from 'assets/svg/game2048/gameover.svg';
 import { Button } from 'components/Button';
 import { useMinigameApi } from 'services/api/minigameApi';
 import { useMyGame2048Data } from 'pages/Game2048/hooks';
-import { useMini } from 'hooks';
+import { useMini, useUserData } from 'hooks';
 import { rem } from 'polished';
 import xUrl from 'assets/svg/x.svg';
 import { useAnalytics } from 'services/analytics';
@@ -23,6 +23,7 @@ export const GameOver: React.FC<Props> = (props) => {
   const analytics = useAnalytics();
   const minigameApi = useMinigameApi();
   const { isInWebEnvironment, shareApp } = useMini();
+  const { nickname } = useUserData();
   const { rank, gameType, updateMyScore } = useMyGame2048Data();
   const [shouldModalOpen, setShouldModalOpen] = useState<boolean>(false);
 

@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import '@karrotframe/navigator/index.css';
-import { Navigator, Screen } from '@karrotframe/navigator';
+import { Navigator, Screen, useNavigator } from '@karrotframe/navigator';
 import { Home } from 'pages/Home';
 import { Game2048Home } from 'pages/Game2048/Home';
 import { Game2048Game } from 'pages/Game2048/Game';
@@ -30,6 +30,7 @@ import { useMinigameApi } from 'services/api/minigameApi';
 
 const App: React.FC = () => {
   const minigameApi = useMinigameApi();
+
   const { setRegionInfo, setTownInfo, setUserInfo, setIsInstalled } =
     useUserData();
   const { accessToken } = useAccessToken();
@@ -71,6 +72,7 @@ const App: React.FC = () => {
     console.log(preload, code, regionId, isInstalled);
     return [preload, code, regionId, isInstalled];
   };
+
   const getDistrictInfo = useCallback(
     async (regionId: string) => {
       try {
@@ -79,6 +81,13 @@ const App: React.FC = () => {
         } = await minigameApi.regionApi.getTownInfoUsingGET(regionId);
         if (data) {
           setTownInfo(data.townId, data.name1, data.name2, data.name3);
+          console.log(
+            'get district info',
+            data.townId,
+            data.name1,
+            data.name2,
+            data.name3
+          );
         }
       } catch (error) {
         console.error(error);
@@ -88,58 +97,58 @@ const App: React.FC = () => {
     [minigameApi.regionApi, setTownInfo]
   );
 
-  const updateUserInfo = useCallback(async () => {
-    const {
-      data: { data },
-    } = await minigameApi.userApi.getUserInfoUsingGET();
-    if (data) {
-      setUserInfo(data.id, data.nickname);
-      // FA: track user with set user id
-      analytics.setUserId(data.id);
-      // console.log('setuserinfo', data.id, data.nickname);
-    }
-  }, [analytics, minigameApi.userApi, setUserInfo]);
+  // const updateUserInfo = useCallback(async () => {
+  //   console.log('update user info attempt');
+  //   const {
+  //     data: { data },
+  //   } = await minigameApi.userApi.getUserInfoUsingGET();
+  //   console.log(data);
+  //   if (data) {
+  //     setUserInfo(data.id, data.nickname);
+  //     // FA: track user with set user id
+  //     analytics.setUserId(data.id);
+
+  //     console.log('setuserinfo', data.id, data.nickname);
+  //   }
+  // }, [analytics, minigameApi.userApi, setUserInfo]);
+
+  const fetchData = useCallback(
+    async (code: string, regionId: string) => {
+      console.log('fetch data', code, regionId);
+      await signAccessToken(code, regionId);
+      // await updateUserInfo();
+    },
+    [signAccessToken]
+  );
+
   useEffect(() => {
-    function fetchData() {
-      try {
-        console.log(accessToken);
-        setRegionInfo(regionId as string);
-        getDistrictInfo(regionId as string);
-        if (accessToken) {
-          removeCookie('accessToken');
-          console.log('already have access token', accessToken);
-          if (isInstalled) {
-            if (isInstalled === 'true') {
-              setIsInstalled(true);
-            } else if (isInstalled === 'false') {
-              setIsInstalled(false);
-            }
-          }
-          updateUserInfo();
-          return;
-        } else if (code) {
-          console.log('don`t have access token', accessToken);
-          signAccessToken(code, regionId as string);
-          if (isInstalled) {
-            if (isInstalled === 'true') {
-              setIsInstalled(true);
-            } else if (isInstalled === 'false') {
-              setIsInstalled(false);
-            }
-          }
-          updateUserInfo();
-        }
-      } catch (error) {
-        console.error(error);
-      }
+    if (accessToken) {
+      console.log('remove cookie');
+      removeCookie('accessToken');
     }
     const [preload, code, regionId, isInstalled] = getQueryParams();
-    analytics.logEvent('launch_app');
     console.log(preload, code, regionId, isInstalled);
-    if (!preload) {
-      fetchData();
+    analytics.logEvent('launch_app');
+
+    setRegionInfo(regionId as string);
+    getDistrictInfo(regionId as string);
+
+    if (isInstalled === 'true') {
+      setIsInstalled(true);
+    } else if (isInstalled === 'false') {
+      setIsInstalled(false);
     }
-  }, [analytics]);
+
+    fetchData(code as string, regionId as string);
+  }, [
+    // accessToken,
+    analytics,
+    // fetchData,
+    // getDistrictInfo,
+    // removeCookie,
+    // setIsInstalled,
+    // setRegionInfo,
+  ]);
 
   return (
     <AnalyticsContext.Provider value={analytics}>
