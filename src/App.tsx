@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import '@karrotframe/navigator/index.css';
-import { Navigator, Screen, useNavigator } from '@karrotframe/navigator';
+import { Navigator, Screen } from '@karrotframe/navigator';
 import { Home } from 'pages/Home';
 import { Game2048Home } from 'pages/Game2048/Home';
 import { Game2048Game } from 'pages/Game2048/Game';
@@ -31,8 +31,7 @@ import { useMinigameApi } from 'services/api/minigameApi';
 const App: React.FC = () => {
   const minigameApi = useMinigameApi();
 
-  const { setRegionInfo, setTownInfo, setUserInfo, setIsInstalled } =
-    useUserData();
+  const { setRegionInfo, setTownInfo, setIsInstalled } = useUserData();
   const { accessToken } = useAccessToken();
   const { signAccessToken, removeCookie } = useSignAccessToken();
   const [analytics, setAnalytics] = useState(emptyAnalytics);
@@ -97,21 +96,6 @@ const App: React.FC = () => {
     [minigameApi.regionApi, setTownInfo]
   );
 
-  // const updateUserInfo = useCallback(async () => {
-  //   console.log('update user info attempt');
-  //   const {
-  //     data: { data },
-  //   } = await minigameApi.userApi.getUserInfoUsingGET();
-  //   console.log(data);
-  //   if (data) {
-  //     setUserInfo(data.id, data.nickname);
-  //     // FA: track user with set user id
-  //     analytics.setUserId(data.id);
-
-  //     console.log('setuserinfo', data.id, data.nickname);
-  //   }
-  // }, [analytics, minigameApi.userApi, setUserInfo]);
-
   const fetchData = useCallback(
     async (code: string, regionId: string) => {
       console.log('fetch data', code, regionId);
@@ -140,6 +124,7 @@ const App: React.FC = () => {
     }
 
     fetchData(code as string, regionId as string);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     // accessToken,
     analytics,

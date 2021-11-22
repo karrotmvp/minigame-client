@@ -34,7 +34,6 @@ export const useGame = () => {
   const [state, dispatch] = useReducer(game2048Reducer, initialState);
   const { score, tiles, byIds, hasChanged, inMotion } = state;
   const [isGameOver, setIsGameOver] = useState<boolean>(false);
-  const [nextBoard, setNextBoard] = useState<number[]>();
 
   const createTile = useCallback(
     ({ coordinate, value }: Partial<TileProps>) => {
@@ -222,10 +221,8 @@ export const useGame = () => {
       setTimeout(() => {
         dispatch(moveEndAction());
       }, animationDuration);
-
-      setNextBoard(() => retrieveTileMap());
     },
-    [dispatch, retrieveTileMap, throttledMergeTile, tiles, updateTile]
+    [dispatch, throttledMergeTile, tiles, updateTile]
   );
 
   const moveLeftFactory = (board: number[]) => {
