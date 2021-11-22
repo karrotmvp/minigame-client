@@ -9,6 +9,7 @@ import { DistrictLeaderboard, UserLeaderboard } from './Leaderboard';
 type Props = {
   districtLeaderboardData: any[];
   userLeaderboardData: any[];
+  shouldSticky?: boolean;
 };
 export const LeaderboardTabs: React.FC<Props> = (props) => {
   const { isTop } = useCurrentScreen();

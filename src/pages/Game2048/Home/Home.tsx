@@ -226,21 +226,25 @@ export const Home = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isTop]);
 
-  const [
-    isScrollValueMoreThanHeaderHeight,
-    setIsScrollValueMoreThanHeaderHeight,
-  ] = useState(false);
+  const [shouldSticky, setShouldSticky] = useState(false);
 
-  //here 96(px) - height of current header
+  const onScroll = (e: any) => {
+    console.log('scrolling');
 
-  useEffect(() => {
-    const handleScroll = () => {
-      console.log(window.scrollY);
-      setIsScrollValueMoreThanHeaderHeight(window.scrollY > 90);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+    const offsetY = e.target.scrollTop;
+    // const screenHeight = window.innerHeight;
+    const limit = 205;
+    console.log(limit, offsetY);
+    // console.log(targetRef.current);
+    if (limit < offsetY) {
+      setShouldSticky(true);
+      // disable();
+    } else {
+      setShouldSticky(false);
+      // enable();
+      // console.log('scrolling down', offsetY);
+    }
+  };
 
   return (
     <div

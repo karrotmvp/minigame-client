@@ -14,6 +14,7 @@ SwiperCore.use([FreeMode, Scrollbar, Mousewheel]);
 
 type Props = {
   userLeaderboardData: any[];
+  shouldSticky?: boolean;
 };
 export const UserLeaderboard: React.FC<Props> = (props) => {
   return (

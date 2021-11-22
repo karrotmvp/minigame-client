@@ -1,7 +1,6 @@
-import { useNavigator } from '@karrotframe/navigator';
+import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
 import styled from '@emotion/styled';
-// import { useMini } from 'hooks';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import ReactModal from 'react-modal';
 import { PostComment } from './PostComment';
 import gameOverSvgUrl from 'assets/svg/game2048/gameover.svg';
@@ -19,6 +18,7 @@ type Props = {
   myBestScore: number;
 };
 export const GameOver: React.FC<Props> = (props) => {
+  const { isTop } = useCurrentScreen();
   const { replace } = useNavigator();
   const analytics = useAnalytics();
   const minigameApi = useMinigameApi();
@@ -30,6 +30,22 @@ export const GameOver: React.FC<Props> = (props) => {
     replace(`/game-2048/leaderboard`);
   };
 
+  const getMyData = useCallback(async () => {
+    try {
+      const {
+        data: { data },
+      } = await minigameApi.gameUserApi.getMyRankInfoUsingGET(gameType);
+      if (data) {
+        if (data.score && data.rank) {
+          updateMyScore(data.score, data.rank);
+          return data.rank;
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }, [gameType, minigameApi.gameUserApi, updateMyScore]);
+
   const handleViewLeaderboard = async () => {
     console.log('try to view leaderboard');
     if (isInWebEnvironment) {
@@ -37,25 +53,16 @@ export const GameOver: React.FC<Props> = (props) => {
       return;
     }
 
-    try {
-      const {
-        data: { data },
-      } = await minigameApi.gameUserApi.getMyRankInfoUsingGET(gameType);
-
-      if (data) {
-        if (data.score && data.rank) {
-          updateMyScore(data.score, data.rank);
-          if (data.rank > 0 && data.rank <= 10) {
-            setShouldModalOpen(true);
-          } else {
-            goToLeaderboardPage();
-          }
-        }
+    const response = await getMyData();
+    if (response) {
+      if (response > 0 && response <= 10) {
+        setShouldModalOpen(true);
+      } else {
+        goToLeaderboardPage();
       }
-    } catch (error) {
-      console.error(error);
     }
   };
+
   const handleShare = () => {
     console.log('trigger share handler');
     const url = 'https://daangn.onelink.me/HhUa/3a219555';
@@ -68,6 +75,13 @@ export const GameOver: React.FC<Props> = (props) => {
     });
   };
 
+  useEffect(() => {
+    if (isTop) {
+      getMyData();
+    }
+  }, [getMyData, isTop]);
+
+  // animation handler
   const [showScore, setShowScore] = useState(false);
   const [showRank, setShowRank] = useState(false);
   useEffect(() => {
