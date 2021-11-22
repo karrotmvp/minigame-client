@@ -52,7 +52,7 @@ export const Game: React.FC = () => {
       undefined,
       1
     );
-    if (data) {
+    if (data && data[0]) {
       setTownieBestScore(data[0].score);
     }
   }, [gameType, minigameApi.gameUserApi]);

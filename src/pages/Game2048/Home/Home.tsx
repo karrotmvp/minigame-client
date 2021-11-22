@@ -122,7 +122,7 @@ export const Home = () => {
         lastWeek.week,
         lastWeek.year
       );
-      if (data) {
+      if (data && data[0]) {
         console.log(data);
         setLastWeekTopTownie({ name: data[0].nickname, score: data[0].score });
       }
@@ -142,7 +142,7 @@ export const Home = () => {
         lastWeek.week,
         lastWeek.year
       );
-      if (data) {
+      if (data && data[0]) {
         console.log(data);
 
         setLastWeekTopDistrict({
