@@ -8,6 +8,7 @@ import { rem } from 'polished';
 import { ReactComponent as Wow } from 'assets/svg/game2048/wow.svg';
 import { useMinigameApi } from 'services/api/minigameApi';
 import { useMini } from 'hooks';
+import { useAnalytics } from 'services/analytics';
 
 type CommentType = {
   comment: string;
@@ -20,12 +21,13 @@ type Props = {
 };
 
 export const PostComment: React.FC<Props> = (props) => {
+  const analytics = useAnalytics();
   const { isTop } = useCurrentScreen();
   const { replace } = useNavigator();
   const minigameApi = useMinigameApi();
   const { townName2: districtName } = useUserData();
   const { isInWebEnvironment } = useMini();
-  const { rank, comment, updateMyComment } = useMyGame2048Data();
+  const { score, rank, comment, updateMyComment } = useMyGame2048Data();
   const [newComment, setNewComment] = useState<CommentType>({
     comment: comment,
     length: comment.length,
@@ -56,6 +58,11 @@ export const PostComment: React.FC<Props> = (props) => {
       }
     );
     if (data.status === 200) {
+      analytics.logEvent('click_submit_comment_button', {
+        game_type: 'game-2048',
+        score: score,
+        rank: rank,
+      });
       props.setShouldModalOpen(false);
       goToLeaderboardPage();
     }

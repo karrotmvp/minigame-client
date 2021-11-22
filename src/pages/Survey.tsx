@@ -9,8 +9,10 @@ import { Button } from 'components/Button';
 import { useMinigameApi } from 'services/api/minigameApi';
 import { useUserData } from 'hooks';
 import { SurveyToastContainer, surveyToastEmitter } from 'components/Toast';
+import { useAnalytics } from 'services/analytics';
 
 export const Survey: React.FC = () => {
+  const analytics = useAnalytics();
   const { pop } = useNavigator();
   const minigameApi = useMinigameApi();
   const { regionId } = useUserData();
@@ -31,6 +33,7 @@ export const Survey: React.FC = () => {
       regionId: regionId,
     });
     if (data.status === 200) {
+      analytics.logEvent('click_submit_game_request_button');
       setGameSurveyInput('');
       surveyToastEmitter();
     }

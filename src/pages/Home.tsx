@@ -152,17 +152,17 @@ export const Home: React.FC = () => {
   const triggerShareHandler = () => {
     console.log('trigger share handler');
     const url = 'https://daangn.onelink.me/HhUa/3a219555';
-    const text = `2048 퍼즐을 플레이 하고 이웃들에게 한 마디를 남겨보세요!`;
+    const text = `동네대회를 플레이 하고 이웃들에게 한 마디를 남겨보세요!`;
     if (accessToken) {
       shareApp(url, text);
       analytics.logEvent('click_share_button', {
-        // game_type: 'game-2048',
+        location: 'platform_page',
       });
     } else {
       handleThirdPartyAgreement(() => {
         shareApp(url, text);
         analytics.logEvent('click_share_button', {
-          // game_type: 'game-2048',
+          location: 'platform_page',
         });
       });
     }
@@ -176,6 +176,10 @@ export const Home: React.FC = () => {
   };
   const triggerInstallationHandler = () => {
     console.log('trigger installation handler');
+    analytics.logEvent('click_subscribe_button', {
+      location: 'platform_page',
+      is_voluntary: true,
+    });
     if (accessToken) {
       handleInstallation(onInstallationSuccess);
     } else {

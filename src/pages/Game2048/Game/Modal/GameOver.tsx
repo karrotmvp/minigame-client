@@ -64,6 +64,7 @@ export const GameOver: React.FC<Props> = (props) => {
     shareApp(url, text);
     analytics.logEvent('click_share_button', {
       game_type: 'game-2048',
+      location: 'game_over_modal',
     });
   };
 

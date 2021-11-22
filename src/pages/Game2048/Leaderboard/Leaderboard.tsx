@@ -132,10 +132,11 @@ export const Leaderboard = () => {
 
   const handleShare = () => {
     const url = 'https://daangn.onelink.me/HhUa/3a219555';
-    const text = `전국${rank}등!!  2048 퍼즐을 플레이 하고 이웃들에게 한 마디를 남겨보세요!`;
+    const text = `전국에서 ${rank}등!!  2048 퍼즐을 플레이 하고 이웃들에게 한 마디를 남겨보세요!`;
     shareApp(url, text);
     analytics.logEvent('click_share_button', {
       game_type: 'game-2048',
+      location: 'leaderboard_page',
     });
   };
 
@@ -152,13 +153,7 @@ export const Leaderboard = () => {
   }, [minigameApi.notificationApi]);
   const onSubscribeSuccess = useCallback(() => {
     setIsInstalled(true);
-    // toast.success('즐겨찾기 성공', {
-    //   icon: <img src={checkMarkUrl} alt="" />,
-    //   position: 'bottom-center',
-    //   autoClose: 3000,
-    //   hideProgressBar: true,
     subscribeToastEmitter();
-    // });
   }, [setIsInstalled]);
   const turnOffSubscribeNotification = useCallback(async () => {
     await minigameApi.notificationApi.saveNotificationUsingPOST({
@@ -170,11 +165,17 @@ export const Leaderboard = () => {
       if (isInstalled === false) {
         const response = await isSubscribeNotificationOff();
         if (response !== undefined && response === false) {
+          analytics.logEvent('click_subscribe_button', {
+            game_type: 'game-2048',
+            location: 'leaderboard_page',
+            is_voluntary: false,
+          });
           handleInstallation(onSubscribeSuccess, turnOffSubscribeNotification);
         }
       }
     };
     showSubscribe();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

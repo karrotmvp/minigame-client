@@ -15,8 +15,10 @@ import {
   MemoizedTownieBestScore as TownieBestScore,
 } from './Score';
 import refreshGameUrl from 'assets/svg/game2048/refresh_game.svg';
+import { useAnalytics } from 'services/analytics';
 
 export const Game: React.FC = () => {
+  const analytics = useAnalytics();
   const { isTop } = useCurrentScreen();
   const minigameApi = useMinigameApi();
   const { score: myBestScore, highestScore, gameType } = useMyGame2048Data();
@@ -38,9 +40,14 @@ export const Game: React.FC = () => {
 
   // Action buttons
   const handlePlayAgain = () => {
+    // analytics.logEvent('click_play')
     resetGame();
   };
   const handleGameOver = () => {
+    analytics.logEvent('click_game_end_button', {
+      game_type: 'game-2048',
+      button_type: 'game_end',
+    });
     setIsGameOver(true);
   };
 
