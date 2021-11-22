@@ -65,10 +65,8 @@ export const GameOver: React.FC<Props> = (props) => {
   };
 
   const handleShare = () => {
-    console.log('trigger share handler');
-    const url = 'https://daangn.onelink.me/HhUa/3a219555';
-    const text = `2048 퍼즐을 플레이 하고 이웃들에게 한 마디를 남겨보세요!`;
-
+    const url = 'https://daangn.onelink.me/HhUa/54499335';
+    const text = `${nickname}님은 2048 퍼즐에서 전국 ${rank}등!`;
     shareApp(url, text);
     analytics.logEvent('click_share_button', {
       game_type: 'game-2048',
