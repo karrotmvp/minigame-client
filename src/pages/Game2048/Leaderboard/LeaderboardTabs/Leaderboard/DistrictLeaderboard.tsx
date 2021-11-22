@@ -1,6 +1,16 @@
 import styled from '@emotion/styled';
 import { DefaultDistrictRow, TopDistrictRow } from '../Row';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/swiper-bundle.min.css';
+import 'swiper/swiper.min.css';
 
+// import Swiper core and required modules
+import SwiperCore, { Scrollbar, Mousewheel } from 'swiper';
+import FreeMode from 'swiper';
+import { useUserData } from 'hooks';
+
+// install Swiper modules
+SwiperCore.use([FreeMode, Scrollbar, Mousewheel]);
 type Props = {
   districtLeaderboardData: any[];
 };
@@ -20,8 +30,17 @@ export const DistrictLeaderboard: React.FC<Props> = (props) => {
   // };
 
   return (
-    <Container>
-      <Wrapper>
+    <Swiper
+      direction={'vertical'}
+      slidesPerView={'auto'}
+      freeMode={true}
+      mousewheel={true}
+      style={{
+        height: '100%',
+        padding: `0 18px`,
+      }}
+    >
+      <SwiperSlide>
         {props.districtLeaderboardData.slice(0, 10).map((district) => {
           return (
             <TopDistrictRow
@@ -46,8 +65,8 @@ export const DistrictLeaderboard: React.FC<Props> = (props) => {
             />
           );
         })}
-      </Wrapper>
-    </Container>
+      </SwiperSlide>
+    </Swiper>
   );
 };
 
@@ -56,7 +75,7 @@ const Container = styled.div`
   box-sizing: border-box;
   width: 100%;
   height: 100%;
-  overflow: hidden;
+  // overflow: hidden;
 `;
 
 const Wrapper = styled.div`
@@ -65,7 +84,7 @@ const Wrapper = styled.div`
   align-items: center;
   width: 100%;
   height: 100%;
-  overflow-y: scroll;
+  overflow-y: auto;
   padding-bottom: 60px;
 
   // Hide scrollbar but keep functionality

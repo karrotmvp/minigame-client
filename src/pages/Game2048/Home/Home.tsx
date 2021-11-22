@@ -18,6 +18,19 @@ import { useMini } from 'hooks';
 import { useThrottledCallback } from 'use-debounce/lib';
 import { useAnalytics } from 'services/analytics';
 import { lastWeek } from 'utils';
+import { Swiper, SwiperSlide } from 'swiper/react';
+
+// Import Swiper styles
+import SwiperCore, { Pagination } from 'swiper'; //*
+
+//style
+import 'swiper/swiper.scss';
+import 'swiper/components/pagination/pagination.scss'; // *
+
+// import Swiper core and required modules
+
+// install Swiper modules
+SwiperCore.use([Pagination]);
 
 export const Home = () => {
   const { isTop } = useCurrentScreen();
@@ -230,45 +243,83 @@ export const Home = () => {
   }, []);
 
   return (
-    <>
+    <div
+      style={{
+        display: `flex`,
+        flexDirection: 'column',
+      }}
+    >
       <Nav
         appendLeft={<BackIcon />}
         onClickLeft={goToPlatformPage}
         backgroundColor={`#e3efff`}
       />
-      <Page>
-        <TopHalf>
-          <Banner className="banner">
-            <BannerImage />
-          </Banner>
-          <Container className="last-week-winner">
-            <LastWeekTopDistrict
-              townName1={lastWeekTopDistrict.townName1}
-              townName2={lastWeekTopDistrict.townName2}
-              score={lastWeekTopDistrict.score}
-            />
-            <LastWeekTopTownie
-              name={lastWeekTopTownie.name}
-              score={lastWeekTopTownie.score}
-            />
-          </Container>
-        </TopHalf>
-        <BottomHalf
-          className={isScrollValueMoreThanHeaderHeight ? 'class1' : 'class2'}
+
+      <div
+        style={{
+          height: `calc(100vh - ${navHeight}px - 90px)`,
+          width: `100%`,
+        }}
+      >
+        <Swiper
+          direction={'vertical'}
+          // freeMode={true}
+          // freeModeSticky={true}
+          autoHeight={true}
+          // slidesPerView={}
+          // mousewheel={true}
+          // className={css`
+          //   .swiper-container-vertical .swiper-wrapper {
+          //     position: absolute;
+          //     height: 100% !important;
+          //   }
+          // `}
+          style={{
+            height: `100%`,
+          }}
+          onScroll={onScroll}
         >
-          <WeeklyCountdown className="weekly-countdown-refresh">
-            <Refresh handleRefresh={throttledRefresh} />
-          </WeeklyCountdown>
+          <SwiperSlide>
+            <div
+              style={{
+                marginBottom: '25px',
+              }}
+            >
+              <Banner className="banner">
+                <BannerImage />
+              </Banner>
+              <Container className="last-week-winner">
+                <LastWeekTopDistrict
+                  townName1={lastWeekTopDistrict.townName1}
+                  townName2={lastWeekTopDistrict.townName2}
+                  score={lastWeekTopDistrict.score}
+                />
+                <LastWeekTopTownie
+                  name={lastWeekTopTownie.name}
+                  score={lastWeekTopTownie.score}
+                />
+              </Container>
+            </div>
+            <div
+              style={{
+                background: `#fff`,
+              }}
+            >
+              <WeeklyCountdown className="weekly-countdown-refresh">
+                <Refresh handleRefresh={throttledRefresh} />
+              </WeeklyCountdown>
 
-          <Container>{isRanked ? <MyInfo /> : null}</Container>
-          <LeaderboardTabs
-            districtLeaderboardData={districtLeaderboardData}
-            userLeaderboardData={userLeaderboardData}
-          />
-        </BottomHalf>
-      </Page>
-
-      <ActionItems>
+              <Container>{isRanked ? <MyInfo /> : null}</Container>
+              <LeaderboardTabs
+                districtLeaderboardData={districtLeaderboardData}
+                userLeaderboardData={userLeaderboardData}
+                shouldSticky={shouldSticky}
+              />
+            </div>
+          </SwiperSlide>
+        </Swiper>
+      </div>
+      <Bottom>
         <div
           style={{
             position: 'absolute',
@@ -287,8 +338,8 @@ export const Home = () => {
         >
           게임 시작
         </Button>
-      </ActionItems>
-    </>
+      </Bottom>
+    </div>
   );
 };
 
