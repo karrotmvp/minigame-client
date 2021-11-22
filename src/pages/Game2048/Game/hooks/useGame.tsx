@@ -388,7 +388,6 @@ export const useGame = () => {
       console.log(matrix);
       for (let i = 0; i < matrix.length; i++) {
         for (let j = 0; j < matrix[i].length; j++) {
-          console.log(matrix[i][j], matrix[i][j + 1]);
           if (matrix[i][j] === matrix[i][j + 1]) {
             console.log('possible moves left');
             return false;
@@ -399,7 +398,6 @@ export const useGame = () => {
       console.log(transposedMatrix);
       for (let i = 0; i < transposedMatrix.length; i++) {
         for (let j = 0; j < transposedMatrix[i].length; j++) {
-          console.log(transposedMatrix[i][j], transposedMatrix[i][j + 1]);
           if (transposedMatrix[i][j] === transposedMatrix[i][j + 1]) {
             console.log('possible moves left');
 
