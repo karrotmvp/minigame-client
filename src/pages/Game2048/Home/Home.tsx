@@ -279,7 +279,7 @@ export const Home = () => {
           style={{
             height: `100%`,
           }}
-          onScroll={onScroll}
+          // onScroll={onScroll}
         >
           <SwiperSlide>
             <div
