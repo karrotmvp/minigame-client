@@ -45,8 +45,8 @@ export const surveyToastEmitter = () => {
     toastId: 'game-survey-success',
     icon: <img src={checkMarkUrl} alt="" />,
     position: 'bottom-center',
-    delay: 1000,
     autoClose: 3000,
+    delay: 200,
     hideProgressBar: true,
   });
 };

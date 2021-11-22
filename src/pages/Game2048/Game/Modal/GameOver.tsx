@@ -44,7 +44,7 @@ export const GameOver: React.FC<Props> = (props) => {
     } catch (error) {
       console.error(error);
     }
-  }, [gameType, minigameApi.gameUserApi, updateMyScore]);
+  }, [gameType, minigameApi.gameUserApi]);
 
   const handleViewLeaderboard = async () => {
     console.log('try to view leaderboard');
@@ -79,7 +79,8 @@ export const GameOver: React.FC<Props> = (props) => {
     if (isTop) {
       getMyData();
     }
-  }, [getMyData, isTop]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isTop]);
 
   // animation handler
   const [showScore, setShowScore] = useState(false);

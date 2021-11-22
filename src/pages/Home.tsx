@@ -149,21 +149,22 @@ export const Home: React.FC = () => {
 
   // Share handler
   // =================================================================
+
+  const handleShare = () => {
+    const url = 'https://daangn.onelink.me/HhUa/39b03946';
+    const text = `${nickname}님이 이웃님을 동네대회에 초대했어요! 같이 게임할래요?`;
+    shareApp(url, text);
+    analytics.logEvent('click_share_button', {
+      location: 'platform_page',
+    });
+  };
   const triggerShareHandler = () => {
     console.log('trigger share handler');
-    const url = 'https://daangn.onelink.me/HhUa/3a219555';
-    const text = `동네대회를 플레이 하고 이웃들에게 한 마디를 남겨보세요!`;
     if (accessToken) {
-      shareApp(url, text);
-      analytics.logEvent('click_share_button', {
-        location: 'platform_page',
-      });
+      handleShare();
     } else {
       handleThirdPartyAgreement(() => {
-        shareApp(url, text);
-        analytics.logEvent('click_share_button', {
-          location: 'platform_page',
-        });
+        handleShare();
       });
     }
   };

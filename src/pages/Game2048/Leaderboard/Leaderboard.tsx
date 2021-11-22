@@ -25,7 +25,7 @@ export const Leaderboard = () => {
   const minigameApi = useMinigameApi();
   const analytics = useAnalytics();
   const { shareApp, handleInstallation } = useMini();
-  const { isInstalled, setIsInstalled } = useUserData();
+  const { nickname, isInstalled, setIsInstalled } = useUserData();
 
   const {
     rank,
@@ -131,8 +131,8 @@ export const Leaderboard = () => {
   }, [isTop, rank]);
 
   const handleShare = () => {
-    const url = 'https://daangn.onelink.me/HhUa/3a219555';
-    const text = `전국에서 ${rank}등!!  2048 퍼즐을 플레이 하고 이웃들에게 한 마디를 남겨보세요!`;
+    const url = 'https://daangn.onelink.me/HhUa/54499335';
+    const text = `${nickname}님은 2048 퍼즐에서 전국 ${rank}등!`;
     shareApp(url, text);
     analytics.logEvent('click_share_button', {
       game_type: 'game-2048',
