@@ -18,19 +18,13 @@ import { useMini } from 'hooks';
 import { useThrottledCallback } from 'use-debounce/lib';
 import { useAnalytics } from 'services/analytics';
 import { lastWeek } from 'utils';
-import { Swiper, SwiperSlide } from 'swiper/react';
 
-// Import Swiper styles
-import SwiperCore, { Pagination } from 'swiper'; //*
-
-//style
-import 'swiper/swiper.scss';
-import 'swiper/components/pagination/pagination.scss'; // *
-
-// import Swiper core and required modules
-
-// install Swiper modules
-SwiperCore.use([Pagination]);
+import { Pagination, FreeMode, Scrollbar, Mousewheel } from 'swiper';
+import { Swiper, SwiperSlide } from 'swiper/react/swiper-react.js';
+import 'swiper/swiper.scss'; // core Swiper
+import 'swiper/modules/free-mode/free-mode.scss';
+import 'swiper/modules/scrollbar/scrollbar.scss';
+import 'swiper/modules/mousewheel/mousewheel.scss';
 
 export const Home = () => {
   const { isTop } = useCurrentScreen();
@@ -247,45 +241,33 @@ export const Home = () => {
   };
 
   return (
-    <div
-      style={{
-        display: `flex`,
-        flexDirection: 'column',
-        background: `linear-gradient(180deg, #e3efff ${rem(180)}, #fff 0)`,
-      }}
-    >
-      <Nav
-        appendLeft={<BackIcon />}
-        onClickLeft={goToPlatformPage}
-        // backgroundColor={`transparent`}
-        style={{ backgroundColor: 'transparent' }}
-      />
-
+    <>
       <div
         style={{
-          height: `calc(100vh - ${navHeight}px - 90px)`,
-          width: `100%`,
+          display: `flex`,
+          flexDirection: 'column',
+          background: `linear-gradient(180deg, #e3efff ${rem(180)}, #fff 0)`,
         }}
       >
-        <Swiper
-          direction={'vertical'}
-          // freeMode={true}
-          // freeModeSticky={true}
-          autoHeight={true}
-          // slidesPerView={}
-          // mousewheel={true}
-          // className={css`
-          //   .swiper-container-vertical .swiper-wrapper {
-          //     position: absolute;
-          //     height: 100% !important;
-          //   }
-          // `}
+        <Nav
+          appendLeft={<BackIcon />}
+          onClickLeft={goToPlatformPage}
+          // backgroundColor={`transparent`}
+          style={{ backgroundColor: 'transparent' }}
+        />
+
+        <div
           style={{
-            height: `100%`,
+            height: `calc(100vh - ${navHeight}px - 90px)`,
+            width: `100%`,
           }}
-          // onScroll={onScroll}
         >
-          <SwiperSlide>
+          <div
+            style={{
+              height: `100%`,
+              overflow: 'auto',
+            }}
+          >
             <div
               style={{
                 marginBottom: '25px',
@@ -322,30 +304,30 @@ export const Home = () => {
                 shouldSticky={shouldSticky}
               />
             </div>
-          </SwiperSlide>
-        </Swiper>
-      </div>
-      <Bottom>
-        <div
-          style={{
-            position: 'absolute',
-            bottom: '90px',
-            right: '24px',
-            zIndex: 101,
-          }}
-        >
-          <ActiveUserCount gameType="GAME_2048" />
+          </div>
         </div>
-        <Button
-          size={`large`}
-          fontSize={rem(20)}
-          color={`primary`}
-          onClick={handleGameStart}
-        >
-          게임 시작
-        </Button>
-      </Bottom>
-    </div>
+        <Bottom>
+          <div
+            style={{
+              position: 'absolute',
+              bottom: '90px',
+              right: '24px',
+              zIndex: 101,
+            }}
+          >
+            <ActiveUserCount gameType="GAME_2048" />
+          </div>
+          <Button
+            size={`large`}
+            fontSize={rem(20)}
+            color={`primary`}
+            onClick={handleGameStart}
+          >
+            게임 시작
+          </Button>
+        </Bottom>
+      </div>
+    </>
   );
 };
 

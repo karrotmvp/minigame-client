@@ -28,7 +28,7 @@
     "react-toastify": "^8.1.0",
     "redux-thunk": "^2.3.0",
     "sass": "^1.43.4",
-    "swiper": "^6.8.4",
+    "swiper": "^7.3.0",
     "use-debounce": "^7.0.0"
   },
   "scripts": {

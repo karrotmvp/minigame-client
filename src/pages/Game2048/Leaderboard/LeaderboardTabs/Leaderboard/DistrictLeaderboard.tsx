@@ -1,16 +1,14 @@
 // import styled from '@emotion/styled';
 import { DefaultDistrictRow, TopDistrictRow } from '../Row';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import 'swiper/swiper-bundle.min.css';
-import 'swiper/swiper.min.css';
-
-// import Swiper core and required modules
-import SwiperCore, { Scrollbar, Mousewheel } from 'swiper';
-import FreeMode from 'swiper';
 import { useUserData } from 'hooks';
 
-// install Swiper modules
-SwiperCore.use([FreeMode, Scrollbar, Mousewheel]);
+import { FreeMode, Scrollbar, Mousewheel } from 'swiper';
+import { Swiper, SwiperSlide } from 'swiper/react/swiper-react.js';
+import 'swiper/swiper.scss'; // core Swiper
+import 'swiper/modules/free-mode/free-mode.scss';
+import 'swiper/modules/scrollbar/scrollbar.scss';
+import 'swiper/modules/mousewheel/mousewheel.scss';
+
 type Props = {
   districtLeaderboardData: any[];
 };
@@ -18,13 +16,14 @@ export const DistrictLeaderboard: React.FC<Props> = (props) => {
   const { townName2: myTown } = useUserData();
   return (
     <Swiper
-      direction={'vertical'}
-      slidesPerView={'auto'}
-      freeMode={true}
-      mousewheel={true}
+      modules={[FreeMode, Scrollbar, Mousewheel]}
+      // direction={'vertical'}
+      // slidesPerView={'auto'}
+      // mousewheel={true}
       style={{
         height: '100%',
         padding: `0 18px`,
+        overflow: `auto`,
       }}
     >
       <SwiperSlide>

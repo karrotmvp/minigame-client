@@ -1,16 +1,14 @@
+import { css } from '@emotion/css';
 import styled from '@emotion/styled';
 import { TopUserRow } from '../Row/TopRow';
 import { DefaultUserRow } from '../Row/DefaultRow';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import 'swiper/swiper-bundle.min.css';
-import 'swiper/swiper.min.css';
 
-// import Swiper core and required modules
-import SwiperCore, { Scrollbar, Mousewheel } from 'swiper';
-import FreeMode from 'swiper';
-
-// install Swiper modules
-SwiperCore.use([FreeMode, Scrollbar, Mousewheel]);
+import { FreeMode, Scrollbar, Mousewheel } from 'swiper';
+import { Swiper, SwiperSlide } from 'swiper/react/swiper-react.js';
+import 'swiper/swiper.scss'; // core Swiper
+import 'swiper/modules/free-mode/free-mode.scss';
+import 'swiper/modules/scrollbar/scrollbar.scss';
+import 'swiper/modules/mousewheel/mousewheel.scss';
 
 type Props = {
   userLeaderboardData: any[];
@@ -19,13 +17,11 @@ type Props = {
 export const UserLeaderboard: React.FC<Props> = (props) => {
   return (
     <Swiper
-      direction={'vertical'}
-      slidesPerView={'auto'}
-      freeMode={true}
-      mousewheel={true}
+      modules={[FreeMode, Scrollbar, Mousewheel]}
       style={{
         height: '100%',
         padding: `0 18px`,
+        overflow: `auto`,
       }}
     >
       <SwiperSlide>
@@ -42,13 +38,16 @@ export const UserLeaderboard: React.FC<Props> = (props) => {
             />
           );
         })}
+
         <Text>
           🎉 TOP 10 🎉 이 되어서
           <br />
           이웃들에게 한 마디를 남겨보세요!
         </Text>
+
         {props.userLeaderboardData.slice(10).map((user) => {
           return (
+            // <SwiperSlide>
             <DefaultUserRow
               key={user.userId}
               rank={user.rank}
