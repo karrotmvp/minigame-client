@@ -15,20 +15,7 @@ type Props = {
   districtLeaderboardData: any[];
 };
 export const DistrictLeaderboard: React.FC<Props> = (props) => {
-  // const getDistrictLeaderboardData = async () => {
-  //   const {
-  //     data: { data },
-  //   } = await minigameApi.gameTownApi.getLeaderBoardByTownUsingGET(gameType);
-  //   if (data) {
-  //     const indexedDistrictRankData = data.map((item: any, index: number) => ({
-  //       rank: index + 1,
-  //       ...item,
-  //     }));
-
-  //     setDistrictLeaderboardData(() => indexedDistrictRankData);
-  //   }
-  // };
-
+  const { townName2: myTown } = useUserData();
   return (
     <Swiper
       direction={'vertical'}
@@ -42,7 +29,19 @@ export const DistrictLeaderboard: React.FC<Props> = (props) => {
     >
       <SwiperSlide>
         {props.districtLeaderboardData.slice(0, 10).map((district) => {
-          return (
+          return myTown === district.name2 ? (
+            <TopDistrictRow
+              key={district.name2}
+              rank={district.rank}
+              cityName={district.name1}
+              districtName={district.name2}
+              playerCount={district.playerCount}
+              score={district.score}
+              style={{
+                border: `1px solid #4694FF`,
+              }}
+            />
+          ) : (
             <TopDistrictRow
               key={district.name2}
               rank={district.rank}
@@ -54,7 +53,19 @@ export const DistrictLeaderboard: React.FC<Props> = (props) => {
           );
         })}
         {props.districtLeaderboardData.slice(10).map((district) => {
-          return (
+          return myTown === district.name2 ? (
+            <DefaultDistrictRow
+              key={district.name2}
+              rank={district.rank}
+              cityName={district.name1}
+              districtName={district.name2}
+              playerCount={district.playerCount}
+              score={district.score}
+              style={{
+                border: `1px solid #4694FF`,
+              }}
+            />
+          ) : (
             <DefaultDistrictRow
               key={district.name2}
               rank={district.rank}
