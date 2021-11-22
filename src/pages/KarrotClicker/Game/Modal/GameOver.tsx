@@ -52,7 +52,8 @@ export const GameOver: React.FC<Props> = (props) => {
         data: { data },
       } = await minigameApi.gameUserApi.getMyRankInfoUsingGET('GAME_KARROT');
       if (data) {
-        if (data.score && data.rank) {
+        if (data.score !== undefined && data.rank !== undefined) {
+          console.log(data.score, data.rank);
           updateMyKarrotClickerData(data.score, data.rank);
           if (data.rank <= 10 && data.rank > 0) {
             analytics.logEvent('click_game_end_button', {
