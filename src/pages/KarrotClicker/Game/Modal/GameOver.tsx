@@ -37,9 +37,6 @@ export const GameOver: React.FC<Props> = (props) => {
 
   const handleViewLeaderboard = async () => {
     if (isInWebEnvironment) {
-      console.log(
-        'bypass in web environment: game-pause-modal to leaderboard-page'
-      );
       props.setIsGameOver(false);
       goToLeaderboardPage();
       return;
@@ -53,7 +50,6 @@ export const GameOver: React.FC<Props> = (props) => {
       } = await minigameApi.gameUserApi.getMyRankInfoUsingGET('GAME_KARROT');
       if (data) {
         if (data.score !== undefined && data.rank !== undefined) {
-          console.log(data.score, data.rank);
           updateMyKarrotClickerData(data.score, data.rank);
           if (data.rank <= 10 && data.rank > 0) {
             analytics.logEvent('click_game_end_button', {
@@ -63,7 +59,6 @@ export const GameOver: React.FC<Props> = (props) => {
               is_top_user: true,
               button_type: 'game_over',
             });
-            console.log('comment modal should open');
             // open-comment-modal
             setShouldModalOpen(true);
           } else {

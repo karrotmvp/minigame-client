@@ -77,7 +77,6 @@ export const Game: React.FC = () => {
   }, [getTownieBestScoreEver, isTop]);
 
   const updateMyBestScore = async (score: number) => {
-    console.log('upate my best score in live', score);
     await minigameApi.gamePlayApi.updateScoreUsingPATCH(gameType, {
       score: score,
     });
@@ -85,7 +84,6 @@ export const Game: React.FC = () => {
 
   // constantly patch best score
   useEffect(() => {
-    console.log('currentscore', currentScore);
     if (currentScore > myBestScore) {
       updateMyBestScore(currentScore);
     }
@@ -102,11 +100,9 @@ export const Game: React.FC = () => {
 
   // new user guide
   useEffect(() => {
-    console.log(highestScore);
     if (isTop) {
       if (highestScore === 0) {
         setIsUserNew(true);
-        console.log('guide is on for new user');
       }
     }
   }, [highestScore, isTop]);
@@ -127,7 +123,6 @@ export const Game: React.FC = () => {
 
   // update user-info
   const updateUserInfo = useCallback(async () => {
-    console.log('update user info attempt, userId:', userId);
     if (userId) {
       return;
     } else {
@@ -135,13 +130,10 @@ export const Game: React.FC = () => {
         const {
           data: { data },
         } = await minigameApi.userApi.getUserInfoUsingGET();
-        console.log(data);
         if (data) {
           setUserInfo(data.id, data.nickname);
           // FA: track user with set user id
           analytics.setUserId(data.id);
-
-          console.log('setuserinfo', data.id, data.nickname);
         }
       } catch (error) {
         console.error(error);

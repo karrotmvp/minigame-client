@@ -17,23 +17,16 @@ type Props = {
   moveDown: () => void;
 };
 export const Board: React.FC<Props> = (props) => {
-  // const { score, tileList, moveRight, moveLeft, moveUp, moveDown, resetGame } =
-  //   useGame();
   const [cellWidth, setCellWidth] = useState<number>(0);
   const tileContainerRef = useRef() as React.MutableRefObject<HTMLDivElement>;
   const refPassthrough = (el: any) => {
     handlers.ref(el);
     tileContainerRef.current = el;
   };
-
-  // const { tileList, moveRight, moveLeft, moveUp, moveDown, resetGame } =
-  //   useGame();
-
   // =================================================================
   // mobile(touch) friendly
   const handlers = useSwipeable({
     onSwipeStart: (eventData) => {
-      console.log(eventData);
       switch (eventData.dir) {
         case 'Left':
           props.moveLeft();

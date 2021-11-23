@@ -37,12 +37,10 @@ export const PostComment: React.FC<Props> = (props) => {
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e.target.value);
     setNewComment({
       comment: e.target.value.slice(0, 19),
       length: e.target.value.length,
     });
-    console.log(newComment);
   };
 
   const patchComment = async () => {
@@ -79,7 +77,7 @@ export const PostComment: React.FC<Props> = (props) => {
         game_type: '2048_puzzle',
       });
     }
-  });
+  }, [analytics, isTop]);
   return (
     <>
       <div

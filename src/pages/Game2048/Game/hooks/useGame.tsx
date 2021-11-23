@@ -118,9 +118,7 @@ export const useGame = () => {
   }, [retrieveTileMap]);
 
   const generateRandomTile = useCallback(() => {
-    console.log('generate');
     const emptyTiles = findEmptyTiles();
-
     if (emptyTiles.length > 0) {
       const index = Math.floor(Math.random() * emptyTiles.length);
       const coordinate = emptyTiles[index];
@@ -184,7 +182,6 @@ export const useGame = () => {
             } as TileProps;
 
             scorekeeper += currentTile.value * 2;
-            console.log('scorekeeper', scorekeeper);
             // delays the merge by 100ms, so the sliding animation can be completed.
             throttledMergeTile(tile, previousTile);
 
@@ -220,10 +217,7 @@ export const useGame = () => {
 
         combinedScore += scorekeeper;
       }
-
-      console.log('move end, combinedScore:', combinedScore);
       dispatch(updateScoreAction(combinedScore));
-
       // wait until the end of all animations.
       setTimeout(() => {
         dispatch(moveEndAction());
@@ -373,27 +367,21 @@ export const useGame = () => {
     const tileMap = retrieveTileMapByValue();
     const matrix = [];
     while (tileMap.length) matrix.push(tileMap.splice(0, 4));
-    console.log(matrix);
     for (let i = 0; i < matrix.length; i++) {
       for (let j = 0; j < matrix[i].length; j++) {
         if (matrix[i][j] === matrix[i][j + 1]) {
-          console.log('possible moves left');
           return false;
         }
       }
     }
     const transposedMatrix = transpose(matrix);
-    console.log(transposedMatrix);
     for (let i = 0; i < transposedMatrix.length; i++) {
       for (let j = 0; j < transposedMatrix[i].length; j++) {
         if (transposedMatrix[i][j] === transposedMatrix[i][j + 1]) {
-          console.log('possible moves left');
-
           return false;
         }
       }
     }
-    console.log('gameover');
     return true;
   };
   useEffect(() => {
@@ -405,9 +393,7 @@ export const useGame = () => {
     if (!inMotion && hasChanged) {
       generateRandomTile();
     }
-
     if (findEmptyTiles().length === 0) {
-      console.log('no empty tiles, check game-over possibility');
       setIsGameOver(checkGameOver());
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

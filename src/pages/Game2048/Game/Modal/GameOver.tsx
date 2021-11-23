@@ -42,13 +42,10 @@ export const GameOver: React.FC<Props> = (props) => {
           return data.rank;
         }
       }
-    } catch (error) {
-      console.error(error);
-    }
+    } catch (error) {}
   }, [gameType, minigameApi.gameUserApi, updateMyScore]);
 
   const handleViewLeaderboard = async () => {
-    console.log('try to view leaderboard');
     if (isInWebEnvironment) {
       goToLeaderboardPage();
       return;

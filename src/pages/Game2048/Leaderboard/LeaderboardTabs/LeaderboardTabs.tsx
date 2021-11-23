@@ -16,7 +16,6 @@ export const LeaderboardTabs: React.FC<Props> = (props) => {
   const [activeTabKey, setActiveTabKey] = useState<string>('district');
   const handleTabChange = (key: string) => {
     if (isTop) {
-      console.log('Leaderboard Tabs is on top');
       setActiveTabKey(key);
     }
   };

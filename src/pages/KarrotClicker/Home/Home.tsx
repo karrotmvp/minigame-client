@@ -90,7 +90,6 @@ export const Home = () => {
   const handleGameStart = () => {
     // bypass in web environment
     if (isInWebEnvironment) {
-      console.log('bypass in web environment: home-page to game-page');
       goToGamePage();
       return;
     }

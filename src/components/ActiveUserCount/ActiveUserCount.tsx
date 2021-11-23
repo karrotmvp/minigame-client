@@ -22,7 +22,6 @@ export const ActiveUserCount: React.FC<Props> = (props) => {
   }, [minigameApi, props.gameType]);
 
   useEffect(() => {
-    console.log('Is active user count on top?', isTop);
     if (isTop) {
       getDailyUserCount();
     }

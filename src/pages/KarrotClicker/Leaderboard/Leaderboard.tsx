@@ -99,7 +99,6 @@ export const Leaderboard = () => {
       }
     } catch (error) {
       console.error(error);
-      console.log('no access token');
     }
   }, [gameType, minigameApi.gameUserApi, updateMyKarrotClickerData]);
 

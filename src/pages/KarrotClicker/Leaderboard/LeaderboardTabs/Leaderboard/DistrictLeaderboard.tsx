@@ -29,7 +29,6 @@ export const DistrictLeaderboard: React.FC = () => {
         );
         setDistrictRankData(indexedDistrictRankData);
       }
-      console.log('update district leaderboard');
     } catch (error) {
       console.error(error);
     }
