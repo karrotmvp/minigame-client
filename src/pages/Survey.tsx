@@ -1,10 +1,10 @@
 import React, { useRef, useState } from 'react';
 import styled from '@emotion/styled';
-import { Nav, navHeight } from 'components/Navigation/Nav';
+import { Nav } from 'components/Navigation/Nav';
 import { BackIcon } from 'assets/Icon';
 import { useNavigator } from '@karrotframe/navigator';
 import { rem } from 'polished';
-import { color } from 'styles';
+import { color, PageContainer } from 'styles';
 import { Button } from 'components/Button';
 import { useMinigameApi } from 'services/api/minigameApi';
 import { useUserData } from 'hooks';
@@ -40,9 +40,9 @@ export const Survey: React.FC = () => {
   };
 
   return (
-    <div id="survey-page" style={{ display: `flex`, flexDirection: 'column' }}>
+    <>
       <Nav appendLeft={<BackIcon />} onClickLeft={goToPlatformPage} />
-      <Main>
+      <PageContainer id="survey-page">
         <GameSurvey>
           <h3>하고 싶은 게임이 있나요?</h3>
           <div>
@@ -56,27 +56,21 @@ export const Survey: React.FC = () => {
           </div>
           <p>예) 테트리스, 공룡점프</p>
         </GameSurvey>
-      </Main>
-      <ActionItems>
-        <Button
-          size={`large`}
-          fontSize={rem(20)}
-          color={`primary`}
-          onClick={submitGameSurvey}
-        >
-          보내기
-        </Button>
-      </ActionItems>
+        <ActionItems>
+          <Button
+            size={`large`}
+            fontSize={rem(20)}
+            color={`primary`}
+            onClick={submitGameSurvey}
+          >
+            보내기
+          </Button>
+        </ActionItems>
+      </PageContainer>
       <SurveyToastContainer />
-    </div>
+    </>
   );
 };
-
-const Main = styled.div`
-  display: flex;
-  flex-flow: column;
-  height: calc(100vh - ${navHeight}px - 90px);
-`;
 
 const GameSurvey = styled.div`
   flex: 1;

@@ -9,7 +9,7 @@ import {
 import { rem } from 'polished';
 import { Button } from 'components/Button';
 import { useCallback, useEffect, useState } from 'react';
-import { Nav, navHeight } from 'components/Navigation/Nav';
+import { Nav } from 'components/Navigation/Nav';
 import { BackIcon } from 'assets/Icon';
 import { ReactComponent as BannerImage } from 'assets/svg/game2048/home_top_banner.svg';
 import { Refresh } from '../Leaderboard/Refresh';
@@ -21,6 +21,7 @@ import { useMyGame2048Data } from '../hooks';
 import { useMini } from 'hooks';
 import { useThrottledCallback } from 'use-debounce/lib';
 import { useAnalytics } from 'services/analytics';
+import { navHeight, PageContainer, pageHeight } from 'styles';
 // import { lastWeek } from 'utils';
 
 export const Home = () => {
@@ -238,45 +239,23 @@ export const Home = () => {
       // enable();
     }
   };
+  // background: `linear-gradient(180deg, #e3efff ${rem(180)}, #fff 0)`,
 
   return (
     <>
-      <div
-        style={{
-          display: `flex`,
-          flexDirection: 'column',
-          background: `linear-gradient(180deg, #e3efff ${rem(180)}, #fff 0)`,
-        }}
-      >
-        <Nav
-          appendLeft={<BackIcon />}
-          onClickLeft={goToPlatformPage}
-          style={{ backgroundColor: 'transparent' }}
-        />
+      <Nav
+        appendLeft={<BackIcon />}
+        onClickLeft={goToPlatformPage}
+        style={{ backgroundColor: 'transparent' }}
+      />
 
-        <div
-          style={{
-            height: `calc(100vh - ${navHeight}px - 90px)`,
-            width: `100%`,
-          }}
-          onScroll={onScroll}
-        >
-          <div
-            style={{
-              height: `100%`,
-              overflow: 'auto',
-            }}
-          >
-            <div
-              style={{
-                marginBottom: '25px',
-              }}
-            >
-              <Banner className="banner">
-                <BannerImage />
-              </Banner>
-              <Container className="last-week-winner">
-                {/* <LastWeekTopDistrict
+      <PageContainer id="home-page__2048-puzzle" onScroll={onScroll}>
+        <Top className="top">
+          <Banner className="banner">
+            <BannerImage />
+          </Banner>
+          <Container className="last-week-winner">
+            {/* <LastWeekTopDistrict
                   townName1={lastWeekTopDistrict.townName1}
                   townName2={lastWeekTopDistrict.townName2}
                   score={lastWeekTopDistrict.score}
@@ -285,29 +264,22 @@ export const Home = () => {
                   name={lastWeekTopTownie.name}
                   score={lastWeekTopTownie.score}
                 /> */}
-                <VeryFirstWeekDistrict />
-                <VeryFirstWeekTownie />
-              </Container>
-            </div>
-            <div
-              style={{
-                background: `#fff`,
-              }}
-            >
-              <WeeklyCountdown className="weekly-countdown-refresh">
-                <Refresh handleRefresh={throttledRefresh} />
-              </WeeklyCountdown>
-
-              <Container>{isRanked ? <MyInfo /> : null}</Container>
-              <LeaderboardTabs
-                districtLeaderboardData={districtLeaderboardData}
-                userLeaderboardData={userLeaderboardData}
-                shouldSticky={shouldSticky}
-              />
-            </div>
-          </div>
-        </div>
-        <Bottom>
+            <VeryFirstWeekDistrict />
+            <VeryFirstWeekTownie />
+          </Container>
+        </Top>
+        <Bottom className="bottom">
+          <WeeklyCountdown className="weekly-countdown-refresh">
+            <Refresh handleRefresh={throttledRefresh} />
+          </WeeklyCountdown>
+          <Container>{isRanked ? <MyInfo /> : null}</Container>
+          <LeaderboardTabs
+            districtLeaderboardData={districtLeaderboardData}
+            userLeaderboardData={userLeaderboardData}
+            shouldSticky={shouldSticky}
+          />
+        </Bottom>
+        <ActionItem>
           <div
             style={{
               position: 'absolute',
@@ -326,11 +298,28 @@ export const Home = () => {
           >
             게임 시작
           </Button>
-        </Bottom>
-      </div>
+        </ActionItem>
+      </PageContainer>
     </>
   );
 };
+
+const Top = styled.div`
+  width: 100%;
+  background: linear-gradient(180deg, #e3efff ${rem(180)}, #fff 0);
+  position: relative;
+  top: -${navHeight};
+  margin-bottom: 25px;
+  padding-top: ${navHeight};
+`;
+
+const Bottom = styled.div`
+  background: #fff;
+  position: sticky;
+  top: ${navHeight};
+  left: 0;
+  height: ${pageHeight};
+`;
 
 const Banner = styled.div`
   display: flex;
@@ -339,13 +328,17 @@ const Banner = styled.div`
   align-items: center;
   padding-bottom: 1rem;
 `;
+
 const Container = styled.div`
   display: flex;
   flex-flow: row;
   gap: ${rem(12)};
   padding: 0 ${rem(20)};
 `;
-const Bottom = styled.div`
+const ActionItem = styled.div`
+  position: sticky;
+  bottom: 0;
+  left: 0;
   width: 100%;
   height: 90px;
   padding: 15px 18px 30px;
