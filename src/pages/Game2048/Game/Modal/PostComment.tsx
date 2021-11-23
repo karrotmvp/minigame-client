@@ -27,7 +27,7 @@ export const PostComment: React.FC<Props> = (props) => {
     comment: prevComment,
     updateMyComment,
   } = useMyGame2048Data();
-  const [newComment, setNewComment] = useState({
+  const [currentComment, setCurrentComment] = useState({
     comment: prevComment,
     length: prevComment.length,
   });
@@ -36,27 +36,42 @@ export const PostComment: React.FC<Props> = (props) => {
     replace(`/game-2048/leaderboard`);
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e.target.value);
-    setNewComment({
+  const handleDeleteCharacter = (e: any) => {
+    console.log('onKeyDown', e, e.keyCode, e.key);
+    if (e.keyCode === 8 || e.key === 'Backspace') {
+      if (e.target.defaultValue === '') {
+        setCurrentComment({
+          comment: '',
+          length: 0,
+        });
+      } else {
+        setCurrentComment((prevState) => ({
+          comment: prevState.comment.slice(0, -1),
+          length: prevState.length - 1,
+        }));
+      }
+    }
+  };
+
+  const handleCommentInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCurrentComment({
       comment: e.target.value.slice(0, 19),
       length: e.target.value.length,
     });
-    console.log(newComment);
   };
 
   const patchComment = async () => {
     if (isInWebEnvironment) {
-      updateMyComment(newComment.comment);
+      updateMyComment(currentComment.comment);
       goToLeaderboardPage();
       return;
     }
     try {
-      updateMyComment(newComment.comment);
+      updateMyComment(currentComment.comment);
       const { data } = await minigameApi.gamePlayApi.addCommentUsingPATCH(
         'GAME_2048',
         {
-          comment: newComment.comment,
+          comment: currentComment.comment,
         }
       );
       if (data.status === 200) {
@@ -79,7 +94,7 @@ export const PostComment: React.FC<Props> = (props) => {
         game_type: '2048_puzzle',
       });
     }
-  });
+  }, [analytics, isTop]);
   return (
     <>
       <div
@@ -103,15 +118,17 @@ export const PostComment: React.FC<Props> = (props) => {
       <ActionItems>
         <CommentInput>
           <input
+            autoFocus
             type="text"
-            onChange={handleInputChange}
-            value={newComment.comment}
-            placeholder={`예) 오예~${districtName}짱! :)`}
             maxLength={20}
+            placeholder={`예) 오예~${districtName}짱! :)`}
+            onChange={handleCommentInput}
+            onKeyDown={handleDeleteCharacter}
+            value={currentComment.comment}
           />
-          <span>{newComment.length}/20</span>
+          <span>{currentComment.length}/20</span>
         </CommentInput>
-        {newComment.length > 0 ? (
+        {currentComment.length > 0 ? (
           <Button
             size={`large`}
             fontSize={rem(16)}

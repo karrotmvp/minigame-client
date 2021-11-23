@@ -25,7 +25,6 @@ export const useMini = () => {
       setUserInfo(data.id, data.nickname);
       // FA: track user with set user id
       analytics.setUserId(data.id);
-      console.log('setuserinfo', data.id, data.nickname);
     }
   };
 
@@ -51,7 +50,6 @@ export const useMini = () => {
       onSuccess: async function (result) {
         if (result && result.code) {
           const response = await signAccessToken(result.code, regionId);
-          console.log(response);
           if (response === true) {
             await updateUserInfo();
             if (runOnSuccess) {
@@ -61,7 +59,6 @@ export const useMini = () => {
         }
       },
       onClose: function () {
-        console.log('accesstoken from preset', accessToken);
         updateUserInfo();
       },
       onFailure: function () {},
@@ -73,25 +70,18 @@ export const useMini = () => {
     runOnSuccess?: () => void,
     runOnClose?: () => void
   ) => {
-    console.log('installation handler opened');
     mini.startPreset({
       preset: installationUrl!,
       onSuccess: async function (result) {
-        console.log(result);
         if (result.ok) {
-          console.log('즐겨찾기 성공');
-
           if (runOnSuccess) {
             runOnSuccess();
           }
         }
       },
-      onFailure: async function () {
-        console.log('installation handler failed');
-      },
+      onFailure: async function () {},
       onClose: () => {
         if (runOnClose) {
-          console.log('installation handler closed');
           runOnClose();
         }
       },
@@ -114,13 +104,3 @@ export const useMini = () => {
     shareApp,
   };
 };
-
-// const mini = getMini();
-// mini.startPreset({
-//   preset: `https://mini-assets.kr.karrotmarket.com/presets/mvp-game-recommend-installation/alpha.html`,
-//   onSuccess: async function (result) {
-//     if (result.ok) {
-//       console.log('즐겨찾기 성공');
-//     }
-//   },
-// });

@@ -44,7 +44,6 @@ export const CommentModal: React.FC<Props> = (props) => {
       comment: e.target.value.slice(0, 19),
       length: e.target.value.length,
     });
-    console.log(currentComment);
   };
 
   const handleUpdateComment = () => {

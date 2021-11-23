@@ -25,9 +25,7 @@ export const IndividualLeaderboard: React.FC = () => {
           updateMyKarrotClickerData(data.score, data.rank);
         }
       }
-      console.log('update my data');
     } catch (error) {
-      console.log('no access token');
       console.error(error);
     }
 
@@ -46,10 +44,7 @@ export const IndividualLeaderboard: React.FC = () => {
           })
         );
         setIndividualRankData(() => indexedindividualRankData);
-        console.log(indexedindividualRankData);
       }
-      //
-      console.log('update individual leaderboard');
     } catch (error) {
       console.error(error);
     }
@@ -67,7 +62,6 @@ export const IndividualLeaderboard: React.FC = () => {
 
   useEffect(() => {
     refreshLeaderboard();
-    console.log('leaderboard refreshed');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (

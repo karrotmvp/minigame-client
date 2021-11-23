@@ -30,7 +30,6 @@ export const Guide: React.FC<Props> = (props) => {
     return pixel;
   };
   const animateDistance = props.cellWidth * 2 + boardPadding * 16 * 2;
-  console.log(animateDistance);
   return (
     <GuideMotion
       animate={{

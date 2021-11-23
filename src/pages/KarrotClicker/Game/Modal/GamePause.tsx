@@ -41,7 +41,6 @@ export const GamePause: React.FC<GamePauseProps> = (props) => {
   // Button handler
   const handleContinue = () => {
     props.setIsPaused(false);
-    console.log('continue');
     shouldPause(false);
     resumeGame();
     analytics.logEvent('click_game_continue_button', {
@@ -51,11 +50,7 @@ export const GamePause: React.FC<GamePauseProps> = (props) => {
 
   const handleGameEnd = async () => {
     pauseGame();
-
     if (isInWebEnvironment) {
-      console.log(
-        'bypass in web environment: game-pause-modal to leaderboard-page'
-      );
       goToLeaderboardPage();
       return;
     }
@@ -66,12 +61,8 @@ export const GamePause: React.FC<GamePauseProps> = (props) => {
       const {
         data: { data },
       } = await minigameApi.gameUserApi.getMyRankInfoUsingGET('GAME_KARROT');
-      console.log(data, data?.score, data?.rank);
-
       if (data && data.rank !== undefined && data.score !== undefined) {
-        console.log('asdf');
         updateMyKarrotClickerData(data.score, data.rank);
-
         if (data.rank > 0 && data.rank <= 10) {
           analytics.logEvent('click_game_end_button', {
             game_type: 'karrot_clicker',
@@ -95,7 +86,6 @@ export const GamePause: React.FC<GamePauseProps> = (props) => {
 
   useEffect(() => {
     if (isTop) {
-      console.log('istop');
       analytics.logEvent('view_game_pause_modal', {
         game_type: 'karrot_clicker',
       });

@@ -20,7 +20,6 @@ function CreateMinigameApi({
   accessToken?: string;
   env: minigameApiConfig;
 }) {
-  console.log('here is your access token:', accessToken);
   if (accessToken) {
     const configuration = new Configuration({
       apiKey: `Bearer ${accessToken}`,
@@ -46,7 +45,6 @@ function CreateMinigameApi({
       notificationApi,
     };
   } else {
-    console.log('no access token');
     const gamePlayApi = new GamePlayApi();
     const gameTownApi = new GameTownApi();
     const gameUserApi = new GameUserApi();

@@ -24,13 +24,7 @@ export const Game = () => {
   const { userId, setUserInfo } = useUserData();
   const minigameApi = useMinigameApi();
   const { score } = useMyKarrotClickerData();
-  const {
-    clickCount,
-
-    updateAnimationPlayState,
-    animationPlayState,
-    shouldPause,
-  } = useGame();
+  const { clickCount, updateAnimationPlayState, shouldPause } = useGame();
 
   const [isPaused, setIsPaused] = useState<boolean>(false);
   const [isGameOver, setIsGameOver] = useState<boolean>(false);
@@ -40,7 +34,6 @@ export const Game = () => {
   const handlePause = () => {
     shouldPause(true);
     setIsPaused(true);
-    console.log('paused?', animationPlayState);
     analytics.logEvent('click_game_pause_button', {
       game_type: 'karrot_clicker',
     });
@@ -49,7 +42,6 @@ export const Game = () => {
   // Popup modal if user is new
   useEffect(() => {
     if (score === 0) {
-      console.log('score zero');
       updateAnimationPlayState('paused');
       setIsUserNew(true);
     } else {
@@ -59,7 +51,6 @@ export const Game = () => {
 
   useEffect(() => {
     if (isTop) {
-      console.log('is top?', isTop);
       analytics.logEvent('view_game_page', {
         game_type: 'karrot_clicker',
       });
@@ -67,7 +58,6 @@ export const Game = () => {
   }, [analytics, isTop]);
 
   const updateUserInfo = useCallback(async () => {
-    console.log('update user info attempt, userId:', userId);
     if (userId) {
       return;
     } else {
@@ -75,13 +65,10 @@ export const Game = () => {
         const {
           data: { data },
         } = await minigameApi.userApi.getUserInfoUsingGET();
-        console.log(data);
         if (data) {
           setUserInfo(data.id, data.nickname);
           // FA: track user with set user id
           analytics.setUserId(data.id);
-
-          console.log('setuserinfo', data.id, data.nickname);
         }
       } catch (error) {
         console.error(error);
@@ -92,7 +79,7 @@ export const Game = () => {
   useEffect(() => {
     if (isTop) {
       analytics.logEvent('view_game_page', {
-        game_type: 'karrot_clicker',
+        game_type: '2048_puzzle',
       });
       if (userId === '') {
         updateUserInfo();
@@ -291,19 +278,3 @@ const popupModalStyle = css`
   padding: 55px 20px 25px;
   border-radius: 21px;
 `;
-
-// useEffect(() => {
-//   console.log('aaaaasasfasfas');
-//   const unblock = history.block((location, action) => {
-//     if (action === 'POP') {
-//       setIsPaused(true);
-//       return false;
-//     }
-//     return undefined;
-//   });
-//   if (isTop) {
-//     unblock();
-//   }
-
-//   return () => unblock();
-// }, [isTop]);

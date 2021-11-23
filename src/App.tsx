@@ -68,7 +68,6 @@ const App: React.FC = () => {
     const code: string | null = searchParams.get('code');
     const regionId: string | null = searchParams.get('region_id');
     const isInstalled: string | null = searchParams.get('installed');
-    console.log(preload, code, regionId, isInstalled);
     return [preload, code, regionId, isInstalled];
   };
 
@@ -80,13 +79,6 @@ const App: React.FC = () => {
         } = await minigameApi.regionApi.getTownInfoUsingGET(regionId);
         if (data) {
           setTownInfo(data.townId, data.name1, data.name2, data.name3);
-          console.log(
-            'get district info',
-            data.townId,
-            data.name1,
-            data.name2,
-            data.name3
-          );
         }
       } catch (error) {
         console.error(error);
@@ -98,7 +90,6 @@ const App: React.FC = () => {
 
   const fetchData = useCallback(
     async (code: string, regionId: string) => {
-      console.log('fetch data', code, regionId);
       await signAccessToken(code, regionId);
       // await updateUserInfo();
     },
@@ -107,11 +98,9 @@ const App: React.FC = () => {
 
   useEffect(() => {
     if (accessToken) {
-      console.log('remove cookie');
       removeCookie('accessToken');
     }
-    const [preload, code, regionId, isInstalled] = getQueryParams();
-    console.log(preload, code, regionId, isInstalled);
+    const [, code, regionId, isInstalled] = getQueryParams();
     analytics.logEvent('launch_app');
 
     setRegionInfo(regionId as string);
@@ -141,7 +130,6 @@ const App: React.FC = () => {
         <Navigator
           theme="Cupertino"
           onClose={() => {
-            console.log('Close button is pressed');
             karrotMarketMini.close();
           }}
         >

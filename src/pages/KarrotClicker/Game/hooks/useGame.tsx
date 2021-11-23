@@ -68,10 +68,6 @@ export const useGame = () => {
     start();
   }, [onIncrementClickCount, start, updateAnimationPlayState]);
 
-  // useEffect(() => {
-  //   console.log('is paused,', isPaused);
-  //   console.log('is idle?', isIdle());
-  // });
   return {
     clickCount,
     animationPlayState,

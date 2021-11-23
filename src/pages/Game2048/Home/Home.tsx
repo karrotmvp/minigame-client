@@ -98,7 +98,6 @@ export const Home = () => {
   const handleGameStart = () => {
     // bypass in web environment
     if (isInWebEnvironment) {
-      console.log('bypass in web environment: home-page to game-page');
       goToGamePage();
       return;
     }
@@ -126,7 +125,6 @@ export const Home = () => {
   //       lastWeek.year
   //     );
   //     if (data && data[0]) {
-  //       console.log(data);
   //       setLastWeekTopTownie({ name: data[0].nickname, score: data[0].score });
   //     }
   //   } catch (error) {
@@ -146,8 +144,6 @@ export const Home = () => {
   //       lastWeek.year
   //     );
   //     if (data && data[0]) {
-  //       console.log(data);
-
   //       setLastWeekTopDistrict({
   //         townName1: data[0].name1,
   //         townName2: data[0].name2,
@@ -232,20 +228,14 @@ export const Home = () => {
   const [shouldSticky, setShouldSticky] = useState(false);
 
   const onScroll = (e: any) => {
-    console.log('scrolling');
-
     const offsetY = e.target.scrollTop;
-    // const screenHeight = window.innerHeight;
     const limit = 205;
-    console.log(limit, offsetY);
-    // console.log(targetRef.current);
     if (limit < offsetY) {
       setShouldSticky(true);
       // disable();
     } else {
       setShouldSticky(false);
       // enable();
-      // console.log('scrolling down', offsetY);
     }
   };
 

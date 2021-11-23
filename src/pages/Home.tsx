@@ -75,7 +75,6 @@ export const Home: React.FC = () => {
     setGameTypeToGame2048();
     // bypass in web environment
     if (isInWebEnvironment) {
-      console.log('bypass in web environment: main to game-2048');
       push(`/game-2048`);
       return;
     }
@@ -111,7 +110,6 @@ export const Home: React.FC = () => {
   const goToKarrotClicker = async () => {
     setGameTypeToKarrotClicker();
     if (isInWebEnvironment) {
-      console.log('bypass in web environment: main to karrot-clicker');
       push(`/karrot-clicker`);
       return;
     }
@@ -163,7 +161,6 @@ export const Home: React.FC = () => {
     shareApp(url, text);
   };
   const triggerShareHandler = () => {
-    console.log('trigger share handler');
     if (accessToken) {
       handleShare();
     } else {
@@ -189,7 +186,6 @@ export const Home: React.FC = () => {
     handleInstallation(onSubscribeSucess);
   };
   const triggerInstallationHandler = () => {
-    console.log('trigger installation handler');
     if (accessToken) {
       handleInstallation(onSubscribeSucess);
     } else {
@@ -213,7 +209,6 @@ export const Home: React.FC = () => {
           type: 'OPEN_GAME' as NotificationRequestDtoTypeEnum,
         });
       if (data.status === 200) {
-        console.log('notification (game) success');
         analytics.logEvent('click_notification_button', {
           notification_type: 'new_game',
         });
@@ -247,7 +242,6 @@ export const Home: React.FC = () => {
   ]);
 
   const updateUserInfo = useCallback(async () => {
-    console.log('update user info attempt');
     if (userId) {
       return;
     } else {
@@ -255,13 +249,10 @@ export const Home: React.FC = () => {
         const {
           data: { data },
         } = await minigameApi.userApi.getUserInfoUsingGET();
-        console.log(data);
         if (data) {
           setUserInfo(data.id, data.nickname);
           // FA: track user with set user id
           analytics.setUserId(data.id);
-
-          console.log('setuserinfo', data.id, data.nickname);
         }
       } catch (error) {
         console.error(error);

@@ -17,9 +17,6 @@ export const useSignAccessToken = () => {
 
   const signAccessToken = useCallback(
     async (code: string, regionId: string) => {
-      // removeCookie('accessToken', { path: '/' });
-      // console.log('useSignAccessToken, removeCookie:', cookies.accessToken);
-
       try {
         const {
           data: { data },
@@ -29,14 +26,12 @@ export const useSignAccessToken = () => {
         });
         if (data) {
           setCookie('accessToken', data.accessToken);
-          console.log('useSignAccessToken, setCookie:', cookies.accessToken);
+
           return true;
         }
-      } catch (error) {
-        console.log(error);
-      }
+      } catch (error) {}
     },
-    [cookies.accessToken, minigameApi.oauth2Api, setCookie]
+    [minigameApi.oauth2Api, setCookie]
   );
 
   return {

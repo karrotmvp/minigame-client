@@ -26,7 +26,7 @@ export const Guide: React.FC<Props> = (props) => {
   const analytics = useAnalytics();
   const minigameApi = useMinigameApi();
   const { setUserInfo } = useUserData();
-  const { updateAnimationPlayState, isPaused } = useGame();
+  const { updateAnimationPlayState } = useGame();
 
   const updateUserInfo = async () => {
     const {
@@ -36,16 +36,13 @@ export const Guide: React.FC<Props> = (props) => {
       setUserInfo(data.id, data.nickname);
       // FA: track user with set user id
       analytics.setUserId(data.id);
-      console.log('setuserinfo', data.id, data.nickname);
     }
   };
 
   const handleCloseGuide = () => {
     updateUserInfo();
     props.setIsUserNew(false);
-    console.log(isPaused);
     updateAnimationPlayState('running');
-    console.log('start game');
   };
   return (
     <>

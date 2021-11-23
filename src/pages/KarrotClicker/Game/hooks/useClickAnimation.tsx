@@ -51,7 +51,6 @@ export const useClickAnimation = () => {
   });
 
   const handleParticleSpawn = useCallback((posX, posY) => {
-    console.log(posX, posY);
     dispatch({ type: 'spawn', posX, posY });
   }, []);
   const handleParticleDestroy = useCallback<ParticleDestroyHandler>((id) => {
