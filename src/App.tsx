@@ -100,7 +100,7 @@ const App: React.FC = () => {
     if (accessToken) {
       removeCookie('accessToken');
     }
-    const [code, regionId, isInstalled] = getQueryParams();
+    const [, code, regionId, isInstalled] = getQueryParams();
     analytics.logEvent('launch_app');
 
     setRegionInfo(regionId as string);

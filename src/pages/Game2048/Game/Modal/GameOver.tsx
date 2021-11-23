@@ -48,6 +48,7 @@ export const GameOver: React.FC<Props> = (props) => {
   const handleViewLeaderboard = async () => {
     if (isInWebEnvironment) {
       goToLeaderboardPage();
+      // setShouldModalOpen(true);
       return;
     }
 
@@ -136,6 +137,7 @@ export const GameOver: React.FC<Props> = (props) => {
         <AnimatePresence>
           {showScore && (
             <Final
+              key="final-score"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1 }}
@@ -146,6 +148,7 @@ export const GameOver: React.FC<Props> = (props) => {
           )}
           {showRank && (
             <Final
+              key="final-rank"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1 }}
