@@ -294,9 +294,8 @@ export const Home: React.FC = () => {
         <CardContainer className="container--games">
           <Card game={`game-2048`} onClick={goToGame2048}>
             <CardImg1 src={Game2048CardImgUrl} />
-
             <Title>
-              퍼즐 2048
+              2048 퍼즐
               <img
                 src={newUrl}
                 alt=""
@@ -306,7 +305,6 @@ export const Home: React.FC = () => {
                 }}
               />
             </Title>
-
             <Text>
               동네 천재 타이틀을 원한다면?
               <br />
@@ -528,6 +526,7 @@ const ActionButton = styled.img`
 
 const Break = styled.div`
   background: #f8f8f8;
+  min-height: 6px;
   height: 6px;
   margin: 30px 0 22px;
 `;

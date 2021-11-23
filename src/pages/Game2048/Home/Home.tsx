@@ -1,7 +1,11 @@
 import styled from '@emotion/styled';
 import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
 import { LeaderboardTabs } from 'pages/Game2048/Leaderboard/LeaderboardTabs';
-import { LastWeekTopDistrict, LastWeekTopTownie } from './LastWeekWinner';
+// import { LastWeekTopDistrict, LastWeekTopTownie } from './LastWeekWinner';
+import {
+  VeryFirstWeekDistrict,
+  VeryFirstWeekTownie,
+} from './LastWeekWinner/VeryFirstWeek';
 import { rem } from 'polished';
 import { Button } from 'components/Button';
 import { useCallback, useEffect, useState } from 'react';
@@ -17,7 +21,7 @@ import { useMyGame2048Data } from '../hooks';
 import { useMini } from 'hooks';
 import { useThrottledCallback } from 'use-debounce/lib';
 import { useAnalytics } from 'services/analytics';
-import { lastWeek } from 'utils';
+// import { lastWeek } from 'utils';
 
 export const Home = () => {
   const { isTop } = useCurrentScreen();
@@ -40,15 +44,15 @@ export const Home = () => {
     []
   );
 
-  const [lastWeekTopDistrict, setLastWeekTopDistrict] = useState<{
-    townName1: string;
-    townName2: string;
-    score: number;
-  }>({ townName1: '', townName2: '', score: 0 });
-  const [lastWeekTopTownie, setLastWeekTopTownie] = useState<{
-    name: string;
-    score: number;
-  }>({ name: '', score: 0 });
+  // const [lastWeekTopDistrict, setLastWeekTopDistrict] = useState<{
+  //   townName1: string;
+  //   townName2: string;
+  //   score: number;
+  // }>({ townName1: '', townName2: '', score: 0 });
+  // const [lastWeekTopTownie, setLastWeekTopTownie] = useState<{
+  //   name: string;
+  //   score: number;
+  // }>({ name: '', score: 0 });
   const goToPlatformPage = () => {
     pop();
   };
@@ -101,50 +105,50 @@ export const Home = () => {
 
   // last week winner handler
   // =================================================================
-  const getLastWeekTopTownie = async () => {
-    try {
-      const {
-        data: { data },
-      } = await minigameApi.gameUserApi.getLeaderBoardByUserUsingGET(
-        gameType,
-        lastWeek.month,
-        1,
-        lastWeek.week,
-        lastWeek.year
-      );
-      if (data && data[0]) {
-        console.log(data);
-        setLastWeekTopTownie({ name: data[0].nickname, score: data[0].score });
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  // const getLastWeekTopTownie = async () => {
+  //   try {
+  //     const {
+  //       data: { data },
+  //     } = await minigameApi.gameUserApi.getLeaderBoardByUserUsingGET(
+  //       gameType,
+  //       lastWeek.month,
+  //       1,
+  //       lastWeek.week,
+  //       lastWeek.year
+  //     );
+  //     if (data && data[0]) {
+  //       console.log(data);
+  //       setLastWeekTopTownie({ name: data[0].nickname, score: data[0].score });
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
 
-  const getLastWeekTopDistrict = async () => {
-    try {
-      const {
-        data: { data },
-      } = await minigameApi.gameTownApi.getLeaderBoardByTownUsingGET(
-        gameType,
-        lastWeek.month,
-        1,
-        lastWeek.week,
-        lastWeek.year
-      );
-      if (data && data[0]) {
-        console.log(data);
+  // const getLastWeekTopDistrict = async () => {
+  //   try {
+  //     const {
+  //       data: { data },
+  //     } = await minigameApi.gameTownApi.getLeaderBoardByTownUsingGET(
+  //       gameType,
+  //       lastWeek.month,
+  //       1,
+  //       lastWeek.week,
+  //       lastWeek.year
+  //     );
+  //     if (data && data[0]) {
+  //       console.log(data);
 
-        setLastWeekTopDistrict({
-          townName1: data[0].name1,
-          townName2: data[0].name2,
-          score: data[0].score,
-        });
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  //       setLastWeekTopDistrict({
+  //         townName1: data[0].name1,
+  //         townName2: data[0].name2,
+  //         score: data[0].score,
+  //       });
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
 
   // refresh button handler
   // =================================================================
@@ -207,8 +211,8 @@ export const Home = () => {
   useEffect(() => {
     if (isTop) {
       handleRefresh();
-      getLastWeekTopTownie();
-      getLastWeekTopDistrict();
+      // getLastWeekTopTownie();
+      // getLastWeekTopDistrict();
     }
     if (rank !== 0) {
       setIsRanked(true);
@@ -273,7 +277,7 @@ export const Home = () => {
                 <BannerImage />
               </Banner>
               <Container className="last-week-winner">
-                <LastWeekTopDistrict
+                {/* <LastWeekTopDistrict
                   townName1={lastWeekTopDistrict.townName1}
                   townName2={lastWeekTopDistrict.townName2}
                   score={lastWeekTopDistrict.score}
@@ -281,7 +285,9 @@ export const Home = () => {
                 <LastWeekTopTownie
                   name={lastWeekTopTownie.name}
                   score={lastWeekTopTownie.score}
-                />
+                /> */}
+                <VeryFirstWeekDistrict />
+                <VeryFirstWeekTownie />
               </Container>
             </div>
             <div
