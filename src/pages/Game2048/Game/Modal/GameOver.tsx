@@ -80,10 +80,13 @@ export const GameOver: React.FC<Props> = (props) => {
 
   useEffect(() => {
     if (isTop) {
+      analytics.logEvent('view_game_over_modal', {
+        game_type: '2048_puzzle',
+      });
       getMyData();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isTop]);
+  }, [analytics, isTop]);
 
   // animation handler
   const [showScore, setShowScore] = useState(false);

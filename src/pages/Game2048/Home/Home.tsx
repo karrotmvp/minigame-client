@@ -54,6 +54,10 @@ export const Home = () => {
   //   score: number;
   // }>({ name: '', score: 0 });
   const goToPlatformPage = () => {
+    analytics.logEvent('click_leave_game_button', {
+      game_type: '2048_puzzle',
+      location: 'home_page',
+    });
     pop();
   };
   const goToGamePage = () => {

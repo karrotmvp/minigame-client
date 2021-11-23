@@ -44,7 +44,7 @@ export const Leaderboard = () => {
   const goBackToPlatform = () => {
     analytics.logEvent('click_leave_game_button', {
       game_type: '2048_puzzle',
-      from: 'leaderboard_page',
+      location: 'leaderboard_page',
     });
     push(`/`);
   };
@@ -120,15 +120,17 @@ export const Leaderboard = () => {
   const throttledRefresh = useThrottledCallback(handleRefresh, 3000);
 
   useEffect(() => {
-    console.log(isTop, 'isTop');
     if (isTop) {
+      analytics.logEvent('view_leaderboard_page', {
+        game_type: '2048_puzzle',
+      });
       handleRefresh();
     }
     if (rank !== 0) {
       setIsRanked(() => true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isTop, rank]);
+  }, [analytics, isTop, rank]);
 
   const handleShare = () => {
     analytics.logEvent('click_share_button', {

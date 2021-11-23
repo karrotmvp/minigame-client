@@ -147,11 +147,14 @@ export const Game: React.FC = () => {
 
   useEffect(() => {
     if (isTop) {
+      analytics.logEvent('view_game_page', {
+        game_type: '2048_puzzle',
+      });
       if (userId === '') {
         updateUserInfo();
       }
     }
-  }, [isTop, updateUserInfo, userId]);
+  }, [analytics, isTop, updateUserInfo, userId]);
 
   return (
     <>

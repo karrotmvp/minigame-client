@@ -271,10 +271,11 @@ export const Home: React.FC = () => {
 
   useEffect(() => {
     if (isTop) {
+      analytics.logEvent('view_platform_page');
       updateUserInfo();
       checkNotificationStatus();
     }
-  }, [checkNotificationStatus, isTop, updateUserInfo]);
+  }, [analytics, checkNotificationStatus, isTop, updateUserInfo]);
 
   // =================================================================
 

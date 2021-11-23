@@ -74,9 +74,9 @@ export const PostComment: React.FC<Props> = (props) => {
 
   useEffect(() => {
     if (isTop) {
-      // analytics.logEvent('view_comment_modal', {
-      //   game_type: 'karrot_clicker',
-      // });
+      analytics.logEvent('view_comment_modal', {
+        game_type: '2048_puzzle',
+      });
     }
   });
   return (
