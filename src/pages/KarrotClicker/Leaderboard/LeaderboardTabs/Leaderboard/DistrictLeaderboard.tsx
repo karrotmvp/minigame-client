@@ -4,7 +4,7 @@ import styled from '@emotion/styled';
 import { RefreshButton } from 'components/Button';
 import { useCallback, useEffect, useState } from 'react';
 import { DefaultDistrictRow, TopDistrictRow } from '../Row';
-// import { WeeklyCountdown } from 'components/Timer';
+import { WeeklyCountdown } from 'components/Timer';
 import { useMinigameApi } from 'services/api/minigameApi';
 import { useMyKarrotClickerData } from 'pages/KarrotClicker/hooks';
 import { useAnalytics } from 'services/analytics';
@@ -61,8 +61,15 @@ export const DistrictLeaderboard: React.FC = () => {
             gap: '4px',
           }}
         >
-          <p>이번 주 랭킹</p>
-          {/* <WeeklyCountdown /> */}
+          <p>
+            이번 주 랭킹&nbsp;&nbsp;
+            <span>
+              | 초기화 까지
+              <span>
+                <WeeklyCountdown />
+              </span>
+            </span>
+          </p>
         </div>
         <RefreshButton handleRefresh={refreshLeaderboard} />
       </Refresh>
@@ -120,6 +127,19 @@ const Refresh = styled.div`
     /* or 19px */
 
     color: #5b5b5b;
+
+    span {
+      font-size: 10px;
+      line-height: 161.7%;
+      font-style: normal;
+      font-weight: normal;
+      /* or 16px */
+
+      color: #5b5b5b;
+      span {
+        color: #eb5d0e;
+      }
+    }
   }
 `;
 const leaderboardWrapperStyle = css`
@@ -128,7 +148,7 @@ const leaderboardWrapperStyle = css`
   align-items: center;
   width: 100%;
   height: 100%;
-  overflow-y: scroll;
+  overflow-y: auto;
   padding-bottom: 60px;
 
   // Hide scrollbar but keep functionality

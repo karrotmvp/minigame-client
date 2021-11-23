@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 import { motion } from 'framer-motion';
 import { boardPadding } from '../styles';
-
+import { ReactComponent as GuideCircle } from 'assets/svg/game2048/guide_circle.svg';
 const GuideMotion = styled(motion.div)<{
   cellWidth: number;
   offsetY: number;
@@ -9,11 +9,13 @@ const GuideMotion = styled(motion.div)<{
 }>`
   width: ${(props) => props.cellWidth}px;
   height: ${(props) => props.cellWidth}px;
-  background: black;
   position: absolute;
   top: ${(props) => props.offsetY}px;
   left: ${(props) => props.offsetX}px;
   z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 type Props = {
@@ -27,10 +29,12 @@ export const Guide: React.FC<Props> = (props) => {
       (props.cellWidth + boardPadding * 16) * coordinate + boardPadding * 16;
     return pixel;
   };
+  const animateDistance = props.cellWidth * 2 + boardPadding * 16 * 2;
+  console.log(animateDistance);
   return (
     <GuideMotion
       animate={{
-        x: -(props.cellWidth * 2),
+        x: -animateDistance,
       }}
       transition={{
         duration: 2,
@@ -42,6 +46,8 @@ export const Guide: React.FC<Props> = (props) => {
       cellWidth={props.cellWidth}
       offsetY={coordinateToPixels(coordinate[0])}
       offsetX={coordinateToPixels(coordinate[1])}
-    />
+    >
+      <GuideCircle />
+    </GuideMotion>
   );
 };

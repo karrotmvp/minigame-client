@@ -1,11 +1,12 @@
 import { useCurrentScreen } from '@karrotframe/navigator';
 import { useState, useEffect, useCallback } from 'react';
+import { nextMonday } from 'date-fns';
 
 function _getNextMonday() {
-  let date = new Date('November 3, 2021');
-  date.setDate(date.getDate() + ((7 - date.getDay()) % 7) + 1);
-  date.setHours(0, 0, 0, 0);
-  return date.getTime();
+  let date = new Date();
+  let next = nextMonday(date);
+  next.setHours(0, 0, 0, 0);
+  return next.getTime();
 }
 function _getCurrentTime() {
   let date = new Date();

@@ -6,7 +6,7 @@ import karrotImageUrl from 'assets/svg/KarrotClicker/small_circle_karrot.svg';
 
 import React, { useEffect, useState } from 'react';
 import ReactModal from 'react-modal';
-import { commafy } from 'utils/functions/numberFunctions';
+import { commafy } from 'utils/numberFunctions';
 import { useAnalytics } from 'services/analytics';
 import { OldButton } from 'components/Button';
 import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
@@ -66,11 +66,12 @@ export const GamePause: React.FC<GamePauseProps> = (props) => {
       const {
         data: { data },
       } = await minigameApi.gameUserApi.getMyRankInfoUsingGET('GAME_KARROT');
-      console.log(data);
+      console.log(data, data?.score, data?.rank);
 
-      if (data && data.rank && data.score) {
-        console.log(data, data.score, data.rank);
+      if (data && data.rank !== undefined && data.score !== undefined) {
+        console.log('asdf');
         updateMyKarrotClickerData(data.score, data.rank);
+
         if (data.rank > 0 && data.rank <= 10) {
           analytics.logEvent('click_game_end_button', {
             game_type: 'karrot-clicker',

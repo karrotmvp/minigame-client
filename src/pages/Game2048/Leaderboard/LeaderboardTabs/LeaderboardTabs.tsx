@@ -3,13 +3,13 @@ import styled from '@emotion/styled';
 import { useCurrentScreen } from '@karrotframe/navigator';
 import { Tabs } from '@karrotframe/tabs';
 import '@karrotframe/tabs/index.css';
-import { motion } from 'framer-motion';
 import { useCallback, useState } from 'react';
 import { DistrictLeaderboard, UserLeaderboard } from './Leaderboard';
 
 type Props = {
   districtLeaderboardData: any[];
   userLeaderboardData: any[];
+  shouldSticky?: boolean;
 };
 export const LeaderboardTabs: React.FC<Props> = (props) => {
   const { isTop } = useCurrentScreen();
@@ -21,12 +21,12 @@ export const LeaderboardTabs: React.FC<Props> = (props) => {
     }
   };
   return (
-    <LeaderboardContainer drag="y">
+    <LeaderboardContainer>
       <Tabs
         className={css`
           --kf_tabs_tabBar-borderColor: none;
           --kf_tabs_tabBar-indicator-color: none;
-          --kf_tabs_tabBar-activeFontColor: hotpink;
+          --kf_tabs_tabBar-activeFontColor: #0e74ff;
         `}
         activeTabKey={activeTabKey}
         tabs={[
@@ -61,15 +61,11 @@ export const LeaderboardTabs: React.FC<Props> = (props) => {
   );
 };
 
-const LeaderboardContainer = styled(motion.div)`
+const LeaderboardContainer = styled.div`
   flex: 1;
+  height: 100%;
   overflow: auto;
-  padding: 18px 18px 0;
-  margin: 0 18px;
-  max-height: inherit;
+  // max-height: inherit;
   background: #ffffff;
-  border: 1px solid #ebe0db;
   box-sizing: border-box;
-  border-radius: 10px 10px 0 0;
-  border-bottom-style: none;
 `;

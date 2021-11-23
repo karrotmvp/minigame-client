@@ -45,12 +45,12 @@ const UserScoreExists: React.FC<UserScoreExistsProps> = (props) => {
 };
 
 export const Leaderboard = () => {
-  const { replace } = useNavigator();
+  const { push, replace } = useNavigator();
   const { isTop } = useCurrentScreen();
   const analytics = useAnalytics();
   const minigameApi = useMinigameApi();
   const karrotMarketMini = useMini();
-  const { nickname, districtName } = useUserData();
+  const { nickname, townName2: districtName } = useUserData();
   const { gameType, score, rank, comment, updateMyKarrotClickerData } =
     useMyKarrotClickerData();
   const { onResetCount, resumeGame } = useGame();
@@ -59,9 +59,12 @@ export const Leaderboard = () => {
   const goToGamePage = () => {
     replace(`/karrot-clicker/game`);
   };
-  const leaveMiniApp = () => {
-    analytics.logEvent('click_leave_mini_app_button');
-    karrotMarketMini.ejectApp();
+  const goBackToPlatform = () => {
+    analytics.logEvent('click_leave_game_button', {
+      game_type: 'karrot-clicker',
+      from: 'leaderboard_page',
+    });
+    push(`/`);
   };
 
   const handlePlayAgain = async () => {
@@ -75,12 +78,12 @@ export const Leaderboard = () => {
   };
 
   const handleShare = () => {
-    const url = 'https://daangn.onelink.me/HhUa/3a219555';
-    const text =
-      '우리동네에서 나는 몇 등? 당근모아를 플레이 하고 동네 이웃들에게 한 마디를 남겨보세요!';
+    const url = 'https://daangn.onelink.me/HhUa/31bbbcf';
+    const text = `${nickname}님은 당근모아에서 전국 ${rank}등!`;
     karrotMarketMini.shareApp(url, text);
     analytics.logEvent('click_share_button', {
       game_type: 'karrot-clicker',
+      location: 'leaderboard_page',
     });
   };
 
@@ -111,7 +114,7 @@ export const Leaderboard = () => {
   }, [analytics, isTop]);
   return (
     <Page className="">
-      <Nav appendLeft={<CloseIcon />} onClickLeft={leaveMiniApp} />
+      <Nav appendLeft={<CloseIcon />} onClickLeft={goBackToPlatform} />
       {score === 0 ? null : (
         <Heading>
           <EmphasizedSpan>{nickname}</EmphasizedSpan>님은
@@ -121,24 +124,6 @@ export const Leaderboard = () => {
       )}
 
       <MyRow>
-        {/* {rank > 0 && rank <= 10 ? (
-          <TopUserRow
-            me={true}
-            rank={rank}
-            nickname={nickname}
-            score={score}
-            comment={comment}
-            districtName={districtName!}
-          />
-        ) : (
-          <DefaultUserRow
-            me={true}
-            rank={rank}
-            nickname={nickname}
-            score={score}
-            districtName={districtName}
-          />
-        )} */}
         {score === 0 ? null : (
           <UserScoreExists
             nickname={nickname}

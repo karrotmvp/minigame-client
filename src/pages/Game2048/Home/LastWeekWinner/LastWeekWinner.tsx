@@ -1,6 +1,42 @@
 import styled from '@emotion/styled';
 import { rem } from 'polished';
-import { useEffect } from 'react';
+import BadgeUrl from 'assets/svg/game2048/top_badge.svg';
+import { commafy } from 'utils';
+
+type DistrictProps = {
+  townName1: string;
+  townName2: string;
+  score: number;
+};
+export const LastWeekTopDistrict: React.FC<DistrictProps> = (props) => {
+  return (
+    <Container>
+      <Title>
+        지난 주 <span>1등 동네</span>
+      </Title>
+      <Name>
+        {props.townName1.slice(0, 2)} {props.townName2}
+      </Name>
+      <Score>{commafy(props.score)}점</Score>
+    </Container>
+  );
+};
+
+type TownieProps = {
+  name: string;
+  score: number;
+};
+export const LastWeekTopTownie: React.FC<TownieProps> = (props) => {
+  return (
+    <Container>
+      <Title>
+        지난 주 <span>전국 1등</span>
+      </Title>
+      <Name>{props.name}</Name>
+      <Score>{commafy(props.score)}점</Score>
+    </Container>
+  );
+};
 
 const Container = styled.div`
   display: flex;
@@ -17,11 +53,32 @@ const Container = styled.div`
   background: #f3f8ff;
   border: 1px solid #5ba1ff;
   border-radius: 10px;
+
+  position: relative;
+
+  &::before {
+    content: '';
+    background-image: url(${BadgeUrl});
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    width: 23px;
+    height: 31px;
+    position: absolute;
+    top: -11px;
+    left: 17px;
+  }
 `;
 const Title = styled.p`
   color: #0e74ff;
   font-size: ${rem(10)};
   text-align: center;
+
+  span {
+    color: #ec9c00;
+    font-size: ${rem(12)};
+    font-weight: bold;
+  }
 `;
 const Name = styled.h3`
   color: #0e74ff;
@@ -33,45 +90,3 @@ const Score = styled.div`
   color: #0e74ff;
   font-size: ${rem(10)};
 `;
-
-const Highlight = styled.span`
-  color: #ec9c00;
-  font-size: ${rem(12)};
-  font-weight: bold;
-`;
-
-type TownieProps = {
-  getLastWeekTopTownie: () => void;
-};
-export const LastWeekTopTownie: React.FC<TownieProps> = (props) => {
-  useEffect(() => {
-    props.getLastWeekTopTownie();
-  }, [props]);
-  return (
-    <Container>
-      <Title>
-        지난 주 <Highlight>1등 동네</Highlight>
-      </Title>
-      <Name>district_name</Name>
-      <Score>9999</Score>
-    </Container>
-  );
-};
-
-type DistrictProps = {
-  getLastWeekTopDistrict: () => void;
-};
-export const LastWeekTopDistrict: React.FC<DistrictProps> = (props) => {
-  useEffect(() => {
-    props.getLastWeekTopDistrict();
-  }, [props]);
-  return (
-    <Container>
-      <Title>
-        지난 주 <Highlight>1등 주민</Highlight>
-      </Title>
-      <Name>townie_name</Name>
-      <Score>99999</Score>
-    </Container>
-  );
-};

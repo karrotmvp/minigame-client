@@ -1,9 +1,9 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Modal from 'react-modal';
-import { commafy } from 'utils/functions/numberFunctions';
+import { commafy } from 'utils/numberFunctions';
 import { useAnalytics } from 'services/analytics';
 import gameBackgroundUrl from 'assets/images/KarrotClicker/game_background.png';
 import { Guide } from './NewUser';
@@ -13,13 +13,16 @@ import { useCurrentScreen } from '@karrotframe/navigator';
 import { useMyKarrotClickerData } from '../hooks';
 import { GameOver, GamePause } from './Modal';
 import { useGame } from './hooks';
+import { useUserData } from 'hooks';
+import { useMinigameApi } from 'services/api/minigameApi';
 
 Modal.setAppElement(document.createElement('div'));
 
 export const Game = () => {
   const { isTop } = useCurrentScreen();
   const analytics = useAnalytics();
-
+  const { userId, setUserInfo } = useUserData();
+  const minigameApi = useMinigameApi();
   const { score } = useMyKarrotClickerData();
   const {
     clickCount,
@@ -60,6 +63,37 @@ export const Game = () => {
       analytics.logEvent('view_game_page', { game_type: 'karrot-clicker' });
     }
   }, [analytics, isTop]);
+
+  const updateUserInfo = useCallback(async () => {
+    console.log('update user info attempt, userId:', userId);
+    if (userId) {
+      return;
+    } else {
+      try {
+        const {
+          data: { data },
+        } = await minigameApi.userApi.getUserInfoUsingGET();
+        console.log(data);
+        if (data) {
+          setUserInfo(data.id, data.nickname);
+          // FA: track user with set user id
+          analytics.setUserId(data.id);
+
+          console.log('setuserinfo', data.id, data.nickname);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  }, [analytics, minigameApi.userApi, setUserInfo, userId]);
+
+  useEffect(() => {
+    if (isTop) {
+      if (userId === '') {
+        updateUserInfo();
+      }
+    }
+  }, [isTop, updateUserInfo, userId]);
 
   return (
     <>

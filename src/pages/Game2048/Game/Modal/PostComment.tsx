@@ -1,11 +1,14 @@
 import styled from '@emotion/styled';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, DisabledButton } from 'components/Button';
-import { useNavigator } from '@karrotframe/navigator';
+import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
 import { useUserData } from 'hooks';
 import { useMyGame2048Data } from 'pages/Game2048/hooks';
 import { rem } from 'polished';
+import { ReactComponent as Wow } from 'assets/svg/game2048/wow.svg';
 import { useMinigameApi } from 'services/api/minigameApi';
+import { useMini } from 'hooks';
+import { useAnalytics } from 'services/analytics';
 
 type CommentType = {
   comment: string;
@@ -13,22 +16,25 @@ type CommentType = {
 };
 
 type Props = {
-  setIsUserInTopTen: React.Dispatch<React.SetStateAction<boolean>>;
+  setShouldModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  // shouldOpen: any;
 };
 
 export const PostComment: React.FC<Props> = (props) => {
-  const { push } = useNavigator();
+  const analytics = useAnalytics();
+  const { isTop } = useCurrentScreen();
+  const { replace } = useNavigator();
   const minigameApi = useMinigameApi();
-  const { districtName } = useUserData();
-  const { score, rank, comment, gameType, updateMyGame2048Data } =
-    useMyGame2048Data();
+  const { townName2: districtName } = useUserData();
+  const { isInWebEnvironment } = useMini();
+  const { score, rank, comment, updateMyComment } = useMyGame2048Data();
   const [newComment, setNewComment] = useState<CommentType>({
     comment: comment,
     length: comment.length,
   });
   // Page navigation
   const goToLeaderboardPage = () => {
-    push(`/game-2048/leaderboard`);
+    replace(`/game-2048/leaderboard`);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -38,26 +44,56 @@ export const PostComment: React.FC<Props> = (props) => {
     });
   };
 
-  const patchComment = () => {
-    // minigameApi
-    //   .gamePlayApi()
-    //   .addCommentUsingPATCH(gameType, newComment.comment);
-    updateMyGame2048Data(score, rank, newComment.comment);
-    props.setIsUserInTopTen(false);
-    goToLeaderboardPage();
+  const patchComment = async () => {
+    if (isInWebEnvironment) {
+      updateMyComment(newComment.comment);
+      goToLeaderboardPage();
+      return;
+    }
+    updateMyComment(newComment.comment);
+    const { data } = await minigameApi.gamePlayApi.addCommentUsingPATCH(
+      'GAME_2048',
+      {
+        comment: newComment.comment,
+      }
+    );
+    if (data.status === 200) {
+      analytics.logEvent('click_submit_comment_button', {
+        game_type: 'game-2048',
+        score: score,
+        rank: rank,
+      });
+      props.setShouldModalOpen(false);
+      goToLeaderboardPage();
+    }
   };
 
+  useEffect(() => {
+    if (isTop) {
+      // analytics.logEvent('view_comment_modal', {
+      //   game_type: 'karrot-clicker',
+      // });
+    }
+  });
   return (
     <>
+      <div
+        style={{
+          padding: `6px 0 25px`,
+        }}
+      >
+        <Wow />
+      </div>
+
       <Congrats>
         <span>혹시..천재세요?</span>
         <br />
-        <span>{rank}위</span>로 순위권에 들었어요!
+        <span>{rank}위</span>로 Top 10에 들었어요!
       </Congrats>
       <Text>
-        {districtName} 이웃들에게
+        전국 Top 10만 쓸 수 있는 한 마디!
         <br />
-        하고 싶은 말을 남겨보세요
+        이웃들에게 자랑해보세요
       </Text>
       <ActionItems>
         <CommentInput>

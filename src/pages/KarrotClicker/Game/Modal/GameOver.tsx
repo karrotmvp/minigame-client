@@ -4,7 +4,7 @@ import { emphasizedTextStyle, largeTextStyle } from 'styles/textStyle';
 import { ReactComponent as Karrot } from 'assets/svg/KarrotClicker/small_circle_karrot.svg';
 import { useEffect, useState } from 'react';
 import ReactModal from 'react-modal';
-import { commafy } from 'utils/functions/numberFunctions';
+import { commafy } from 'utils/numberFunctions';
 import { useAnalytics } from 'services/analytics';
 import { OldButton } from 'components/Button';
 import { CommentModal } from './CommentModal';
@@ -52,7 +52,8 @@ export const GameOver: React.FC<Props> = (props) => {
         data: { data },
       } = await minigameApi.gameUserApi.getMyRankInfoUsingGET('GAME_KARROT');
       if (data) {
-        if (data.score && data.rank) {
+        if (data.score !== undefined && data.rank !== undefined) {
+          console.log(data.score, data.rank);
           updateMyKarrotClickerData(data.score, data.rank);
           if (data.rank <= 10 && data.rank > 0) {
             analytics.logEvent('click_game_end_button', {

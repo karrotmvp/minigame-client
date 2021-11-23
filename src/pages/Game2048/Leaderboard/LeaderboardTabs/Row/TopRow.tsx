@@ -1,19 +1,78 @@
 import styled from '@emotion/styled';
-import { commafy } from 'utils/functions/numberFunctions';
+import { commafy } from 'utils/numberFunctions';
 import Medal1Url from 'assets/svg/game2048/medal1.svg';
-import Medal2Url from 'assets/svg/game2048/medal1.svg';
-import Medal3Url from 'assets/svg/game2048/medal1.svg';
+import Medal2Url from 'assets/svg/game2048/medal2.svg';
+import Medal3Url from 'assets/svg/game2048/medal3.svg';
 import { rem } from 'polished';
 
+interface TopUserRowProps {
+  me?: boolean;
+  rank: number;
+  nickname: string;
+  score: number;
+  comment: string | null;
+  cityName: string;
+  districtName: string;
+}
+export const TopUserRow: React.FC<TopUserRowProps> = (props) => {
+  let userComment;
+  if (props.comment === '' || props.comment === null) {
+    userComment = `한마디 작성 중...`;
+  } else {
+    userComment = `${props.comment}`;
+  }
+  return (
+    <Container me={props.me} rank={props.rank}>
+      <Rank>{props.rank <= 3 ? ' ' : commafy(props.rank)}</Rank>
+      <ContentsWrapper>
+        <Info>
+          <Name rank={props.rank}>
+            {props.nickname}
+            <DistrictName districtName={props.districtName}>
+              {props.cityName.slice(0, 2)} {props.districtName}
+            </DistrictName>
+          </Name>
+          <Score>{commafy(props.score)}</Score>
+        </Info>
+        <SpeechBalloon>{userComment}</SpeechBalloon>
+      </ContentsWrapper>
+    </Container>
+  );
+};
+
+interface TopDistrictTowProps {
+  rank: number;
+  cityName: string;
+  districtName: string;
+  playerCount: number;
+  score: number;
+  style?: React.CSSProperties;
+}
+export const TopDistrictRow: React.FC<TopDistrictTowProps> = (props) => {
+  return (
+    <Container rank={props.rank} style={props.style}>
+      <Rank>{props.rank <= 3 ? ' ' : commafy(props.rank)}</Rank>
+      <ContentsWrapper>
+        <Info>
+          <Name rank={props.rank}>
+            {props.cityName.slice(0, -3)} {props.districtName}
+          </Name>
+          <Score>{commafy(props.score)}</Score>
+        </Info>
+        <PlayerCount>{commafy(props.playerCount)}명 참여</PlayerCount>
+      </ContentsWrapper>
+    </Container>
+  );
+};
 const Container = styled.div<{ me?: boolean; rank?: number }>`
   display: flex;
   flex-flow: row;
   align-items: center;
 
-  padding: 12px 14px;
+  padding: 12px 20px 14px 26px;
   margin: 4px 0;
   width: 100%;
-  border-radius: ${(props) => (props.me === true ? '10px' : '5px')};
+  border-radius: 10px;
   border: 1px solid ${(props) => (props.me === true ? '#EBE0DB' : '#ececec')};
   background-color: #fff;
 
@@ -34,10 +93,9 @@ const Container = styled.div<{ me?: boolean; rank?: number }>`
     background-position: center center;
     width: 15px;
     height: 20px;
-    // transform: scale(1.5);
     position: absolute;
-    top: 16px;
-    left: 20px;
+    top: 15px;
+    left: 22px;
   }
 `;
 
@@ -46,16 +104,15 @@ const Rank = styled.div`
   display: flex;
   align-self: flex-start;
 
-  margin-top: 5px;
-  margin-left: 5px;
+  margin-top: 3px;
+  // margin-left: 5px;
 
-  font-style: normal;
   font-weight: bold;
   font-size: 12px;
   line-height: 161.7%;
   /* or 19px */
 
-  color: #5b5b5b;
+  color: #7c7c7c;
 `;
 const ContentsWrapper = styled.div`
   flex: 1;
@@ -152,62 +209,3 @@ const PlayerCount = styled.div`
 
   color: #7c7c7c;
 `;
-interface TopUserRowProps {
-  me?: boolean;
-  rank: number;
-  nickname: string;
-  score: number;
-  comment: string | null;
-  cityName: string;
-  districtName: string;
-}
-export const TopUserRow: React.FC<TopUserRowProps> = (props) => {
-  let userComment;
-  if (props.comment === '' || props.comment === null) {
-    userComment = `한마디 작성 중...`;
-  } else {
-    userComment = `${props.comment}`;
-  }
-  return (
-    <Container me={props.me} rank={props.rank}>
-      <Rank>{props.rank <= 3 ? ' ' : commafy(props.rank)}</Rank>
-      <ContentsWrapper>
-        <Info>
-          <Name rank={props.rank}>
-            {props.nickname}
-            <DistrictName districtName={props.districtName}>
-              {props.cityName.slice(0, 2)} {props.districtName}
-            </DistrictName>
-          </Name>
-          <Score>{commafy(props.score)}</Score>
-        </Info>
-        <SpeechBalloon>{userComment}</SpeechBalloon>
-      </ContentsWrapper>
-    </Container>
-  );
-};
-
-interface TopDistrictTowProps {
-  rank: number;
-  cityName: string;
-  districtName: string;
-  playerCount: number;
-  score: number;
-  // comment: string;
-}
-export const TopDistrictRow: React.FC<TopDistrictTowProps> = (props) => {
-  return (
-    <Container rank={props.rank}>
-      <Rank>{props.rank <= 3 ? ' ' : commafy(props.rank)}</Rank>
-      <ContentsWrapper>
-        <Info>
-          <Name rank={props.rank}>
-            {props.cityName.slice(0, -3)} {props.districtName}
-          </Name>
-          <Score>{commafy(props.score)}</Score>
-        </Info>
-        <PlayerCount>{commafy(props.playerCount)}명 참여</PlayerCount>
-      </ContentsWrapper>
-    </Container>
-  );
-};

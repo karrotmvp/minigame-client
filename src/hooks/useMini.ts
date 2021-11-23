@@ -13,8 +13,9 @@ export const useMini = () => {
   const { regionId, setUserInfo } = useUserData();
   const { accessToken } = useAccessToken();
   const { signAccessToken } = useSignAccessToken();
-  const presetUrl = karrotMarketMiniConfig().presetUrl;
   const appId = karrotMarketMiniConfig().appId;
+  const presetUrl = karrotMarketMiniConfig().presetUrl;
+  const installationUrl = karrotMarketMiniConfig().installationUrl;
 
   const updateUserInfo = async () => {
     const {
@@ -35,32 +36,31 @@ export const useMini = () => {
       return false;
     }
   })();
-
+  // Leave miniapp
   const ejectApp = () => {
     mini.close();
   };
 
-  const handleThirdPartyAgreement = async (runOnSuccess: () => void) => {
+  // Third-party agreement handler
+  const handleThirdPartyAgreement = async (runOnSuccess?: () => void) => {
     mini.startPreset({
       preset: presetUrl!,
       params: {
         appId: appId!,
       },
-      onSuccess: function (result) {
+      onSuccess: async function (result) {
         if (result && result.code) {
-          signAccessToken(result.code, regionId);
+          const response = await signAccessToken(result.code, regionId);
           analytics.logEvent('click_karrot_mini_preset_agree_button', {
             game_type: 'karrot-clicker',
           });
-
-          // return new Promise((resolve, reject) => {
-          //   if (accessToken) {
-          //     resolve('resolved');
-          //   } else {
-          //     reject('rejected');
-          //   }
-          // });
-          runOnSuccess();
+          console.log(response);
+          if (response === true) {
+            await updateUserInfo();
+            if (runOnSuccess) {
+              runOnSuccess();
+            }
+          }
         }
       },
       onClose: function () {
@@ -71,6 +71,37 @@ export const useMini = () => {
     });
   };
 
+  // Installation handler
+  const handleInstallation = async (
+    runOnSuccess?: () => void,
+    runOnClose?: () => void
+  ) => {
+    console.log('installation handler opened');
+    mini.startPreset({
+      preset: installationUrl!,
+      onSuccess: async function (result) {
+        console.log(result);
+        if (result.ok) {
+          console.log('즐겨찾기 성공');
+
+          if (runOnSuccess) {
+            runOnSuccess();
+          }
+        }
+      },
+      onFailure: async function () {
+        console.log('installation handler failed');
+      },
+      onClose: () => {
+        if (runOnClose) {
+          console.log('installation handler closed');
+          runOnClose();
+        }
+      },
+    });
+  };
+
+  // Share handler
   const shareApp = (url: string, text: string) => {
     mini.share({
       url,
@@ -82,6 +113,17 @@ export const useMini = () => {
     isInWebEnvironment,
     ejectApp,
     handleThirdPartyAgreement,
+    handleInstallation,
     shareApp,
   };
 };
+
+// const mini = getMini();
+// mini.startPreset({
+//   preset: `https://mini-assets.kr.karrotmarket.com/presets/mvp-game-recommend-installation/alpha.html`,
+//   onSuccess: async function (result) {
+//     if (result.ok) {
+//       console.log('즐겨찾기 성공');
+//     }
+//   },
+// });

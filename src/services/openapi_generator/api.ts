@@ -55,31 +55,62 @@ export interface BaseResponseListTownRankingDto {
 /**
  * 
  * @export
- * @interface BaseResponseListobject
+ * @interface BaseResponseListUserRankingDto
  */
-export interface BaseResponseListobject {
+export interface BaseResponseListUserRankingDto {
     /**
      * 
-     * @type {Array<object>}
-     * @memberof BaseResponseListobject
+     * @type {Array<UserRankingDto>}
+     * @memberof BaseResponseListUserRankingDto
      */
-    'data'?: Array<object>;
+    'data'?: Array<UserRankingDto>;
     /**
      * 
      * @type {string}
-     * @memberof BaseResponseListobject
+     * @memberof BaseResponseListUserRankingDto
      */
     'message'?: string;
     /**
      * 
      * @type {number}
-     * @memberof BaseResponseListobject
+     * @memberof BaseResponseListUserRankingDto
      */
     'status': number;
     /**
      * 
      * @type {string}
-     * @memberof BaseResponseListobject
+     * @memberof BaseResponseListUserRankingDto
+     */
+    'timestamp': string;
+}
+/**
+ * 
+ * @export
+ * @interface BaseResponseNotificationCheckDto
+ */
+export interface BaseResponseNotificationCheckDto {
+    /**
+     * 
+     * @type {NotificationCheckDto}
+     * @memberof BaseResponseNotificationCheckDto
+     */
+    'data'?: NotificationCheckDto;
+    /**
+     * 
+     * @type {string}
+     * @memberof BaseResponseNotificationCheckDto
+     */
+    'message'?: string;
+    /**
+     * 
+     * @type {number}
+     * @memberof BaseResponseNotificationCheckDto
+     */
+    'status': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof BaseResponseNotificationCheckDto
      */
     'timestamp': string;
 }
@@ -117,6 +148,37 @@ export interface BaseResponseRankingDto {
 /**
  * 
  * @export
+ * @interface BaseResponseRegionDto
+ */
+export interface BaseResponseRegionDto {
+    /**
+     * 
+     * @type {RegionDto}
+     * @memberof BaseResponseRegionDto
+     */
+    'data'?: RegionDto;
+    /**
+     * 
+     * @type {string}
+     * @memberof BaseResponseRegionDto
+     */
+    'message'?: string;
+    /**
+     * 
+     * @type {number}
+     * @memberof BaseResponseRegionDto
+     */
+    'status': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof BaseResponseRegionDto
+     */
+    'timestamp': string;
+}
+/**
+ * 
+ * @export
  * @interface BaseResponseTokenDto
  */
 export interface BaseResponseTokenDto {
@@ -142,37 +204,6 @@ export interface BaseResponseTokenDto {
      * 
      * @type {string}
      * @memberof BaseResponseTokenDto
-     */
-    'timestamp': string;
-}
-/**
- * 
- * @export
- * @interface BaseResponseTownDto
- */
-export interface BaseResponseTownDto {
-    /**
-     * 
-     * @type {TownDto}
-     * @memberof BaseResponseTownDto
-     */
-    'data'?: TownDto;
-    /**
-     * 
-     * @type {string}
-     * @memberof BaseResponseTownDto
-     */
-    'message'?: string;
-    /**
-     * 
-     * @type {number}
-     * @memberof BaseResponseTownDto
-     */
-    'status': number;
-    /**
-     * 
-     * @type {string}
-     * @memberof BaseResponseTownDto
      */
     'timestamp': string;
 }
@@ -272,37 +303,6 @@ export interface BaseResponseint {
 /**
  * 
  * @export
- * @interface BaseResponselong
- */
-export interface BaseResponselong {
-    /**
-     * 
-     * @type {number}
-     * @memberof BaseResponselong
-     */
-    'data'?: number;
-    /**
-     * 
-     * @type {string}
-     * @memberof BaseResponselong
-     */
-    'message'?: string;
-    /**
-     * 
-     * @type {number}
-     * @memberof BaseResponselong
-     */
-    'status': number;
-    /**
-     * 
-     * @type {string}
-     * @memberof BaseResponselong
-     */
-    'timestamp': string;
-}
-/**
- * 
- * @export
  * @interface CommentRequestDto
  */
 export interface CommentRequestDto {
@@ -335,6 +335,43 @@ export interface KarrotCodeRequestDto {
 /**
  * 
  * @export
+ * @interface NotificationCheckDto
+ */
+export interface NotificationCheckDto {
+    /**
+     * 
+     * @type {boolean}
+     * @memberof NotificationCheckDto
+     */
+    'check': boolean;
+}
+/**
+ * 
+ * @export
+ * @interface NotificationRequestDto
+ */
+export interface NotificationRequestDto {
+    /**
+     * 
+     * @type {string}
+     * @memberof NotificationRequestDto
+     */
+    'type': NotificationRequestDtoTypeEnum;
+}
+
+/**
+    * @export
+    * @enum {string}
+    */
+export enum NotificationRequestDtoTypeEnum {
+    OpenRegion = 'OPEN_REGION',
+    OpenGame = 'OPEN_GAME',
+    SubscribeOff = 'SUBSCRIBE_OFF'
+}
+
+/**
+ * 
+ * @export
  * @interface RankingDto
  */
 export interface RankingDto {
@@ -345,17 +382,48 @@ export interface RankingDto {
      */
     'comment'?: string;
     /**
-     * 순위(게임을 하지 않은 경우 => 0)
+     * 
      * @type {number}
      * @memberof RankingDto
      */
-    'rank'?: number;
+    'rank': number;
     /**
-     * 점수(게임을 하지 않은 경우 => 0)
+     * 
      * @type {number}
      * @memberof RankingDto
      */
-    'score'?: number;
+    'score': number;
+}
+/**
+ * 
+ * @export
+ * @interface RegionDto
+ */
+export interface RegionDto {
+    /**
+     * 
+     * @type {string}
+     * @memberof RegionDto
+     */
+    'name1': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof RegionDto
+     */
+    'name2': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof RegionDto
+     */
+    'name3': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof RegionDto
+     */
+    'townId': string;
 }
 /**
  * 
@@ -369,6 +437,25 @@ export interface ScoreRequestDto {
      * @memberof ScoreRequestDto
      */
     'score'?: number;
+}
+/**
+ * 
+ * @export
+ * @interface SurveyRequestDto
+ */
+export interface SurveyRequestDto {
+    /**
+     * 
+     * @type {string}
+     * @memberof SurveyRequestDto
+     */
+    'content': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof SurveyRequestDto
+     */
+    'regionId': string;
 }
 /**
  * 
@@ -464,173 +551,43 @@ export interface UserDto {
      */
     'town': TownDto;
 }
-
 /**
- * DefaultApi - axios parameter creator
+ * 
  * @export
+ * @interface UserRankingDto
  */
-export const DefaultApiAxiosParamCreator = function (configuration?: Configuration) {
-    return {
-        /**
-         * 
-         * @summary demandTown
-         * @param {string} [authority] 
-         * @param {string} [createdAt] 
-         * @param {string} [id] 
-         * @param {string} [nickname] 
-         * @param {string} [regionId] 
-         * @param {string} [townId] 
-         * @param {string} [townName1] 
-         * @param {string} [townName2] 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        demandTownUsingPOST: async (authority?: string, createdAt?: string, id?: string, nickname?: string, regionId?: string, townId?: string, townName1?: string, townName2?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/demand`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication JWT required
-            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
-
-            if (authority !== undefined) {
-                localVarQueryParameter['authority'] = authority;
-            }
-
-            if (createdAt !== undefined) {
-                localVarQueryParameter['createdAt'] = (createdAt as any instanceof Date) ?
-                    (createdAt as any).toISOString() :
-                    createdAt;
-            }
-
-            if (id !== undefined) {
-                localVarQueryParameter['id'] = id;
-            }
-
-            if (nickname !== undefined) {
-                localVarQueryParameter['nickname'] = nickname;
-            }
-
-            if (regionId !== undefined) {
-                localVarQueryParameter['regionId'] = regionId;
-            }
-
-            if (townId !== undefined) {
-                localVarQueryParameter['town.id'] = townId;
-            }
-
-            if (townName1 !== undefined) {
-                localVarQueryParameter['town.name1'] = townName1;
-            }
-
-            if (townName2 !== undefined) {
-                localVarQueryParameter['town.name2'] = townName2;
-            }
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-    }
-};
-
-/**
- * DefaultApi - functional programming interface
- * @export
- */
-export const DefaultApiFp = function(configuration?: Configuration) {
-    const localVarAxiosParamCreator = DefaultApiAxiosParamCreator(configuration)
-    return {
-        /**
-         * 
-         * @summary demandTown
-         * @param {string} [authority] 
-         * @param {string} [createdAt] 
-         * @param {string} [id] 
-         * @param {string} [nickname] 
-         * @param {string} [regionId] 
-         * @param {string} [townId] 
-         * @param {string} [townName1] 
-         * @param {string} [townName2] 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async demandTownUsingPOST(authority?: string, createdAt?: string, id?: string, nickname?: string, regionId?: string, townId?: string, townName1?: string, townName2?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseResponseUnit>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.demandTownUsingPOST(authority, createdAt, id, nickname, regionId, townId, townName1, townName2, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-    }
-};
-
-/**
- * DefaultApi - factory interface
- * @export
- */
-export const DefaultApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
-    const localVarFp = DefaultApiFp(configuration)
-    return {
-        /**
-         * 
-         * @summary demandTown
-         * @param {string} [authority] 
-         * @param {string} [createdAt] 
-         * @param {string} [id] 
-         * @param {string} [nickname] 
-         * @param {string} [regionId] 
-         * @param {string} [townId] 
-         * @param {string} [townName1] 
-         * @param {string} [townName2] 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        demandTownUsingPOST(authority?: string, createdAt?: string, id?: string, nickname?: string, regionId?: string, townId?: string, townName1?: string, townName2?: string, options?: any): AxiosPromise<BaseResponseUnit> {
-            return localVarFp.demandTownUsingPOST(authority, createdAt, id, nickname, regionId, townId, townName1, townName2, options).then((request) => request(axios, basePath));
-        },
-    };
-};
-
-/**
- * DefaultApi - object-oriented interface
- * @export
- * @class DefaultApi
- * @extends {BaseAPI}
- */
-export class DefaultApi extends BaseAPI {
+export interface UserRankingDto {
     /**
      * 
-     * @summary demandTown
-     * @param {string} [authority] 
-     * @param {string} [createdAt] 
-     * @param {string} [id] 
-     * @param {string} [nickname] 
-     * @param {string} [regionId] 
-     * @param {string} [townId] 
-     * @param {string} [townName1] 
-     * @param {string} [townName2] 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof DefaultApi
+     * @type {string}
+     * @memberof UserRankingDto
      */
-    public demandTownUsingPOST(authority?: string, createdAt?: string, id?: string, nickname?: string, regionId?: string, townId?: string, townName1?: string, townName2?: string, options?: AxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).demandTownUsingPOST(authority, createdAt, id, nickname, regionId, townId, townName1, townName2, options).then((request) => request(this.axios, this.basePath));
-    }
+    'comment'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof UserRankingDto
+     */
+    'nickname': string;
+    /**
+     * 
+     * @type {number}
+     * @memberof UserRankingDto
+     */
+    'score': number;
+    /**
+     * 
+     * @type {TownDto}
+     * @memberof UserRankingDto
+     */
+    'town': TownDto;
+    /**
+     * 
+     * @type {string}
+     * @memberof UserRankingDto
+     */
+    'userId'?: string;
 }
-
 
 /**
  * GamePlayApi - axios parameter creator
@@ -675,6 +632,80 @@ export const GamePlayApiAxiosParamCreator = function (configuration?: Configurat
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(requestDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 2시간 내에 플레이한 유저 수
+         * @param {'GAME_KARROT' | 'GAME_2048'} gameType gameType
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getUserCountByDailyUsingGET: async (gameType: 'GAME_KARROT' | 'GAME_2048', options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'gameType' is not null or undefined
+            assertParamExists('getUserCountByDailyUsingGET', 'gameType', gameType)
+            const localVarPath = `/api/games/{gameType}/play/daily-count`
+                .replace(`{${"gameType"}}`, encodeURIComponent(String(gameType)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication JWT required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 플레이
+         * @param {'GAME_KARROT' | 'GAME_2048'} gameType gameType
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        playGameUsingPOST: async (gameType: 'GAME_KARROT' | 'GAME_2048', options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'gameType' is not null or undefined
+            assertParamExists('playGameUsingPOST', 'gameType', gameType)
+            const localVarPath = `/api/games/{gameType}/play`
+                .replace(`{${"gameType"}}`, encodeURIComponent(String(gameType)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication JWT required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -748,6 +779,28 @@ export const GamePlayApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary 2시간 내에 플레이한 유저 수
+         * @param {'GAME_KARROT' | 'GAME_2048'} gameType gameType
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getUserCountByDailyUsingGET(gameType: 'GAME_KARROT' | 'GAME_2048', options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseResponseint>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getUserCountByDailyUsingGET(gameType, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary 플레이
+         * @param {'GAME_KARROT' | 'GAME_2048'} gameType gameType
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async playGameUsingPOST(gameType: 'GAME_KARROT' | 'GAME_2048', options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseResponseUnit>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.playGameUsingPOST(gameType, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @summary 스코어 갱신
          * @param {'GAME_KARROT' | 'GAME_2048'} gameType gameType
          * @param {ScoreRequestDto} requestDto requestDto
@@ -781,6 +834,26 @@ export const GamePlayApiFactory = function (configuration?: Configuration, baseP
         },
         /**
          * 
+         * @summary 2시간 내에 플레이한 유저 수
+         * @param {'GAME_KARROT' | 'GAME_2048'} gameType gameType
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getUserCountByDailyUsingGET(gameType: 'GAME_KARROT' | 'GAME_2048', options?: any): AxiosPromise<BaseResponseint> {
+            return localVarFp.getUserCountByDailyUsingGET(gameType, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 플레이
+         * @param {'GAME_KARROT' | 'GAME_2048'} gameType gameType
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        playGameUsingPOST(gameType: 'GAME_KARROT' | 'GAME_2048', options?: any): AxiosPromise<BaseResponseUnit> {
+            return localVarFp.playGameUsingPOST(gameType, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @summary 스코어 갱신
          * @param {'GAME_KARROT' | 'GAME_2048'} gameType gameType
          * @param {ScoreRequestDto} requestDto requestDto
@@ -811,6 +884,30 @@ export class GamePlayApi extends BaseAPI {
      */
     public addCommentUsingPATCH(gameType: 'GAME_KARROT' | 'GAME_2048', requestDto: CommentRequestDto, options?: AxiosRequestConfig) {
         return GamePlayApiFp(this.configuration).addCommentUsingPATCH(gameType, requestDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 2시간 내에 플레이한 유저 수
+     * @param {'GAME_KARROT' | 'GAME_2048'} gameType gameType
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof GamePlayApi
+     */
+    public getUserCountByDailyUsingGET(gameType: 'GAME_KARROT' | 'GAME_2048', options?: AxiosRequestConfig) {
+        return GamePlayApiFp(this.configuration).getUserCountByDailyUsingGET(gameType, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 플레이
+     * @param {'GAME_KARROT' | 'GAME_2048'} gameType gameType
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof GamePlayApi
+     */
+    public playGameUsingPOST(gameType: 'GAME_KARROT' | 'GAME_2048', options?: AxiosRequestConfig) {
+        return GamePlayApiFp(this.configuration).playGameUsingPOST(gameType, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -1073,43 +1170,6 @@ export const GameUserApiAxiosParamCreator = function (configuration?: Configurat
                 options: localVarRequestOptions,
             };
         },
-        /**
-         * 
-         * @summary 48시간 내에 플레이한 유저 수
-         * @param {'GAME_KARROT' | 'GAME_2048'} gameType gameType
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getUserCountByDailyUsingGET: async (gameType: 'GAME_KARROT' | 'GAME_2048', options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'gameType' is not null or undefined
-            assertParamExists('getUserCountByDailyUsingGET', 'gameType', gameType)
-            const localVarPath = `/api/games/{gameType}/users/daily-count`
-                .replace(`{${"gameType"}}`, encodeURIComponent(String(gameType)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication JWT required
-            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
     }
 };
 
@@ -1131,7 +1191,7 @@ export const GameUserApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getLeaderBoardByUserUsingGET(gameType: 'GAME_KARROT' | 'GAME_2048', month?: number, size?: number, week?: number, year?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseResponseListobject>> {
+        async getLeaderBoardByUserUsingGET(gameType: 'GAME_KARROT' | 'GAME_2048', month?: number, size?: number, week?: number, year?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseResponseListUserRankingDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getLeaderBoardByUserUsingGET(gameType, month, size, week, year, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -1145,17 +1205,6 @@ export const GameUserApiFp = function(configuration?: Configuration) {
          */
         async getMyRankInfoUsingGET(gameType: 'GAME_KARROT' | 'GAME_2048', type?: 'BEST' | 'CURRENT', options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseResponseRankingDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getMyRankInfoUsingGET(gameType, type, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * 
-         * @summary 48시간 내에 플레이한 유저 수
-         * @param {'GAME_KARROT' | 'GAME_2048'} gameType gameType
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async getUserCountByDailyUsingGET(gameType: 'GAME_KARROT' | 'GAME_2048', options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseResponseint>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getUserCountByDailyUsingGET(gameType, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
     }
@@ -1179,7 +1228,7 @@ export const GameUserApiFactory = function (configuration?: Configuration, baseP
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getLeaderBoardByUserUsingGET(gameType: 'GAME_KARROT' | 'GAME_2048', month?: number, size?: number, week?: number, year?: number, options?: any): AxiosPromise<BaseResponseListobject> {
+        getLeaderBoardByUserUsingGET(gameType: 'GAME_KARROT' | 'GAME_2048', month?: number, size?: number, week?: number, year?: number, options?: any): AxiosPromise<BaseResponseListUserRankingDto> {
             return localVarFp.getLeaderBoardByUserUsingGET(gameType, month, size, week, year, options).then((request) => request(axios, basePath));
         },
         /**
@@ -1192,16 +1241,6 @@ export const GameUserApiFactory = function (configuration?: Configuration, baseP
          */
         getMyRankInfoUsingGET(gameType: 'GAME_KARROT' | 'GAME_2048', type?: 'BEST' | 'CURRENT', options?: any): AxiosPromise<BaseResponseRankingDto> {
             return localVarFp.getMyRankInfoUsingGET(gameType, type, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @summary 48시간 내에 플레이한 유저 수
-         * @param {'GAME_KARROT' | 'GAME_2048'} gameType gameType
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getUserCountByDailyUsingGET(gameType: 'GAME_KARROT' | 'GAME_2048', options?: any): AxiosPromise<BaseResponseint> {
-            return localVarFp.getUserCountByDailyUsingGET(gameType, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -1241,17 +1280,188 @@ export class GameUserApi extends BaseAPI {
     public getMyRankInfoUsingGET(gameType: 'GAME_KARROT' | 'GAME_2048', type?: 'BEST' | 'CURRENT', options?: AxiosRequestConfig) {
         return GameUserApiFp(this.configuration).getMyRankInfoUsingGET(gameType, type, options).then((request) => request(this.axios, this.basePath));
     }
+}
+
+
+/**
+ * NotificationApi - axios parameter creator
+ * @export
+ */
+export const NotificationApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @summary 알림 신청 여부 확인
+         * @param {'OPEN_REGION' | 'OPEN_GAME' | 'SUBSCRIBE_OFF'} type type
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        checkNotificationUsingGET: async (type: 'OPEN_REGION' | 'OPEN_GAME' | 'SUBSCRIBE_OFF', options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'type' is not null or undefined
+            assertParamExists('checkNotificationUsingGET', 'type', type)
+            const localVarPath = `/api/notifications/check`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication JWT required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+            if (type !== undefined) {
+                localVarQueryParameter['type'] = type;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 알림 신청(지역 오픈/게임 오픈)
+         * @param {NotificationRequestDto} requestDto requestDto
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        saveNotificationUsingPOST: async (requestDto: NotificationRequestDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'requestDto' is not null or undefined
+            assertParamExists('saveNotificationUsingPOST', 'requestDto', requestDto)
+            const localVarPath = `/api/notifications`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication JWT required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(requestDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * NotificationApi - functional programming interface
+ * @export
+ */
+export const NotificationApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = NotificationApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @summary 알림 신청 여부 확인
+         * @param {'OPEN_REGION' | 'OPEN_GAME' | 'SUBSCRIBE_OFF'} type type
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async checkNotificationUsingGET(type: 'OPEN_REGION' | 'OPEN_GAME' | 'SUBSCRIBE_OFF', options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseResponseNotificationCheckDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.checkNotificationUsingGET(type, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary 알림 신청(지역 오픈/게임 오픈)
+         * @param {NotificationRequestDto} requestDto requestDto
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async saveNotificationUsingPOST(requestDto: NotificationRequestDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseResponseUnit>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.saveNotificationUsingPOST(requestDto, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+    }
+};
+
+/**
+ * NotificationApi - factory interface
+ * @export
+ */
+export const NotificationApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = NotificationApiFp(configuration)
+    return {
+        /**
+         * 
+         * @summary 알림 신청 여부 확인
+         * @param {'OPEN_REGION' | 'OPEN_GAME' | 'SUBSCRIBE_OFF'} type type
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        checkNotificationUsingGET(type: 'OPEN_REGION' | 'OPEN_GAME' | 'SUBSCRIBE_OFF', options?: any): AxiosPromise<BaseResponseNotificationCheckDto> {
+            return localVarFp.checkNotificationUsingGET(type, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 알림 신청(지역 오픈/게임 오픈)
+         * @param {NotificationRequestDto} requestDto requestDto
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        saveNotificationUsingPOST(requestDto: NotificationRequestDto, options?: any): AxiosPromise<BaseResponseUnit> {
+            return localVarFp.saveNotificationUsingPOST(requestDto, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * NotificationApi - object-oriented interface
+ * @export
+ * @class NotificationApi
+ * @extends {BaseAPI}
+ */
+export class NotificationApi extends BaseAPI {
+    /**
+     * 
+     * @summary 알림 신청 여부 확인
+     * @param {'OPEN_REGION' | 'OPEN_GAME' | 'SUBSCRIBE_OFF'} type type
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof NotificationApi
+     */
+    public checkNotificationUsingGET(type: 'OPEN_REGION' | 'OPEN_GAME' | 'SUBSCRIBE_OFF', options?: AxiosRequestConfig) {
+        return NotificationApiFp(this.configuration).checkNotificationUsingGET(type, options).then((request) => request(this.axios, this.basePath));
+    }
 
     /**
      * 
-     * @summary 48시간 내에 플레이한 유저 수
-     * @param {'GAME_KARROT' | 'GAME_2048'} gameType gameType
+     * @summary 알림 신청(지역 오픈/게임 오픈)
+     * @param {NotificationRequestDto} requestDto requestDto
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof GameUserApi
+     * @memberof NotificationApi
      */
-    public getUserCountByDailyUsingGET(gameType: 'GAME_KARROT' | 'GAME_2048', options?: AxiosRequestConfig) {
-        return GameUserApiFp(this.configuration).getUserCountByDailyUsingGET(gameType, options).then((request) => request(this.axios, this.basePath));
+    public saveNotificationUsingPOST(requestDto: NotificationRequestDto, options?: AxiosRequestConfig) {
+        return NotificationApiFp(this.configuration).saveNotificationUsingPOST(requestDto, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
@@ -1367,14 +1577,14 @@ export class Oauth2Api extends BaseAPI {
 
 
 /**
- * TownApi - axios parameter creator
+ * RegionApi - axios parameter creator
  * @export
  */
-export const TownApiAxiosParamCreator = function (configuration?: Configuration) {
+export const RegionApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
          * 
-         * @summary RegionId로 Town 정보 조회
+         * @summary RegionId로 지역 정보 조회
          * @param {string} regionId regionId
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1382,7 +1592,7 @@ export const TownApiAxiosParamCreator = function (configuration?: Configuration)
         getTownInfoUsingGET: async (regionId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'regionId' is not null or undefined
             assertParamExists('getTownInfoUsingGET', 'regionId', regionId)
-            const localVarPath = `/api/town`;
+            const localVarPath = `/api/region`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -1416,20 +1626,20 @@ export const TownApiAxiosParamCreator = function (configuration?: Configuration)
 };
 
 /**
- * TownApi - functional programming interface
+ * RegionApi - functional programming interface
  * @export
  */
-export const TownApiFp = function(configuration?: Configuration) {
-    const localVarAxiosParamCreator = TownApiAxiosParamCreator(configuration)
+export const RegionApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = RegionApiAxiosParamCreator(configuration)
     return {
         /**
          * 
-         * @summary RegionId로 Town 정보 조회
+         * @summary RegionId로 지역 정보 조회
          * @param {string} regionId regionId
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getTownInfoUsingGET(regionId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseResponseTownDto>> {
+        async getTownInfoUsingGET(regionId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseResponseRegionDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getTownInfoUsingGET(regionId, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -1437,42 +1647,152 @@ export const TownApiFp = function(configuration?: Configuration) {
 };
 
 /**
- * TownApi - factory interface
+ * RegionApi - factory interface
  * @export
  */
-export const TownApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
-    const localVarFp = TownApiFp(configuration)
+export const RegionApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = RegionApiFp(configuration)
     return {
         /**
          * 
-         * @summary RegionId로 Town 정보 조회
+         * @summary RegionId로 지역 정보 조회
          * @param {string} regionId regionId
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getTownInfoUsingGET(regionId: string, options?: any): AxiosPromise<BaseResponseTownDto> {
+        getTownInfoUsingGET(regionId: string, options?: any): AxiosPromise<BaseResponseRegionDto> {
             return localVarFp.getTownInfoUsingGET(regionId, options).then((request) => request(axios, basePath));
         },
     };
 };
 
 /**
- * TownApi - object-oriented interface
+ * RegionApi - object-oriented interface
  * @export
- * @class TownApi
+ * @class RegionApi
  * @extends {BaseAPI}
  */
-export class TownApi extends BaseAPI {
+export class RegionApi extends BaseAPI {
     /**
      * 
-     * @summary RegionId로 Town 정보 조회
+     * @summary RegionId로 지역 정보 조회
      * @param {string} regionId regionId
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof TownApi
+     * @memberof RegionApi
      */
     public getTownInfoUsingGET(regionId: string, options?: AxiosRequestConfig) {
-        return TownApiFp(this.configuration).getTownInfoUsingGET(regionId, options).then((request) => request(this.axios, this.basePath));
+        return RegionApiFp(this.configuration).getTownInfoUsingGET(regionId, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+/**
+ * SurveyApi - axios parameter creator
+ * @export
+ */
+export const SurveyApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @summary 하고 싶은 게임 등록
+         * @param {SurveyRequestDto} requestDto requestDto
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        registerGameSurveyUsingPOST: async (requestDto: SurveyRequestDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'requestDto' is not null or undefined
+            assertParamExists('registerGameSurveyUsingPOST', 'requestDto', requestDto)
+            const localVarPath = `/api/surveys`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication JWT required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(requestDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * SurveyApi - functional programming interface
+ * @export
+ */
+export const SurveyApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = SurveyApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @summary 하고 싶은 게임 등록
+         * @param {SurveyRequestDto} requestDto requestDto
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async registerGameSurveyUsingPOST(requestDto: SurveyRequestDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseResponseUnit>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.registerGameSurveyUsingPOST(requestDto, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+    }
+};
+
+/**
+ * SurveyApi - factory interface
+ * @export
+ */
+export const SurveyApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = SurveyApiFp(configuration)
+    return {
+        /**
+         * 
+         * @summary 하고 싶은 게임 등록
+         * @param {SurveyRequestDto} requestDto requestDto
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        registerGameSurveyUsingPOST(requestDto: SurveyRequestDto, options?: any): AxiosPromise<BaseResponseUnit> {
+            return localVarFp.registerGameSurveyUsingPOST(requestDto, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * SurveyApi - object-oriented interface
+ * @export
+ * @class SurveyApi
+ * @extends {BaseAPI}
+ */
+export class SurveyApi extends BaseAPI {
+    /**
+     * 
+     * @summary 하고 싶은 게임 등록
+     * @param {SurveyRequestDto} requestDto requestDto
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof SurveyApi
+     */
+    public registerGameSurveyUsingPOST(requestDto: SurveyRequestDto, options?: AxiosRequestConfig) {
+        return SurveyApiFp(this.configuration).registerGameSurveyUsingPOST(requestDto, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
@@ -1483,39 +1803,6 @@ export class TownApi extends BaseAPI {
  */
 export const UserApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
-        /**
-         * 
-         * @summary 유저 수 조회
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getUserCountUsingGET: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/users/count`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication JWT required
-            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
         /**
          * 
          * @summary 내 정보 조회
@@ -1561,16 +1848,6 @@ export const UserApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
-         * @summary 유저 수 조회
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async getUserCountUsingGET(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseResponselong>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getUserCountUsingGET(options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * 
          * @summary 내 정보 조회
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1591,15 +1868,6 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
     return {
         /**
          * 
-         * @summary 유저 수 조회
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getUserCountUsingGET(options?: any): AxiosPromise<BaseResponselong> {
-            return localVarFp.getUserCountUsingGET(options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
          * @summary 내 정보 조회
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1617,17 +1885,6 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
  * @extends {BaseAPI}
  */
 export class UserApi extends BaseAPI {
-    /**
-     * 
-     * @summary 유저 수 조회
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof UserApi
-     */
-    public getUserCountUsingGET(options?: AxiosRequestConfig) {
-        return UserApiFp(this.configuration).getUserCountUsingGET(options).then((request) => request(this.axios, this.basePath));
-    }
-
     /**
      * 
      * @summary 내 정보 조회
