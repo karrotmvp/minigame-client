@@ -1,4 +1,4 @@
-import { useAccessToken, useSignAccessToken, useUserData } from 'hooks';
+import { useSignAccessToken, useUserData } from 'hooks';
 import { useAnalytics } from 'services/analytics';
 import { useMinigameApi } from 'services/api/minigameApi';
 import {
@@ -11,7 +11,6 @@ export const useMini = () => {
   const analytics = useAnalytics();
   const minigameApi = useMinigameApi();
   const { regionId, setUserInfo } = useUserData();
-  const { accessToken } = useAccessToken();
   const { signAccessToken } = useSignAccessToken();
   const appId = karrotMarketMiniConfig().appId;
   const presetUrl = karrotMarketMiniConfig().presetUrl;

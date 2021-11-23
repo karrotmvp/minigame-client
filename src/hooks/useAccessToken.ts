@@ -13,7 +13,7 @@ export const useAccessToken = () => {
 
 export const useSignAccessToken = () => {
   const minigameApi = useMinigameApi();
-  const [cookies, setCookie, removeCookie] = useCookies(['accessToken']);
+  const [, setCookie, removeCookie] = useCookies(['accessToken']);
 
   const signAccessToken = useCallback(
     async (code: string, regionId: string) => {
