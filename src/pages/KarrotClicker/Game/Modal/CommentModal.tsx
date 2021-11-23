@@ -53,7 +53,7 @@ export const CommentModal: React.FC<Props> = (props) => {
     updateMyKarrotClickerData(score, rank);
     updateMyComment(currentComment.comment);
     analytics.logEvent('click_submit_comment_button', {
-      game_type: 'karrot-clicker',
+      game_type: 'karrot_clicker',
       score: score,
       rank: rank,
     });
@@ -64,7 +64,7 @@ export const CommentModal: React.FC<Props> = (props) => {
   useEffect(() => {
     if (isTop) {
       analytics.logEvent('view_comment_modal', {
-        game_type: 'karrot-clicker',
+        game_type: 'karrot_clicker',
       });
     }
   }, [analytics, isTop, prevComment, rank]);

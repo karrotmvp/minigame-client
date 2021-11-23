@@ -50,28 +50,32 @@ export const PostComment: React.FC<Props> = (props) => {
       goToLeaderboardPage();
       return;
     }
-    updateMyComment(newComment.comment);
-    const { data } = await minigameApi.gamePlayApi.addCommentUsingPATCH(
-      'GAME_2048',
-      {
-        comment: newComment.comment,
+    try {
+      updateMyComment(newComment.comment);
+      const { data } = await minigameApi.gamePlayApi.addCommentUsingPATCH(
+        'GAME_2048',
+        {
+          comment: newComment.comment,
+        }
+      );
+      if (data.status === 200) {
+        analytics.logEvent('click_submit_comment_button', {
+          game_type: '2048_puzzle',
+          score: score,
+          rank: rank,
+        });
+        props.setShouldModalOpen(false);
+        goToLeaderboardPage();
       }
-    );
-    if (data.status === 200) {
-      analytics.logEvent('click_submit_comment_button', {
-        game_type: 'game-2048',
-        score: score,
-        rank: rank,
-      });
-      props.setShouldModalOpen(false);
-      goToLeaderboardPage();
+    } catch (error) {
+      console.error(error);
     }
   };
 
   useEffect(() => {
     if (isTop) {
       // analytics.logEvent('view_comment_modal', {
-      //   game_type: 'karrot-clicker',
+      //   game_type: 'karrot_clicker',
       // });
     }
   });

@@ -51,9 +51,6 @@ export const useMini = () => {
       onSuccess: async function (result) {
         if (result && result.code) {
           const response = await signAccessToken(result.code, regionId);
-          analytics.logEvent('click_karrot_mini_preset_agree_button', {
-            game_type: 'karrot-clicker',
-          });
           console.log(response);
           if (response === true) {
             await updateUserInfo();

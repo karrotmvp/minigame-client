@@ -71,7 +71,7 @@ export const Home = () => {
   const handleReturningUser = () => {
     // if access token exists, user is not new
     analytics.logEvent('click_game_start_button', {
-      game_type: 'karrot-clicker',
+      game_type: 'karrot_clicker',
       is_new_user: false,
     });
     onResetCount();
@@ -80,7 +80,7 @@ export const Home = () => {
   const handleNewUser = () => {
     // if user is new, open third-party agreement preset
     analytics.logEvent('click_game_start_button', {
-      game_type: 'karrot-clicker',
+      game_type: 'karrot_clicker',
       is_new_user: true,
     });
     handleThirdPartyAgreement(goToGamePage);

@@ -57,7 +57,7 @@ export const GameOver: React.FC<Props> = (props) => {
           updateMyKarrotClickerData(data.score, data.rank);
           if (data.rank <= 10 && data.rank > 0) {
             analytics.logEvent('click_game_end_button', {
-              game_type: 'karrot-clicker',
+              game_type: 'karrot_clicker',
               score: clickCount,
               rank: data.rank,
               is_top_user: true,
@@ -68,7 +68,7 @@ export const GameOver: React.FC<Props> = (props) => {
             setShouldModalOpen(true);
           } else {
             analytics.logEvent('click_game_end_button', {
-              game_type: 'karrot-clicker',
+              game_type: 'karrot_clicker',
               score: clickCount,
               rank: data.rank,
               is_top_user: false,
@@ -90,7 +90,7 @@ export const GameOver: React.FC<Props> = (props) => {
     if (isTop) {
       shouldPause(true);
       analytics.logEvent('view_game_over_modal', {
-        game_type: 'karrot-clicker',
+        game_type: 'karrot_clicker',
       });
     }
   }, [analytics, isTop, shouldPause]);

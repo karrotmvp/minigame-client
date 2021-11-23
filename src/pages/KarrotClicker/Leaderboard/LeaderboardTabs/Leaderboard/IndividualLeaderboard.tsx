@@ -57,7 +57,7 @@ export const IndividualLeaderboard: React.FC = () => {
 
   const refreshLeaderboard = useCallback(() => {
     analytics.logEvent('click_refresh_button', {
-      game_type: 'karrot-clicker',
+      game_type: 'karrot_clicker',
       button_type: 'user_leaderboard',
     });
     updateMyData();

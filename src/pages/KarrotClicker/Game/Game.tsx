@@ -42,7 +42,7 @@ export const Game = () => {
     setIsPaused(true);
     console.log('paused?', animationPlayState);
     analytics.logEvent('click_game_pause_button', {
-      game_type: 'karrot-clicker',
+      game_type: 'karrot_clicker',
     });
   };
 
@@ -60,7 +60,9 @@ export const Game = () => {
   useEffect(() => {
     if (isTop) {
       console.log('is top?', isTop);
-      analytics.logEvent('view_game_page', { game_type: 'karrot-clicker' });
+      analytics.logEvent('view_game_page', {
+        game_type: 'karrot_clicker',
+      });
     }
   }, [analytics, isTop]);
 

@@ -45,7 +45,7 @@ export const GamePause: React.FC<GamePauseProps> = (props) => {
     shouldPause(false);
     resumeGame();
     analytics.logEvent('click_game_continue_button', {
-      game_type: 'karrot-clicker',
+      game_type: 'karrot_clicker',
     });
   };
 
@@ -74,7 +74,7 @@ export const GamePause: React.FC<GamePauseProps> = (props) => {
 
         if (data.rank > 0 && data.rank <= 10) {
           analytics.logEvent('click_game_end_button', {
-            game_type: 'karrot-clicker',
+            game_type: 'karrot_clicker',
             score: clickCount,
             rank: data.rank,
             is_top_user: true,
@@ -97,7 +97,7 @@ export const GamePause: React.FC<GamePauseProps> = (props) => {
     if (isTop) {
       console.log('istop');
       analytics.logEvent('view_game_pause_modal', {
-        game_type: 'karrot-clicker',
+        game_type: 'karrot_clicker',
       });
     }
   }, [analytics, isTop]);

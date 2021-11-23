@@ -43,7 +43,7 @@ export const Leaderboard = () => {
   // page navigation
   const goBackToPlatform = () => {
     analytics.logEvent('click_leave_game_button', {
-      game_type: 'game-2048',
+      game_type: '2048_puzzle',
       from: 'leaderboard_page',
     });
     push(`/`);
@@ -54,7 +54,7 @@ export const Leaderboard = () => {
 
   const handlePlayAgain = () => {
     analytics.logEvent('click_game_play_again_button', {
-      game_type: 'game-2048',
+      game_type: '2048_puzzle',
     });
     // resetGame();
 
@@ -131,13 +131,13 @@ export const Leaderboard = () => {
   }, [isTop, rank]);
 
   const handleShare = () => {
+    analytics.logEvent('click_share_button', {
+      game_type: '2048_puzzle',
+      location: 'leaderboard_page',
+    });
     const url = 'https://daangn.onelink.me/HhUa/54499335';
     const text = `${nickname}님은 2048 퍼즐에서 전국 ${rank}등!`;
     shareApp(url, text);
-    analytics.logEvent('click_share_button', {
-      game_type: 'game-2048',
-      location: 'leaderboard_page',
-    });
   };
 
   // show subscribe preset non-subscribed user with notificaiton not turned off
@@ -152,9 +152,15 @@ export const Leaderboard = () => {
     }
   }, [minigameApi.notificationApi]);
   const onSubscribeSuccess = useCallback(() => {
+    analytics.logEvent('click_subscribe_button', {
+      game_type: '2048_puzzle',
+      location: 'leaderboard_page',
+      is_voluntary: false,
+    });
     setIsInstalled(true);
     subscribeToastEmitter();
-  }, [setIsInstalled]);
+  }, [analytics, setIsInstalled]);
+
   const turnOffSubscribeNotification = useCallback(async () => {
     await minigameApi.notificationApi.saveNotificationUsingPOST({
       type: 'SUBSCRIBE_OFF' as NotificationRequestDtoTypeEnum,
@@ -165,8 +171,8 @@ export const Leaderboard = () => {
       if (isInstalled === false) {
         const response = await isSubscribeNotificationOff();
         if (response !== undefined && response === false) {
-          analytics.logEvent('click_subscribe_button', {
-            game_type: 'game-2048',
+          analytics.logEvent('show_subscribe_button', {
+            game_type: '2048_puzzle',
             location: 'leaderboard_page',
             is_voluntary: false,
           });

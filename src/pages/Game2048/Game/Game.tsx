@@ -42,12 +42,15 @@ export const Game: React.FC = () => {
 
   // Action buttons
   const handlePlayAgain = () => {
-    // analytics.logEvent('click_play')
+    analytics.logEvent('click_game_play_again_button', {
+      game_type: '2048_puzzle',
+      button_type: 'refresh',
+    });
     resetGame();
   };
   const handleGameOver = () => {
     analytics.logEvent('click_game_end_button', {
-      game_type: 'game-2048',
+      game_type: '2048_puzzle',
       button_type: 'game_end',
     });
     setIsGameOver(true);
@@ -67,6 +70,7 @@ export const Game: React.FC = () => {
   }, [gameType, minigameApi.gameUserApi]);
 
   const updateMyBestScore = async (score: number) => {
+    console.log('upate my best score in live', score);
     await minigameApi.gamePlayApi.updateScoreUsingPATCH(gameType, {
       score: score,
     });
@@ -104,6 +108,19 @@ export const Game: React.FC = () => {
       getTownieBestScoreEver();
     }
   }, [getTownieBestScoreEver, isTop]);
+
+  useEffect(() => {
+    let timerId: NodeJS.Timeout;
+    if (gameOverStatus) {
+      analytics.logEvent('handle_game_over', {
+        game_type: '2048_puzzle',
+      });
+      timerId = setTimeout(() => {
+        setIsGameOver(() => true);
+      }, 1500);
+    }
+    return () => clearTimeout(timerId);
+  }, [analytics, gameOverStatus]);
 
   const updateUserInfo = useCallback(async () => {
     console.log('update user info attempt, userId:', userId);
@@ -202,7 +219,7 @@ export const Game: React.FC = () => {
       </Page>
 
       <ReactModal
-        isOpen={isGameOver || gameOverStatus}
+        isOpen={isGameOver}
         shouldCloseOnOverlayClick={false}
         contentLabel="Game Over"
         style={{
