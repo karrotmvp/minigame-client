@@ -91,11 +91,14 @@ export const Game = () => {
 
   useEffect(() => {
     if (isTop) {
+      analytics.logEvent('view_game_page', {
+        game_type: 'karrot_clicker',
+      });
       if (userId === '') {
         updateUserInfo();
       }
     }
-  }, [isTop, updateUserInfo, userId]);
+  }, [analytics, isTop, updateUserInfo, userId]);
 
   return (
     <>
