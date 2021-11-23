@@ -10,14 +10,8 @@ import { useMinigameApi } from 'services/api/minigameApi';
 import { useMini } from 'hooks';
 import { useAnalytics } from 'services/analytics';
 
-type CommentType = {
-  comment: string;
-  length: number;
-};
-
 type Props = {
   setShouldModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  // shouldOpen: any;
 };
 
 export const PostComment: React.FC<Props> = (props) => {
@@ -27,10 +21,15 @@ export const PostComment: React.FC<Props> = (props) => {
   const minigameApi = useMinigameApi();
   const { townName2: districtName } = useUserData();
   const { isInWebEnvironment } = useMini();
-  const { score, rank, comment, updateMyComment } = useMyGame2048Data();
-  const [newComment, setNewComment] = useState<CommentType>({
-    comment: comment,
-    length: comment.length,
+  const {
+    score,
+    rank,
+    comment: prevComment,
+    updateMyComment,
+  } = useMyGame2048Data();
+  const [newComment, setNewComment] = useState({
+    comment: prevComment,
+    length: prevComment.length,
   });
   // Page navigation
   const goToLeaderboardPage = () => {
@@ -38,10 +37,12 @@ export const PostComment: React.FC<Props> = (props) => {
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log(e.target.value);
     setNewComment({
       comment: e.target.value.slice(0, 19),
       length: e.target.value.length,
     });
+    console.log(newComment);
   };
 
   const patchComment = async () => {

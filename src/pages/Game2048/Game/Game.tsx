@@ -56,6 +56,7 @@ export const Game: React.FC = () => {
     setIsGameOver(true);
   };
 
+  // get rank 1's score
   const getTownieBestScoreEver = useCallback(async () => {
     const {
       data: { data },
@@ -69,6 +70,12 @@ export const Game: React.FC = () => {
     }
   }, [gameType, minigameApi.gameUserApi]);
 
+  useEffect(() => {
+    if (isTop) {
+      getTownieBestScoreEver();
+    }
+  }, [getTownieBestScoreEver, isTop]);
+
   const updateMyBestScore = async (score: number) => {
     console.log('upate my best score in live', score);
     await minigameApi.gamePlayApi.updateScoreUsingPATCH(gameType, {
@@ -76,19 +83,9 @@ export const Game: React.FC = () => {
     });
   };
 
-  // new user guide
-  useEffect(() => {
-    console.log(highestScore);
-    if (isTop) {
-      if (highestScore === 0) {
-        setIsUserNew(true);
-        console.log('guide is on for new user');
-      }
-    }
-  }, [highestScore, isTop]);
-
   // constantly patch best score
   useEffect(() => {
+    console.log('currentscore', currentScore);
     if (currentScore > myBestScore) {
       updateMyBestScore(currentScore);
     }
@@ -103,12 +100,18 @@ export const Game: React.FC = () => {
     }
   }, [currentScore, myBestScore]);
 
+  // new user guide
   useEffect(() => {
+    console.log(highestScore);
     if (isTop) {
-      getTownieBestScoreEver();
+      if (highestScore === 0) {
+        setIsUserNew(true);
+        console.log('guide is on for new user');
+      }
     }
-  }, [getTownieBestScoreEver, isTop]);
+  }, [highestScore, isTop]);
 
+  // game-over
   useEffect(() => {
     let timerId: NodeJS.Timeout;
     if (gameOverStatus) {
@@ -122,6 +125,7 @@ export const Game: React.FC = () => {
     return () => clearTimeout(timerId);
   }, [analytics, gameOverStatus]);
 
+  // update user-info
   const updateUserInfo = useCallback(async () => {
     console.log('update user info attempt, userId:', userId);
     if (userId) {
