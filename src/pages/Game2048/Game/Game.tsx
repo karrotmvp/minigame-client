@@ -42,17 +42,21 @@ export const Game: React.FC = () => {
 
   // Action buttons
   const handlePlayAgain = () => {
-    // analytics.logEvent('click_play')
+    analytics.logEvent('click_game_play_again_button', {
+      game_type: '2048_puzzle',
+      button_type: 'refresh',
+    });
     resetGame();
   };
   const handleGameOver = () => {
     analytics.logEvent('click_game_end_button', {
-      game_type: 'game-2048',
+      game_type: '2048_puzzle',
       button_type: 'game_end',
     });
     setIsGameOver(true);
   };
 
+  // get rank 1's score
   const getTownieBestScoreEver = useCallback(async () => {
     const {
       data: { data },
@@ -66,25 +70,22 @@ export const Game: React.FC = () => {
     }
   }, [gameType, minigameApi.gameUserApi]);
 
+  useEffect(() => {
+    if (isTop) {
+      getTownieBestScoreEver();
+    }
+  }, [getTownieBestScoreEver, isTop]);
+
   const updateMyBestScore = async (score: number) => {
+    console.log('upate my best score in live', score);
     await minigameApi.gamePlayApi.updateScoreUsingPATCH(gameType, {
       score: score,
     });
   };
 
-  // new user guide
-  useEffect(() => {
-    console.log(highestScore);
-    if (isTop) {
-      if (highestScore === 0) {
-        setIsUserNew(true);
-        console.log('guide is on for new user');
-      }
-    }
-  }, [highestScore, isTop]);
-
   // constantly patch best score
   useEffect(() => {
+    console.log('currentscore', currentScore);
     if (currentScore > myBestScore) {
       updateMyBestScore(currentScore);
     }
@@ -99,12 +100,32 @@ export const Game: React.FC = () => {
     }
   }, [currentScore, myBestScore]);
 
+  // new user guide
   useEffect(() => {
+    console.log(highestScore);
     if (isTop) {
-      getTownieBestScoreEver();
+      if (highestScore === 0) {
+        setIsUserNew(true);
+        console.log('guide is on for new user');
+      }
     }
-  }, [getTownieBestScoreEver, isTop]);
+  }, [highestScore, isTop]);
 
+  // game-over
+  useEffect(() => {
+    let timerId: NodeJS.Timeout;
+    if (gameOverStatus) {
+      analytics.logEvent('handle_game_over', {
+        game_type: '2048_puzzle',
+      });
+      timerId = setTimeout(() => {
+        setIsGameOver(() => true);
+      }, 1500);
+    }
+    return () => clearTimeout(timerId);
+  }, [analytics, gameOverStatus]);
+
+  // update user-info
   const updateUserInfo = useCallback(async () => {
     console.log('update user info attempt, userId:', userId);
     if (userId) {
@@ -130,11 +151,14 @@ export const Game: React.FC = () => {
 
   useEffect(() => {
     if (isTop) {
+      analytics.logEvent('view_game_page', {
+        game_type: '2048_puzzle',
+      });
       if (userId === '') {
         updateUserInfo();
       }
     }
-  }, [isTop, updateUserInfo, userId]);
+  }, [analytics, isTop, updateUserInfo, userId]);
 
   return (
     <>
@@ -202,7 +226,7 @@ export const Game: React.FC = () => {
       </Page>
 
       <ReactModal
-        isOpen={isGameOver || gameOverStatus}
+        isOpen={isGameOver}
         shouldCloseOnOverlayClick={false}
         contentLabel="Game Over"
         style={{

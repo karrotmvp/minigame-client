@@ -2,6 +2,7 @@
 import { css, keyframes } from '@emotion/react';
 import BigKarrotImageUrl from 'assets/images/KarrotClicker/big_karrot.png';
 import React, { useCallback } from 'react';
+import { useAnalytics } from 'services/analytics';
 import { useClickAnimation, useGame } from '../hooks';
 
 import ClickAnimation from './ClickAnimation';
@@ -10,6 +11,7 @@ interface BigKarrotProps {
   setIsGameOver: React.Dispatch<React.SetStateAction<boolean>>;
 }
 const BigKarrot: React.FC<BigKarrotProps> = (props) => {
+  const analytics = useAnalytics();
   const { handleKarrotTouch, animationPlayState, pauseGame } = useGame();
   const { state, handleParticleSpawn, handleParticleDestroy } =
     useClickAnimation();
@@ -30,6 +32,9 @@ const BigKarrot: React.FC<BigKarrotProps> = (props) => {
     activateAnimation(e);
   };
   const handleGameOver = () => {
+    analytics.logEvent('handle_game_over', {
+      game_type: 'karrot_clicker',
+    });
     pauseGame();
     props.setIsGameOver(true);
   };

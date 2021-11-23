@@ -54,6 +54,10 @@ export const Home = () => {
   //   score: number;
   // }>({ name: '', score: 0 });
   const goToPlatformPage = () => {
+    analytics.logEvent('click_leave_game_button', {
+      game_type: '2048_puzzle',
+      location: 'home_page',
+    });
     pop();
   };
   const goToGamePage = () => {
@@ -70,22 +74,27 @@ export const Home = () => {
   const handleReturningUser = () => {
     // if access token exists, user is not new
     analytics.logEvent('click_game_start_button', {
-      game_type: 'game-2048',
+      game_type: '2048_puzzle',
       is_new_user: false,
     });
   };
   const onNewUserSuccessHandler = () => {
+    analytics.logEvent('click_third_party_agreement_button', {
+      game_type: '2048_puzzle',
+      origin: 'game_start_button',
+    });
     addPlayerCount();
     goToGamePage();
   };
   const handleNewUser = () => {
     // if user is new, open third-party agreement preset
     analytics.logEvent('click_game_start_button', {
-      game_type: 'game-2048',
+      game_type: '2048_puzzle',
       is_new_user: true,
     });
     handleThirdPartyAgreement(onNewUserSuccessHandler);
   };
+
   const handleGameStart = () => {
     // bypass in web environment
     if (isInWebEnvironment) {

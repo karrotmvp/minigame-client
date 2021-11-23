@@ -68,6 +68,7 @@ export const Home: React.FC = () => {
   };
 
   const goToSurveyPage = () => {
+    analytics.logEvent('click_survey_button');
     push(`/survey`);
   };
   const goToGame2048 = async () => {
@@ -81,7 +82,7 @@ export const Home: React.FC = () => {
     try {
       if (accessToken) {
         analytics.logEvent('click_game_enter_button', {
-          game_type: 'game-2048',
+          game_type: '2048_puzzle',
           is_new_user: false,
         });
         const {
@@ -98,7 +99,7 @@ export const Home: React.FC = () => {
         push(`/game-2048`);
       } else {
         analytics.logEvent('click_game_enter_button', {
-          game_type: 'game-2048',
+          game_type: '2048_puzzle',
           is_new_user: true,
         });
         push(`/game-2048`);
@@ -117,7 +118,7 @@ export const Home: React.FC = () => {
     try {
       if (accessToken) {
         analytics.logEvent('click_game_enter_button', {
-          game_type: 'karrot-clicker',
+          game_type: 'karrot_clicker',
           is_new_user: false,
         });
         const {
@@ -134,7 +135,7 @@ export const Home: React.FC = () => {
         push(`/karrot-clicker`);
       } else {
         analytics.logEvent('click_game_enter_button', {
-          game_type: 'karrot-clicker',
+          game_type: 'karrot_clicker',
           is_new_user: true,
         });
         push(`/karrot-clicker`);
@@ -146,49 +147,65 @@ export const Home: React.FC = () => {
 
   // Share handler
   // =================================================================
-
+  const runShareOnSuccess = () => {
+    analytics.logEvent('click_third_party_agreement_button', {
+      location: 'platform_page',
+      origin: 'share_button',
+    });
+    handleShare();
+  };
   const handleShare = () => {
-    const url = 'https://daangn.onelink.me/HhUa/39b03946';
-    const text = `${nickname}님이 이웃님을 동네대회에 초대했어요! 같이 게임할래요?`;
-    shareApp(url, text);
     analytics.logEvent('click_share_button', {
       location: 'platform_page',
     });
+    const url = 'https://daangn.onelink.me/HhUa/39b03946';
+    const text = `${nickname}님이 이웃님을 동네대회에 초대했어요! 같이 게임할래요?`;
+    shareApp(url, text);
   };
   const triggerShareHandler = () => {
     console.log('trigger share handler');
     if (accessToken) {
       handleShare();
     } else {
-      handleThirdPartyAgreement(() => {
-        handleShare();
-      });
+      handleThirdPartyAgreement(runShareOnSuccess);
     }
   };
 
   // Installation handler
   // =================================================================
-  const onInstallationSuccess = () => {
-    setIsInstalled(true);
-    subscribeToastEmitter();
-  };
-  const triggerInstallationHandler = () => {
-    console.log('trigger installation handler');
+  const onSubscribeSucess = () => {
     analytics.logEvent('click_subscribe_button', {
       location: 'platform_page',
       is_voluntary: true,
     });
+    setIsInstalled(true);
+    subscribeToastEmitter();
+  };
+  const runOnSuccess = () => {
+    analytics.logEvent('click_third_party_agreement_button', {
+      location: 'platform_page',
+      origin: 'subscribe_button',
+    });
+    handleInstallation(onSubscribeSucess);
+  };
+  const triggerInstallationHandler = () => {
+    console.log('trigger installation handler');
     if (accessToken) {
-      handleInstallation(onInstallationSuccess);
+      handleInstallation(onSubscribeSucess);
     } else {
-      handleThirdPartyAgreement(() => {
-        handleInstallation(onInstallationSuccess);
-      });
+      handleThirdPartyAgreement(runOnSuccess);
     }
   };
 
   // New game notification handler
   // =================================================================
+  const onSuccessHandler = () => {
+    analytics.logEvent('click_third_party_agreement_button', {
+      location: 'platform_page',
+      origin: 'notification_button',
+    });
+    setIsNewGameNotificationOn(true);
+  };
   const handleNewGameNotification = async () => {
     if (accessToken) {
       const { data } =
@@ -197,10 +214,13 @@ export const Home: React.FC = () => {
         });
       if (data.status === 200) {
         console.log('notification (game) success');
+        analytics.logEvent('click_notification_button', {
+          notification_type: 'new_game',
+        });
         setIsNewGameNotificationOn(true);
       }
     } else {
-      handleThirdPartyAgreement(() => setIsNewGameNotificationOn(true));
+      handleThirdPartyAgreement(onSuccessHandler);
     }
   };
   const checkNotificationStatus = useCallback(async () => {
@@ -251,10 +271,11 @@ export const Home: React.FC = () => {
 
   useEffect(() => {
     if (isTop) {
+      analytics.logEvent('view_platform_page');
       updateUserInfo();
       checkNotificationStatus();
     }
-  }, [checkNotificationStatus, isTop, updateUserInfo]);
+  }, [analytics, checkNotificationStatus, isTop, updateUserInfo]);
 
   // =================================================================
 

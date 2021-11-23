@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { useNavigator } from '@karrotframe/navigator';
+import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
 import { BackIcon } from 'assets/Icon';
 import { ActiveUserCount } from 'components/ActiveUserCount';
 import { OldButton } from 'components/Button';
@@ -14,6 +14,7 @@ import { LeaderboardTabs } from '../Leaderboard/LeaderboardTabs';
 import { DefaultUserRow, TopUserRow } from '../Leaderboard/LeaderboardTabs/Row';
 import { ReactComponent as BannerImage } from 'assets/svg/KarrotClicker/top.svg';
 import { useMinigameApi } from 'services/api/minigameApi';
+import { useEffect } from 'react';
 
 interface UserScoreExistsProps {
   nickname: string;
@@ -48,6 +49,7 @@ const UserScoreExists: React.FC<UserScoreExistsProps> = (props) => {
 };
 
 export const Home = () => {
+  const { isTop } = useCurrentScreen();
   const { push, pop } = useNavigator();
   const analytics = useAnalytics();
   const { accessToken } = useAccessToken();
@@ -71,7 +73,7 @@ export const Home = () => {
   const handleReturningUser = () => {
     // if access token exists, user is not new
     analytics.logEvent('click_game_start_button', {
-      game_type: 'karrot-clicker',
+      game_type: 'karrot_clicker',
       is_new_user: false,
     });
     onResetCount();
@@ -80,7 +82,7 @@ export const Home = () => {
   const handleNewUser = () => {
     // if user is new, open third-party agreement preset
     analytics.logEvent('click_game_start_button', {
-      game_type: 'karrot-clicker',
+      game_type: 'karrot_clicker',
       is_new_user: true,
     });
     handleThirdPartyAgreement(goToGamePage);
@@ -101,6 +103,14 @@ export const Home = () => {
       addPlayerCount();
     }
   };
+
+  useEffect(() => {
+    if (isTop) {
+      analytics.logEvent('view_home_page', {
+        game_type: 'karrot_clicker',
+      });
+    }
+  }, [analytics, isTop]);
   return (
     <Page className="karrot-clicker-home-page">
       <Nav appendLeft={<BackIcon />} onClickLeft={goToPlatformPage} />

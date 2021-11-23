@@ -54,6 +54,10 @@ export const GameOver: React.FC<Props> = (props) => {
       return;
     }
 
+    analytics.logEvent('click_view_leaderboard_button', {
+      game_type: '2048_puzzle',
+    });
+
     const response = await getMyData();
     if (response) {
       if (response > 0 && response <= 10) {
@@ -65,21 +69,24 @@ export const GameOver: React.FC<Props> = (props) => {
   };
 
   const handleShare = () => {
+    analytics.logEvent('click_share_button', {
+      game_type: '2048_puzzle',
+      location: 'game_over_modal',
+    });
     const url = 'https://daangn.onelink.me/HhUa/54499335';
     const text = `${nickname}님은 2048 퍼즐에서 전국 ${rank}등!`;
     shareApp(url, text);
-    analytics.logEvent('click_share_button', {
-      game_type: 'game-2048',
-      location: 'game_over_modal',
-    });
   };
 
   useEffect(() => {
     if (isTop) {
+      analytics.logEvent('view_game_over_modal', {
+        game_type: '2048_puzzle',
+      });
       getMyData();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isTop]);
+  }, [analytics, isTop]);
 
   // animation handler
   const [showScore, setShowScore] = useState(false);

@@ -61,7 +61,7 @@ export const Leaderboard = () => {
   };
   const goBackToPlatform = () => {
     analytics.logEvent('click_leave_game_button', {
-      game_type: 'karrot-clicker',
+      game_type: 'karrot_clicker',
       from: 'leaderboard_page',
     });
     push(`/`);
@@ -69,7 +69,7 @@ export const Leaderboard = () => {
 
   const handlePlayAgain = async () => {
     analytics.logEvent('click_game_play_again_button', {
-      game_type: 'karrot-clicker',
+      game_type: 'karrot_clicker',
     });
 
     goToGamePage();
@@ -82,7 +82,7 @@ export const Leaderboard = () => {
     const text = `${nickname}님은 당근모아에서 전국 ${rank}등!`;
     karrotMarketMini.shareApp(url, text);
     analytics.logEvent('click_share_button', {
-      game_type: 'karrot-clicker',
+      game_type: 'karrot_clicker',
       location: 'leaderboard_page',
     });
   };
@@ -107,7 +107,7 @@ export const Leaderboard = () => {
     if (isTop) {
       getMyData();
       analytics.logEvent('view_leaderboard_page', {
-        game_type: 'karrot-clicker',
+        game_type: 'karrot_clicker',
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
