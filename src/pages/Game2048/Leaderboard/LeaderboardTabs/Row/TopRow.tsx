@@ -17,7 +17,7 @@ interface TopUserRowProps {
 export const TopUserRow: React.FC<TopUserRowProps> = (props) => {
   let userComment;
   if (props.comment === '' || props.comment === null) {
-    userComment = `한마디 작성 중...`;
+    userComment = `${props.districtName} 파이팅!`;
   } else {
     userComment = `${props.comment}`;
   }
