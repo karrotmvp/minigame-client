@@ -62,7 +62,7 @@ export const Leaderboard = () => {
   const goBackToPlatform = () => {
     analytics.logEvent('click_leave_game_button', {
       game_type: 'karrot_clicker',
-      from: 'leaderboard_page',
+      location: 'leaderboard_page',
     });
     push(`/`);
   };

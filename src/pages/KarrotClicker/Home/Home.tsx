@@ -63,6 +63,10 @@ export const Home = () => {
   };
 
   const goToPlatformPage = () => {
+    analytics.logEvent('click_leave_game_button', {
+      game_type: 'karrot_clicker',
+      location: 'home_page',
+    });
     pop();
   };
 
@@ -79,13 +83,20 @@ export const Home = () => {
     onResetCount();
     resumeGame();
   };
+  const onNewUserSuccessHandler = () => {
+    analytics.logEvent('click_third_party_agreement_button', {
+      game_type: 'karrot_clicker',
+      origin: 'game_start_button',
+    });
+    goToGamePage();
+  };
   const handleNewUser = () => {
     // if user is new, open third-party agreement preset
     analytics.logEvent('click_game_start_button', {
       game_type: 'karrot_clicker',
       is_new_user: true,
     });
-    handleThirdPartyAgreement(goToGamePage);
+    handleThirdPartyAgreement(onNewUserSuccessHandler);
   };
   const handleGameStart = () => {
     // bypass in web environment
