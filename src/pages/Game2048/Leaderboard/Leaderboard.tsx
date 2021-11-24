@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
 import { LeaderboardTabs } from 'pages/Game2048/Leaderboard/LeaderboardTabs';
-import { math, rem } from 'polished';
+import { rem } from 'polished';
 import { Button } from 'components/Button';
 import { useCallback, useEffect, useState } from 'react';
 import { Nav } from 'components/Navigation/Nav';
