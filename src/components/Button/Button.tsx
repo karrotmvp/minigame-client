@@ -1,7 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
-import { rem } from 'polished';
 import React from 'react';
 
 const oldButtonStyle = ({ size, color }: any) => css`
@@ -119,11 +118,7 @@ const CustomButton = styled.a<{
   width: ${(props) => (props.size === `large` ? `100%` : `fit-content`)};
 
   padding: ${(props) =>
-    props.size === `large`
-      ? `${rem(8)} 0`
-      : `tiny`
-      ? `${rem(6)} ${rem(11)} ${rem(5)}`
-      : `0`};
+    props.size === `large` ? `8px 0` : `tiny` ? `6px 11px 5px` : `0`};
 
   font-weight: ${(props) =>
     props.size === `large`

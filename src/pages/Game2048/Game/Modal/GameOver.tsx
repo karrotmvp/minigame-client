@@ -9,7 +9,6 @@ import { useMinigameApi } from 'services/api/minigameApi';
 import { useMyGame2048Data } from 'pages/Game2048/hooks';
 import { useMini, useUserData } from 'hooks';
 import { rem } from 'polished';
-import xUrl from 'assets/svg/game2048/x.svg';
 import { useAnalytics } from 'services/analytics';
 import { AnimatePresence, motion } from 'framer-motion';
 
@@ -48,14 +47,11 @@ export const GameOver: React.FC<Props> = (props) => {
   const handleViewLeaderboard = async () => {
     if (isInWebEnvironment) {
       goToLeaderboardPage();
-      // setShouldModalOpen(true);
       return;
     }
-
     analytics.logEvent('click_view_leaderboard_button', {
       game_type: '2048_puzzle',
     });
-
     const response = await getMyData();
     if (response) {
       if (response > 0 && response <= 10) {
@@ -104,16 +100,6 @@ export const GameOver: React.FC<Props> = (props) => {
   });
   return (
     <>
-      <img
-        src={xUrl}
-        alt="close"
-        onClick={handleViewLeaderboard}
-        style={{
-          position: 'absolute',
-          top: 39,
-          right: 27,
-        }}
-      />
       <div
         style={{
           flex: 1,
@@ -159,15 +145,30 @@ export const GameOver: React.FC<Props> = (props) => {
           )}
         </AnimatePresence>
       </div>
-      <Button
-        size={`large`}
-        fontSize={rem(16)}
-        color={`primary`}
-        onClick={handleShare}
-      >
-        자랑하기
-      </Button>
+      {rank !== 0 && rank <= 10 && (
+        <TopUserDirection>
+          <p>Top10에게 혜택이 있어요!</p>
+        </TopUserDirection>
+      )}
 
+      <ActionItems>
+        <Button
+          size={`large`}
+          fontSize={rem(16)}
+          color={`secondary1`}
+          onClick={handleViewLeaderboard}
+        >
+          랭킹보기
+        </Button>
+        <Button
+          size={`large`}
+          fontSize={rem(16)}
+          color={`primary`}
+          onClick={handleShare}
+        >
+          자랑하기
+        </Button>
+      </ActionItems>
       <ReactModal
         // isOpen={shouldOpen.current}
         isOpen={shouldModalOpen}
@@ -223,5 +224,62 @@ const Final = styled(motion.div)`
     font-family: 'Montserrat', sans-serif;
     font-size: ${rem(30)};
     line-height: 103.7%;
+  }
+`;
+
+const ActionItems = styled.div`
+  display: flex;
+  flex-flow: row;
+  gap: 12px;
+  justify-content: center;
+
+  width: 100%;
+`;
+
+const TopUserDirection = styled.div`
+  position: relative;
+  margin-bottom: 14px;
+  align-self: flex-start;
+  background: #e3efff;
+  border-radius: 5px;
+
+  font-family: Cafe24SsurroundAir;
+  font-style: normal;
+  font-size: ${rem(10)};
+  line-height: 161.7%;
+
+  color: #ffffff;
+
+  width: fit-content;
+  padding: 5px 10px;
+
+  &:after {
+    z-index: 1000;
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-color: transparent;
+    border-width: 14px 8px;
+    border-radius: 10px;
+    border-top-color: #e3efff;
+    border-bottom: 0;
+
+    margin-left: -15px;
+    margin-bottom: -8px;
+  }
+
+  p {
+    font-family: Cafe24SsurroundAir;
+    font-style: normal;
+    font-weight: normal;
+    font-size: ${rem(10)};
+    line-height: 161.7%;
+    /* or 16px */
+
+    color: #0e74ff;
   }
 `;
