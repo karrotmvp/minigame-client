@@ -42,7 +42,7 @@ const NavContainer = styled.div<{
   top: 0;
   left: 0;
 
-  padding: 14px 22px 16px;
+  padding: 14px 22px 14px;
 
   display: flex;
   flex-flow: row;

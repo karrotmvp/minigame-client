@@ -306,19 +306,20 @@ export const Home = () => {
 
 const Top = styled.div`
   width: 100%;
-  background: linear-gradient(180deg, #e3efff ${rem(180)}, #fff 0);
+  background: linear-gradient(180deg, #e3efff 180px, #fff 0);
   position: relative;
   top: -${navHeight};
-  margin-bottom: 25px;
+  // margin-bottom: 25px;
   padding-top: ${navHeight};
 `;
 
 const Bottom = styled.div`
+  flex: 1;
   background: #fff;
   position: sticky;
   top: ${navHeight};
-  left: 0;
-  height: ${pageHeight};
+  // left: 0;
+  height: calc(${pageHeight} - 90px);
 `;
 
 const Banner = styled.div`
@@ -332,8 +333,8 @@ const Banner = styled.div`
 const Container = styled.div`
   display: flex;
   flex-flow: row;
-  gap: ${rem(12)};
-  padding: 0 ${rem(20)};
+  gap: 12px;
+  padding: 0 20px;
 `;
 const ActionItem = styled.div`
   position: sticky;
@@ -354,10 +355,11 @@ const ActionItem = styled.div`
 `;
 
 const WeeklyCountdown = styled.div`
+  height: 35px;
   font-style: normal;
   font-weight: normal;
   display: flex;
   flex-flow: row;
   justify-content: space-between;
-  padding: 0 ${rem(20)} ${rem(15)};
+  padding: 0 20px 15px;
 `;
