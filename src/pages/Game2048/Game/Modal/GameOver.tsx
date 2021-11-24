@@ -9,7 +9,7 @@ import { useMinigameApi } from 'services/api/minigameApi';
 import { useMyGame2048Data } from 'pages/Game2048/hooks';
 import { useMini, useUserData } from 'hooks';
 import { rem } from 'polished';
-import xUrl from 'assets/svg/x.svg';
+import xUrl from 'assets/svg/game2048/x.svg';
 import { useAnalytics } from 'services/analytics';
 import { AnimatePresence, motion } from 'framer-motion';
 

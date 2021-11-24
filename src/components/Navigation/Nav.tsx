@@ -1,8 +1,8 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import styled from '@emotion/styled';
+// import { ScreenHelmet } from '@karrotframe/navigator';
 import React from 'react';
-
-export const navHeight = 68;
+import { navHeight } from 'styles';
 
 type Props = {
   appendLeft?: React.ReactNode;
@@ -15,29 +15,42 @@ type Props = {
 };
 export const Nav = (props: Props) => {
   return (
-    <Wrapper className="nav" border={props.border} style={props.style}>
+    // <ScreenHelmet>
+    <NavContainer className="nav" border={props.border} style={props.style}>
       <a onClick={props.onClickLeft}>{props.appendLeft}</a>
       <a onClick={props.onClickRight}>{props.appendRight}</a>
-    </Wrapper>
+    </NavContainer>
+    // </ScreenHelmet>
   );
 };
 
-const Wrapper = styled.div<{
+// export const Nav: React.FC<Props> = (props) => {
+//   return (
+//     <ScreenHelmet
+//       appendLeft={<a onClick={props.onClickLeft}>{props.appendLeft}</a>}
+//       appendRight={<a onClick={props.onClickRight}>{props.appendRight}</a>}
+//     />
+//   );
+// };
+
+const NavContainer = styled.div<{
   border: string | undefined;
 }>`
+  position: sticky;
+  height: ${navHeight};
+  width: 100%;
+  top: 0;
+  left: 0;
+
+  padding: 14px 22px 14px;
+
   display: flex;
   flex-flow: row;
   align-items: flex-end;
   justify-content: space-between;
-  height: ${navHeight}px;
-  padding: 28px 22px 16px;
 
   border-bottom: ${(props) => (props.border ? props.border : `none`)};
   z-index: 10;
-  position: sticky;
-  // width: 100%;
-  top: 0;
-  left: 0;
 
   a {
     display: flex;

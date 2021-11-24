@@ -1,10 +1,10 @@
 import styled from '@emotion/styled';
 import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
 import { LeaderboardTabs } from 'pages/Game2048/Leaderboard/LeaderboardTabs';
-import { rem } from 'polished';
+import { math, rem } from 'polished';
 import { Button } from 'components/Button';
 import { useCallback, useEffect, useState } from 'react';
-import { Nav, navHeight } from 'components/Navigation/Nav';
+import { Nav } from 'components/Navigation/Nav';
 import { CloseIcon } from 'assets/Icon';
 import { MyInfo } from './MyInfo';
 import { useMinigameApi } from 'services/api/minigameApi';
@@ -18,6 +18,7 @@ import {
   SubscribeToastContainer,
   subscribeToastEmitter,
 } from 'components/Toast';
+import { pageHeight } from 'styles';
 
 export const Leaderboard = () => {
   const { isTop } = useCurrentScreen();
@@ -229,7 +230,7 @@ export const Leaderboard = () => {
 const Main = styled.div`
   display: flex;
   flex-flow: column;
-  height: calc(100vh - ${navHeight}px - 90px);
+  height: calc(${pageHeight} - 90px);
 `;
 
 const WeeklyCountdown = styled.div`

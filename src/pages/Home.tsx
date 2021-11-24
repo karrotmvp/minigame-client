@@ -3,13 +3,13 @@ import styled from '@emotion/styled';
 import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
 import { useMinigameApi } from 'services/api/minigameApi';
 import { useAccessToken, useMini, useUserData } from 'hooks';
-import { Nav, navHeight } from 'components/Navigation/Nav';
+import { Nav } from 'components/Navigation/Nav';
 import { CloseIcon } from 'assets/Icon';
 import { rem } from 'polished';
 import { useMyGame2048Data } from './Game2048/hooks';
 import { useMyKarrotClickerData } from './KarrotClicker/hooks';
 import { useAnalytics } from 'services/analytics';
-import { color } from 'styles';
+import { color, PageContainer } from 'styles';
 import newUrl from 'assets/svg/new.svg';
 import BellUrl from 'assets/svg/bell.svg';
 import Game2048CardImgUrl from 'assets/svg/game2048/game_2048_card_img.svg';
@@ -296,8 +296,7 @@ export const Home: React.FC = () => {
           background: `#fff`,
         }}
       />
-
-      <Page className="game-platform-page">
+      <PageContainer id="platform-page">
         <MainText>
           <span>{townName3}</span> 이웃들과
           <br />
@@ -380,18 +379,11 @@ export const Home: React.FC = () => {
             <p className="right-text">보내기</p>
           </ModalOpenButton>
         </GameSurvey>
-      </Page>
-
+      </PageContainer>
       <SubscribeToastContainer />
     </>
   );
 };
-
-const Page = styled.div`
-  display: flex;
-  flex-flow: column;
-  height: calc(100vh - ${navHeight}px);
-`;
 
 const MainText = styled.div`
   padding: 0 ${rem(20)};
