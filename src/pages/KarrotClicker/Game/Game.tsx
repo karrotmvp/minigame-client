@@ -32,11 +32,11 @@ export const Game = () => {
 
   // User clicks pause button
   const handlePause = () => {
-    shouldPause(true);
-    setIsPaused(true);
     analytics.logEvent('click_game_pause_button', {
       game_type: 'karrot_clicker',
     });
+    shouldPause(true);
+    setIsPaused(true);
   };
 
   // Popup modal if user is new

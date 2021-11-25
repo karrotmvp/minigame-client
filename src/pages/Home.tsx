@@ -148,7 +148,7 @@ export const Home: React.FC = () => {
   const runShareOnSuccess = () => {
     analytics.logEvent('click_third_party_agreement_button', {
       location: 'platform_page',
-      origin: 'share_button',
+      button_type: 'share_button',
     });
     handleShare();
   };
@@ -181,7 +181,7 @@ export const Home: React.FC = () => {
   const runOnSuccess = () => {
     analytics.logEvent('click_third_party_agreement_button', {
       location: 'platform_page',
-      origin: 'subscribe_button',
+      button_type: 'subscribe_button',
     });
     handleInstallation(onSubscribeSucess);
   };
@@ -198,7 +198,7 @@ export const Home: React.FC = () => {
   const onSuccessHandler = () => {
     analytics.logEvent('click_third_party_agreement_button', {
       location: 'platform_page',
-      origin: 'notification_button',
+      button_type: 'notification_button',
     });
     setIsNewGameNotificationOn(true);
   };

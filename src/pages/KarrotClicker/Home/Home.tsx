@@ -86,7 +86,7 @@ export const Home = () => {
   const onNewUserSuccessHandler = () => {
     analytics.logEvent('click_third_party_agreement_button', {
       game_type: 'karrot_clicker',
-      origin: 'game_start_button',
+      button_type: 'game_start_button',
     });
     goToGamePage();
   };

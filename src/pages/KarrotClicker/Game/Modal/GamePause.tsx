@@ -40,12 +40,12 @@ export const GamePause: React.FC<GamePauseProps> = (props) => {
 
   // Button handler
   const handleContinue = () => {
-    props.setIsPaused(false);
-    shouldPause(false);
-    resumeGame();
     analytics.logEvent('click_game_continue_button', {
       game_type: 'karrot_clicker',
     });
+    props.setIsPaused(false);
+    shouldPause(false);
+    resumeGame();
   };
 
   const handleGameEnd = async () => {
@@ -66,14 +66,21 @@ export const GamePause: React.FC<GamePauseProps> = (props) => {
         if (data.rank > 0 && data.rank <= 10) {
           analytics.logEvent('click_game_end_button', {
             game_type: 'karrot_clicker',
+            button_type: 'game_end',
+            is_top_user: true,
             score: clickCount,
             rank: data.rank,
-            is_top_user: true,
-            button_type: 'game_end',
           });
           // open comment-modal
           setShouldModalOpen(true);
         } else {
+          analytics.logEvent('click_game_end_button', {
+            game_type: 'karrot_clicker',
+            button_type: 'game_end',
+            is_top_user: false,
+            score: clickCount,
+            rank: data.rank,
+          });
           goToLeaderboardPage();
         }
       } else {

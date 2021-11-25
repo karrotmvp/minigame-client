@@ -54,20 +54,20 @@ export const GameOver: React.FC<Props> = (props) => {
           if (data.rank <= 10 && data.rank > 0) {
             analytics.logEvent('click_game_end_button', {
               game_type: 'karrot_clicker',
+              button_type: 'game_over',
+              is_top_user: true,
               score: clickCount,
               rank: data.rank,
-              is_top_user: true,
-              button_type: 'game_over',
             });
             // open-comment-modal
             setShouldModalOpen(true);
           } else {
             analytics.logEvent('click_game_end_button', {
               game_type: 'karrot_clicker',
+              button_type: 'game_over',
+              is_top_user: false,
               score: clickCount,
               rank: data.rank,
-              is_top_user: false,
-              button_type: 'game_over',
             });
             // close-game-over-modal
             goToLeaderboardPage();
@@ -83,10 +83,10 @@ export const GameOver: React.FC<Props> = (props) => {
 
   useEffect(() => {
     if (isTop) {
-      shouldPause(true);
       analytics.logEvent('view_game_over_modal', {
         game_type: 'karrot_clicker',
       });
+      shouldPause(true);
     }
   }, [analytics, isTop, shouldPause]);
   return (
