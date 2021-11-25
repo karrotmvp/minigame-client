@@ -82,7 +82,7 @@ export const Home = () => {
   const onNewUserSuccessHandler = () => {
     analytics.logEvent('click_third_party_agreement_button', {
       game_type: '2048_puzzle',
-      origin: 'game_start_button',
+      button_type: 'game_start_button',
     });
     addPlayerCount();
     goToGamePage();
