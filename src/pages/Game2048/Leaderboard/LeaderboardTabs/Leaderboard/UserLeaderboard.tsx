@@ -1,19 +1,19 @@
-import styled from '@emotion/styled';
+import React from 'react';
 import { TopUserRow } from '../Row/TopRow';
 import { DefaultUserRow } from '../Row/DefaultRow';
-
 import { FreeMode, Scrollbar, Mousewheel } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/react/swiper-react.js';
 import 'swiper/swiper.scss'; // core Swiper
 import 'swiper/modules/free-mode/free-mode.scss';
 import 'swiper/modules/scrollbar/scrollbar.scss';
 import 'swiper/modules/mousewheel/mousewheel.scss';
+import { rem } from 'polished';
 
 type Props = {
   userLeaderboardData: any[];
-  shouldSticky?: boolean;
+  isRanked: boolean;
 };
-export const UserLeaderboard: React.FC<Props> = (props) => {
+const UserLeaderboard: React.FC<Props> = (props) => {
   return (
     <Swiper
       modules={[FreeMode, Scrollbar, Mousewheel]}
@@ -38,15 +38,24 @@ export const UserLeaderboard: React.FC<Props> = (props) => {
           );
         })}
 
-        <Text>
+        <p
+          style={{
+            margin: `17px 0 17px`,
+            fontStyle: `normal`,
+            fontWeight: `normal`,
+            fontSize: `${rem(16)}`,
+            lineHeight: `161.7%`,
+            textAlign: `center`,
+            color: `#7c7c7c`,
+          }}
+        >
           🎉 TOP 10 🎉 이 되어서
           <br />
           이웃들에게 한 마디를 남겨보세요!
-        </Text>
+        </p>
 
         {props.userLeaderboardData.slice(10).map((user) => {
           return (
-            // <SwiperSlide>
             <DefaultUserRow
               key={user.userId}
               rank={user.rank}
@@ -57,45 +66,10 @@ export const UserLeaderboard: React.FC<Props> = (props) => {
             />
           );
         })}
+        <div style={{ padding: props.isRanked ? `75px` : `25px` }} />
       </SwiperSlide>
     </Swiper>
   );
 };
 
-// const Container = styled.div`
-//   box-sizing: border-box;
-//   width: 100%;
-//   height: 100%;
-//   // overflow: hidden;
-// `;
-
-// const LeaderboardWrapper = styled.div`
-//   display: flex;
-//   flex-flow: column;
-//   align-items: center;
-//   width: 100%;
-//   height: 100%;
-//   overflow-y: auto;
-//   padding-bottom: 60px;
-
-//   // // Hide scrollbar but keep functionality
-//   // &::-webkit-scrollbar {
-//   //   display: none;
-//   // }
-//   // -ms-overflow-style: none; /* IE and Edge */
-//   // scrollbar-width: none; /* Firefox */
-// `;
-
-const Text = styled.p`
-  margin: 17px 0 17px;
-
-  font-style: normal;
-  font-weight: normal;
-  font-size: 16px;
-  line-height: 161.7%;
-  /* or 26px */
-
-  text-align: center;
-
-  color: #7c7c7c;
-`;
+export const MemoizedUserLeaderboard = React.memo(UserLeaderboard);

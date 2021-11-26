@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
 import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
-import { LeaderboardTabs } from 'pages/Game2048/Leaderboard/LeaderboardTabs';
+import { MemoizedLeaderboardTabs as LeaderboardTabs } from 'pages/Game2048/Leaderboard/LeaderboardTabs';
 // import { LastWeekTopDistrict, LastWeekTopTownie } from './LastWeekWinner';
 import {
   VeryFirstWeekDistrict,
@@ -226,36 +226,49 @@ export const Home = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isTop]);
 
-  const [shouldSticky, setShouldSticky] = useState(false);
+  // const [shouldSticky, setShouldSticky] = useState(false);
 
   const onScroll = (e: any) => {
     const offsetY = e.target.scrollTop;
     const limit = 205;
     if (limit < offsetY) {
-      setShouldSticky(true);
+      // setShouldSticky(true);
       // disable();
     } else {
-      setShouldSticky(false);
+      // setShouldSticky(false);
       // enable();
     }
   };
   // background: `linear-gradient(180deg, #e3efff ${rem(180)}, #fff 0)`,
 
   return (
-    <>
-      <Nav
-        appendLeft={<BackIcon />}
-        onClickLeft={goToPlatformPage}
-        style={{ backgroundColor: 'transparent' }}
-      />
-
-      <PageContainer id="home-page__2048-puzzle" onScroll={onScroll}>
-        <Top className="top">
-          <Banner className="banner">
-            <BannerImage />
-          </Banner>
-          <Container className="last-week-winner">
-            {/* <LastWeekTopDistrict
+    <div style={{ display: `flex`, flexFlow: `column` }}>
+      <div
+        style={{
+          height: `calc(100vh - 90px)`,
+          overflow: `hidden`,
+          overscrollBehavior: `contain`,
+        }}
+      >
+        <PageContainer
+          id="home-page__2048-puzzle"
+          onScroll={onScroll}
+          style={{
+            height: `100%`,
+            overflow: `auto`,
+          }}
+        >
+          <Nav
+            appendLeft={<BackIcon />}
+            onClickLeft={goToPlatformPage}
+            style={{ backgroundColor: 'transparent' }}
+          />
+          <Top className="top">
+            <Banner className="banner">
+              <BannerImage />
+            </Banner>
+            <Container className="last-week-winner">
+              {/* <LastWeekTopDistrict
                   townName1={lastWeekTopDistrict.townName1}
                   townName2={lastWeekTopDistrict.townName2}
                   score={lastWeekTopDistrict.score}
@@ -264,43 +277,44 @@ export const Home = () => {
                   name={lastWeekTopTownie.name}
                   score={lastWeekTopTownie.score}
                 /> */}
-            <VeryFirstWeekDistrict />
-            <VeryFirstWeekTownie />
-          </Container>
-        </Top>
-        <Bottom className="bottom">
-          <WeeklyCountdown className="weekly-countdown-refresh">
-            <Refresh handleRefresh={throttledRefresh} />
-          </WeeklyCountdown>
-          <Container>{isRanked ? <MyInfo /> : null}</Container>
-          <LeaderboardTabs
-            districtLeaderboardData={districtLeaderboardData}
-            userLeaderboardData={userLeaderboardData}
-            shouldSticky={shouldSticky}
-          />
-        </Bottom>
-        <ActionItem>
-          <div
-            style={{
-              position: 'absolute',
-              bottom: '90px',
-              right: '24px',
-              zIndex: 101,
-            }}
-          >
-            <ActiveUserCount gameType="GAME_2048" />
-          </div>
-          <Button
-            size={`large`}
-            fontSize={rem(20)}
-            color={`primary`}
-            onClick={handleGameStart}
-          >
-            게임 시작
-          </Button>
-        </ActionItem>
-      </PageContainer>
-    </>
+              <VeryFirstWeekDistrict />
+              <VeryFirstWeekTownie />
+            </Container>
+          </Top>
+          <Bottom className="bottom">
+            <WeeklyCountdown className="weekly-countdown-refresh">
+              <Refresh handleRefresh={throttledRefresh} />
+            </WeeklyCountdown>
+            <Container>{isRanked ? <MyInfo /> : null}</Container>
+            <LeaderboardTabs
+              districtLeaderboardData={districtLeaderboardData}
+              userLeaderboardData={userLeaderboardData}
+              isRanked={isRanked}
+            />
+          </Bottom>
+        </PageContainer>
+      </div>
+      <ActionItem>
+        <div
+          style={{
+            position: 'absolute',
+            bottom: '90px',
+            right: '24px',
+            zIndex: 101,
+          }}
+        >
+          <ActiveUserCount gameType="GAME_2048" />
+        </div>
+        <Button
+          size={`large`}
+          fontSize={rem(20)}
+          color={`primary`}
+          onClick={handleGameStart}
+        >
+          게임 시작
+        </Button>
+      </ActionItem>
+    </div>
   );
 };
 
@@ -309,7 +323,6 @@ const Top = styled.div`
   background: linear-gradient(180deg, #e3efff 180px, #fff 0);
   position: relative;
   top: -${navHeight};
-  // margin-bottom: 25px;
   padding-top: ${navHeight};
 `;
 
@@ -317,9 +330,8 @@ const Bottom = styled.div`
   flex: 1;
   background: #fff;
   position: sticky;
-  top: ${navHeight};
-  // left: 0;
   height: calc(${pageHeight} - 90px);
+  top: ${navHeight};
 `;
 
 const Banner = styled.div`

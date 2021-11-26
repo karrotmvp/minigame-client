@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
 import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
-import { LeaderboardTabs } from 'pages/Game2048/Leaderboard/LeaderboardTabs';
+import { MemoizedLeaderboardTabs as LeaderboardTabs } from 'pages/Game2048/Leaderboard/LeaderboardTabs';
 import { rem } from 'polished';
 import { Button } from 'components/Button';
 import { useCallback, useEffect, useState } from 'react';
@@ -202,6 +202,7 @@ export const Leaderboard = () => {
         <LeaderboardTabs
           districtLeaderboardData={districtLeaderboardData}
           userLeaderboardData={userLeaderboardData}
+          isRanked={isRanked}
         />
       </Main>
       <ActionItems>

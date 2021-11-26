@@ -62,8 +62,8 @@ const Container = styled.div<{ me?: boolean }>`
   flex-flow: row;
   align-items: center;
 
-  padding: 12px 20px 14px 26px;
-  margin: 4px 0;
+  padding: 12px 20px 12px 26px;
+  margin: 8px 0px;
   width: 100%;
   border-radius: 10px;
   border: 1px solid #ececec;
@@ -93,7 +93,6 @@ const Info = styled.div`
   flex-flow: row;
   align-items: center;
   gap: 12px;
-  margin-bottom: 4px;
 `;
 const Name = styled.div`
   display: flex;

@@ -69,8 +69,8 @@ const Container = styled.div<{ me?: boolean; rank?: number }>`
   flex-flow: row;
   align-items: center;
 
-  padding: 12px 20px 14px 26px;
-  margin: 4px 0;
+  padding: 12px 20px 8px 26px;
+  margin: 8px 0px;
   width: 100%;
   border-radius: 10px;
   border: 1px solid ${(props) => (props.me === true ? '#EBE0DB' : '#ececec')};
