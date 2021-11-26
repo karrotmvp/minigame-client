@@ -61,7 +61,8 @@ const Container = styled.div<{ me?: boolean }>`
   display: flex;
   flex-flow: row;
   align-items: center;
-
+  justify-content: center;
+  gap: 15px;
   padding: 12px 20px 12px 26px;
   margin: 8px 0px;
   width: 100%;
@@ -76,11 +77,6 @@ const ContentsWrapper = styled.div`
 const Rank = styled.div`
   width: 25px;
   display: flex;
-  align-self: flex-start;
-
-  margin-top: 3px;
-  // margin-left: 5px;
-
   font-weight: bold;
   font-size: 12px;
   line-height: 161.7%;
@@ -97,7 +93,7 @@ const Info = styled.div`
 const Name = styled.div`
   display: flex;
   flex-flow: row;
-  gap: 4px;
+  gap: 6px;
   align-items: center;
 
   font-style: normal;

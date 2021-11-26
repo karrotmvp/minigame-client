@@ -68,9 +68,10 @@ const Container = styled.div<{ me?: boolean; rank?: number }>`
   display: flex;
   flex-flow: row;
   align-items: center;
-
+  justify-content: center;
   padding: 12px 20px 8px 26px;
   margin: 8px 0px;
+  gap: 15px;
   width: 100%;
   border-radius: 10px;
   border: 1px solid ${(props) => (props.me === true ? '#EBE0DB' : '#ececec')};
@@ -100,6 +101,7 @@ const Container = styled.div<{ me?: boolean; rank?: number }>`
 `;
 
 const Rank = styled.div`
+  min-width: 25px;
   width: 25px;
   display: flex;
   align-self: flex-start;
@@ -127,7 +129,7 @@ const Info = styled.div`
 const Name = styled.div<{ rank: number }>`
   display: flex;
   flex-flow: row;
-  gap: 4px;
+  gap: 6px;
   align-items: center;
 
   font-style: normal;
