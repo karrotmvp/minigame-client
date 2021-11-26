@@ -226,16 +226,16 @@ export const Home = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isTop]);
 
-  const [shouldSticky, setShouldSticky] = useState(false);
+  // const [shouldSticky, setShouldSticky] = useState(false);
 
   const onScroll = (e: any) => {
     const offsetY = e.target.scrollTop;
     const limit = 205;
     if (limit < offsetY) {
-      setShouldSticky(true);
+      // setShouldSticky(true);
       // disable();
     } else {
-      setShouldSticky(false);
+      // setShouldSticky(false);
       // enable();
     }
   };
@@ -243,14 +243,9 @@ export const Home = () => {
 
   return (
     <div style={{ display: `flex`, flexFlow: `column` }}>
-      <Nav
-        appendLeft={<BackIcon />}
-        onClickLeft={goToPlatformPage}
-        style={{ backgroundColor: 'transparent' }}
-      />
       <div
         style={{
-          height: `calc(100vh - ${navHeight} - 90px)`,
+          height: `calc(100vh - 90px)`,
           overflow: `hidden`,
           overscrollBehavior: `contain`,
         }}
@@ -263,6 +258,11 @@ export const Home = () => {
             overflow: `auto`,
           }}
         >
+          <Nav
+            appendLeft={<BackIcon />}
+            onClickLeft={goToPlatformPage}
+            style={{ backgroundColor: 'transparent' }}
+          />
           <Top className="top">
             <Banner className="banner">
               <BannerImage />
@@ -285,11 +285,10 @@ export const Home = () => {
             <WeeklyCountdown className="weekly-countdown-refresh">
               <Refresh handleRefresh={throttledRefresh} />
             </WeeklyCountdown>
+            <Container>{isRanked ? <MyInfo /> : null}</Container>
             <LeaderboardTabs
-              // style={{ overscrollBehavior: `contain` }}
               districtLeaderboardData={districtLeaderboardData}
               userLeaderboardData={userLeaderboardData}
-              shouldSticky={shouldSticky}
             />
           </Bottom>
         </PageContainer>
@@ -323,7 +322,6 @@ const Top = styled.div`
   background: linear-gradient(180deg, #e3efff 180px, #fff 0);
   position: relative;
   top: -${navHeight};
-  // margin-bottom: 25px;
   padding-top: ${navHeight};
 `;
 
@@ -331,9 +329,8 @@ const Bottom = styled.div`
   flex: 1;
   background: #fff;
   position: sticky;
-  top: ${navHeight};
-  // left: 0;
   height: calc(${pageHeight} - 90px);
+  top: ${navHeight};
 `;
 
 const Banner = styled.div`
