@@ -99,7 +99,7 @@ const SingleTile = styled.div<{
       ? `#FFC554`
       : props.value === 512
       ? `#FFA800`
-      : props.value < 5000
+      : props.value < 4000
       ? `#FFA775`
       : props.value < 10000
       ? `#FF8845`
@@ -126,7 +126,7 @@ const SingleTile = styled.div<{
       ? `0px 6px 0px 0px #FFAB09`
       : props.value === 512
       ? `0px 6px 0px 0px #E29500`
-      : props.value < 5000
+      : props.value < 4000
       ? `0px 6px 0px 0px #FF8A48`
       : props.value < 10000
       ? `0px 6px 0px 0px #FF6F1E`
