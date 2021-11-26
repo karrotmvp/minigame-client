@@ -87,7 +87,11 @@ export const Leaderboard = () => {
   const getUserLeaderboardData = async () => {
     const {
       data: { data },
-    } = await minigameApi.gameUserApi.getLeaderBoardByUserUsingGET(gameType);
+    } = await minigameApi.gameUserApi.getLeaderBoardByUserUsingGET(
+      gameType,
+      undefined,
+      1000
+    );
     if (data) {
       const indexedUserRankData = data.map((item: any, index: number) => ({
         rank: index + 1,

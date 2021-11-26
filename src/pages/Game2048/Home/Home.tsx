@@ -183,7 +183,11 @@ export const Home = () => {
   const getUserLeaderboardData = useCallback(async () => {
     const {
       data: { data },
-    } = await minigameApi.gameUserApi.getLeaderBoardByUserUsingGET(gameType);
+    } = await minigameApi.gameUserApi.getLeaderBoardByUserUsingGET(
+      gameType,
+      undefined,
+      1000
+    );
     if (data) {
       const indexedDistrictRankData = data.map((item: any, index: number) => ({
         rank: index + 1,
