@@ -1,17 +1,21 @@
+import React from 'react';
 import { css } from '@emotion/css';
 import styled from '@emotion/styled';
 import { useCurrentScreen } from '@karrotframe/navigator';
 import { Tabs } from '@karrotframe/tabs';
 import '@karrotframe/tabs/index.css';
 import { useCallback, useState } from 'react';
-import { DistrictLeaderboard, UserLeaderboard } from './Leaderboard';
+import {
+  MemoizedDistrictLeaderboard as DistrictLeaderboard,
+  MemoizedUserLeaderboard as UserLeaderboard,
+} from './Leaderboard';
 
 type Props = {
   districtLeaderboardData: any[];
   userLeaderboardData: any[];
-  shouldSticky?: boolean;
+  isRanked: boolean;
 };
-export const LeaderboardTabs: React.FC<Props> = (props) => {
+const LeaderboardTabs: React.FC<Props> = (props) => {
   const { isTop } = useCurrentScreen();
   const [activeTabKey, setActiveTabKey] = useState<string>('district');
   const handleTabChange = (key: string) => {
@@ -36,9 +40,10 @@ export const LeaderboardTabs: React.FC<Props> = (props) => {
               () => (
                 <DistrictLeaderboard
                   districtLeaderboardData={props.districtLeaderboardData}
+                  isRanked={props.isRanked}
                 />
               ),
-              [props.districtLeaderboardData]
+              [props.districtLeaderboardData, props.isRanked]
             ),
           },
           {
@@ -48,9 +53,10 @@ export const LeaderboardTabs: React.FC<Props> = (props) => {
               () => (
                 <UserLeaderboard
                   userLeaderboardData={props.userLeaderboardData}
+                  isRanked={props.isRanked}
                 />
               ),
-              [props.userLeaderboardData]
+              [props.isRanked, props.userLeaderboardData]
             ),
           },
         ]}
@@ -60,6 +66,7 @@ export const LeaderboardTabs: React.FC<Props> = (props) => {
   );
 };
 
+export const MemoizedLeaderboardTabs = React.memo(LeaderboardTabs);
 const LeaderboardContainer = styled.div`
   flex: 1;
   height: 100%;

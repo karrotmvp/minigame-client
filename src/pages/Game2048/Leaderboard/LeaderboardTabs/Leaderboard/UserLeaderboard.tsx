@@ -1,3 +1,4 @@
+import React from 'react';
 import { TopUserRow } from '../Row/TopRow';
 import { DefaultUserRow } from '../Row/DefaultRow';
 import { FreeMode, Scrollbar, Mousewheel } from 'swiper';
@@ -10,8 +11,9 @@ import { rem } from 'polished';
 
 type Props = {
   userLeaderboardData: any[];
+  isRanked: boolean;
 };
-export const UserLeaderboard: React.FC<Props> = (props) => {
+const UserLeaderboard: React.FC<Props> = (props) => {
   return (
     <Swiper
       modules={[FreeMode, Scrollbar, Mousewheel]}
@@ -54,7 +56,6 @@ export const UserLeaderboard: React.FC<Props> = (props) => {
 
         {props.userLeaderboardData.slice(10).map((user) => {
           return (
-            // <SwiperSlide>
             <DefaultUserRow
               key={user.userId}
               rank={user.rank}
@@ -65,8 +66,10 @@ export const UserLeaderboard: React.FC<Props> = (props) => {
             />
           );
         })}
-        <div style={{ height: `50px`, minHeight: `50px` }} />
+        <div style={{ padding: props.isRanked ? `75px` : `25px` }} />
       </SwiperSlide>
     </Swiper>
   );
 };
+
+export const MemoizedUserLeaderboard = React.memo(UserLeaderboard);

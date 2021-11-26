@@ -1,4 +1,5 @@
 // import styled from '@emotion/styled';
+import React from 'react';
 import { DefaultDistrictRow, TopDistrictRow } from '../Row';
 import { useUserData } from 'hooks';
 
@@ -11,8 +12,9 @@ import 'swiper/modules/mousewheel/mousewheel.scss';
 
 type Props = {
   districtLeaderboardData: any[];
+  isRanked: boolean;
 };
-export const DistrictLeaderboard: React.FC<Props> = (props) => {
+const DistrictLeaderboard: React.FC<Props> = (props) => {
   const { townName2: myTown } = useUserData();
   return (
     <Swiper
@@ -75,8 +77,10 @@ export const DistrictLeaderboard: React.FC<Props> = (props) => {
             />
           );
         })}
-        <div style={{ height: `50px`, minHeight: `50px` }} />
+        <div style={{ padding: props.isRanked ? `75px` : `25px` }} />
       </SwiperSlide>
     </Swiper>
   );
 };
+
+export const MemoizedDistrictLeaderboard = React.memo(DistrictLeaderboard);

@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
 import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
-import { LeaderboardTabs } from 'pages/Game2048/Leaderboard/LeaderboardTabs';
+import { MemoizedLeaderboardTabs as LeaderboardTabs } from 'pages/Game2048/Leaderboard/LeaderboardTabs';
 // import { LastWeekTopDistrict, LastWeekTopTownie } from './LastWeekWinner';
 import {
   VeryFirstWeekDistrict,
@@ -289,6 +289,7 @@ export const Home = () => {
             <LeaderboardTabs
               districtLeaderboardData={districtLeaderboardData}
               userLeaderboardData={userLeaderboardData}
+              isRanked={isRanked}
             />
           </Bottom>
         </PageContainer>
