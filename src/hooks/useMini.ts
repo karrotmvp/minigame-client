@@ -1,4 +1,5 @@
 import { useSignAccessToken, useUserData } from 'hooks';
+import { useUser } from 'redux/user';
 import { useAnalytics } from 'services/analytics';
 import { useMinigameApi } from 'services/api/minigameApi';
 import {
@@ -15,6 +16,8 @@ export const useMini = () => {
   const appId = karrotMarketMiniConfig().appId;
   const presetUrl = karrotMarketMiniConfig().presetUrl;
   const installationUrl = karrotMarketMiniConfig().installationUrl;
+
+  const { uuid } = useUser();
 
   const updateUserInfo = async () => {
     const {
@@ -48,7 +51,7 @@ export const useMini = () => {
       },
       onSuccess: async function (result) {
         if (result && result.code) {
-          const response = await signAccessToken(result.code, regionId);
+          const response = await signAccessToken(uuid, result.code, regionId);
           if (response === true) {
             await updateUserInfo();
             if (runOnSuccess) {

@@ -10,6 +10,7 @@ import { useMinigameApi } from 'services/api/minigameApi';
 import { useUserData } from 'hooks';
 import { SurveyToastContainer, surveyToastEmitter } from 'components/Toast';
 import { useAnalytics } from 'services/analytics';
+import { useUser } from 'redux/user';
 
 export const Survey: React.FC = () => {
   const analytics = useAnalytics();
@@ -18,6 +19,8 @@ export const Survey: React.FC = () => {
   const { regionId } = useUserData();
   const [gameSurveyInput, setGameSurveyInput] = useState('');
   const inputRef = useRef<any>();
+
+  const { uuid } = useUser();
 
   const goToPlatformPage = () => {
     pop();
@@ -28,10 +31,13 @@ export const Survey: React.FC = () => {
   };
   const submitGameSurvey = async () => {
     inputRef.current.focus();
-    const { data } = await minigameApi.surveyApi.registerGameSurveyUsingPOST({
-      content: gameSurveyInput,
-      regionId: regionId,
-    });
+    const { data } = await minigameApi.surveyApi.registerGameSurveyUsingPOST(
+      uuid,
+      regionId,
+      {
+        content: gameSurveyInput,
+      }
+    );
     if (data.status === 200) {
       analytics.logEvent('click_submit_game_request_button');
       setGameSurveyInput('');
