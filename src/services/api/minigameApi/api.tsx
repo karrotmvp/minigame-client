@@ -9,6 +9,7 @@ import {
   RegionApi,
   SurveyApi,
   VisitorApi,
+  ScoreLogApi,
 } from '../../openapi_generator/api';
 import { Configuration } from '../../openapi_generator/configuration';
 import { useAccessToken } from 'hooks';
@@ -35,6 +36,7 @@ function CreateMinigameApi({
     const surveyApi = new SurveyApi(configuration);
     const userApi = new UserApi(configuration);
     const visitorApi = new VisitorApi(configuration);
+    const scoreLogApi = new ScoreLogApi(configuration);
     return {
       oauth2Api,
       userApi,
@@ -45,6 +47,7 @@ function CreateMinigameApi({
       surveyApi,
       notificationApi,
       visitorApi,
+      scoreLogApi,
     };
   } else {
     const gamePlayApi = new GamePlayApi();
@@ -56,7 +59,7 @@ function CreateMinigameApi({
     const surveyApi = new SurveyApi();
     const userApi = new UserApi();
     const visitorApi = new VisitorApi();
-
+    const scoreLogApi = new ScoreLogApi();
     return {
       oauth2Api,
       userApi,
@@ -67,6 +70,7 @@ function CreateMinigameApi({
       surveyApi,
       notificationApi,
       visitorApi,
+      scoreLogApi,
     };
   }
 }

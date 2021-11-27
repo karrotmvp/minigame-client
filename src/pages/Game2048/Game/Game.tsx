@@ -82,12 +82,23 @@ export const Game: React.FC = () => {
     });
   };
 
-  // constantly patch best score
+  const logScore = async ({
+    score,
+    gameType,
+  }: {
+    score: number;
+    gameType: 'GAME_KARROT' | 'GAME_2048';
+  }) => {
+    const data = await minigameApi.scoreLogApi.logScoreUsingPOST(
+      { score: score },
+      gameType
+    );
+    console.log(data);
+    return data;
+  };
+  // constantly patch score (score log)
   useEffect(() => {
-    if (currentScore > myBestScore) {
-      updateMyBestScore(currentScore);
-    }
-
+    logScore({ score: currentScore, gameType: gameType });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentScore]);
 
