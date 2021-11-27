@@ -26,6 +26,7 @@ import {
   SubscribeToastContainer,
   subscribeToastEmitter,
 } from 'components/Toast';
+import { useUser } from 'redux/user';
 
 export const Home: React.FC = () => {
   const analytics = useAnalytics();
@@ -40,7 +41,6 @@ export const Home: React.FC = () => {
     shareApp,
   } = useMini();
   const { accessToken } = useAccessToken();
-
   const {
     userId,
     nickname,
@@ -61,6 +61,7 @@ export const Home: React.FC = () => {
     updateMyComment: updateMyKarrotClickerComment,
     setGameTypeToKarrotClicker,
   } = useMyKarrotClickerData();
+  const { uuid, regionId, referer } = useUser();
 
   const leaveMiniApp = () => {
     analytics.logEvent('click_leave_mini_app_button');
@@ -259,14 +260,46 @@ export const Home: React.FC = () => {
       }
     }
   }, [analytics, minigameApi.userApi, setUserInfo, userId]);
-
+  const trackUser = useCallback(
+    async ({
+      uUID,
+      regionId,
+      referer,
+    }: {
+      uUID: string;
+      regionId: string;
+      referer?: 'FEED' | 'NEAR_BY' | 'SHARE' | 'UNKNOWN';
+    }) => {
+      try {
+        const data = await minigameApi.visitorApi.visitUsingPOST(
+          uUID,
+          regionId,
+          referer
+        );
+        return data;
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    [minigameApi.visitorApi]
+  );
   useEffect(() => {
     if (isTop) {
       analytics.logEvent('view_platform_page');
       updateUserInfo();
+      trackUser({ uUID: uuid, regionId: regionId, referer: referer });
       checkNotificationStatus();
     }
-  }, [analytics, checkNotificationStatus, isTop, updateUserInfo]);
+  }, [
+    analytics,
+    checkNotificationStatus,
+    isTop,
+    referer,
+    regionId,
+    trackUser,
+    updateUserInfo,
+    uuid,
+  ]);
 
   // =================================================================
 

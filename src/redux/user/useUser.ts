@@ -4,14 +4,16 @@ import { RootState } from 'store';
 import {
   saveUserInfo as saveUserInfoAction,
   trackVisitor as trackVisitorAction,
-} from '.';
+} from './user';
 
 export const useUser = () => {
-  const { uuid, regionId, installed, referer } = useSelector(
+  // const minigameApi = useMinigameApi();
+
+  const { uuid, regionId, isSubscribed, referer } = useSelector(
     (state: RootState) => ({
       uuid: state.user.uuid,
       regionId: state.user.regionId,
-      installed: state.user.installed,
+      isSubscribed: state.user.isSubscribed,
       referer: state.user.referer,
     }),
     shallowEqual
@@ -22,10 +24,10 @@ export const useUser = () => {
     (
       uuid: string,
       regionId: string,
-      installed: string,
+      isSubscribed: boolean,
       referer: 'FEED' | 'NEAR_BY' | 'SHARE' | 'UNKNOWN'
     ) => {
-      dispatch(saveUserInfoAction({ uuid, regionId, installed, referer }));
+      dispatch(saveUserInfoAction({ uuid, regionId, isSubscribed, referer }));
     },
     [dispatch]
   );
@@ -33,10 +35,11 @@ export const useUser = () => {
   const trackVisitor = () => {
     dispatch(trackVisitorAction());
   };
+
   return {
     uuid,
     regionId,
-    installed,
+    isSubscribed,
     referer,
     saveUserInfo,
     trackVisitor,

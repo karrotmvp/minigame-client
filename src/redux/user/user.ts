@@ -1,7 +1,14 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { useMinigameApi } from 'services/api/minigameApi';
 
-export const trackVisitor: any = createAsyncThunk(
+const MinigameApi = () => {
+  const minigameApi = useMinigameApi();
+  return {
+    minigameApi,
+  };
+};
+
+export const trackVisitor = createAsyncThunk(
   'user/trackVisitor',
   async (_args, { getState }) => {
     const { uuid, regionId, referer } = getState() as {
@@ -9,12 +16,14 @@ export const trackVisitor: any = createAsyncThunk(
       regionId: string;
       referer: 'FEED' | 'NEAR_BY' | 'SHARE' | 'UNKNOWN';
     };
-    const minigameApi = useMinigameApi();
-    const data = await minigameApi.visitorApi.visitUsingPOST(
+
+    console.log(uuid, regionId, referer);
+    const data = await MinigameApi().minigameApi.visitorApi.visitUsingPOST(
       uuid,
       regionId,
       referer
     );
+    // .visitUsingPOST(uuid, regionId, referer);
     return data;
   }
 );
@@ -22,19 +31,19 @@ export const trackVisitor: any = createAsyncThunk(
 interface UserState {
   uuid: string;
   regionId: string;
-  installed: string;
+  isSubscribed: boolean;
   referer: 'FEED' | 'NEAR_BY' | 'SHARE' | 'UNKNOWN';
   status: string;
-  payload: any[];
+  // payload: {};
 }
 
 const initialState: UserState = {
   uuid: '',
   regionId: '',
-  installed: '',
+  isSubscribed: false,
   referer: 'UNKNOWN',
   status: '',
-  payload: [],
+  // payload: {},
 };
 
 const userSlice = createSlice({
@@ -44,21 +53,23 @@ const userSlice = createSlice({
     saveUserInfo(state, action) {
       state.uuid = action.payload.uuid;
       state.regionId = action.payload.regionId;
-      state.installed = action.payload.installed;
+      state.isSubscribed = action.payload.isSubscribed;
       state.referer = action.payload.referer;
     },
   },
-  extraReducers: {
-    [trackVisitor.pending]: (state, action) => {
+  extraReducers: (builder) => {
+    builder.addCase(trackVisitor.pending, (state) => {
       state.status = 'loading';
-    },
-    [trackVisitor.fulfilled]: (state, { payload }) => {
-      state.payload = payload;
+    });
+
+    builder.addCase(trackVisitor.fulfilled, (state, { payload }) => {
       state.status = 'success';
-    },
-    [trackVisitor.rejected]: (state, action) => {
+      // state.payload = payload;
+    });
+
+    builder.addCase(trackVisitor.rejected, (state, { payload }) => {
       state.status = 'failed';
-    },
+    });
   },
 });
 

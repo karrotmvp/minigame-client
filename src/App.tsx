@@ -29,10 +29,10 @@ import { useAccessToken, useSignAccessToken, useUserData } from 'hooks';
 import { useMinigameApi } from 'services/api/minigameApi';
 
 import { v4 as uuidv4 } from 'uuid';
-import { trackVisitor, useUser } from 'redux/user';
-import { useDispatch } from 'react-redux';
+import { useUser } from 'redux/user';
 
 const App: React.FC = () => {
+  // const dispatch = useDispatch();
   const minigameApi = useMinigameApi();
   const { setRegionInfo, setTownInfo, setIsInstalled } = useUserData();
   const { accessToken } = useAccessToken();
@@ -43,7 +43,7 @@ const App: React.FC = () => {
   );
 
   const { saveUserInfo } = useUser();
-  const dispatch = useDispatch();
+
   // Firebase Analytics가 설정되어 있으면 인스턴스를 초기화하고 교체합니다.
   useEffect(() => {
     try {
@@ -113,29 +113,21 @@ const App: React.FC = () => {
       if (accessToken) {
         removeCookie('accessToken');
       }
-      const [, code, regionId, installed, referer] = getQueryParams();
+      const [preload, code, regionId, installed, referer] = getQueryParams();
       analytics.logEvent('launch_app');
 
       setRegionInfo(regionId as string);
       getDistrictInfo(regionId as string);
-
-      // if (isInstalled === 'true') {
-      //   setIsInstalled(true);
-      // } else if (isInstalled === 'false') {
-      //   setIsInstalled(false);
-      // }
       setIsInstalled(isSubscribed(installed));
-      console.log('asfsf');
+      console.log(preload, code, regionId, installed, referer);
       const uuid = uuidv4();
       console.log('uuid', uuid);
       saveUserInfo(
         uuid,
         regionId as string,
-        installed as string,
+        isSubscribed(installed),
         referer as any
       );
-      dispatch(trackVisitor(uuid, regionId, referer));
-
       fetchData(uuid, code as string, regionId as string);
       // eslint-disable-next-line react-hooks/exhaustive-deps
     },
