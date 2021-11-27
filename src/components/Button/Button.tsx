@@ -181,6 +181,7 @@ const ButtonComponent: React.FC<Props> = (props) => {
       color={props.color}
       onClick={props.onClick}
       style={props.style}
+      type={props.type}
     >
       {props.children}
     </CustomButton>

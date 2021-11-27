@@ -93,14 +93,28 @@ export const Survey: React.FC = () => {
           <p>예) 테트리스, 공룡점프</p>
         </GameSurvey>
         <ActionItems>
-          <Button
-            size={`large`}
-            fontSize={rem(20)}
-            color={`primary`}
-            onClick={submitGameSurvey}
-          >
-            보내기
-          </Button>
+          {gameSurveyInput.length <= 0 ? (
+            <Button
+              size={`large`}
+              fontSize={rem(20)}
+              color={``}
+              type={`disabled`}
+            >
+              보내기
+            </Button>
+          ) : (
+            <Button
+              size={`large`}
+              fontSize={rem(20)}
+              color={`primary`}
+              onClick={submitGameSurvey}
+            >
+              보내기
+            </Button>
+          )}
+          {/* <Button
+       
+          </Button> */}
         </ActionItems>
       </PageContainer>
       <SurveyToastContainer />
