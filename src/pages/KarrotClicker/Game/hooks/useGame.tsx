@@ -7,7 +7,7 @@ import {
   reset,
   updatePauseStateAction,
 } from 'pages/KarrotClicker/Game/reducers/gameKarrotClickerReducer';
-import { RootState } from 'reducers/rootReducer';
+import { RootState } from 'store';
 
 export const useGame = () => {
   const {

@@ -4,7 +4,7 @@ import {
   setGameTypeAction,
   updateUserCommentAction,
 } from 'reducers/karrotClickerDataReducer';
-import { RootState } from 'reducers/rootReducer';
+import { RootState } from 'store';
 
 export const useMyKarrotClickerData = () => {
   const { score, rank, comment, gameType } = useSelector(
