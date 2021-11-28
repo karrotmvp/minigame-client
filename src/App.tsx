@@ -67,8 +67,11 @@ const App: React.FC = () => {
     const preload: string | null = searchParams.get('preload');
     const code: string | null = searchParams.get('code');
     const regionId: string | null = searchParams.get('region_id');
-    const isInstalled: string | null = searchParams.get('installed');
-    return [preload, code, regionId, isInstalled];
+    // const regionId = '9bdfe83b68f3';
+    const installed: string | null = searchParams.get('installed');
+    const referer: string | null = searchParams.get('referer');
+    // referer:
+    return [preload, code, regionId, installed, referer];
   };
 
   const getDistrictInfo = useCallback(
