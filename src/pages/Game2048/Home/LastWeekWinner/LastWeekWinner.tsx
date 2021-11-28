@@ -2,13 +2,14 @@ import styled from '@emotion/styled';
 import { rem } from 'polished';
 import BadgeUrl from 'assets/svg/game2048/top_badge.svg';
 import { commafy } from 'utils';
+import React from 'react';
 
 type DistrictProps = {
   townName1: string;
   townName2: string;
   score: number;
 };
-export const LastWeekTopDistrict: React.FC<DistrictProps> = (props) => {
+const LastWeekTopDistrict: React.FC<DistrictProps> = (props) => {
   return (
     <Container>
       <Title>
@@ -21,12 +22,13 @@ export const LastWeekTopDistrict: React.FC<DistrictProps> = (props) => {
     </Container>
   );
 };
+export const MemoizedLastWeekTopDistrict = React.memo(LastWeekTopDistrict);
 
 type TownieProps = {
   name: string;
   score: number;
 };
-export const LastWeekTopTownie: React.FC<TownieProps> = (props) => {
+const LastWeekTopTownie: React.FC<TownieProps> = (props) => {
   return (
     <Container>
       <Title>
@@ -37,6 +39,7 @@ export const LastWeekTopTownie: React.FC<TownieProps> = (props) => {
     </Container>
   );
 };
+export const MemoizedLastWeekTopTownie = React.memo(LastWeekTopTownie);
 
 const Container = styled.div`
   display: flex;

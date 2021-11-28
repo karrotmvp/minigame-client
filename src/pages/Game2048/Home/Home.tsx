@@ -1,7 +1,10 @@
 import styled from '@emotion/styled';
 import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
 import { MemoizedLeaderboardTabs as LeaderboardTabs } from 'pages/Game2048/Leaderboard/LeaderboardTabs';
-import { LastWeekTopDistrict, LastWeekTopTownie } from './LastWeekWinner';
+import {
+  MemoizedLastWeekTopDistrict as LastWeekTopDistrict,
+  MemoizedLastWeekTopTownie as LastWeekTopTownie,
+} from './LastWeekWinner';
 // import {
 //   VeryFirstWeekDistrict,
 //   VeryFirstWeekTownie,
@@ -45,15 +48,6 @@ export const Home = () => {
     []
   );
 
-  const [lastWeekTopDistrict, setLastWeekTopDistrict] = useState<{
-    townName1: string;
-    townName2: string;
-    score: number;
-  }>({ townName1: '', townName2: '', score: 0 });
-  const [lastWeekTopTownie, setLastWeekTopTownie] = useState<{
-    name: string;
-    score: number;
-  }>({ name: '', score: 0 });
   const goToPlatformPage = () => {
     analytics.logEvent('click_leave_game_button', {
       game_type: '2048_puzzle',
@@ -114,47 +108,109 @@ export const Home = () => {
 
   // last week winner handler
   // =================================================================
-  const getLastWeekTopTownie = async () => {
-    try {
-      const {
-        data: { data },
-      } = await minigameApi.gameUserApi.getLeaderBoardByUserUsingGET(
-        gameType,
-        lastWeek.month,
-        1,
-        lastWeek.week,
-        lastWeek.year
-      );
-      if (data && data[0]) {
-        setLastWeekTopTownie({ name: data[0].nickname, score: data[0].score });
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  const [lastWeekTopTownie, setLastWeekTopTownie] = useState<{
+    name: string;
+    score: number;
+  }>({ name: '', score: 0 });
 
-  const getLastWeekTopDistrict = async () => {
-    try {
-      const {
-        data: { data },
-      } = await minigameApi.gameTownApi.getLeaderBoardByTownUsingGET(
-        gameType,
-        lastWeek.month,
-        1,
-        lastWeek.week,
-        lastWeek.year
-      );
-      if (data && data[0]) {
-        setLastWeekTopDistrict({
-          townName1: data[0].name1,
-          townName2: data[0].name2,
-          score: data[0].score,
-        });
+  const getLastWeekTopTownie = useCallback(
+    async ({
+      gameType,
+      year,
+      month,
+      week,
+    }: {
+      gameType: 'GAME_KARROT' | 'GAME_2048';
+      year: number;
+      month: number;
+      week: number;
+    }) => {
+      try {
+        const {
+          data: { data },
+        } = await minigameApi.gameUserApi.getLeaderBoardByUserUsingGET(
+          gameType,
+          month,
+          1,
+          week,
+          year
+        );
+        return data;
+      } catch (error) {
+        console.error(error);
       }
-    } catch (error) {
-      console.error(error);
+    },
+    [minigameApi.gameUserApi]
+  );
+  const displayLastWeekTopTownie = useCallback(async () => {
+    const response = await getLastWeekTopTownie({
+      gameType: gameType,
+      year: lastWeek.year,
+      month: lastWeek.month,
+      week: lastWeek.week,
+    });
+    if (response !== undefined) {
+      setLastWeekTopTownie({
+        name: response[0].nickname,
+        score: response[0].score,
+      });
     }
-  };
+  }, [gameType, getLastWeekTopTownie]);
+
+  const [lastWeekTopDistrict, setLastWeekTopDistrict] = useState<{
+    townName1: string;
+    townName2: string;
+    score: number;
+  }>({ townName1: '', townName2: '', score: 0 });
+  const getLastWeekTopDistrict = useCallback(
+    async ({
+      gameType,
+      year,
+      month,
+      week,
+    }: {
+      gameType: 'GAME_KARROT' | 'GAME_2048';
+      year: number;
+      month: number;
+      week: number;
+    }) => {
+      try {
+        const {
+          data: { data },
+        } = await minigameApi.gameTownApi.getLeaderBoardByTownUsingGET(
+          gameType,
+          month,
+          1,
+          week,
+          year
+        );
+        return data;
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    [minigameApi.gameTownApi]
+  );
+  const displayLastWeekTopDistrict = useCallback(async () => {
+    const response = await getLastWeekTopDistrict({
+      gameType: gameType,
+      year: lastWeek.year,
+      month: lastWeek.month,
+      week: lastWeek.week,
+    });
+    if (response !== undefined) {
+      setLastWeekTopDistrict({
+        townName1: response[0].name1,
+        townName2: response[0].name2,
+        score: response[0].score,
+      });
+    }
+  }, [gameType, getLastWeekTopDistrict]);
+
+  useEffect(() => {
+    displayLastWeekTopTownie();
+    displayLastWeekTopDistrict();
+  }, [displayLastWeekTopDistrict, displayLastWeekTopTownie]);
 
   // refresh button handler
   // =================================================================
@@ -221,8 +277,6 @@ export const Home = () => {
   useEffect(() => {
     if (isTop) {
       handleRefresh();
-      getLastWeekTopTownie();
-      getLastWeekTopDistrict();
     }
     if (rank !== 0) {
       setIsRanked(true);
