@@ -388,9 +388,6 @@ export const Home: React.FC = () => {
     }
   }, [analytics, isTop]);
 
-  // =================================================================
-  console.log(top2048PuzzleUsers);
-
   return (
     <>
       <Nav
@@ -500,6 +497,7 @@ export const Home: React.FC = () => {
                   modules={[Autoplay]}
                   spaceBetween={30}
                   centeredSlides={true}
+                  loop={true}
                   autoplay={{
                     delay: 2500,
                     disableOnInteraction: false,
@@ -540,6 +538,7 @@ export const Home: React.FC = () => {
                   modules={[Autoplay]}
                   spaceBetween={30}
                   centeredSlides={true}
+                  loop={true}
                   autoplay={{
                     delay: 2500,
                     disableOnInteraction: false,
