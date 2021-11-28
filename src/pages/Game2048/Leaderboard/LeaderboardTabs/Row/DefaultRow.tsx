@@ -2,6 +2,7 @@ import styled from '@emotion/styled';
 import { commafy } from 'utils/numberFunctions';
 import React from 'react';
 import { rem } from 'polished';
+import { DistrictName } from 'styles/leaderboard';
 
 interface DefaultUserRowProps {
   me?: boolean;
@@ -20,7 +21,7 @@ export const DefaultUserRow: React.FC<DefaultUserRowProps> = (props) => {
         <Info>
           <Name>
             {props.nickname}
-            <DistrictName districtName={props.districtName}>
+            <DistrictName color={`#7c7c7c`}>
               {props.cityName.slice(0, 2)} {props.districtName}
             </DistrictName>
           </Name>
@@ -115,22 +116,6 @@ const Score = styled.div`
   line-height: 161.7%;
   /* or 19px */
   color: #5b5b5b;
-`;
-
-const DistrictName = styled.div<{ districtName: string }>`
-  height: fit-content;
-  width: fit-content;
-  padding: 0 5px;
-
-  color: #7c7c7c;
-  font-style: normal;
-  font-weight: normal;
-  font-size: ${rem(8)};
-  line-height: 161.7%;
-
-  border: 0.5px solid #7c7c7c;
-  box-sizing: border-box;
-  border-radius: 7px;
 `;
 
 const PlayerCount = styled.div`
