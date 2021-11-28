@@ -279,7 +279,13 @@ export const Home: React.FC = () => {
     }: {
       uUID: string;
       regionId: string;
-      referer?: 'FEED' | 'NEAR_BY' | 'SHARE' | 'UNKNOWN';
+      referer?:
+        | 'FEED'
+        | 'NEAR_BY'
+        | 'UNKNOWN'
+        | 'SHARE_GAME_2048'
+        | 'SHARE_GAME_KARROT'
+        | 'SHARE_PLATFORM';
     }) => {
       try {
         const data = await minigameApi.visitorApi.visitUsingPOST(
@@ -308,25 +314,7 @@ export const Home: React.FC = () => {
     uuid,
   ]);
 
-  // last week winner handler
-  // const getLastWeekTopTownie = async () => {
-  //   try {
-  //     const {
-  //       data: { data },
-  //     } = await minigameApi.gameUserApi.getLeaderBoardByUserUsingGET(
-  //       gameType,
-  //       lastWeek.month,
-  //       1,
-  //       lastWeek.week,
-  //       lastWeek.year
-  //     );
-  //     if (data && data[0]) {
-  //       setLastWeekTopTownie({ name: data[0].nickname, score: data[0].score });
-  //     }
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
+  // Last week Top 10 Comments Carousel
   const [top2048PuzzleUsers, setTop2048PuzzleUsers] = useState<any[]>();
   const [topKarrotClickerUsers, setTopKarrotClickerUsers] = useState<any[]>();
 
@@ -382,6 +370,7 @@ export const Home: React.FC = () => {
       retrieveTopKarrotClickerUsers();
     }
   }, [isTop, retreieveTop2048PuzzleUsers, retrieveTopKarrotClickerUsers]);
+
   useEffect(() => {
     if (isTop) {
       analytics.logEvent('view_platform_page');

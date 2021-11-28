@@ -30,7 +30,13 @@ export const useUser = () => {
       uuid?: string;
       regionId?: string;
       isSubscribed?: boolean;
-      referer?: 'FEED' | 'NEAR_BY' | 'SHARE' | 'UNKNOWN';
+      referer?:
+        | 'FEED'
+        | 'NEAR_BY'
+        | 'UNKNOWN'
+        | 'SHARE_GAME_2048'
+        | 'SHARE_GAME_KARROT'
+        | 'SHARE_PLATFORM';
     }) => {
       dispatch(saveUserInfoAction({ uuid, regionId, isSubscribed, referer }));
     },

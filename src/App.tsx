@@ -75,7 +75,6 @@ const App: React.FC = () => {
     const regionId: string | null = searchParams.get('region_id');
     const installed: string | null = searchParams.get('installed');
     const referer: string | null = searchParams.get('referer');
-    // referer:
     return [preload, code, regionId, installed, referer];
   };
 
@@ -128,8 +127,10 @@ const App: React.FC = () => {
       referer: referer?.toUpperCase() as
         | 'FEED'
         | 'NEAR_BY'
-        | 'SHARE'
-        | 'UNKNOWN',
+        | 'UNKNOWN'
+        | 'SHARE_GAME_2048'
+        | 'SHARE_GAME_KARROT'
+        | 'SHARE_PLATFORM',
     });
     fetchData(uuid, code as string, regionId as string);
     // eslint-disable-next-line react-hooks/exhaustive-deps
