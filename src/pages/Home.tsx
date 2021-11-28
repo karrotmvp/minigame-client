@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
 import { useMinigameApi } from 'services/api/minigameApi';
@@ -21,11 +21,19 @@ import ArrowKarrotClickerUrl from 'assets/svg/arrow_karrot_clicker.svg';
 import { ReactComponent as Bookmark } from 'assets/svg/bookmark_icon.svg';
 import { ReactComponent as BookmarkDone } from 'assets/svg/bookmark_done_icon.svg';
 import { ReactComponent as Share } from 'assets/svg/share_icon.svg';
+import { ReactComponent as Circle2048Puzzle } from 'assets/svg/circle_2048_puzzle.svg';
+import { ReactComponent as CircleKarrotClicker } from 'assets/svg/circle_karrot_clicker.svg';
 import { NotificationRequestDtoTypeEnum } from 'services/openapi_generator';
 import {
   SubscribeToastContainer,
   subscribeToastEmitter,
 } from 'components/Toast';
+import { useUser } from 'redux/user';
+import { Swiper, SwiperSlide } from 'swiper/react/swiper-react.js';
+import 'swiper/swiper.scss';
+import { Autoplay } from 'swiper';
+import { lastWeek } from 'utils/date';
+import { DistrictName } from 'styles/leaderboard';
 
 export const Home: React.FC = () => {
   const analytics = useAnalytics();
@@ -268,7 +276,88 @@ export const Home: React.FC = () => {
     }
   }, [analytics, checkNotificationStatus, isTop, updateUserInfo]);
 
+  // last week winner handler
+  // const getLastWeekTopTownie = async () => {
+  //   try {
+  //     const {
+  //       data: { data },
+  //     } = await minigameApi.gameUserApi.getLeaderBoardByUserUsingGET(
+  //       gameType,
+  //       lastWeek.month,
+  //       1,
+  //       lastWeek.week,
+  //       lastWeek.year
+  //     );
+  //     if (data && data[0]) {
+  //       setLastWeekTopTownie({ name: data[0].nickname, score: data[0].score });
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
+  const [top2048PuzzleUsers, setTop2048PuzzleUsers] = useState<any[]>();
+  const [topKarrotClickerUsers, setTopKarrotClickerUsers] = useState<any[]>();
+
+  const getLastWeekTopUsers = useCallback(
+    async ({ gameType }: { gameType: 'GAME_KARROT' | 'GAME_2048' }) => {
+      try {
+        const {
+          data: { data },
+        } = await minigameApi.gameUserApi.getLeaderBoardByUserUsingGET(
+          gameType,
+          lastWeek.month,
+          10,
+          lastWeek.week,
+          lastWeek.year
+        );
+        return data;
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    [minigameApi.gameUserApi]
+  );
+
+  const retreieveTop2048PuzzleUsers = useCallback(async () => {
+    const response = await getLastWeekTopUsers({
+      gameType: 'GAME_2048',
+    });
+    const indexedResponse2048Puzzle = response?.map(
+      (item: any, index: number) => ({
+        rank: index + 1,
+        ...item,
+      })
+    );
+    setTop2048PuzzleUsers(indexedResponse2048Puzzle);
+  }, [getLastWeekTopUsers]);
+
+  const retrieveTopKarrotClickerUsers = useCallback(async () => {
+    const response = await getLastWeekTopUsers({
+      gameType: 'GAME_KARROT',
+    });
+    const indexedResponseKarrotClicker = response?.map(
+      (item: any, index: number) => ({
+        rank: index + 1,
+        ...item,
+      })
+    );
+    setTopKarrotClickerUsers(indexedResponseKarrotClicker);
+  }, [getLastWeekTopUsers]);
+
+  useEffect(() => {
+    if (isTop) {
+      retreieveTop2048PuzzleUsers();
+      retrieveTopKarrotClickerUsers();
+    }
+  }, [isTop, retreieveTop2048PuzzleUsers, retrieveTopKarrotClickerUsers]);
+  useEffect(() => {
+    if (isTop) {
+      analytics.logEvent('view_platform_page');
+    }
+  }, [analytics, isTop]);
+
   // =================================================================
+  console.log(top2048PuzzleUsers);
 
   return (
     <>
@@ -297,96 +386,246 @@ export const Home: React.FC = () => {
         }}
       />
       <PageContainer id="platform-page">
-        <MainText>
-          <span>{townName3}</span> 이웃들과
-          <br />
-          같이 게임해요!
-        </MainText>
-        <CardContainer className="container--games">
-          <Card game={`game-2048`} onClick={goToGame2048}>
-            <CardImg1 src={Game2048CardImgUrl} />
-            <Title>
-              2048 퍼즐
+        <Section>
+          <MainText>
+            <span>{townName3}</span> 이웃들과
+            <br />
+            같이 게임해요!
+          </MainText>
+          <CardContainer className="container--games">
+            <Card game={`game-2048`} onClick={goToGame2048}>
               <img
-                src={newUrl}
-                alt=""
+                src={Game2048CardImgUrl}
+                alt="2048-puzzle-enter-button"
                 style={{
-                  display: 'inline-box',
-                  marginLeft: '5px',
+                  width: `${rem(80)}`,
+                  height: `${rem(115)}`,
+                  bottom: `10px`,
+                  left: `0`,
                 }}
               />
-            </Title>
-            <Text>
-              동네 천재 타이틀을 원한다면?
-              <br />
-              중독성 갑 퍼즐 게임
-            </Text>
-            <ActionButton src={ArrowGame2048Url} />
-          </Card>
-          <Card game={`karrot-clicker`} onClick={goToKarrotClicker}>
-            <CardImg2 src={KarrotClickerCardImgUrl} />
-            <Title>당근모아</Title>
-            <Text>
-              한 번 누르면 멈추기 어려운
-              <br />
-              귀여운 클리커 게임
-            </Text>
-            <ActionButton src={ArrowKarrotClickerUrl} />
-          </Card>
-        </CardContainer>
-        <Break />
-        <SectionTitle style={{ marginBottom: `15px` }}>
-          새로운 게임을 준비 중이에요
-        </SectionTitle>
-        <CardContainer>
-          {isNewGameNotificationOn ? (
-            <Card game={`coming-soon`}>
-              <CardImg3 src={ComingSoonCardImgUrl} />
-              <Title>Coming Soon</Title>
-              <Text>
-                오픈 알림 신청 완료!
+              <h3>
+                2048 퍼즐
+                <img
+                  src={newUrl}
+                  alt=""
+                  style={{
+                    display: 'inline-box',
+                    marginLeft: '5px',
+                  }}
+                />
+              </h3>
+              <p>
+                동네 천재 타이틀을 원한다면?
                 <br />
-                새로운 게임이 열리면 알려드릴게요
-              </Text>
+                중독성 갑 퍼즐 게임
+              </p>
+              <ActionButton src={ArrowGame2048Url} />
             </Card>
-          ) : (
-            <Card
-              game={`whats-next`}
-              onClick={handleNewGameNotification}
-              style={{
-                border: `1px solid #ECECEC`,
-              }}
-            >
-              <CardImg3 src={WhatsNextCardImgUrl} />
-              <Title>What's Next?</Title>
-              <Text>
-                <span>오픈 알림</span>을 신청하면
+            <Card game={`karrot-clicker`} onClick={goToKarrotClicker}>
+              <img
+                src={KarrotClickerCardImgUrl}
+                alt="karrot-clicker-enter-button"
+                style={{
+                  width: `${rem(60)}`,
+                  height: `${rem(130)}`,
+                  bottom: `0`,
+                  left: `23px`,
+                }}
+              />
+              <h3>당근모아</h3>
+              <p>
+                한 번 누르면 멈추기 어려운
                 <br />
-                빠르게 대회에 참여할 수 있어요!
-              </Text>
-              <ActionButton src={BellUrl} />
+                귀여운 클리커 게임
+              </p>
+              <ActionButton src={ArrowKarrotClickerUrl} />
             </Card>
-          )}
-        </CardContainer>
+          </CardContainer>
+        </Section>
         <Break />
-        <SectionTitle style={{ marginBottom: `15px` }}>
-          하고 싶은 게임이 있나요?
-        </SectionTitle>
-
-        <GameSurvey>
-          <ModalOpenButton onClick={goToSurveyPage}>
-            <p className="left-text">예) 테트리스</p>
-            <p className="right-text">보내기</p>
-          </ModalOpenButton>
-        </GameSurvey>
+        <Section>
+          <SectionTitle style={{ marginBottom: `10px` }}>
+            전국 Top 10의 한 마디
+          </SectionTitle>
+          <p
+            style={{
+              fontStyle: 'normal',
+              fontWeight: 'normal',
+              fontSize: `${rem(12)}`,
+              lineHeight: `161.7%`,
+              color: `#9F9F9F`,
+              marginBottom: `20px`,
+            }}
+          >
+            Top 10에 들면 이웃들에게 한 마디 외칠 수 있어요
+          </p>
+          <LastWeekTopComments>
+            <div className="game">
+              <Circle2048Puzzle />
+              <div className="comment-bubble">
+                <Swiper
+                  modules={[Autoplay]}
+                  spaceBetween={30}
+                  centeredSlides={true}
+                  autoplay={{
+                    delay: 2500,
+                    disableOnInteraction: false,
+                  }}
+                  className="mySwiper"
+                >
+                  {top2048PuzzleUsers?.map((user, i) => {
+                    if (user.comment === '' || user.comment === null) {
+                      user.comment = `${user.town.name2} 파이팅!`;
+                    }
+                    return (
+                      <SwiperSlide key={i}>
+                        <TopUserContent>
+                          <div className="user-info">
+                            <p
+                              style={{
+                                color: `#0E74FF`,
+                              }}
+                            >
+                              {user.rank}등 {user.nickname}
+                            </p>
+                            <DistrictName color={`#0E74FF`}>
+                              {user.town.name1.slice(0, 2)} {user.town.name2}
+                            </DistrictName>
+                          </div>
+                          <p className="comment">{user.comment}</p>
+                        </TopUserContent>
+                      </SwiperSlide>
+                    );
+                  })}
+                </Swiper>
+              </div>
+            </div>
+            <div className="game">
+              <CircleKarrotClicker />
+              <div className="comment-bubble">
+                <Swiper
+                  modules={[Autoplay]}
+                  spaceBetween={30}
+                  centeredSlides={true}
+                  autoplay={{
+                    delay: 2500,
+                    disableOnInteraction: false,
+                  }}
+                  className="mySwiper"
+                >
+                  {topKarrotClickerUsers?.map((user, i) => {
+                    if (user.comment === '' || user.comment === null) {
+                      user.comment = `${user.town.name2} 파이팅!`;
+                    }
+                    return (
+                      <SwiperSlide key={i}>
+                        <TopUserContent>
+                          <div className="user-info">
+                            <p
+                              style={{
+                                color: `#EB5D0E`,
+                              }}
+                            >
+                              {user.rank}등 {user.nickname}
+                            </p>
+                            <DistrictName color={`#EB5D0E`}>
+                              {user.town.name1.slice(0, 2)} {user.town.name2}
+                            </DistrictName>
+                          </div>
+                          <p className="comment">{user.comment}</p>
+                        </TopUserContent>
+                      </SwiperSlide>
+                    );
+                  })}
+                </Swiper>
+              </div>
+            </div>
+          </LastWeekTopComments>
+        </Section>
+        <Break
+          style={{
+            margin: `24px 0 22px`,
+          }}
+        />
+        <Section>
+          <SectionTitle>새로운 게임을 준비 중이에요</SectionTitle>
+          <CardContainer>
+            {isNewGameNotificationOn ? (
+              <Card game={`coming-soon`}>
+                <img
+                  src={ComingSoonCardImgUrl}
+                  alt="coming-soon-button"
+                  style={{
+                    width: `${rem(71)}`,
+                    height: `${rem(93)}`,
+                    bottom: `-3px`,
+                    left: `15px`,
+                  }}
+                />
+                <h3>Coming Soon</h3>
+                <p>
+                  오픈 알림 신청 완료!
+                  <br />
+                  새로운 게임이 열리면 알려드릴게요
+                </p>
+              </Card>
+            ) : (
+              <Card
+                game={`whats-next`}
+                onClick={handleNewGameNotification}
+                style={{
+                  border: `1px solid #ECECEC`,
+                }}
+              >
+                <img
+                  src={WhatsNextCardImgUrl}
+                  alt="whats-next"
+                  style={{
+                    width: `${rem(71)}`,
+                    height: `${rem(93)}`,
+                    bottom: `-3px`,
+                    left: `15px`,
+                  }}
+                />
+                <h3>What's Next?</h3>
+                <p>
+                  <span>오픈 알림</span>을 신청하면
+                  <br />
+                  빠르게 대회에 참여할 수 있어요!
+                </p>
+                <ActionButton src={BellUrl} />
+              </Card>
+            )}
+          </CardContainer>
+        </Section>
+        <Break />
+        <Section>
+          <SectionTitle>하고 싶은 게임이 있나요?</SectionTitle>
+          <GameSurvey>
+            <ModalOpenButton onClick={goToSurveyPage}>
+              <p className="left-text">예) 테트리스</p>
+              <p className="right-text">보내기</p>
+            </ModalOpenButton>
+          </GameSurvey>
+        </Section>
       </PageContainer>
       <SubscribeToastContainer />
     </>
   );
 };
 
-const MainText = styled.div`
+const Section = styled.div`
   padding: 0 ${rem(20)};
+`;
+const Break = styled.div`
+  background: #f8f8f8;
+  min-height: 6px;
+  height: 6px;
+  margin: 30px 0 22px;
+`;
+
+const MainText = styled.div`
   color: #3f3f3f;
   font-size: ${rem(24)};
   font-weight: bold;
@@ -397,21 +636,19 @@ const MainText = styled.div`
     font-size: ${rem(34)};
   }
 `;
-
 const SectionTitle = styled.h3`
   font-style: normal;
   font-weight: bold;
   font-size: ${rem(20)};
   line-height: 121.2%;
   /* or 24px */
-  padding: 0 ${rem(20)};
   color: #3f3f3f;
+  margin-bottom: 15px;
 `;
 const CardContainer = styled.div`
   display: flex;
   flex-flow: column;
   gap: ${rem(30)};
-  padding: 0 ${rem(20)};
 `;
 const Card = styled.a<{ game: string }>`
   position: relative;
@@ -441,7 +678,18 @@ const Card = styled.a<{ game: string }>`
       ? `0px 8px 0px 0px #E5E5E5`
       : `0px 0px 0px 0px #fff`};
 
+  img {
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    position: absolute;
+  }
+
   h3 {
+    font-weight: bold;
+    font-size: ${rem(24)};
+    line-height: 161.7%;
+    /* or 39px */
     margin: 0 ${rem(50)} 0 ${rem(105)};
     color: ${(props) =>
       props.game === `whats-next`
@@ -457,7 +705,11 @@ const Card = styled.a<{ game: string }>`
   }
 
   p {
-    margin: 0 ${rem(50)} 0 ${rem(105)};
+    font-weight: normal;
+    font-size: ${rem(12)};
+    line-height: 161.7%;
+    /* or 19px */
+    margin-left: ${rem(105)};
 
     color: ${(props) =>
       props.game === `whats-next`
@@ -474,49 +726,6 @@ const Card = styled.a<{ game: string }>`
   }
 `;
 
-const Title = styled.h3`
-  font-weight: bold;
-  font-size: ${rem(24)};
-  line-height: 161.7%;
-  /* or 39px */
-`;
-const Text = styled.p`
-  font-weight: normal;
-  font-size: ${rem(12)};
-  line-height: 161.7%;
-  /* or 19px */
-`;
-const CardImg1 = styled.img`
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center center;
-  width: ${rem(80)};
-  height: ${rem(115)};
-  position: absolute;
-  bottom: 10px;
-  left: 0;
-`;
-const CardImg2 = styled.img`
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center center;
-  width: ${rem(60)};
-  height: ${rem(130)};
-  position: absolute;
-  bottom: 0;
-  left: 23px;
-`;
-const CardImg3 = styled.img`
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center center;
-  width: ${rem(71)};
-  height: ${rem(93)};
-  position: absolute;
-  bottom: -3px;
-  left: 15px;
-`;
-
 const ActionButton = styled.img`
   position: absolute;
   top: 24px;
@@ -528,15 +737,73 @@ const ActionButton = styled.img`
   display: inline-block;
 `;
 
-const Break = styled.div`
-  background: #f8f8f8;
-  min-height: 6px;
-  height: 6px;
-  margin: 30px 0 22px;
+const LastWeekTopComments = styled.div`
+  display: flex;
+  flex-flow: column;
+  gap: 15px;
+
+  div.game {
+    display: flex;
+    flex-flow: row;
+    gap: 20px;
+
+    div.comment-bubble {
+      flex: 1;
+      width: 100px;
+      display: flex;
+      justify-content: center;
+      position: relative;
+      background: #f5f5f5;
+      border-radius: 10px;
+      padding: 10px 13px;
+      &:after {
+        content: '';
+        position: absolute;
+        border-style: solid;
+        border-width: 7px 10px 7px 0;
+        border-color: transparent #f5f5f5;
+        display: block;
+        width: 0;
+        z-index: 1;
+        margin-top: -7px;
+        left: -8px;
+        top: 50%;
+      }
+    }
+  }
+`;
+
+const TopUserContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  
+  div.user-info {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+
+    p {
+      font-style: normal;
+      font-weight: bold;
+      font-size: ${rem(12)}
+      line-height: 161.7%;
+      word-spacing: 5px;
+    }
+  }
+
+  p.comment {
+    font-style: normal;
+    font-weight: normal;
+    font-size: ${rem(14)};
+    line-height: 161.7%;
+    color: #5B5B5B;
+
+  }
+
 `;
 
 const GameSurvey = styled.div`
-  margin: 0 20px 0 20px;
   padding-bottom: 44px;
 `;
 const ModalOpenButton = styled.button`
