@@ -14,7 +14,13 @@ export const trackVisitor = createAsyncThunk(
     const { uuid, regionId, referer } = getState() as {
       uuid: string;
       regionId: string;
-      referer: 'FEED' | 'NEAR_BY' | 'SHARE' | 'UNKNOWN';
+      referer:
+        | 'FEED'
+        | 'NEAR_BY'
+        | 'UNKNOWN'
+        | 'SHARE_GAME_2048'
+        | 'SHARE_GAME_KARROT'
+        | 'SHARE_PLATFORM';
     };
 
     console.log(uuid, regionId, referer);
@@ -32,7 +38,13 @@ interface UserState {
   uuid: string;
   regionId: string;
   isSubscribed: boolean;
-  referer: 'FEED' | 'NEAR_BY' | 'SHARE' | 'UNKNOWN';
+  referer:
+    | 'FEED'
+    | 'NEAR_BY'
+    | 'UNKNOWN'
+    | 'SHARE_GAME_2048'
+    | 'SHARE_GAME_KARROT'
+    | 'SHARE_PLATFORM';
   status: string;
   // payload: {};
 }

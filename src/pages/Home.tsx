@@ -279,7 +279,13 @@ export const Home: React.FC = () => {
     }: {
       uUID: string;
       regionId: string;
-      referer?: 'FEED' | 'NEAR_BY' | 'SHARE' | 'UNKNOWN';
+      referer?:
+        | 'FEED'
+        | 'NEAR_BY'
+        | 'UNKNOWN'
+        | 'SHARE_GAME_2048'
+        | 'SHARE_GAME_KARROT'
+        | 'SHARE_PLATFORM';
     }) => {
       try {
         const data = await minigameApi.visitorApi.visitUsingPOST(
