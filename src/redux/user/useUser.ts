@@ -21,12 +21,17 @@ export const useUser = () => {
   const dispatch = useDispatch();
 
   const saveUserInfo = useCallback(
-    (
-      uuid: string,
-      regionId: string,
-      isSubscribed: boolean,
-      referer: 'FEED' | 'NEAR_BY' | 'SHARE' | 'UNKNOWN'
-    ) => {
+    ({
+      uuid,
+      regionId,
+      isSubscribed,
+      referer,
+    }: {
+      uuid?: string;
+      regionId?: string;
+      isSubscribed?: boolean;
+      referer?: 'FEED' | 'NEAR_BY' | 'SHARE' | 'UNKNOWN';
+    }) => {
       dispatch(saveUserInfoAction({ uuid, regionId, isSubscribed, referer }));
     },
     [dispatch]

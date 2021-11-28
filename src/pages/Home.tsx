@@ -68,6 +68,7 @@ export const Home: React.FC = () => {
     ejectApp();
   };
 
+  // Page navigator
   const goToSurveyPage = () => {
     analytics.logEvent('click_survey_button');
     push(`/survey`);
@@ -242,6 +243,7 @@ export const Home: React.FC = () => {
     setIsNewGameNotificationOn,
   ]);
 
+  // Update user info
   const updateUserInfo = useCallback(async () => {
     if (userId) {
       return;
@@ -260,6 +262,8 @@ export const Home: React.FC = () => {
       }
     }
   }, [analytics, minigameApi.userApi, setUserInfo, userId]);
+
+  // Track user with uuid
   const trackUser = useCallback(
     async ({
       uUID,
@@ -283,17 +287,13 @@ export const Home: React.FC = () => {
     },
     [minigameApi.visitorApi]
   );
+
   useEffect(() => {
-    if (isTop) {
-      analytics.logEvent('view_platform_page');
-      updateUserInfo();
-      trackUser({ uUID: uuid, regionId: regionId, referer: referer });
-      checkNotificationStatus();
-    }
+    updateUserInfo();
+    trackUser({ uUID: uuid, regionId: regionId, referer: referer });
+    checkNotificationStatus();
   }, [
-    analytics,
     checkNotificationStatus,
-    isTop,
     referer,
     regionId,
     trackUser,

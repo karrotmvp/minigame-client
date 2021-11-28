@@ -74,7 +74,7 @@ const App: React.FC = () => {
     const code: string | null = searchParams.get('code');
     const regionId: string | null = searchParams.get('region_id');
     const installed: string | null = searchParams.get('installed');
-    const referer = searchParams.get('referer');
+    const referer: string | null = searchParams.get('referer');
     // referer:
     return [preload, code, regionId, installed, referer];
   };
@@ -108,39 +108,32 @@ const App: React.FC = () => {
     [signAccessToken]
   );
 
-  useEffect(
-    () => {
-      if (accessToken) {
-        removeCookie('accessToken');
-      }
-      const [preload, code, regionId, installed, referer] = getQueryParams();
-      analytics.logEvent('launch_app');
+  useEffect(() => {
+    if (accessToken) {
+      removeCookie('accessToken');
+    }
+    const [preload, code, regionId, installed, referer] = getQueryParams();
+    analytics.logEvent('launch_app');
 
-      setRegionInfo(regionId as string);
-      getDistrictInfo(regionId as string);
-      setIsInstalled(isSubscribed(installed));
-      console.log(preload, code, regionId, installed, referer);
-      const uuid = uuidv4();
-      console.log('uuid', uuid);
-      saveUserInfo(
-        uuid,
-        regionId as string,
-        isSubscribed(installed),
-        referer as any
-      );
-      fetchData(uuid, code as string, regionId as string);
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    },
-    [
-      // accessToken,
-      // analytics,
-      // fetchData,
-      // getDistrictInfo,
-      // removeCookie,
-      // setIsInstalled,
-      // setRegionInfo,
-    ]
-  );
+    setRegionInfo(regionId as string);
+    getDistrictInfo(regionId as string);
+    setIsInstalled(isSubscribed(installed));
+    console.log(preload, code, regionId, installed, referer);
+    const uuid = uuidv4();
+    console.log('uuid', uuid);
+    saveUserInfo({
+      uuid: uuid,
+      regionId: regionId as string,
+      isSubscribed: isSubscribed(installed),
+      referer: referer?.toUpperCase() as
+        | 'FEED'
+        | 'NEAR_BY'
+        | 'SHARE'
+        | 'UNKNOWN',
+    });
+    fetchData(uuid, code as string, regionId as string);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [analytics]);
 
   return (
     <AnalyticsContext.Provider value={analytics}>
