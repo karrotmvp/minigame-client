@@ -48,7 +48,6 @@ export const Home: React.FC = () => {
     shareApp,
   } = useMini();
   const { accessToken } = useAccessToken();
-
   const {
     userId,
     nickname,
@@ -69,12 +68,14 @@ export const Home: React.FC = () => {
     updateMyComment: updateMyKarrotClickerComment,
     setGameTypeToKarrotClicker,
   } = useMyKarrotClickerData();
+  const { uuid, regionId, referer } = useUser();
 
   const leaveMiniApp = () => {
     analytics.logEvent('click_leave_mini_app_button');
     ejectApp();
   };
 
+  // Page navigator
   const goToSurveyPage = () => {
     analytics.logEvent('click_survey_button');
     push(`/survey`);
@@ -249,6 +250,7 @@ export const Home: React.FC = () => {
     setIsNewGameNotificationOn,
   ]);
 
+  // Update user info
   const updateUserInfo = useCallback(async () => {
     if (userId) {
       return;
@@ -268,13 +270,43 @@ export const Home: React.FC = () => {
     }
   }, [analytics, minigameApi.userApi, setUserInfo, userId]);
 
+  // Track user with uuid
+  const trackUser = useCallback(
+    async ({
+      uUID,
+      regionId,
+      referer,
+    }: {
+      uUID: string;
+      regionId: string;
+      referer?: 'FEED' | 'NEAR_BY' | 'SHARE' | 'UNKNOWN';
+    }) => {
+      try {
+        const data = await minigameApi.visitorApi.visitUsingPOST(
+          uUID,
+          regionId,
+          referer
+        );
+        return data;
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    [minigameApi.visitorApi]
+  );
+
   useEffect(() => {
-    if (isTop) {
-      analytics.logEvent('view_platform_page');
-      updateUserInfo();
-      checkNotificationStatus();
-    }
-  }, [analytics, checkNotificationStatus, isTop, updateUserInfo]);
+    updateUserInfo();
+    trackUser({ uUID: uuid, regionId: regionId, referer: referer });
+    checkNotificationStatus();
+  }, [
+    checkNotificationStatus,
+    referer,
+    regionId,
+    trackUser,
+    updateUserInfo,
+    uuid,
+  ]);
 
   // last week winner handler
   // const getLastWeekTopTownie = async () => {

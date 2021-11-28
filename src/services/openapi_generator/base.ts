@@ -21,7 +21,7 @@ import globalAxios, {
   AxiosRequestConfig,
 } from 'axios';
 
-export const BASE_PATH = 'https://api.daangn-game.com'.replace(/\/+$/, '');
+export const BASE_PATH = 'https://alpha.daangn-game.com'.replace(/\/+$/, '');
 
 /**
  *

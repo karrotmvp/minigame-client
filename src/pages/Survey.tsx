@@ -1,8 +1,8 @@
-import React, { useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from '@emotion/styled';
 import { Nav } from 'components/Navigation/Nav';
 import { BackIcon } from 'assets/Icon';
-import { useNavigator } from '@karrotframe/navigator';
+import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
 import { rem } from 'polished';
 import { color, PageContainer } from 'styles';
 import { Button } from 'components/Button';
@@ -10,14 +10,18 @@ import { useMinigameApi } from 'services/api/minigameApi';
 import { useUserData } from 'hooks';
 import { SurveyToastContainer, surveyToastEmitter } from 'components/Toast';
 import { useAnalytics } from 'services/analytics';
+import { useUser } from 'redux/user';
 
 export const Survey: React.FC = () => {
   const analytics = useAnalytics();
+  const { isTop } = useCurrentScreen();
   const { pop } = useNavigator();
   const minigameApi = useMinigameApi();
   const { regionId } = useUserData();
   const [gameSurveyInput, setGameSurveyInput] = useState('');
   const inputRef = useRef<any>();
+
+  const { uuid } = useUser();
 
   const goToPlatformPage = () => {
     pop();
@@ -26,19 +30,52 @@ export const Survey: React.FC = () => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setGameSurveyInput(e.target.value);
   };
+
+  const postGameSurvey = async ({
+    uuid,
+    regionId,
+    content,
+  }: {
+    uuid: string;
+    regionId: string;
+    content: string;
+  }) => {
+    try {
+      const { data } = await minigameApi.surveyApi.registerGameSurveyUsingPOST(
+        uuid,
+        regionId,
+        {
+          content,
+        }
+      );
+      console.log(data);
+      return data;
+    } catch (error) {
+      console.error(error);
+    }
+  };
   const submitGameSurvey = async () => {
     inputRef.current.focus();
-    const { data } = await minigameApi.surveyApi.registerGameSurveyUsingPOST({
-      content: gameSurveyInput,
+    const response = await postGameSurvey({
+      uuid: uuid,
       regionId: regionId,
+      content: gameSurveyInput,
     });
-    if (data.status === 200) {
+    if (response?.status === 200) {
       analytics.logEvent('click_submit_game_request_button');
       setGameSurveyInput('');
       surveyToastEmitter();
     }
   };
 
+  useEffect(() => {
+    if (isTop) {
+      const timerId = setTimeout(() => {
+        inputRef.current.focus();
+      }, 300);
+      return clearTimeout(timerId);
+    }
+  }, [isTop]);
   return (
     <>
       <Nav appendLeft={<BackIcon />} onClickLeft={goToPlatformPage} />
@@ -47,7 +84,6 @@ export const Survey: React.FC = () => {
           <h3>하고 싶은 게임이 있나요?</h3>
           <div>
             <input
-              autoFocus
               ref={inputRef}
               type="text"
               onChange={handleInputChange}
@@ -57,14 +93,28 @@ export const Survey: React.FC = () => {
           <p>예) 테트리스, 공룡점프</p>
         </GameSurvey>
         <ActionItems>
-          <Button
-            size={`large`}
-            fontSize={rem(20)}
-            color={`primary`}
-            onClick={submitGameSurvey}
-          >
-            보내기
-          </Button>
+          {gameSurveyInput.length <= 0 ? (
+            <Button
+              size={`large`}
+              fontSize={rem(20)}
+              color={``}
+              type={`disabled`}
+            >
+              보내기
+            </Button>
+          ) : (
+            <Button
+              size={`large`}
+              fontSize={rem(20)}
+              color={`primary`}
+              onClick={submitGameSurvey}
+            >
+              보내기
+            </Button>
+          )}
+          {/* <Button
+       
+          </Button> */}
         </ActionItems>
       </PageContainer>
       <SurveyToastContainer />

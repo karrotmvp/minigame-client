@@ -76,18 +76,49 @@ export const Game: React.FC = () => {
     }
   }, [getTownieBestScoreEver, isTop]);
 
-  const updateMyBestScore = async (score: number) => {
-    await minigameApi.gamePlayApi.updateScoreUsingPATCH(gameType, {
-      score: score,
-    });
-  };
-
-  // constantly patch best score
-  useEffect(() => {
-    if (currentScore > myBestScore) {
-      updateMyBestScore(currentScore);
+  const updateMyBestScore = async ({
+    score,
+    gameType,
+  }: {
+    score: number;
+    gameType: 'GAME_KARROT' | 'GAME_2048';
+  }) => {
+    try {
+      const response = await minigameApi.gamePlayApi.updateScoreUsingPATCH(
+        gameType,
+        {
+          score: score,
+        }
+      );
+      return response;
+    } catch (error) {
+      console.error(error);
     }
-
+  };
+  const logScore = useCallback(
+    async ({
+      score,
+      gameType,
+    }: {
+      score: number;
+      gameType: 'GAME_KARROT' | 'GAME_2048';
+    }) => {
+      try {
+        const response = await minigameApi.scoreLogApi.logScoreUsingPOST(
+          { score: score },
+          gameType
+        );
+        console.log(response);
+        return response;
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    [minigameApi.scoreLogApi]
+  );
+  // constantly patch score (score log)
+  useEffect(() => {
+    logScore({ score: currentScore, gameType: gameType });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentScore]);
 
@@ -114,11 +145,15 @@ export const Game: React.FC = () => {
       analytics.logEvent('handle_game_over', {
         game_type: '2048_puzzle',
       });
+      if (currentScore > myBestScore) {
+        updateMyBestScore({ score: currentScore, gameType: gameType });
+      }
       timerId = setTimeout(() => {
         setIsGameOver(() => true);
       }, 1500);
     }
     return () => clearTimeout(timerId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [analytics, gameOverStatus]);
 
   // update user-info
