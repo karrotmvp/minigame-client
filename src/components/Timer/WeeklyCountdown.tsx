@@ -1,6 +1,6 @@
 import { useCurrentScreen } from '@karrotframe/navigator';
 import { useState, useEffect, useCallback } from 'react';
-import { nextMonday } from 'date-fns';
+import { nextMonday, formatDistanceToNowStrict } from 'date-fns';
 
 function _getNextMonday() {
   let date = new Date();
@@ -64,9 +64,11 @@ export const WeeklyCountdown = () => {
 
   return (
     <>
-      {` ${time?.hours.toString().padStart(2, '0')}:${time?.minutes
-        .toString()
-        .padStart(2, '0')}:${time?.seconds.toString().padStart(2, '0')}`}
+      {time.hours <= 24
+        ? ` ${time?.hours.toString().padStart(2, '0')}:${time?.minutes
+            .toString()
+            .padStart(2, '0')}:${time?.seconds.toString().padStart(2, '0')}`
+        : `${formatDistanceToNowStrict(nextMonday(new Date())).slice(0, 1)}일`}
     </>
   );
 };

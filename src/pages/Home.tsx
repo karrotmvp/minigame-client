@@ -466,7 +466,7 @@ export const Home: React.FC = () => {
         <Break />
         <Section>
           <SectionTitle style={{ marginBottom: `10px` }}>
-            전국 Top 10의 한 마디
+            지난주 전국 Top 10의 한 마디
           </SectionTitle>
           <p
             style={{
@@ -488,6 +488,7 @@ export const Home: React.FC = () => {
                   modules={[Autoplay]}
                   spaceBetween={30}
                   centeredSlides={true}
+                  initialSlide={1}
                   loop={true}
                   autoplay={{
                     delay: 2500,
@@ -496,6 +497,7 @@ export const Home: React.FC = () => {
                   className="mySwiper"
                 >
                   {top2048PuzzleUsers?.map((user, i) => {
+                    console.log(top2048PuzzleUsers, i);
                     if (user.comment === '' || user.comment === null) {
                       user.comment = `${user.town.name2} 파이팅!`;
                     }
@@ -529,6 +531,7 @@ export const Home: React.FC = () => {
                   modules={[Autoplay]}
                   spaceBetween={30}
                   centeredSlides={true}
+                  initialSlide={1}
                   loop={true}
                   autoplay={{
                     delay: 2500,
