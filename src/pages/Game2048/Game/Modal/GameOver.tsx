@@ -64,7 +64,7 @@ export const GameOver: React.FC<Props> = (props) => {
       game_type: '2048_puzzle',
       location: 'game_over_modal',
     });
-    const url = 'https://daangn.onelink.me/HhUa/54499335';
+    const url = 'https://daangn.onelink.me/HhUa/37719e67';
     const text = `${nickname}님은 2048 퍼즐에서 전국 ${rank}등!`;
     shareApp(url, text);
   };

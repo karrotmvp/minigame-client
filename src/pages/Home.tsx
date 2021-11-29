@@ -165,7 +165,7 @@ export const Home: React.FC = () => {
     analytics.logEvent('click_share_button', {
       location: 'platform_page',
     });
-    const url = 'https://daangn.onelink.me/HhUa/39b03946';
+    const url = 'https://daangn.onelink.me/HhUa/2da74f80';
     const text = `${nickname}님이 이웃님을 동네대회에 초대했어요! 같이 게임할래요?`;
     shareApp(url, text);
   };

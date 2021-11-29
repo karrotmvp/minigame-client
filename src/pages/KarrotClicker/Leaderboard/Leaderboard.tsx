@@ -78,7 +78,7 @@ export const Leaderboard = () => {
   };
 
   const handleShare = () => {
-    const url = 'https://daangn.onelink.me/HhUa/31bbbcf';
+    const url = 'https://daangn.onelink.me/HhUa/8db9923d';
     const text = `${nickname}님은 당근모아에서 전국 ${rank}등!`;
     karrotMarketMini.shareApp(url, text);
     analytics.logEvent('click_share_button', {
