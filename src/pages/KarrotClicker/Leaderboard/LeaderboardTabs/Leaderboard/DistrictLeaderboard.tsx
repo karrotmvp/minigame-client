@@ -23,8 +23,12 @@ export const DistrictLeaderboard: React.FC = () => {
       if (data) {
         const indexedDistrictRankData = data.map(
           (item: any, index: number) => ({
-            rank: index + 1,
             ...item,
+            rank: index + 1,
+            name1: item.name1.replace(
+              /(특별시|광역시|특별자치시|특별자치도)$/,
+              ''
+            ),
           })
         );
         setDistrictRankData(indexedDistrictRankData);

@@ -16,12 +16,13 @@ import {
 } from './Score';
 import refreshGameUrl from 'assets/svg/game2048/refresh_game.svg';
 import { useAnalytics } from 'services/analytics';
-import { useUserData } from 'hooks';
+import { useMini, useUserData } from 'hooks';
 
 export const Game: React.FC = () => {
   const analytics = useAnalytics();
   const { isTop } = useCurrentScreen();
   const minigameApi = useMinigameApi();
+  const { isInWebEnvironment } = useMini();
   const { userId, setUserInfo } = useUserData();
   const { score: myBestScore, highestScore, gameType } = useMyGame2048Data();
   const {
@@ -49,6 +50,10 @@ export const Game: React.FC = () => {
     resetGame();
   };
   const handleGameEnd = async () => {
+    if (isInWebEnvironment) {
+      setIsGameOver(true);
+      return;
+    }
     analytics.logEvent('click_game_end_button', {
       game_type: '2048_puzzle',
       button_type: 'game_end',

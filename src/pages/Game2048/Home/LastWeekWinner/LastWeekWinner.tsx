@@ -16,7 +16,7 @@ const LastWeekTopDistrict: React.FC<DistrictProps> = (props) => {
         지난 주 <span>1등 동네</span>
       </Title>
       <Name>
-        {props.townName1.slice(0, 2)} {props.townName2}
+        {props.townName1} {props.townName2}
       </Name>
       <Score>{commafy(props.score)}점</Score>
     </Container>

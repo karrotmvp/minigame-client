@@ -22,7 +22,7 @@ export const DefaultUserRow: React.FC<DefaultUserRowProps> = (props) => {
           <Name>
             {props.nickname}
             <DistrictName color={`#7c7c7c`}>
-              {props.cityName.slice(0, 2)} {props.districtName}
+              {props.cityName} {props.districtName}
             </DistrictName>
           </Name>
           <Score>{commafy(props.score)}</Score>
@@ -49,7 +49,7 @@ export const DefaultDistrictRow: React.FC<DefaultDistrictRowProps> = (
       <ContentsWrapper>
         <Info>
           <Name>
-            {props.cityName.slice(0, 2)} {props.districtName}
+            {props.cityName} {props.districtName}
           </Name>
           <Score>{commafy(props.score)}</Score>
         </Info>

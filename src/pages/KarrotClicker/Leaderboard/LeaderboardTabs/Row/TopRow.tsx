@@ -36,7 +36,7 @@ export const TopUserRow: React.FC<TopUserRowProps> = (props) => {
         <Info>
           <Name rank={props.rank}>
             <DistrictName districtName={props.districtName}>
-              {props.districtName.slice(0, -1)}
+              {props.districtName}
             </DistrictName>
             {props.nickname}
           </Name>
@@ -55,7 +55,7 @@ export const TopDistrictRow: React.FC<TopDistrictTowProps> = (props) => {
       <ContentsWrapper>
         <Info>
           <Name rank={props.rank}>
-            {props.cityName.slice(0, 2)} {props.districtName}
+            {props.cityName} {props.districtName}
           </Name>
           <Score>{commafy(props.score)}</Score>
         </Info>
