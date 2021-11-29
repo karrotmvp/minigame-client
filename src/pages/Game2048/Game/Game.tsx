@@ -48,13 +48,55 @@ export const Game: React.FC = () => {
     });
     resetGame();
   };
-  const handleGameOver = () => {
+  const handleGameEnd = async () => {
     analytics.logEvent('click_game_end_button', {
       game_type: '2048_puzzle',
       button_type: 'game_end',
     });
-    setIsGameOver(true);
+    if (currentScore > myBestScore) {
+      const response = await updateMyBestScore({
+        score: currentScore,
+        gameType: gameType,
+      });
+      if (response?.status === 200) {
+        setIsGameOver(true);
+      }
+    } else {
+      setIsGameOver(true);
+    }
   };
+
+  const handleGameOver = async () => {
+    // let timerId: NodeJS.Timeout;
+    if (gameOverStatus) {
+      analytics.logEvent('handle_game_over', {
+        game_type: '2048_puzzle',
+      });
+      if (currentScore > myBestScore) {
+        const response = await updateMyBestScore({
+          score: currentScore,
+          gameType: gameType,
+        });
+        if (response?.status === 200) {
+          let timerId = setTimeout(() => {
+            setIsGameOver(() => true);
+            clearTimeout(timerId);
+          }, 1500);
+        }
+      } else {
+        let timerId = setTimeout(() => {
+          setIsGameOver(() => true);
+          clearTimeout(timerId);
+        }, 1500);
+      }
+    }
+  };
+
+  // game-over
+  useEffect(() => {
+    handleGameOver();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gameOverStatus]);
 
   // get rank 1's score
   const getTownieBestScoreEver = useCallback(async () => {
@@ -84,13 +126,13 @@ export const Game: React.FC = () => {
     gameType: 'GAME_KARROT' | 'GAME_2048';
   }) => {
     try {
-      const response = await minigameApi.gamePlayApi.updateScoreUsingPATCH(
+      const data = await minigameApi.gamePlayApi.updateScoreUsingPATCH(
         gameType,
         {
           score: score,
         }
       );
-      return response;
+      return data;
     } catch (error) {
       console.error(error);
     }
@@ -137,24 +179,6 @@ export const Game: React.FC = () => {
       }
     }
   }, [highestScore, isTop]);
-
-  // game-over
-  useEffect(() => {
-    let timerId: NodeJS.Timeout;
-    if (gameOverStatus) {
-      analytics.logEvent('handle_game_over', {
-        game_type: '2048_puzzle',
-      });
-      if (currentScore > myBestScore) {
-        updateMyBestScore({ score: currentScore, gameType: gameType });
-      }
-      timerId = setTimeout(() => {
-        setIsGameOver(() => true);
-      }, 1500);
-    }
-    return () => clearTimeout(timerId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [analytics, gameOverStatus]);
 
   // update user-info
   const updateUserInfo = useCallback(async () => {
@@ -240,7 +264,7 @@ export const Game: React.FC = () => {
               size={`tiny`}
               fontSize={rem(14)}
               color={`secondary2`}
-              onClick={handleGameOver}
+              onClick={handleGameEnd}
               style={{
                 border: `1px solid #C8D8EE`,
               }}

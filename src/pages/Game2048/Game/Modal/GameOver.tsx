@@ -35,14 +35,9 @@ export const GameOver: React.FC<Props> = (props) => {
       const {
         data: { data },
       } = await minigameApi.gameUserApi.getMyRankInfoUsingGET(gameType);
-      if (data) {
-        if (data.score && data.rank) {
-          updateMyScore(data.score, data.rank);
-          return data.rank;
-        }
-      }
+      return data;
     } catch (error) {}
-  }, [gameType, minigameApi.gameUserApi, updateMyScore]);
+  }, [gameType, minigameApi.gameUserApi]);
 
   const handleViewLeaderboard = async () => {
     if (isInWebEnvironment) {
@@ -53,12 +48,13 @@ export const GameOver: React.FC<Props> = (props) => {
       game_type: '2048_puzzle',
     });
     const response = await getMyData();
-    if (response) {
-      if (response > 0 && response <= 10) {
-        setShouldModalOpen(true);
-      } else {
-        goToLeaderboardPage();
-      }
+
+    console.log(response);
+    if (response !== undefined) {
+      updateMyScore(response.score, response.rank);
+      response.rank > 0 && response.rank <= 10
+        ? setShouldModalOpen(true)
+        : goToLeaderboardPage();
     }
   };
 
