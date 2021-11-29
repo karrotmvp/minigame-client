@@ -51,10 +51,14 @@ export const useMini = () => {
       },
       onSuccess: async function (result) {
         if (result && result.code) {
+          // console.log('1', result.code);
           const response = await signAccessToken(uuid, result.code, regionId);
+          // console.log('2', response);
           if (response === true) {
-            await updateUserInfo();
-            if (runOnSuccess) {
+            // console.log('3');
+            updateUserInfo();
+            if (runOnSuccess !== undefined) {
+              // console.log('4');
               runOnSuccess();
             }
           }

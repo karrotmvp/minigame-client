@@ -200,15 +200,18 @@ export const Game: React.FC = () => {
   }, [minigameApi.userApi, setUserInfo, userId]);
 
   useEffect(() => {
+    if (userId === '') {
+      updateUserInfo();
+    }
+  }, [updateUserInfo, userId]);
+
+  useEffect(() => {
     if (isTop) {
       analytics.logEvent('view_game_page', {
         game_type: '2048_puzzle',
       });
-      if (userId === '') {
-        updateUserInfo();
-      }
     }
-  }, [analytics, isTop, updateUserInfo, userId]);
+  }, [analytics, isTop]);
 
   return (
     <>

@@ -48,15 +48,6 @@ export const Game = () => {
     } else {
       shouldPause(false);
     }
-  }, [analytics, score, updateAnimationPlayState, shouldPause]);
-
-  useEffect(() => {
-    if (isTop) {
-      analytics.logEvent('view_game_page', {
-        game_type: 'karrot_clicker',
-      });
-    }
-  }, [analytics, isTop]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [score]);
 
@@ -80,15 +71,18 @@ export const Game = () => {
   }, [minigameApi.userApi, setUserInfo, userId]);
 
   useEffect(() => {
+    if (userId === '') {
+      updateUserInfo();
+    }
+  }, [updateUserInfo, userId]);
+
+  useEffect(() => {
     if (isTop) {
       analytics.logEvent('view_game_page', {
-        game_type: '2048_puzzle',
+        game_type: 'karrot_clicker',
       });
-      if (userId === '') {
-        updateUserInfo();
-      }
     }
-  }, [analytics, isTop, updateUserInfo, userId]);
+  }, [analytics, isTop]);
 
   return (
     <>
