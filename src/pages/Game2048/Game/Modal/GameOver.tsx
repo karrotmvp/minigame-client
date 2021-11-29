@@ -11,6 +11,7 @@ import { useMini, useUserData } from 'hooks';
 import { rem } from 'polished';
 import { useAnalytics } from 'services/analytics';
 import { AnimatePresence, motion } from 'framer-motion';
+import { commafy } from 'utils';
 
 type Props = {
   currentScore: number;
@@ -125,7 +126,7 @@ export const GameOver: React.FC<Props> = (props) => {
               transition={{ duration: 1 }}
             >
               <p className="text">최종 스코어</p>
-              <p className="number">{props.currentScore}</p>
+              <p className="number">{commafy(props.currentScore)}</p>
             </Final>
           )}
           {showRank && (

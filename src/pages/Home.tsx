@@ -797,7 +797,7 @@ const TopUserContent = styled.div`
   display: flex;
   flex-direction: column;
   gap: 3px;
-  
+
   div.user-info {
     display: flex;
     flex-direction: row;
@@ -806,7 +806,7 @@ const TopUserContent = styled.div`
     p {
       font-style: normal;
       font-weight: bold;
-      font-size: ${rem(12)}
+      font-size: ${rem(12)};
       line-height: 161.7%;
       word-spacing: 5px;
     }
@@ -817,10 +817,8 @@ const TopUserContent = styled.div`
     font-weight: normal;
     font-size: ${rem(14)};
     line-height: 161.7%;
-    color: #5B5B5B;
-
+    color: #5b5b5b;
   }
-
 `;
 
 const GameSurvey = styled.div`
