@@ -107,21 +107,34 @@ const App: React.FC = () => {
     [signAccessToken]
   );
 
+  const retrieveUUID = () => {
+    if (localStorage.getItem('uuid') !== null) {
+      console.log('localstorage uuid', localStorage.getItem('uuid'));
+      return;
+    } else {
+      const uuid = uuidv4();
+      localStorage.setItem('uuid', uuid);
+    }
+  };
+
   useEffect(() => {
+    retrieveUUID();
     if (accessToken) {
       removeCookie('accessToken');
     }
     const [preload, code, regionId, installed, referer] = getQueryParams();
+    // if (code)... returning user handler
+    // else... new user handler
+
     analytics.logEvent('launch_app');
 
     setRegionInfo(regionId as string);
     getDistrictInfo(regionId as string);
     setIsInstalled(isSubscribed(installed));
     console.log(preload, code, regionId, installed, referer);
-    const uuid = uuidv4();
-    console.log('uuid', uuid);
+
     saveUserInfo({
-      uuid: uuid,
+      uuid: localStorage.getItem('uuid'),
       regionId: regionId as string,
       isSubscribed: isSubscribed(installed),
       referer: referer?.toUpperCase() as
@@ -132,9 +145,13 @@ const App: React.FC = () => {
         | 'SHARE_GAME_KARROT'
         | 'SHARE_PLATFORM',
     });
-    fetchData(uuid, code as string, regionId as string);
+    fetchData(
+      localStorage.getItem('uuid') as string,
+      code as string,
+      regionId as string
+    );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [analytics]);
+  }, []);
 
   return (
     <AnalyticsContext.Provider value={analytics}>

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from '@emotion/styled';
 import { Nav } from 'components/Navigation/Nav';
 import { BackIcon } from 'assets/Icon';

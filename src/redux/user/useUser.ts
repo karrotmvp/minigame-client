@@ -27,7 +27,7 @@ export const useUser = () => {
       isSubscribed,
       referer,
     }: {
-      uuid?: string;
+      uuid?: string | null;
       regionId?: string;
       isSubscribed?: boolean;
       referer?:

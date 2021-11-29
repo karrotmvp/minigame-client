@@ -262,13 +262,13 @@ export const Home: React.FC = () => {
         if (data) {
           setUserInfo(data.id, data.nickname);
           // FA: track user with set user id
-          analytics.setUserId(data.id);
+          // analytics.setUserId(data.id);
         }
       } catch (error) {
         console.error(error);
       }
     }
-  }, [analytics, minigameApi.userApi, setUserInfo, userId]);
+  }, [minigameApi.userApi, setUserInfo, userId]);
 
   // Track user with uuid
   const trackUser = useCallback(
@@ -288,6 +288,7 @@ export const Home: React.FC = () => {
         | 'SHARE_PLATFORM';
     }) => {
       try {
+        analytics.setUserId(uuid);
         const data = await minigameApi.visitorApi.visitUsingPOST(
           uUID,
           regionId,
@@ -298,12 +299,12 @@ export const Home: React.FC = () => {
         console.error(error);
       }
     },
-    [minigameApi.visitorApi]
+    [analytics, minigameApi.visitorApi, uuid]
   );
 
   useEffect(() => {
-    updateUserInfo();
     trackUser({ uUID: uuid, regionId: regionId, referer: referer });
+    updateUserInfo();
     checkNotificationStatus();
   }, [
     checkNotificationStatus,

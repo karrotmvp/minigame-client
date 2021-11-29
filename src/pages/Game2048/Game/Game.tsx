@@ -192,13 +192,13 @@ export const Game: React.FC = () => {
         if (data) {
           setUserInfo(data.id, data.nickname);
           // FA: track user with set user id
-          analytics.setUserId(data.id);
+          // analytics.setUserId(data.id);
         }
       } catch (error) {
         console.error(error);
       }
     }
-  }, [analytics, minigameApi.userApi, setUserInfo, userId]);
+  }, [minigameApi.userApi, setUserInfo, userId]);
 
   useEffect(() => {
     if (isTop) {

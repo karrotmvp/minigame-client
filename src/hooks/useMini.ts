@@ -1,6 +1,6 @@
 import { useSignAccessToken, useUserData } from 'hooks';
 import { useUser } from 'redux/user';
-import { useAnalytics } from 'services/analytics';
+// import { useAnalytics } from 'services/analytics';
 import { useMinigameApi } from 'services/api/minigameApi';
 import {
   getMini,
@@ -9,7 +9,7 @@ import {
 
 export const useMini = () => {
   const mini = getMini();
-  const analytics = useAnalytics();
+  // const analytics = useAnalytics();
   const minigameApi = useMinigameApi();
   const { regionId, setUserInfo } = useUserData();
   const { signAccessToken } = useSignAccessToken();
@@ -26,7 +26,7 @@ export const useMini = () => {
     if (data) {
       setUserInfo(data.id, data.nickname);
       // FA: track user with set user id
-      analytics.setUserId(data.id);
+      // analytics.setUserId(data.id);
     }
   };
 
