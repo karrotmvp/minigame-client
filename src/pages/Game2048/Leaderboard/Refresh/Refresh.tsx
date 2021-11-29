@@ -18,9 +18,11 @@ const Countdown = styled.span`
   font-weight: normal;
   color: #5b5b5b;
   font-size: ${rem(10)};
+
   span {
     color: #0e74ff;
     font-size: ${rem(10)};
+    margin-left: 2px;
   }
 `;
 
