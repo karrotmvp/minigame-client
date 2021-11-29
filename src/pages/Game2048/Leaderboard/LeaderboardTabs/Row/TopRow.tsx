@@ -30,7 +30,7 @@ export const TopUserRow: React.FC<TopUserRowProps> = (props) => {
           <Name rank={props.rank}>
             {props.nickname}
             <DistrictName color={`#7c7c7c`}>
-              {props.cityName.slice(0, 2)} {props.districtName}
+              {props.cityName} {props.districtName}
             </DistrictName>
           </Name>
           <Score>{commafy(props.score)}</Score>
@@ -56,7 +56,7 @@ export const TopDistrictRow: React.FC<TopDistrictTowProps> = (props) => {
       <ContentsWrapper>
         <Info>
           <Name rank={props.rank}>
-            {props.cityName.slice(0, 2)} {props.districtName}
+            {props.cityName} {props.districtName}
           </Name>
           <Score>{commafy(props.score)}</Score>
         </Info>

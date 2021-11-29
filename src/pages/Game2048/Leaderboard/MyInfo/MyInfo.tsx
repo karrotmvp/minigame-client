@@ -21,7 +21,8 @@ export const MyInfo: React.FC = () => {
           <Name>
             {nickname}
             <District>
-              {cityName.slice(0, 2)} {districtName}
+              {cityName.replace(/(특별시|광역시|특별자치시|특별자치도)$/, '')}
+              &nbsp;{districtName}
             </District>
           </Name>
         </Info>

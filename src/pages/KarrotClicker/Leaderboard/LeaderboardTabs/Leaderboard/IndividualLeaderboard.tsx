@@ -43,8 +43,15 @@ export const IndividualLeaderboard: React.FC = () => {
       if (data) {
         const indexedindividualRankData = data.map(
           (item: any, index: number) => ({
-            rank: index + 1,
             ...item,
+            rank: index + 1,
+            town: {
+              ...item.town,
+              name1: item.town.name1.replace(
+                /(특별시|광역시|특별자치시|특별자치도)$/,
+                ''
+              ),
+            },
           })
         );
         setIndividualRankData(() => indexedindividualRankData);
