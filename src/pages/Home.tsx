@@ -159,6 +159,7 @@ export const Home: React.FC = () => {
       location: 'platform_page',
       button_type: 'share_button',
     });
+    console.log('thirdpartyagreement success');
     handleShare();
   };
   const handleShare = () => {
@@ -251,24 +252,27 @@ export const Home: React.FC = () => {
   ]);
 
   // Update user info
-  const updateUserInfo = useCallback(async () => {
-    if (userId) {
-      return;
-    } else {
-      try {
-        const {
-          data: { data },
-        } = await minigameApi.userApi.getUserInfoUsingGET();
-        if (data) {
-          setUserInfo(data.id, data.nickname);
-          // FA: track user with set user id
-          // analytics.setUserId(data.id);
+  const updateUserInfo = useCallback(
+    async ({ userId }: { userId: string }) => {
+      if (userId) {
+        return;
+      } else {
+        try {
+          const {
+            data: { data },
+          } = await minigameApi.userApi.getUserInfoUsingGET();
+          if (data) {
+            setUserInfo(data.id, data.nickname);
+            // FA: track user with set user id
+            // analytics.setUserId(data.id);
+          }
+        } catch (error) {
+          console.error(error);
         }
-      } catch (error) {
-        console.error(error);
       }
-    }
-  }, [minigameApi.userApi, setUserInfo, userId]);
+    },
+    [minigameApi.userApi, setUserInfo]
+  );
 
   // Track user with uuid
   const trackUser = useCallback(
@@ -294,6 +298,7 @@ export const Home: React.FC = () => {
           regionId,
           referer
         );
+        console.log('trackuser', data);
         return data;
       } catch (error) {
         console.error(error);
@@ -304,16 +309,12 @@ export const Home: React.FC = () => {
 
   useEffect(() => {
     trackUser({ uUID: uuid, regionId: regionId, referer: referer });
-    updateUserInfo();
+  }, [referer, regionId, trackUser, uuid]);
+
+  useEffect(() => {
+    updateUserInfo({ userId: userId });
     checkNotificationStatus();
-  }, [
-    checkNotificationStatus,
-    referer,
-    regionId,
-    trackUser,
-    updateUserInfo,
-    uuid,
-  ]);
+  }, [checkNotificationStatus, updateUserInfo, userId]);
 
   // Last week Top 10 Comments Carousel
   const [top2048PuzzleUsers, setTop2048PuzzleUsers] = useState<any[]>();
