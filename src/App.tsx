@@ -28,9 +28,12 @@ import {
 import { useAccessToken, useSignAccessToken, useUserData } from 'hooks';
 import { useMinigameApi } from 'services/api/minigameApi';
 
-const App: React.FC = () => {
-  const minigameApi = useMinigameApi();
+import { v4 as uuidv4 } from 'uuid';
+import { useUser } from 'redux/user';
 
+const App: React.FC = () => {
+  // const dispatch = useDispatch();
+  const minigameApi = useMinigameApi();
   const { setRegionInfo, setTownInfo, setIsInstalled } = useUserData();
   const { accessToken } = useAccessToken();
   const { signAccessToken, removeCookie } = useSignAccessToken();
@@ -38,6 +41,9 @@ const App: React.FC = () => {
   const [karrotMarketMini, setKarrotMarketMini] = useState(
     emptyKarrotMarketMini
   );
+
+  const { saveUserInfo } = useUser();
+
   // Firebase Analytics가 설정되어 있으면 인스턴스를 초기화하고 교체합니다.
   useEffect(() => {
     try {
@@ -67,8 +73,9 @@ const App: React.FC = () => {
     const preload: string | null = searchParams.get('preload');
     const code: string | null = searchParams.get('code');
     const regionId: string | null = searchParams.get('region_id');
-    const isInstalled: string | null = searchParams.get('installed');
-    return [preload, code, regionId, isInstalled];
+    const installed: string | null = searchParams.get('installed');
+    const referer: string | null = searchParams.get('referer');
+    return [preload, code, regionId, installed, referer];
   };
 
   const getDistrictInfo = useCallback(
@@ -88,41 +95,63 @@ const App: React.FC = () => {
     [minigameApi.regionApi, setTownInfo]
   );
 
+  const isSubscribed = (installed: string | null) => {
+    return installed === 'true' ? true : false;
+  };
+
   const fetchData = useCallback(
-    async (code: string, regionId: string) => {
-      await signAccessToken(code, regionId);
+    async (uuid: string, code: string, regionId: string) => {
+      await signAccessToken(uuid, code, regionId);
       // await updateUserInfo();
     },
     [signAccessToken]
   );
 
+  const retrieveUUID = () => {
+    if (localStorage.getItem('uuid') !== null) {
+      console.log('localstorage uuid', localStorage.getItem('uuid'));
+      return;
+    } else {
+      const uuid = uuidv4();
+      localStorage.setItem('uuid', uuid);
+    }
+  };
+
   useEffect(() => {
+    retrieveUUID();
     if (accessToken) {
       removeCookie('accessToken');
     }
-    const [, code, regionId, isInstalled] = getQueryParams();
+    const [preload, code, regionId, installed, referer] = getQueryParams();
+    // if (code)... returning user handler
+    // else... new user handler
+
     analytics.logEvent('launch_app');
 
     setRegionInfo(regionId as string);
     getDistrictInfo(regionId as string);
+    setIsInstalled(isSubscribed(installed));
+    console.log(preload, code, regionId, installed, referer);
 
-    if (isInstalled === 'true') {
-      setIsInstalled(true);
-    } else if (isInstalled === 'false') {
-      setIsInstalled(false);
-    }
-
-    fetchData(code as string, regionId as string);
+    saveUserInfo({
+      uuid: localStorage.getItem('uuid'),
+      regionId: regionId as string,
+      isSubscribed: isSubscribed(installed),
+      referer: referer?.toUpperCase() as
+        | 'FEED'
+        | 'NEAR_BY'
+        | 'UNKNOWN'
+        | 'SHARE_GAME_2048'
+        | 'SHARE_GAME_KARROT'
+        | 'SHARE_PLATFORM',
+    });
+    fetchData(
+      localStorage.getItem('uuid') as string,
+      code as string,
+      regionId as string
+    );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    // accessToken,
-    analytics,
-    // fetchData,
-    // getDistrictInfo,
-    // removeCookie,
-    // setIsInstalled,
-    // setRegionInfo,
-  ]);
+  }, []);
 
   return (
     <AnalyticsContext.Provider value={analytics}>

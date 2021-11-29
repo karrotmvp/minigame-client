@@ -31,7 +31,13 @@ export const GamePause: React.FC<GamePauseProps> = (props) => {
   const { isInWebEnvironment } = useMini();
   const { score, updateMyKarrotClickerData } = useMyKarrotClickerData();
   const [shouldModalOpen, setShouldModalOpen] = useState<boolean>(false);
-  const { clickCount, pauseGame, resumeGame, shouldPause } = useGame();
+  const {
+    clickCount,
+    pauseGame,
+    resumeGame,
+    shouldPause,
+    updateAnimationPlayState,
+  } = useGame();
 
   // Page navigation
   const goToLeaderboardPage = () => {
@@ -93,10 +99,12 @@ export const GamePause: React.FC<GamePauseProps> = (props) => {
 
   useEffect(() => {
     if (isTop) {
+      updateAnimationPlayState('paused');
       analytics.logEvent('view_game_pause_modal', {
         game_type: 'karrot_clicker',
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [analytics, isTop]);
   return (
     <>

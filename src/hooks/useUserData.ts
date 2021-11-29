@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from 'reducers/rootReducer';
+import { RootState } from 'store';
 import {
   setUserInfoAction,
   setRegionInfoAction,

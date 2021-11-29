@@ -1,6 +1,5 @@
 import { useCallback } from 'react';
 import { useCookies } from 'react-cookie';
-
 import { useMinigameApi } from 'services/api/minigameApi';
 
 export const useAccessToken = () => {
@@ -16,17 +15,16 @@ export const useSignAccessToken = () => {
   const [, setCookie, removeCookie] = useCookies(['accessToken']);
 
   const signAccessToken = useCallback(
-    async (code: string, regionId: string) => {
+    async (uuid: string, code: string, regionId: string) => {
       try {
         const {
           data: { data },
-        } = await minigameApi.oauth2Api.karrotLoginUsingPOST({
+        } = await minigameApi.oauth2Api.karrotLoginUsingPOST(uuid, regionId, {
           code,
-          regionId,
         });
         if (data) {
           setCookie('accessToken', data.accessToken);
-
+          console.log('accessToken', data);
           return true;
         }
       } catch (error) {}

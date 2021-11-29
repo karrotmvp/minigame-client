@@ -58,6 +58,7 @@ export const Home = () => {
   const { nickname, townName2: districtName } = useUserData();
   const { gameType, rank, score, comment } = useMyKarrotClickerData();
   const { resumeGame, onResetCount } = useGame();
+
   const goToGamePage = () => {
     push(`/karrot-clicker/game`);
   };
@@ -88,6 +89,7 @@ export const Home = () => {
       game_type: 'karrot_clicker',
       button_type: 'game_start_button',
     });
+    addPlayerCount();
     goToGamePage();
   };
   const handleNewUser = () => {
@@ -110,7 +112,6 @@ export const Home = () => {
       addPlayerCount();
     } else {
       handleNewUser();
-      addPlayerCount();
     }
   };
 

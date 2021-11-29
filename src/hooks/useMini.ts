@@ -1,5 +1,6 @@
 import { useSignAccessToken, useUserData } from 'hooks';
-import { useAnalytics } from 'services/analytics';
+import { useUser } from 'redux/user';
+// import { useAnalytics } from 'services/analytics';
 import { useMinigameApi } from 'services/api/minigameApi';
 import {
   getMini,
@@ -8,13 +9,15 @@ import {
 
 export const useMini = () => {
   const mini = getMini();
-  const analytics = useAnalytics();
+  // const analytics = useAnalytics();
   const minigameApi = useMinigameApi();
   const { regionId, setUserInfo } = useUserData();
   const { signAccessToken } = useSignAccessToken();
   const appId = karrotMarketMiniConfig().appId;
   const presetUrl = karrotMarketMiniConfig().presetUrl;
   const installationUrl = karrotMarketMiniConfig().installationUrl;
+
+  const { uuid } = useUser();
 
   const updateUserInfo = async () => {
     const {
@@ -23,7 +26,7 @@ export const useMini = () => {
     if (data) {
       setUserInfo(data.id, data.nickname);
       // FA: track user with set user id
-      analytics.setUserId(data.id);
+      // analytics.setUserId(data.id);
     }
   };
 
@@ -48,10 +51,14 @@ export const useMini = () => {
       },
       onSuccess: async function (result) {
         if (result && result.code) {
-          const response = await signAccessToken(result.code, regionId);
+          // console.log('1', result.code);
+          const response = await signAccessToken(uuid, result.code, regionId);
+          // console.log('2', response);
           if (response === true) {
-            await updateUserInfo();
-            if (runOnSuccess) {
+            // console.log('3');
+            updateUserInfo();
+            if (runOnSuccess !== undefined) {
+              // console.log('4');
               runOnSuccess();
             }
           }

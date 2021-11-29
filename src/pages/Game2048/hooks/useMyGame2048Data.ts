@@ -5,7 +5,7 @@ import {
   updateMyCommentAction,
   getMyHighestScoreAction,
 } from 'reducers/game2048DataReducer';
-import { RootState } from 'reducers/rootReducer';
+import { RootState } from 'store';
 
 export const useMyGame2048Data = () => {
   const { score, rank, comment, gameType, highestScore, highestRank } =

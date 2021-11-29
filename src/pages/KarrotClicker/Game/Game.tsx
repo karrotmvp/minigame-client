@@ -43,19 +43,13 @@ export const Game = () => {
   useEffect(() => {
     if (score === 0) {
       updateAnimationPlayState('paused');
+      shouldPause(true);
       setIsUserNew(true);
     } else {
       shouldPause(false);
     }
-  }, [analytics, score, updateAnimationPlayState, shouldPause]);
-
-  useEffect(() => {
-    if (isTop) {
-      analytics.logEvent('view_game_page', {
-        game_type: 'karrot_clicker',
-      });
-    }
-  }, [analytics, isTop]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [score]);
 
   const updateUserInfo = useCallback(async () => {
     if (userId) {
@@ -68,24 +62,27 @@ export const Game = () => {
         if (data) {
           setUserInfo(data.id, data.nickname);
           // FA: track user with set user id
-          analytics.setUserId(data.id);
+          // analytics.setUserId(data.id);
         }
       } catch (error) {
         console.error(error);
       }
     }
-  }, [analytics, minigameApi.userApi, setUserInfo, userId]);
+  }, [minigameApi.userApi, setUserInfo, userId]);
+
+  useEffect(() => {
+    if (userId === '') {
+      updateUserInfo();
+    }
+  }, [updateUserInfo, userId]);
 
   useEffect(() => {
     if (isTop) {
       analytics.logEvent('view_game_page', {
-        game_type: '2048_puzzle',
+        game_type: 'karrot_clicker',
       });
-      if (userId === '') {
-        updateUserInfo();
-      }
     }
-  }, [analytics, isTop, updateUserInfo, userId]);
+  }, [analytics, isTop]);
 
   return (
     <>

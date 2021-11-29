@@ -11,6 +11,7 @@ import { useMini, useUserData } from 'hooks';
 import { rem } from 'polished';
 import { useAnalytics } from 'services/analytics';
 import { AnimatePresence, motion } from 'framer-motion';
+import { commafy } from 'utils';
 
 type Props = {
   currentScore: number;
@@ -30,20 +31,46 @@ export const GameOver: React.FC<Props> = (props) => {
     replace(`/game-2048/leaderboard`);
   };
 
+  const handleShare = () => {
+    analytics.logEvent('click_share_button', {
+      game_type: '2048_puzzle',
+      location: 'game_over_modal',
+    });
+    const url = 'https://daangn.onelink.me/HhUa/37719e67';
+    const text = `${nickname}님은 2048 퍼즐에서 전국 ${rank}등!`;
+    shareApp(url, text);
+  };
+
   const getMyData = useCallback(async () => {
     try {
       const {
         data: { data },
       } = await minigameApi.gameUserApi.getMyRankInfoUsingGET(gameType);
-      if (data) {
-        if (data.score && data.rank) {
-          updateMyScore(data.score, data.rank);
-          return data.rank;
-        }
-      }
-    } catch (error) {}
-  }, [gameType, minigameApi.gameUserApi, updateMyScore]);
 
+      return data;
+    } catch (error) {
+      console.error(error);
+    }
+  }, [gameType, minigameApi.gameUserApi]);
+
+  const retrieveMyData = async () => {
+    const response = await getMyData();
+    if (response !== undefined) {
+      updateMyScore(response.score, response.rank);
+    }
+  };
+
+  useEffect(() => {
+    if (isTop) {
+      analytics.logEvent('view_game_over_modal', {
+        game_type: '2048_puzzle',
+      });
+      retrieveMyData();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [analytics, isTop]);
+
+  // button to view leaderbaord (open commment modal if condition is met)
   const handleViewLeaderboard = async () => {
     if (isInWebEnvironment) {
       goToLeaderboardPage();
@@ -53,34 +80,14 @@ export const GameOver: React.FC<Props> = (props) => {
       game_type: '2048_puzzle',
     });
     const response = await getMyData();
-    if (response) {
-      if (response > 0 && response <= 10) {
-        setShouldModalOpen(true);
-      } else {
-        goToLeaderboardPage();
-      }
+
+    console.log(response);
+    if (response !== undefined) {
+      response.rank > 0 && response.rank <= 10
+        ? setShouldModalOpen(true)
+        : goToLeaderboardPage();
     }
   };
-
-  const handleShare = () => {
-    analytics.logEvent('click_share_button', {
-      game_type: '2048_puzzle',
-      location: 'game_over_modal',
-    });
-    const url = 'https://daangn.onelink.me/HhUa/54499335';
-    const text = `${nickname}님은 2048 퍼즐에서 전국 ${rank}등!`;
-    shareApp(url, text);
-  };
-
-  useEffect(() => {
-    if (isTop) {
-      analytics.logEvent('view_game_over_modal', {
-        game_type: '2048_puzzle',
-      });
-      getMyData();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [analytics, isTop]);
 
   // animation handler
   const [showScore, setShowScore] = useState(false);
@@ -129,7 +136,7 @@ export const GameOver: React.FC<Props> = (props) => {
               transition={{ duration: 1 }}
             >
               <p className="text">최종 스코어</p>
-              <p className="number">{props.currentScore}</p>
+              <p className="number">{commafy(props.currentScore)}</p>
             </Final>
           )}
           {showRank && (

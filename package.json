@@ -10,7 +10,7 @@
     "@karrotframe/navigator": "^0.17.3",
     "@karrotframe/tabs": "^0.3.3",
     "@karrotmarket/mini": "^0.12.0",
-    "@reduxjs/toolkit": "^1.6.1",
+    "@reduxjs/toolkit": "^1.6.2",
     "axios": "^0.22.0",
     "body-scroll-lock": "^4.0.0-beta.0",
     "date-fns": "^2.25.0",
@@ -26,10 +26,12 @@
     "react-router-dom": "^5.3.0",
     "react-swipeable": "^6.2.0",
     "react-toastify": "^8.1.0",
+    "redux-logger": "^3.0.6",
     "redux-thunk": "^2.3.0",
     "sass": "^1.43.4",
     "swiper": "^7.3.0",
-    "use-debounce": "^7.0.0"
+    "use-debounce": "^7.0.0",
+    "uuid": "^8.3.2"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -64,6 +66,8 @@
     "@types/react-dom": "^17.0.9",
     "@types/react-modal": "^3.12.1",
     "@types/react-redux": "^7.1.19",
+    "@types/redux-logger": "^3.0.9",
+    "@types/uuid": "^8.3.3",
     "react-scripts": "^4.0.3",
     "redux-devtools-extension": "^2.13.9",
     "typescript": "^4.4.4"

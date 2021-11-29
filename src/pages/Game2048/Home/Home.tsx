@@ -62,8 +62,13 @@ export const Home = () => {
 
   // game start button handler
   // =================================================================
-  const addPlayerCount = () => {
-    minigameApi.gamePlayApi.playGameUsingPOST(gameType);
+  const addPlayerCount = async () => {
+    try {
+      const data = await minigameApi.gamePlayApi.playGameUsingPOST(gameType);
+      return data;
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const handleReturningUser = () => {
@@ -74,11 +79,14 @@ export const Home = () => {
     });
   };
   const onNewUserSuccessHandler = () => {
+    // console.log('5');
     analytics.logEvent('click_third_party_agreement_button', {
       game_type: '2048_puzzle',
       button_type: 'game_start_button',
     });
+    // console.log('6');
     addPlayerCount();
+    // console.log('7');
     goToGamePage();
   };
   const handleNewUser = () => {
@@ -297,7 +305,14 @@ export const Home = () => {
       // enable();
     }
   };
-  // background: `linear-gradient(180deg, #e3efff ${rem(180)}, #fff 0)`,
+
+  useEffect(() => {
+    if (isTop) {
+      analytics.logEvent('view_home_page', {
+        game_type: '2048_puzzle',
+      });
+    }
+  }, [analytics, isTop]);
 
   return (
     <div style={{ display: `flex`, flexFlow: `column` }}>

@@ -4,6 +4,7 @@ import Medal1Url from 'assets/svg/game2048/medal1.svg';
 import Medal2Url from 'assets/svg/game2048/medal2.svg';
 import Medal3Url from 'assets/svg/game2048/medal3.svg';
 import { rem } from 'polished';
+import { DistrictName } from 'styles/leaderboard';
 
 interface TopUserRowProps {
   me?: boolean;
@@ -28,7 +29,7 @@ export const TopUserRow: React.FC<TopUserRowProps> = (props) => {
         <Info>
           <Name rank={props.rank}>
             {props.nickname}
-            <DistrictName districtName={props.districtName}>
+            <DistrictName color={`#7c7c7c`}>
               {props.cityName.slice(0, 2)} {props.districtName}
             </DistrictName>
           </Name>
@@ -68,9 +69,10 @@ const Container = styled.div<{ me?: boolean; rank?: number }>`
   display: flex;
   flex-flow: row;
   align-items: center;
-
+  justify-content: center;
   padding: 12px 20px 8px 26px;
   margin: 8px 0px;
+  gap: 15px;
   width: 100%;
   border-radius: 10px;
   border: 1px solid ${(props) => (props.me === true ? '#EBE0DB' : '#ececec')};
@@ -100,6 +102,7 @@ const Container = styled.div<{ me?: boolean; rank?: number }>`
 `;
 
 const Rank = styled.div`
+  min-width: 25px;
   width: 25px;
   display: flex;
   align-self: flex-start;
@@ -127,7 +130,7 @@ const Info = styled.div`
 const Name = styled.div<{ rank: number }>`
   display: flex;
   flex-flow: row;
-  gap: 4px;
+  gap: 6px;
   align-items: center;
 
   font-style: normal;
@@ -180,22 +183,6 @@ const SpeechBalloon = styled.div`
   /* or 16px */
 
   color: #7c7c7c;
-`;
-
-const DistrictName = styled.div<{ districtName: string }>`
-  height: fit-content;
-  width: fit-content;
-  padding: 0 5px;
-
-  color: #7c7c7c;
-  font-style: normal;
-  font-weight: normal;
-  font-size: ${rem(8)};
-  line-height: 161.7%;
-
-  border: 0.5px solid #7c7c7c;
-  box-sizing: border-box;
-  border-radius: 7px;
 `;
 
 const PlayerCount = styled.div`

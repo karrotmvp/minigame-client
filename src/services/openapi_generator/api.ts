@@ -325,12 +325,6 @@ export interface KarrotCodeRequestDto {
      * @memberof KarrotCodeRequestDto
      */
     'code': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof KarrotCodeRequestDto
-     */
-    'regionId': string;
 }
 /**
  * 
@@ -450,12 +444,6 @@ export interface SurveyRequestDto {
      * @memberof SurveyRequestDto
      */
     'content': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SurveyRequestDto
-     */
-    'regionId': string;
 }
 /**
  * 
@@ -1475,11 +1463,17 @@ export const Oauth2ApiAxiosParamCreator = function (configuration?: Configuratio
         /**
          * 
          * @summary 당근 Oauth2
+         * @param {string} uUID UUID
+         * @param {string} regionId regionId
          * @param {KarrotCodeRequestDto} requestDto requestDto
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        karrotLoginUsingPOST: async (requestDto: KarrotCodeRequestDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        karrotLoginUsingPOST: async (uUID: string, regionId: string, requestDto: KarrotCodeRequestDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'uUID' is not null or undefined
+            assertParamExists('karrotLoginUsingPOST', 'uUID', uUID)
+            // verify required parameter 'regionId' is not null or undefined
+            assertParamExists('karrotLoginUsingPOST', 'regionId', regionId)
             // verify required parameter 'requestDto' is not null or undefined
             assertParamExists('karrotLoginUsingPOST', 'requestDto', requestDto)
             const localVarPath = `/api/oauth`;
@@ -1496,6 +1490,14 @@ export const Oauth2ApiAxiosParamCreator = function (configuration?: Configuratio
 
             // authentication JWT required
             await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+            if (regionId !== undefined) {
+                localVarQueryParameter['regionId'] = regionId;
+            }
+
+            if (uUID !== undefined && uUID !== null) {
+                localVarHeaderParameter['UUID'] = String(uUID);
+            }
 
 
     
@@ -1524,12 +1526,14 @@ export const Oauth2ApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @summary 당근 Oauth2
+         * @param {string} uUID UUID
+         * @param {string} regionId regionId
          * @param {KarrotCodeRequestDto} requestDto requestDto
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async karrotLoginUsingPOST(requestDto: KarrotCodeRequestDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseResponseTokenDto>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.karrotLoginUsingPOST(requestDto, options);
+        async karrotLoginUsingPOST(uUID: string, regionId: string, requestDto: KarrotCodeRequestDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseResponseTokenDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.karrotLoginUsingPOST(uUID, regionId, requestDto, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
     }
@@ -1545,12 +1549,14 @@ export const Oauth2ApiFactory = function (configuration?: Configuration, basePat
         /**
          * 
          * @summary 당근 Oauth2
+         * @param {string} uUID UUID
+         * @param {string} regionId regionId
          * @param {KarrotCodeRequestDto} requestDto requestDto
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        karrotLoginUsingPOST(requestDto: KarrotCodeRequestDto, options?: any): AxiosPromise<BaseResponseTokenDto> {
-            return localVarFp.karrotLoginUsingPOST(requestDto, options).then((request) => request(axios, basePath));
+        karrotLoginUsingPOST(uUID: string, regionId: string, requestDto: KarrotCodeRequestDto, options?: any): AxiosPromise<BaseResponseTokenDto> {
+            return localVarFp.karrotLoginUsingPOST(uUID, regionId, requestDto, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -1565,13 +1571,15 @@ export class Oauth2Api extends BaseAPI {
     /**
      * 
      * @summary 당근 Oauth2
+     * @param {string} uUID UUID
+     * @param {string} regionId regionId
      * @param {KarrotCodeRequestDto} requestDto requestDto
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof Oauth2Api
      */
-    public karrotLoginUsingPOST(requestDto: KarrotCodeRequestDto, options?: AxiosRequestConfig) {
-        return Oauth2ApiFp(this.configuration).karrotLoginUsingPOST(requestDto, options).then((request) => request(this.axios, this.basePath));
+    public karrotLoginUsingPOST(uUID: string, regionId: string, requestDto: KarrotCodeRequestDto, options?: AxiosRequestConfig) {
+        return Oauth2ApiFp(this.configuration).karrotLoginUsingPOST(uUID, regionId, requestDto, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
@@ -1688,6 +1696,124 @@ export class RegionApi extends BaseAPI {
 
 
 /**
+ * ScoreLogApi - axios parameter creator
+ * @export
+ */
+export const ScoreLogApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @summary 게임 점수 기록(2048)
+         * @param {ScoreRequestDto} requestDto requestDto
+         * @param {'GAME_KARROT' | 'GAME_2048'} [gameType] gameType
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        logScoreUsingPOST: async (requestDto: ScoreRequestDto, gameType?: 'GAME_KARROT' | 'GAME_2048', options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'requestDto' is not null or undefined
+            assertParamExists('logScoreUsingPOST', 'requestDto', requestDto)
+            const localVarPath = `/api/log/score`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication JWT required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+            if (gameType !== undefined) {
+                localVarQueryParameter['gameType'] = gameType;
+            }
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(requestDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * ScoreLogApi - functional programming interface
+ * @export
+ */
+export const ScoreLogApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = ScoreLogApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @summary 게임 점수 기록(2048)
+         * @param {ScoreRequestDto} requestDto requestDto
+         * @param {'GAME_KARROT' | 'GAME_2048'} [gameType] gameType
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async logScoreUsingPOST(requestDto: ScoreRequestDto, gameType?: 'GAME_KARROT' | 'GAME_2048', options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseResponseUnit>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.logScoreUsingPOST(requestDto, gameType, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+    }
+};
+
+/**
+ * ScoreLogApi - factory interface
+ * @export
+ */
+export const ScoreLogApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = ScoreLogApiFp(configuration)
+    return {
+        /**
+         * 
+         * @summary 게임 점수 기록(2048)
+         * @param {ScoreRequestDto} requestDto requestDto
+         * @param {'GAME_KARROT' | 'GAME_2048'} [gameType] gameType
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        logScoreUsingPOST(requestDto: ScoreRequestDto, gameType?: 'GAME_KARROT' | 'GAME_2048', options?: any): AxiosPromise<BaseResponseUnit> {
+            return localVarFp.logScoreUsingPOST(requestDto, gameType, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * ScoreLogApi - object-oriented interface
+ * @export
+ * @class ScoreLogApi
+ * @extends {BaseAPI}
+ */
+export class ScoreLogApi extends BaseAPI {
+    /**
+     * 
+     * @summary 게임 점수 기록(2048)
+     * @param {ScoreRequestDto} requestDto requestDto
+     * @param {'GAME_KARROT' | 'GAME_2048'} [gameType] gameType
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ScoreLogApi
+     */
+    public logScoreUsingPOST(requestDto: ScoreRequestDto, gameType?: 'GAME_KARROT' | 'GAME_2048', options?: AxiosRequestConfig) {
+        return ScoreLogApiFp(this.configuration).logScoreUsingPOST(requestDto, gameType, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+/**
  * SurveyApi - axios parameter creator
  * @export
  */
@@ -1696,11 +1822,17 @@ export const SurveyApiAxiosParamCreator = function (configuration?: Configuratio
         /**
          * 
          * @summary 하고 싶은 게임 등록
+         * @param {string} uUID UUID
+         * @param {string} regionId regionId
          * @param {SurveyRequestDto} requestDto requestDto
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        registerGameSurveyUsingPOST: async (requestDto: SurveyRequestDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        registerGameSurveyUsingPOST: async (uUID: string, regionId: string, requestDto: SurveyRequestDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'uUID' is not null or undefined
+            assertParamExists('registerGameSurveyUsingPOST', 'uUID', uUID)
+            // verify required parameter 'regionId' is not null or undefined
+            assertParamExists('registerGameSurveyUsingPOST', 'regionId', regionId)
             // verify required parameter 'requestDto' is not null or undefined
             assertParamExists('registerGameSurveyUsingPOST', 'requestDto', requestDto)
             const localVarPath = `/api/surveys`;
@@ -1717,6 +1849,14 @@ export const SurveyApiAxiosParamCreator = function (configuration?: Configuratio
 
             // authentication JWT required
             await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+            if (regionId !== undefined) {
+                localVarQueryParameter['regionId'] = regionId;
+            }
+
+            if (uUID !== undefined && uUID !== null) {
+                localVarHeaderParameter['UUID'] = String(uUID);
+            }
 
 
     
@@ -1745,12 +1885,14 @@ export const SurveyApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @summary 하고 싶은 게임 등록
+         * @param {string} uUID UUID
+         * @param {string} regionId regionId
          * @param {SurveyRequestDto} requestDto requestDto
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async registerGameSurveyUsingPOST(requestDto: SurveyRequestDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseResponseUnit>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.registerGameSurveyUsingPOST(requestDto, options);
+        async registerGameSurveyUsingPOST(uUID: string, regionId: string, requestDto: SurveyRequestDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseResponseUnit>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.registerGameSurveyUsingPOST(uUID, regionId, requestDto, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
     }
@@ -1766,12 +1908,14 @@ export const SurveyApiFactory = function (configuration?: Configuration, basePat
         /**
          * 
          * @summary 하고 싶은 게임 등록
+         * @param {string} uUID UUID
+         * @param {string} regionId regionId
          * @param {SurveyRequestDto} requestDto requestDto
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        registerGameSurveyUsingPOST(requestDto: SurveyRequestDto, options?: any): AxiosPromise<BaseResponseUnit> {
-            return localVarFp.registerGameSurveyUsingPOST(requestDto, options).then((request) => request(axios, basePath));
+        registerGameSurveyUsingPOST(uUID: string, regionId: string, requestDto: SurveyRequestDto, options?: any): AxiosPromise<BaseResponseUnit> {
+            return localVarFp.registerGameSurveyUsingPOST(uUID, regionId, requestDto, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -1786,13 +1930,15 @@ export class SurveyApi extends BaseAPI {
     /**
      * 
      * @summary 하고 싶은 게임 등록
+     * @param {string} uUID UUID
+     * @param {string} regionId regionId
      * @param {SurveyRequestDto} requestDto requestDto
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof SurveyApi
      */
-    public registerGameSurveyUsingPOST(requestDto: SurveyRequestDto, options?: AxiosRequestConfig) {
-        return SurveyApiFp(this.configuration).registerGameSurveyUsingPOST(requestDto, options).then((request) => request(this.axios, this.basePath));
+    public registerGameSurveyUsingPOST(uUID: string, regionId: string, requestDto: SurveyRequestDto, options?: AxiosRequestConfig) {
+        return SurveyApiFp(this.configuration).registerGameSurveyUsingPOST(uUID, regionId, requestDto, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
@@ -1894,6 +2040,135 @@ export class UserApi extends BaseAPI {
      */
     public getUserInfoUsingGET(options?: AxiosRequestConfig) {
         return UserApiFp(this.configuration).getUserInfoUsingGET(options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+/**
+ * VisitorApi - axios parameter creator
+ * @export
+ */
+export const VisitorApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @summary visit
+         * @param {string} uUID UUID
+         * @param {string} regionId regionId
+         * @param {'FEED' | 'NEAR_BY' | 'SHARE_GAME_2048' | 'SHARE_GAME_KARROT' | 'SHARE_PLATFORM' | 'UNKNOWN'} [referer] referer
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        visitUsingPOST: async (uUID: string, regionId: string, referer?: 'FEED' | 'NEAR_BY' | 'SHARE_GAME_2048' | 'SHARE_GAME_KARROT' | 'SHARE_PLATFORM' | 'UNKNOWN', options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'uUID' is not null or undefined
+            assertParamExists('visitUsingPOST', 'uUID', uUID)
+            // verify required parameter 'regionId' is not null or undefined
+            assertParamExists('visitUsingPOST', 'regionId', regionId)
+            const localVarPath = `/api/visitors`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication JWT required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+            if (referer !== undefined) {
+                localVarQueryParameter['referer'] = referer;
+            }
+
+            if (regionId !== undefined) {
+                localVarQueryParameter['regionId'] = regionId;
+            }
+
+            if (uUID !== undefined && uUID !== null) {
+                localVarHeaderParameter['UUID'] = String(uUID);
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * VisitorApi - functional programming interface
+ * @export
+ */
+export const VisitorApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = VisitorApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @summary visit
+         * @param {string} uUID UUID
+         * @param {string} regionId regionId
+         * @param {'FEED' | 'NEAR_BY' | 'SHARE_GAME_2048' | 'SHARE_GAME_KARROT' | 'SHARE_PLATFORM' | 'UNKNOWN'} [referer] referer
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async visitUsingPOST(uUID: string, regionId: string, referer?: 'FEED' | 'NEAR_BY' | 'SHARE_GAME_2048' | 'SHARE_GAME_KARROT' | 'SHARE_PLATFORM' | 'UNKNOWN', options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseResponseUnit>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.visitUsingPOST(uUID, regionId, referer, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+    }
+};
+
+/**
+ * VisitorApi - factory interface
+ * @export
+ */
+export const VisitorApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = VisitorApiFp(configuration)
+    return {
+        /**
+         * 
+         * @summary visit
+         * @param {string} uUID UUID
+         * @param {string} regionId regionId
+         * @param {'FEED' | 'NEAR_BY' | 'SHARE_GAME_2048' | 'SHARE_GAME_KARROT' | 'SHARE_PLATFORM' | 'UNKNOWN'} [referer] referer
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        visitUsingPOST(uUID: string, regionId: string, referer?: 'FEED' | 'NEAR_BY' | 'SHARE_GAME_2048' | 'SHARE_GAME_KARROT' | 'SHARE_PLATFORM' | 'UNKNOWN', options?: any): AxiosPromise<BaseResponseUnit> {
+            return localVarFp.visitUsingPOST(uUID, regionId, referer, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * VisitorApi - object-oriented interface
+ * @export
+ * @class VisitorApi
+ * @extends {BaseAPI}
+ */
+export class VisitorApi extends BaseAPI {
+    /**
+     * 
+     * @summary visit
+     * @param {string} uUID UUID
+     * @param {string} regionId regionId
+     * @param {'FEED' | 'NEAR_BY' | 'SHARE_GAME_2048' | 'SHARE_GAME_KARROT' | 'SHARE_PLATFORM' | 'UNKNOWN'} [referer] referer
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof VisitorApi
+     */
+    public visitUsingPOST(uUID: string, regionId: string, referer?: 'FEED' | 'NEAR_BY' | 'SHARE_GAME_2048' | 'SHARE_GAME_KARROT' | 'SHARE_PLATFORM' | 'UNKNOWN', options?: AxiosRequestConfig) {
+        return VisitorApiFp(this.configuration).visitUsingPOST(uUID, regionId, referer, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
