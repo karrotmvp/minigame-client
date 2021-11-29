@@ -1,8 +1,10 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
+import { useCurrentScreen } from '@karrotframe/navigator';
 import { ReactComponent as PointingFinger } from 'assets/svg/KarrotClicker/pointing_finger.svg';
 import { OldButton } from 'components/Button/Button';
 import { useUserData } from 'hooks';
+import { useEffect } from 'react';
 // import { useAnalytics } from 'services/analytics';
 import { useMinigameApi } from 'services/api/minigameApi';
 import { useGame } from '../hooks';
@@ -23,6 +25,7 @@ type Props = {
   setIsUserNew: React.Dispatch<React.SetStateAction<boolean>>;
 };
 export const Guide: React.FC<Props> = (props) => {
+  const { isTop } = useCurrentScreen();
   // const analytics = useAnalytics();
   const minigameApi = useMinigameApi();
   const { setUserInfo } = useUserData();
@@ -44,6 +47,13 @@ export const Guide: React.FC<Props> = (props) => {
     props.setIsUserNew(false);
     updateAnimationPlayState('running');
   };
+
+  useEffect(() => {
+    if (isTop) {
+      updateAnimationPlayState('paused');
+    }
+  }, [isTop, updateAnimationPlayState]);
+
   return (
     <>
       <PointingFinger />

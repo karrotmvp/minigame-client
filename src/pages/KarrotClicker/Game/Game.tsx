@@ -43,6 +43,7 @@ export const Game = () => {
   useEffect(() => {
     if (score === 0) {
       updateAnimationPlayState('paused');
+      shouldPause(true);
       setIsUserNew(true);
     } else {
       shouldPause(false);
@@ -56,6 +57,8 @@ export const Game = () => {
       });
     }
   }, [analytics, isTop]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [score]);
 
   const updateUserInfo = useCallback(async () => {
     if (userId) {
