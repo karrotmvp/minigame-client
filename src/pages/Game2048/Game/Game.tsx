@@ -111,7 +111,6 @@ export const Game: React.FC = () => {
       setTownieBestScore(data[0].score);
     }
   }, [gameType, minigameApi.gameUserApi]);
-
   useEffect(() => {
     if (isTop) {
       getTownieBestScoreEver();

@@ -31,15 +31,46 @@ export const GameOver: React.FC<Props> = (props) => {
     replace(`/game-2048/leaderboard`);
   };
 
+  const handleShare = () => {
+    analytics.logEvent('click_share_button', {
+      game_type: '2048_puzzle',
+      location: 'game_over_modal',
+    });
+    const url = 'https://daangn.onelink.me/HhUa/37719e67';
+    const text = `${nickname}님은 2048 퍼즐에서 전국 ${rank}등!`;
+    shareApp(url, text);
+  };
+
   const getMyData = useCallback(async () => {
     try {
       const {
         data: { data },
       } = await minigameApi.gameUserApi.getMyRankInfoUsingGET(gameType);
+
       return data;
-    } catch (error) {}
+    } catch (error) {
+      console.error(error);
+    }
   }, [gameType, minigameApi.gameUserApi]);
 
+  const retrieveMyData = async () => {
+    const response = await getMyData();
+    if (response !== undefined) {
+      updateMyScore(response.score, response.rank);
+    }
+  };
+
+  useEffect(() => {
+    if (isTop) {
+      analytics.logEvent('view_game_over_modal', {
+        game_type: '2048_puzzle',
+      });
+      retrieveMyData();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [analytics, isTop]);
+
+  // button to view leaderbaord (open commment modal if condition is met)
   const handleViewLeaderboard = async () => {
     if (isInWebEnvironment) {
       goToLeaderboardPage();
@@ -52,32 +83,11 @@ export const GameOver: React.FC<Props> = (props) => {
 
     console.log(response);
     if (response !== undefined) {
-      updateMyScore(response.score, response.rank);
       response.rank > 0 && response.rank <= 10
         ? setShouldModalOpen(true)
         : goToLeaderboardPage();
     }
   };
-
-  const handleShare = () => {
-    analytics.logEvent('click_share_button', {
-      game_type: '2048_puzzle',
-      location: 'game_over_modal',
-    });
-    const url = 'https://daangn.onelink.me/HhUa/37719e67';
-    const text = `${nickname}님은 2048 퍼즐에서 전국 ${rank}등!`;
-    shareApp(url, text);
-  };
-
-  useEffect(() => {
-    if (isTop) {
-      analytics.logEvent('view_game_over_modal', {
-        game_type: '2048_puzzle',
-      });
-      getMyData();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [analytics, isTop]);
 
   // animation handler
   const [showScore, setShowScore] = useState(false);
