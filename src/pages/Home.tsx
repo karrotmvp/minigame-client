@@ -346,8 +346,15 @@ export const Home: React.FC = () => {
     });
     const indexedResponse2048Puzzle = response?.map(
       (item: any, index: number) => ({
-        rank: index + 1,
         ...item,
+        rank: index + 1,
+        town: {
+          ...item.town,
+          name1: item.town.name1.replace(
+            /(특별시|광역시|특별자치시|특별자치도)$/,
+            ''
+          ),
+        },
       })
     );
     setTop2048PuzzleUsers(indexedResponse2048Puzzle);
@@ -359,8 +366,15 @@ export const Home: React.FC = () => {
     });
     const indexedResponseKarrotClicker = response?.map(
       (item: any, index: number) => ({
-        rank: index + 1,
         ...item,
+        rank: index + 1,
+        town: {
+          ...item.town,
+          name1: item.town.name1.replace(
+            /(특별시|광역시|특별자치시|특별자치도)$/,
+            ''
+          ),
+        },
       })
     );
     setTopKarrotClickerUsers(indexedResponseKarrotClicker);
@@ -497,7 +511,6 @@ export const Home: React.FC = () => {
                   className="mySwiper"
                 >
                   {top2048PuzzleUsers?.map((user, i) => {
-                    console.log(top2048PuzzleUsers, i);
                     if (user.comment === '' || user.comment === null) {
                       user.comment = `${user.town.name2} 파이팅!`;
                     }
@@ -513,7 +526,7 @@ export const Home: React.FC = () => {
                               {user.rank}등 {user.nickname}
                             </p>
                             <DistrictName color={`#0E74FF`}>
-                              {user.town.name1.slice(0, 2)} {user.town.name2}
+                              {user.town.name1}&nbsp;{user.town.name2}
                             </DistrictName>
                           </div>
                           <p className="comment">{user.comment}</p>
@@ -555,7 +568,7 @@ export const Home: React.FC = () => {
                               {user.rank}등 {user.nickname}
                             </p>
                             <DistrictName color={`#EB5D0E`}>
-                              {user.town.name1.slice(0, 2)} {user.town.name2}
+                              {user.town.name1}&nbsp;{user.town.name2}
                             </DistrictName>
                           </div>
                           <p className="comment">{user.comment}</p>

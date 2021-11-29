@@ -16,6 +16,7 @@ type Props = {
   isRanked: boolean;
 };
 const LeaderboardTabs: React.FC<Props> = (props) => {
+  console.log(props.userLeaderboardData);
   const { isTop } = useCurrentScreen();
   const [activeTabKey, setActiveTabKey] = useState<string>('district');
   const handleTabChange = (key: string) => {
