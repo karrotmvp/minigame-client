@@ -2055,11 +2055,11 @@ export const VisitorApiAxiosParamCreator = function (configuration?: Configurati
          * @summary visit
          * @param {string} uUID UUID
          * @param {string} regionId regionId
-         * @param {'FEED' | 'NEAR_BY' | 'SHARE_GAME_2048' | 'SHARE_GAME_KARROT' | 'SHARE_PLATFORM' | 'UNKNOWN'} [referer] referer
+         * @param {'FEED' | 'NEAR_BY' | 'SHARE_GAME_2048' | 'SHARE_GAME_KARROT' | 'SHARE_PLATFORM' | 'SHARE_COMMUNITY' | 'LOGIN' | 'UNKNOWN'} [referer] referer
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        visitUsingPOST: async (uUID: string, regionId: string, referer?: 'FEED' | 'NEAR_BY' | 'SHARE_GAME_2048' | 'SHARE_GAME_KARROT' | 'SHARE_PLATFORM' | 'UNKNOWN', options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        visitUsingPOST: async (uUID: string, regionId: string, referer?: 'FEED' | 'NEAR_BY' | 'SHARE_GAME_2048' | 'SHARE_GAME_KARROT' | 'SHARE_PLATFORM' | 'SHARE_COMMUNITY' | 'LOGIN' | 'UNKNOWN', options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'uUID' is not null or undefined
             assertParamExists('visitUsingPOST', 'uUID', uUID)
             // verify required parameter 'regionId' is not null or undefined
@@ -2117,11 +2117,11 @@ export const VisitorApiFp = function(configuration?: Configuration) {
          * @summary visit
          * @param {string} uUID UUID
          * @param {string} regionId regionId
-         * @param {'FEED' | 'NEAR_BY' | 'SHARE_GAME_2048' | 'SHARE_GAME_KARROT' | 'SHARE_PLATFORM' | 'UNKNOWN'} [referer] referer
+         * @param {'FEED' | 'NEAR_BY' | 'SHARE_GAME_2048' | 'SHARE_GAME_KARROT' | 'SHARE_PLATFORM' | 'SHARE_COMMUNITY' | 'LOGIN' | 'UNKNOWN'} [referer] referer
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async visitUsingPOST(uUID: string, regionId: string, referer?: 'FEED' | 'NEAR_BY' | 'SHARE_GAME_2048' | 'SHARE_GAME_KARROT' | 'SHARE_PLATFORM' | 'UNKNOWN', options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseResponseUnit>> {
+        async visitUsingPOST(uUID: string, regionId: string, referer?: 'FEED' | 'NEAR_BY' | 'SHARE_GAME_2048' | 'SHARE_GAME_KARROT' | 'SHARE_PLATFORM' | 'SHARE_COMMUNITY' | 'LOGIN' | 'UNKNOWN', options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseResponseUnit>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.visitUsingPOST(uUID, regionId, referer, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -2140,11 +2140,11 @@ export const VisitorApiFactory = function (configuration?: Configuration, basePa
          * @summary visit
          * @param {string} uUID UUID
          * @param {string} regionId regionId
-         * @param {'FEED' | 'NEAR_BY' | 'SHARE_GAME_2048' | 'SHARE_GAME_KARROT' | 'SHARE_PLATFORM' | 'UNKNOWN'} [referer] referer
+         * @param {'FEED' | 'NEAR_BY' | 'SHARE_GAME_2048' | 'SHARE_GAME_KARROT' | 'SHARE_PLATFORM' | 'SHARE_COMMUNITY' | 'LOGIN' | 'UNKNOWN'} [referer] referer
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        visitUsingPOST(uUID: string, regionId: string, referer?: 'FEED' | 'NEAR_BY' | 'SHARE_GAME_2048' | 'SHARE_GAME_KARROT' | 'SHARE_PLATFORM' | 'UNKNOWN', options?: any): AxiosPromise<BaseResponseUnit> {
+        visitUsingPOST(uUID: string, regionId: string, referer?: 'FEED' | 'NEAR_BY' | 'SHARE_GAME_2048' | 'SHARE_GAME_KARROT' | 'SHARE_PLATFORM' | 'SHARE_COMMUNITY' | 'LOGIN' | 'UNKNOWN', options?: any): AxiosPromise<BaseResponseUnit> {
             return localVarFp.visitUsingPOST(uUID, regionId, referer, options).then((request) => request(axios, basePath));
         },
     };
@@ -2162,12 +2162,12 @@ export class VisitorApi extends BaseAPI {
      * @summary visit
      * @param {string} uUID UUID
      * @param {string} regionId regionId
-     * @param {'FEED' | 'NEAR_BY' | 'SHARE_GAME_2048' | 'SHARE_GAME_KARROT' | 'SHARE_PLATFORM' | 'UNKNOWN'} [referer] referer
+     * @param {'FEED' | 'NEAR_BY' | 'SHARE_GAME_2048' | 'SHARE_GAME_KARROT' | 'SHARE_PLATFORM' | 'SHARE_COMMUNITY' | 'LOGIN' | 'UNKNOWN'} [referer] referer
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof VisitorApi
      */
-    public visitUsingPOST(uUID: string, regionId: string, referer?: 'FEED' | 'NEAR_BY' | 'SHARE_GAME_2048' | 'SHARE_GAME_KARROT' | 'SHARE_PLATFORM' | 'UNKNOWN', options?: AxiosRequestConfig) {
+    public visitUsingPOST(uUID: string, regionId: string, referer?: 'FEED' | 'NEAR_BY' | 'SHARE_GAME_2048' | 'SHARE_GAME_KARROT' | 'SHARE_PLATFORM' | 'SHARE_COMMUNITY' | 'LOGIN' | 'UNKNOWN', options?: AxiosRequestConfig) {
         return VisitorApiFp(this.configuration).visitUsingPOST(uUID, regionId, referer, options).then((request) => request(this.axios, this.basePath));
     }
 }
