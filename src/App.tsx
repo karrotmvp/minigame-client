@@ -140,10 +140,12 @@ const App: React.FC = () => {
       referer: referer?.toUpperCase() as
         | 'FEED'
         | 'NEAR_BY'
-        | 'UNKNOWN'
         | 'SHARE_GAME_2048'
         | 'SHARE_GAME_KARROT'
-        | 'SHARE_PLATFORM',
+        | 'SHARE_PLATFORM'
+        | 'SHARE_COMMUNITY'
+        | 'LOGIN'
+        | 'UNKNOWN',
     });
     fetchData(
       localStorage.getItem('uuid') as string,

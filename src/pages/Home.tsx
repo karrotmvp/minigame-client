@@ -286,10 +286,12 @@ export const Home: React.FC = () => {
       referer?:
         | 'FEED'
         | 'NEAR_BY'
-        | 'UNKNOWN'
         | 'SHARE_GAME_2048'
         | 'SHARE_GAME_KARROT'
-        | 'SHARE_PLATFORM';
+        | 'SHARE_PLATFORM'
+        | 'SHARE_COMMUNITY'
+        | 'LOGIN'
+        | 'UNKNOWN';
     }) => {
       try {
         analytics.setUserId(uuid);
