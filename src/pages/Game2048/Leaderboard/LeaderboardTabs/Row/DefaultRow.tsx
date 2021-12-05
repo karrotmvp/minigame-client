@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { commafy } from 'utils/numberFunctions';
+import { commafy } from 'utils/number';
 import React from 'react';
 import { rem } from 'polished';
 import { DistrictName } from 'styles/leaderboard';

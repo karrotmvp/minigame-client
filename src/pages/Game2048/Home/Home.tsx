@@ -25,7 +25,7 @@ import { useMini } from 'hooks';
 import { useThrottledCallback } from 'use-debounce/lib';
 import { useAnalytics } from 'services/analytics';
 import { navHeight, PageContainer, pageHeight } from 'styles';
-import { lastWeek } from 'utils';
+import { lastWeek } from 'utils/date';
 
 export const Home = () => {
   const { isTop } = useCurrentScreen();

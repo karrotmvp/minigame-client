@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from '@emotion/styled';
 import { rem } from 'polished';
-import { commafy } from 'utils/numberFunctions';
+import { commafy } from 'utils/number';
 import { useUserData } from 'hooks';
 import { useMyGame2048Data } from 'pages/Game2048/hooks';
 
