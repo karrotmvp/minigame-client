@@ -38,6 +38,7 @@ const NavContainer = styled.div<{
 }>`
   position: sticky;
   height: ${navHeight};
+  min-height: ${navHeight};
   width: 100%;
   top: 0;
   left: 0;

@@ -4,6 +4,7 @@ import { RootState } from 'store';
 import {
   saveUserInfo as saveUserInfoAction,
   trackVisitor as trackVisitorAction,
+  setMissionPreference as setMissionPreferenceAction,
 } from './user';
 
 export const useUser = () => {
@@ -18,6 +19,14 @@ export const useUser = () => {
     }),
     shallowEqual
   );
+
+  const { isMissionChekcedOut, hasMissionPopupSeen } = useSelector(
+    (state: RootState) => ({
+      isMissionChekcedOut: state.user.isMissionChekcedOut,
+      hasMissionPopupSeen: state.user.hasMissionPopupSeen,
+    })
+  );
+
   const dispatch = useDispatch();
 
   const saveUserInfo = useCallback(
@@ -49,12 +58,30 @@ export const useUser = () => {
     dispatch(trackVisitorAction());
   };
 
+  const setMissionPreference = useCallback(
+    ({
+      isMissionChekcedOut,
+      hasMissionPopupSeen,
+    }: {
+      isMissionChekcedOut?: boolean;
+      hasMissionPopupSeen?: boolean;
+    }) => {
+      dispatch(
+        setMissionPreferenceAction({ isMissionChekcedOut, hasMissionPopupSeen })
+      );
+    },
+    [dispatch]
+  );
+
   return {
     uuid,
     regionId,
     isSubscribed,
     referer,
+    isMissionChekcedOut,
+    hasMissionPopupSeen,
     saveUserInfo,
     trackVisitor,
+    setMissionPreference,
   };
 };
