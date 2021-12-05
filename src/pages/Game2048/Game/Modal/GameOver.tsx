@@ -11,11 +11,15 @@ import { useMini, useUserData } from 'hooks';
 import { rem } from 'polished';
 import { useAnalytics } from 'services/analytics';
 import { AnimatePresence, motion } from 'framer-motion';
-import { commafy } from 'utils';
-
+// import { commafy } from 'utils/number';
+import { gameUserApi } from 'api/minigame';
+import {
+  fireConfetti,
+  fireRandomDirectionConfetti,
+} from 'utils/functions/confetti';
+import { useThrottledCallback } from 'use-debounce/lib';
 type Props = {
-  currentScore: number;
-  myBestScore: number;
+  myPreviousRank: number;
 };
 export const GameOver: React.FC<Props> = (props) => {
   const { isTop } = useCurrentScreen();
@@ -24,8 +28,63 @@ export const GameOver: React.FC<Props> = (props) => {
   const minigameApi = useMinigameApi();
   const { isInWebEnvironment, shareApp } = useMini();
   const { nickname } = useUserData();
-  const { rank, gameType, updateMyScore } = useMyGame2048Data();
+  const { gameType } = useMyGame2048Data();
   const [shouldModalOpen, setShouldModalOpen] = useState<boolean>(false);
+  const [myCurrentRank, setMyCurrentRank] = useState<{
+    rank: number | undefined;
+    rankChange: number;
+  }>({
+    rank: undefined,
+    rankChange: 0,
+  });
+  // const [myBestRank, setMyBestRank] = useState<{
+  //   rank: number | undefined;
+  //   rankChanged: number;
+  // }>({
+  //   rank: undefined,
+  //   rankChanged: 0,
+  // });
+
+  useEffect(() => {
+    if (isTop) {
+      analytics.logEvent('view_game_over_modal', {
+        game_type: '2048_puzzle',
+      });
+    }
+  }, [analytics, isTop]);
+
+  const getMyCurrentRank = useCallback(async () => {
+    const myCurrentRankInfo = await gameUserApi({
+      minigameApi: minigameApi,
+    }).getMyRankInfo({
+      gameType: gameType,
+      type: 'CURRENT',
+    });
+    setMyCurrentRank({
+      rank: myCurrentRankInfo?.data?.rank,
+      rankChange: myCurrentRankInfo?.data?.rank! - props.myPreviousRank,
+    });
+  }, [gameType, minigameApi, props.myPreviousRank]);
+
+  // const getMyBestRank = useCallback(async () => {
+  //   const myBestRankInfo = await gameUserApi({
+  //     minigameApi: minigameApi,
+  //   }).getMyRankInfo({
+  //     gameType: gameType,
+  //     type: 'BEST',
+  //   });
+  //   setMyBestRank({
+  //     rank: myBestRankInfo?.data?.rank,
+  //     rankChanged: myBestRankInfo?.data?.rank! - props.myPreviousRank,
+  //   });
+  // }, [gameType, minigameApi, props.myPreviousRank]);
+
+  useEffect(() => {
+    if (isTop) {
+      getMyCurrentRank();
+      // getMyBestRank();
+    }
+  }, [getMyCurrentRank, isTop]);
 
   const goToLeaderboardPage = () => {
     replace(`/game-2048/leaderboard`);
@@ -37,41 +96,12 @@ export const GameOver: React.FC<Props> = (props) => {
       location: 'game_over_modal',
     });
     const url = 'https://daangn.onelink.me/HhUa/37719e67';
-    const text = `${nickname}님은 2048 퍼즐에서 전국 ${rank}등!`;
+    const text = `${nickname}님은 2048 퍼즐에서 전국 ${myCurrentRank.rank}등!`;
     shareApp(url, text);
   };
 
-  const getMyData = useCallback(async () => {
-    try {
-      const {
-        data: { data },
-      } = await minigameApi.gameUserApi.getMyRankInfoUsingGET(gameType);
-
-      return data;
-    } catch (error) {
-      console.error(error);
-    }
-  }, [gameType, minigameApi.gameUserApi]);
-
-  const retrieveMyData = async () => {
-    const response = await getMyData();
-    if (response !== undefined) {
-      updateMyScore(response.score, response.rank);
-    }
-  };
-
-  useEffect(() => {
-    if (isTop) {
-      analytics.logEvent('view_game_over_modal', {
-        game_type: '2048_puzzle',
-      });
-      retrieveMyData();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [analytics, isTop]);
-
   // button to view leaderbaord (open commment modal if condition is met)
-  const handleViewLeaderboard = async () => {
+  const handleViewLeaderboard = () => {
     if (isInWebEnvironment) {
       goToLeaderboardPage();
       return;
@@ -79,11 +109,8 @@ export const GameOver: React.FC<Props> = (props) => {
     analytics.logEvent('click_view_leaderboard_button', {
       game_type: '2048_puzzle',
     });
-    const response = await getMyData();
-
-    console.log(response);
-    if (response !== undefined) {
-      response.rank > 0 && response.rank <= 10
+    if (myCurrentRank.rank !== undefined) {
+      myCurrentRank.rank > 0 && myCurrentRank.rank <= 10
         ? setShouldModalOpen(true)
         : goToLeaderboardPage();
     }
@@ -93,18 +120,31 @@ export const GameOver: React.FC<Props> = (props) => {
   const [showScore, setShowScore] = useState(false);
   const [showRank, setShowRank] = useState(false);
   useEffect(() => {
-    const timerId1 = setTimeout(() => {
-      setShowScore(true);
-    }, 300);
-    const timerId2 = setTimeout(() => {
-      setShowRank(true);
-    }, 500);
+    if (isTop) {
+      const timerId1 = setTimeout(() => {
+        setShowScore(true);
+      }, 300);
+      const timerId2 = setTimeout(() => {
+        setShowRank(true);
+        if (myCurrentRank.rank) {
+          return myCurrentRank.rank > 0 && myCurrentRank.rank <= 10
+            ? fireConfetti({ colors: [`#0E74FF`, `#82B6FF`, `#E3EFFF`] })
+            : null;
+        }
+      }, 500);
+      return () => {
+        clearTimeout(timerId1);
+        clearTimeout(timerId2);
+      };
+    }
+  }, [isTop, myCurrentRank.rank]);
 
-    return () => {
-      clearTimeout(timerId1);
-      clearTimeout(timerId2);
-    };
-  });
+  // confetti
+  const fireThrottledRandomDirectionConfetti = useThrottledCallback(() => {
+    fireRandomDirectionConfetti({
+      colors: [`#0E74FF`, `#82B6FF`, `#E3EFFF`],
+    });
+  }, 3000);
   return (
     <>
       <div
@@ -115,9 +155,10 @@ export const GameOver: React.FC<Props> = (props) => {
           alignItems: 'center',
           justifyContent: 'center',
           width: '100%',
-          gap: `16px`,
+          gap: `8px`,
           marginBottom: `20%`,
         }}
+        onClick={fireThrottledRandomDirectionConfetti}
       >
         <img
           src={gameOverSvgUrl}
@@ -129,30 +170,63 @@ export const GameOver: React.FC<Props> = (props) => {
 
         <AnimatePresence>
           {showScore && (
-            <Final
-              key="final-score"
+            <SessionRank
+              key="session-score-rank"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1 }}
             >
-              <p className="text">최종 스코어</p>
-              <p className="number">{commafy(props.currentScore)}</p>
-            </Final>
+              <div className="row">
+                <p className="text">스코어</p>
+                <p className="number">
+                  {/* {myCurrentRank.score === undefined
+                    ? ''
+                    : commafy(myCurrentRank.score)} */}
+                </p>
+              </div>
+              <div className="row">
+                <p className="text">랭킹</p>
+                <p className="number">
+                  {/* {myCurrentRank.rank === undefined ? '' : myCurrentRank.rank} */}
+                </p>
+              </div>
+            </SessionRank>
           )}
           {showRank && (
-            <Final
+            <FinalRank
+              className="final-rank"
               key="final-rank"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1 }}
             >
-              <p className="text">최종 랭킹</p>
-              <p className="number">{rank}</p>
-            </Final>
+              <div className="row">
+                <p className="text">
+                  최종 랭킹
+                  <span
+                    className={
+                      myCurrentRank.rankChange > 0
+                        ? 'down'
+                        : myCurrentRank.rankChange < 0
+                        ? 'up'
+                        : 'no-change'
+                    }
+                  />
+                  <span className="rank-changed">
+                    {isNaN(Math.abs(myCurrentRank.rankChange))
+                      ? ''
+                      : Math.abs(myCurrentRank.rankChange)}
+                  </span>
+                </p>
+                <p className="number">
+                  {myCurrentRank.rank === undefined ? '' : myCurrentRank.rank}
+                </p>
+              </div>
+            </FinalRank>
           )}
         </AnimatePresence>
       </div>
-      {rank !== 0 && rank <= 10 && (
+      {myCurrentRank.rank! !== 0 && myCurrentRank.rank! <= 10 && (
         <TopUserDirection>
           <p>Top10에게 혜택이 있어요!</p>
         </TopUserDirection>
@@ -210,27 +284,106 @@ export const GameOver: React.FC<Props> = (props) => {
   );
 };
 
-const Final = styled(motion.div)`
+const SessionRank = styled(motion.div)`
+  display: flex;
+  flex-flow: column;
+  gap: 8px;
+
   width: 100%;
-  padding: 10px 15px 15px;
+  padding: 12px 18px 12px 26px;
   text-align: center;
   font-style: normal;
   background: #ffffff;
-  border-radius: 21px;
+  border-radius: 10px;
   color: #0e74ff;
 
+  div.row {
+    display: flex;
+    flex-flow: row;
+    justify-content: space-between;
+    align-items: center;
+  }
   p.text {
+    font-family: Pretendard;
+    font-style: normal;
     font-weight: normal;
-    font-size: 14px;
-    line-height: 161.7%;
-    margin-bottom: 7px;
+    font-size: ${rem(16)};
   }
 
   p.number {
-    font-weight: 700;
+    font-style: normal;
+    font-weight: bold;
     font-family: 'Montserrat', sans-serif;
-    font-size: ${rem(30)};
-    line-height: 103.7%;
+    font-size: ${rem(28)};
+  }
+`;
+
+const FinalRank = styled(motion.div)`
+  width: 100%;
+  padding: 8px 18px 8px 26px;
+  text-align: center;
+  font-style: normal;
+  background: #e3efff;
+  border-radius: 10px;
+  color: #0e74ff;
+
+  div.row {
+    display: flex;
+    flex-flow: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+  p.text {
+    font-family: Pretendard;
+    font-style: normal;
+    font-weight: normal;
+    font-size: ${rem(16)};
+    display: inline-flex;
+
+    span {
+      margin-left: 4px;
+      align-self: center;
+      &.up {
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-width: 0 4px 6.9px 4px;
+        border-color: transparent transparent #eb5b0e transparent;
+      }
+
+      &.down {
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-width: 6.9px 4px 0 4px;
+        border-color: #0e72ff transparent transparent transparent;
+      }
+
+      &.no-change {
+        height: 2px;
+        width: 8px;
+        min-height: 2px;
+        min-width: 8px;
+        background-color: #7c7c7c;
+        display: inline-block;
+      }
+
+      &.rank-changed {
+        font-family: Montserrat;
+        font-style: normal;
+        font-weight: bold;
+        font-size: 10px;
+
+        color: #5b5b5b;
+      }
+    }
+  }
+
+  p.number {
+    font-style: normal;
+    font-weight: bold;
+    font-family: 'Montserrat', sans-serif;
+    font-size: ${rem(28)};
   }
 `;
 
