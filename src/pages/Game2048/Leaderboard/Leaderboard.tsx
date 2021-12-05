@@ -67,7 +67,10 @@ export const Leaderboard = () => {
     } = await minigameApi.gameUserApi.getMyRankInfoUsingGET(gameType);
     if (data) {
       if (data.score && data.rank) {
-        updateMyScore(data.score, data.rank);
+        updateMyScore({
+          score: data.score,
+          rank: data.rank,
+        });
       }
       if (data.comment) {
         updateMyComment(data.comment);
