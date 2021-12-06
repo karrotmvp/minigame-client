@@ -8,6 +8,7 @@ import missionEnvelopeClosed1 from 'assets/svg/mission/mission_envelope_closed_1
 import xCircle from 'assets/svg/x_circle.svg';
 import effect1 from 'assets/svg/effect1.svg';
 import { setMissionPreference } from 'redux/user';
+import { useUserData } from 'hooks';
 
 type Props = {
   setShouldMissionPopupShown: React.Dispatch<React.SetStateAction<boolean>>;
@@ -16,6 +17,7 @@ export const Popup: React.FC<Props> = (props) => {
   const analytics = useAnalytics();
   const { isTop } = useCurrentScreen();
   const { push } = useNavigator();
+  const { nickname } = useUserData();
 
   useEffect(() => {
     if (isTop) {
@@ -79,6 +81,8 @@ export const Popup: React.FC<Props> = (props) => {
           margin: `32px 0 32px`,
         }}
       >
+        {nickname ? `${nickname}님,` : null}
+        <br />
         <span
           style={{
             fontFamily: `Cafe24Ssurround`,
