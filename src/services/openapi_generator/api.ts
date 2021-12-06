@@ -148,6 +148,37 @@ export interface BaseResponseRankingDto {
 /**
  * 
  * @export
+ * @interface BaseResponseRankingWithCommentDto
+ */
+export interface BaseResponseRankingWithCommentDto {
+    /**
+     * 
+     * @type {RankingWithCommentDto}
+     * @memberof BaseResponseRankingWithCommentDto
+     */
+    'data'?: RankingWithCommentDto;
+    /**
+     * 
+     * @type {string}
+     * @memberof BaseResponseRankingWithCommentDto
+     */
+    'message'?: string;
+    /**
+     * 
+     * @type {number}
+     * @memberof BaseResponseRankingWithCommentDto
+     */
+    'status': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof BaseResponseRankingWithCommentDto
+     */
+    'timestamp': string;
+}
+/**
+ * 
+ * @export
  * @interface BaseResponseRegionDto
  */
 export interface BaseResponseRegionDto {
@@ -360,7 +391,8 @@ export interface NotificationRequestDto {
 export enum NotificationRequestDtoTypeEnum {
     OpenRegion = 'OPEN_REGION',
     OpenGame = 'OPEN_GAME',
-    SubscribeOff = 'SUBSCRIBE_OFF'
+    SubscribeOff = 'SUBSCRIBE_OFF',
+    MissionOff = 'MISSION_OFF'
 }
 
 /**
@@ -371,20 +403,33 @@ export enum NotificationRequestDtoTypeEnum {
 export interface RankingDto {
     /**
      * 
-     * @type {string}
+     * @type {number}
      * @memberof RankingDto
+     */
+    'rank': number;
+}
+/**
+ * 
+ * @export
+ * @interface RankingWithCommentDto
+ */
+export interface RankingWithCommentDto {
+    /**
+     * 
+     * @type {string}
+     * @memberof RankingWithCommentDto
      */
     'comment'?: string;
     /**
      * 
      * @type {number}
-     * @memberof RankingDto
+     * @memberof RankingWithCommentDto
      */
     'rank': number;
     /**
      * 
      * @type {number}
-     * @memberof RankingDto
+     * @memberof RankingWithCommentDto
      */
     'score': number;
 }
@@ -628,6 +673,50 @@ export const GamePlayApiAxiosParamCreator = function (configuration?: Configurat
         },
         /**
          * 
+         * @summary 요청된 점수의 랭킹 조회하기
+         * @param {'GAME_KARROT' | 'GAME_2048'} gameType gameType
+         * @param {number} score score
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getRankByScoreUsingGET: async (gameType: 'GAME_KARROT' | 'GAME_2048', score: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'gameType' is not null or undefined
+            assertParamExists('getRankByScoreUsingGET', 'gameType', gameType)
+            // verify required parameter 'score' is not null or undefined
+            assertParamExists('getRankByScoreUsingGET', 'score', score)
+            const localVarPath = `/api/games/{gameType}/rank`
+                .replace(`{${"gameType"}}`, encodeURIComponent(String(gameType)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication JWT required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+            if (score !== undefined) {
+                localVarQueryParameter['score'] = score;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary 2시간 내에 플레이한 유저 수
          * @param {'GAME_KARROT' | 'GAME_2048'} gameType gameType
          * @param {*} [options] Override http request option.
@@ -767,6 +856,18 @@ export const GamePlayApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary 요청된 점수의 랭킹 조회하기
+         * @param {'GAME_KARROT' | 'GAME_2048'} gameType gameType
+         * @param {number} score score
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getRankByScoreUsingGET(gameType: 'GAME_KARROT' | 'GAME_2048', score: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseResponseRankingDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getRankByScoreUsingGET(gameType, score, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @summary 2시간 내에 플레이한 유저 수
          * @param {'GAME_KARROT' | 'GAME_2048'} gameType gameType
          * @param {*} [options] Override http request option.
@@ -822,6 +923,17 @@ export const GamePlayApiFactory = function (configuration?: Configuration, baseP
         },
         /**
          * 
+         * @summary 요청된 점수의 랭킹 조회하기
+         * @param {'GAME_KARROT' | 'GAME_2048'} gameType gameType
+         * @param {number} score score
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getRankByScoreUsingGET(gameType: 'GAME_KARROT' | 'GAME_2048', score: number, options?: any): AxiosPromise<BaseResponseRankingDto> {
+            return localVarFp.getRankByScoreUsingGET(gameType, score, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @summary 2시간 내에 플레이한 유저 수
          * @param {'GAME_KARROT' | 'GAME_2048'} gameType gameType
          * @param {*} [options] Override http request option.
@@ -872,6 +984,19 @@ export class GamePlayApi extends BaseAPI {
      */
     public addCommentUsingPATCH(gameType: 'GAME_KARROT' | 'GAME_2048', requestDto: CommentRequestDto, options?: AxiosRequestConfig) {
         return GamePlayApiFp(this.configuration).addCommentUsingPATCH(gameType, requestDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 요청된 점수의 랭킹 조회하기
+     * @param {'GAME_KARROT' | 'GAME_2048'} gameType gameType
+     * @param {number} score score
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof GamePlayApi
+     */
+    public getRankByScoreUsingGET(gameType: 'GAME_KARROT' | 'GAME_2048', score: number, options?: AxiosRequestConfig) {
+        return GamePlayApiFp(this.configuration).getRankByScoreUsingGET(gameType, score, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -1191,7 +1316,7 @@ export const GameUserApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getMyRankInfoUsingGET(gameType: 'GAME_KARROT' | 'GAME_2048', type?: 'BEST' | 'CURRENT', options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseResponseRankingDto>> {
+        async getMyRankInfoUsingGET(gameType: 'GAME_KARROT' | 'GAME_2048', type?: 'BEST' | 'CURRENT', options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseResponseRankingWithCommentDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getMyRankInfoUsingGET(gameType, type, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -1227,7 +1352,7 @@ export const GameUserApiFactory = function (configuration?: Configuration, baseP
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getMyRankInfoUsingGET(gameType: 'GAME_KARROT' | 'GAME_2048', type?: 'BEST' | 'CURRENT', options?: any): AxiosPromise<BaseResponseRankingDto> {
+        getMyRankInfoUsingGET(gameType: 'GAME_KARROT' | 'GAME_2048', type?: 'BEST' | 'CURRENT', options?: any): AxiosPromise<BaseResponseRankingWithCommentDto> {
             return localVarFp.getMyRankInfoUsingGET(gameType, type, options).then((request) => request(axios, basePath));
         },
     };

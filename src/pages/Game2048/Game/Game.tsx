@@ -17,7 +17,6 @@ import {
 import refreshGameUrl from 'assets/svg/game2048/refresh_game.svg';
 import { useAnalytics } from 'services/analytics';
 import { useMini, useUserData } from 'hooks';
-import { gameUserApi } from 'api/minigame';
 
 export const Game: React.FC = () => {
   const analytics = useAnalytics();
@@ -83,20 +82,30 @@ export const Game: React.FC = () => {
     }
   }, [analytics, isTop]);
 
-  const getMyCurrentRank = useCallback(async () => {
-    const myCurrentGameData = await gameUserApi({
-      minigameApi: minigameApi,
-    }).getMyRankInfo({ gameType: gameType, type: 'CURRENT' });
-    updateMyScore({
-      score: myCurrentGameData?.data?.score as number,
-      rank: myCurrentGameData?.data?.rank as number,
-    });
-  }, [gameType, minigameApi, updateMyScore]);
+  const getMyCurrentRank = useCallback(
+    async ({
+      gameType,
+      type,
+    }: {
+      gameType: 'GAME_KARROT' | 'GAME_2048';
+      type: 'BEST' | 'CURRENT';
+    }) => {
+      const { data } = await minigameApi.gameUserApi.getMyRankInfoUsingGET(
+        gameType,
+        'CURRENT'
+      );
+      updateMyScore({
+        score: data.data?.score as number,
+        rank: data.data?.rank as number,
+      });
+    },
+    [minigameApi, updateMyScore]
+  );
   useEffect(() => {
     if (isTop) {
-      getMyCurrentRank();
+      getMyCurrentRank({ gameType: gameType, type: 'CURRENT' });
     }
-  }, [getMyCurrentRank, isTop]);
+  }, [gameType, getMyCurrentRank, isTop]);
   // get rank 1's score
   const getTownieBestScoreEver = useCallback(
     async ({ gameType }: { gameType: 'GAME_KARROT' | 'GAME_2048' }) => {
@@ -369,7 +378,7 @@ export const Game: React.FC = () => {
           },
         }}
       >
-        <GameOver myPreviousRank={myCurrentRank} />
+        <GameOver myPreviousRank={myCurrentRank} currentScore={currentScore} />
       </ReactModal>
     </>
   );

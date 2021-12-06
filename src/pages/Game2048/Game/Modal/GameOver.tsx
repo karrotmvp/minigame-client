@@ -11,8 +11,7 @@ import { useMini, useUserData } from 'hooks';
 import { rem } from 'polished';
 import { useAnalytics } from 'services/analytics';
 import { AnimatePresence, motion } from 'framer-motion';
-// import { commafy } from 'utils/number';
-import { gameUserApi } from 'api/minigame';
+import { commafy } from 'utils/number';
 import {
   fireConfetti,
   fireRandomDirectionConfetti,
@@ -20,6 +19,7 @@ import {
 import { useThrottledCallback } from 'use-debounce/lib';
 type Props = {
   myPreviousRank: number;
+  currentScore: number;
 };
 export const GameOver: React.FC<Props> = (props) => {
   const { isTop } = useCurrentScreen();
@@ -30,6 +30,10 @@ export const GameOver: React.FC<Props> = (props) => {
   const { nickname } = useUserData();
   const { gameType } = useMyGame2048Data();
   const [shouldModalOpen, setShouldModalOpen] = useState<boolean>(false);
+  const [sessionRank, setSessionRank] = useState<{
+    rank: number | undefined;
+    score: number | undefined;
+  }>({ rank: undefined, score: 0 });
   const [myCurrentRank, setMyCurrentRank] = useState<{
     rank: number | undefined;
     rankChange: number;
@@ -37,13 +41,6 @@ export const GameOver: React.FC<Props> = (props) => {
     rank: undefined,
     rankChange: 0,
   });
-  // const [myBestRank, setMyBestRank] = useState<{
-  //   rank: number | undefined;
-  //   rankChanged: number;
-  // }>({
-  //   rank: undefined,
-  //   rankChanged: 0,
-  // });
 
   useEffect(() => {
     if (isTop) {
@@ -53,38 +50,62 @@ export const GameOver: React.FC<Props> = (props) => {
     }
   }, [analytics, isTop]);
 
-  const getMyCurrentRank = useCallback(async () => {
-    const myCurrentRankInfo = await gameUserApi({
-      minigameApi: minigameApi,
-    }).getMyRankInfo({
-      gameType: gameType,
-      type: 'CURRENT',
-    });
-    setMyCurrentRank({
-      rank: myCurrentRankInfo?.data?.rank,
-      rankChange: myCurrentRankInfo?.data?.rank! - props.myPreviousRank,
-    });
-  }, [gameType, minigameApi, props.myPreviousRank]);
+  const getSessionRank = useCallback(
+    async ({
+      gameType,
+      score,
+    }: {
+      gameType: 'GAME_KARROT' | 'GAME_2048';
+      score: number;
+    }) => {
+      const { data } = await minigameApi.gamePlayApi.getRankByScoreUsingGET(
+        gameType,
+        score
+      );
+      setSessionRank({
+        rank: data.data?.rank,
+        score,
+      });
+    },
+    [minigameApi.gamePlayApi]
+  );
 
-  // const getMyBestRank = useCallback(async () => {
-  //   const myBestRankInfo = await gameUserApi({
-  //     minigameApi: minigameApi,
-  //   }).getMyRankInfo({
-  //     gameType: gameType,
-  //     type: 'BEST',
-  //   });
-  //   setMyBestRank({
-  //     rank: myBestRankInfo?.data?.rank,
-  //     rankChanged: myBestRankInfo?.data?.rank! - props.myPreviousRank,
-  //   });
-  // }, [gameType, minigameApi, props.myPreviousRank]);
+  const getMyCurrentRank = useCallback(
+    async ({
+      gameType,
+      previousRank,
+    }: {
+      gameType: 'GAME_KARROT' | 'GAME_2048';
+      previousRank: number;
+    }) => {
+      const { data } = await minigameApi.gameUserApi.getMyRankInfoUsingGET(
+        gameType
+      );
+
+      setMyCurrentRank({
+        rank: data.data?.rank,
+        rankChange: data?.data?.rank! - previousRank,
+      });
+    },
+    [minigameApi]
+  );
 
   useEffect(() => {
     if (isTop) {
-      getMyCurrentRank();
-      // getMyBestRank();
+      getSessionRank({ gameType: gameType, score: props.currentScore });
+      getMyCurrentRank({
+        gameType: gameType,
+        previousRank: props.myPreviousRank,
+      });
     }
-  }, [getMyCurrentRank, isTop]);
+  }, [
+    gameType,
+    getMyCurrentRank,
+    getSessionRank,
+    isTop,
+    props.currentScore,
+    props.myPreviousRank,
+  ]);
 
   const goToLeaderboardPage = () => {
     replace(`/game-2048/leaderboard`);
@@ -109,8 +130,8 @@ export const GameOver: React.FC<Props> = (props) => {
     analytics.logEvent('click_view_leaderboard_button', {
       game_type: '2048_puzzle',
     });
-    if (myCurrentRank.rank !== undefined) {
-      myCurrentRank.rank > 0 && myCurrentRank.rank <= 10
+    if (sessionRank.rank !== undefined) {
+      sessionRank.rank > 0 && sessionRank.rank <= 10
         ? setShouldModalOpen(true)
         : goToLeaderboardPage();
     }
@@ -123,21 +144,21 @@ export const GameOver: React.FC<Props> = (props) => {
     if (isTop) {
       const timerId1 = setTimeout(() => {
         setShowScore(true);
-      }, 300);
+      }, 500);
       const timerId2 = setTimeout(() => {
         setShowRank(true);
-        if (myCurrentRank.rank) {
-          return myCurrentRank.rank > 0 && myCurrentRank.rank <= 10
+        if (sessionRank.rank) {
+          return sessionRank.rank > 0 && sessionRank.rank <= 10
             ? fireConfetti({ colors: [`#0E74FF`, `#82B6FF`, `#E3EFFF`] })
             : null;
         }
-      }, 500);
+      }, 1000);
       return () => {
         clearTimeout(timerId1);
         clearTimeout(timerId2);
       };
     }
-  }, [isTop, myCurrentRank.rank]);
+  }, [isTop, myCurrentRank.rank, sessionRank.rank]);
 
   // confetti
   const fireThrottledRandomDirectionConfetti = useThrottledCallback(() => {
@@ -179,15 +200,15 @@ export const GameOver: React.FC<Props> = (props) => {
               <div className="row">
                 <p className="text">스코어</p>
                 <p className="number">
-                  {/* {myCurrentRank.score === undefined
+                  {sessionRank.score === undefined
                     ? ''
-                    : commafy(myCurrentRank.score)} */}
+                    : commafy(sessionRank.score)}
                 </p>
               </div>
               <div className="row">
                 <p className="text">랭킹</p>
                 <p className="number">
-                  {/* {myCurrentRank.rank === undefined ? '' : myCurrentRank.rank} */}
+                  {sessionRank.rank === undefined ? '' : sessionRank.rank}
                 </p>
               </div>
             </SessionRank>
