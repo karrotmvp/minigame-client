@@ -78,6 +78,96 @@ export const Home: React.FC = () => {
   const [shouldMissionPopupShown, setShouldMissionPopupShown] =
     useState<boolean>(!hasMissionPopupSeen);
 
+  // Update user info
+  const updateUserInfo = useCallback(
+    async ({ userId }: { userId: string }) => {
+      if (userId) {
+        return;
+      } else {
+        try {
+          const {
+            data: { data },
+          } = await minigameApi.userApi.getUserInfoUsingGET();
+          if (data) {
+            setUserInfo(data.id, data.nickname);
+            // FA: track user with set user id
+            // analytics.setUserId(data.id);
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    },
+    [minigameApi.userApi, setUserInfo]
+  );
+
+  // Track user with uuid
+  const trackUser = useCallback(
+    async ({
+      uUID,
+      regionId,
+      referer,
+    }: {
+      uUID: string;
+      regionId: string;
+      referer?:
+        | 'FEED'
+        | 'NEAR_BY'
+        | 'SHARE_GAME_2048'
+        | 'SHARE_GAME_KARROT'
+        | 'SHARE_PLATFORM'
+        | 'SHARE_COMMUNITY'
+        | 'LOGIN'
+        | 'UNKNOWN';
+    }) => {
+      try {
+        analytics.setUserId(uuid);
+        const data = await minigameApi.visitorApi.visitUsingPOST(
+          uUID,
+          regionId,
+          referer
+        );
+        console.log('trackuser', data);
+        return data;
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    [analytics, minigameApi.visitorApi, uuid]
+  );
+
+  useEffect(() => {
+    trackUser({ uUID: uuid, regionId: regionId, referer: referer });
+  }, [referer, regionId, trackUser, uuid]);
+
+  const checkNotificationStatus = useCallback(async () => {
+    if (isNewGameNotificationOn) {
+      return;
+    } else {
+      try {
+        const {
+          data: { data },
+        } = await minigameApi.notificationApi.checkNotificationUsingGET(
+          'OPEN_GAME'
+        );
+        if (data && data.check) {
+          setIsNewGameNotificationOn(data.check);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  }, [
+    isNewGameNotificationOn,
+    minigameApi.notificationApi,
+    setIsNewGameNotificationOn,
+  ]);
+
+  useEffect(() => {
+    updateUserInfo({ userId: userId });
+    checkNotificationStatus();
+  }, [checkNotificationStatus, updateUserInfo, userId]);
+
   useEffect(() => {
     if (isTop) {
       analytics.logEvent('view_platform_page');
@@ -95,7 +185,9 @@ export const Home: React.FC = () => {
     push(`/survey`);
   };
   const goToMissionPage = () => {
-    analytics.logEvent('click_mission_button');
+    analytics.logEvent('click_mission_button', {
+      location: 'platform_page',
+    });
     push(`/mission`);
   };
   const goToGame2048 = async () => {
@@ -249,95 +341,6 @@ export const Home: React.FC = () => {
       handleThirdPartyAgreement(onSuccessHandler);
     }
   };
-  const checkNotificationStatus = useCallback(async () => {
-    if (isNewGameNotificationOn) {
-      return;
-    } else {
-      try {
-        const {
-          data: { data },
-        } = await minigameApi.notificationApi.checkNotificationUsingGET(
-          'OPEN_GAME'
-        );
-        if (data && data.check) {
-          setIsNewGameNotificationOn(data.check);
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    }
-  }, [
-    isNewGameNotificationOn,
-    minigameApi.notificationApi,
-    setIsNewGameNotificationOn,
-  ]);
-
-  // Update user info
-  const updateUserInfo = useCallback(
-    async ({ userId }: { userId: string }) => {
-      if (userId) {
-        return;
-      } else {
-        try {
-          const {
-            data: { data },
-          } = await minigameApi.userApi.getUserInfoUsingGET();
-          if (data) {
-            setUserInfo(data.id, data.nickname);
-            // FA: track user with set user id
-            // analytics.setUserId(data.id);
-          }
-        } catch (error) {
-          console.error(error);
-        }
-      }
-    },
-    [minigameApi.userApi, setUserInfo]
-  );
-
-  // Track user with uuid
-  const trackUser = useCallback(
-    async ({
-      uUID,
-      regionId,
-      referer,
-    }: {
-      uUID: string;
-      regionId: string;
-      referer?:
-        | 'FEED'
-        | 'NEAR_BY'
-        | 'SHARE_GAME_2048'
-        | 'SHARE_GAME_KARROT'
-        | 'SHARE_PLATFORM'
-        | 'SHARE_COMMUNITY'
-        | 'LOGIN'
-        | 'UNKNOWN';
-    }) => {
-      try {
-        analytics.setUserId(uuid);
-        const data = await minigameApi.visitorApi.visitUsingPOST(
-          uUID,
-          regionId,
-          referer
-        );
-        console.log('trackuser', data);
-        return data;
-      } catch (error) {
-        console.error(error);
-      }
-    },
-    [analytics, minigameApi.visitorApi, uuid]
-  );
-
-  useEffect(() => {
-    trackUser({ uUID: uuid, regionId: regionId, referer: referer });
-  }, [referer, regionId, trackUser, uuid]);
-
-  useEffect(() => {
-    updateUserInfo({ userId: userId });
-    checkNotificationStatus();
-  }, [checkNotificationStatus, updateUserInfo, userId]);
 
   // Last week Top 10 Comments Carousel
   const [top2048PuzzleUsers, setTop2048PuzzleUsers] = useState<any[]>();

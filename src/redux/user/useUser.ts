@@ -24,7 +24,8 @@ export const useUser = () => {
     (state: RootState) => ({
       isMissionChekcedOut: state.user.isMissionChekcedOut,
       hasMissionPopupSeen: state.user.hasMissionPopupSeen,
-    })
+    }),
+    shallowEqual
   );
 
   const dispatch = useDispatch();

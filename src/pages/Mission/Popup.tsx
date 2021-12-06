@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from '@emotion/styled';
-import { useNavigator } from '@karrotframe/navigator';
+import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
 import { useAnalytics } from 'services/analytics';
 import { rem } from 'polished';
 import missionEnvelopeOpened from 'assets/svg/mission/mission_envelope_opened.svg';
@@ -14,7 +14,14 @@ type Props = {
 };
 export const Popup: React.FC<Props> = (props) => {
   const analytics = useAnalytics();
+  const { isTop } = useCurrentScreen();
   const { push } = useNavigator();
+
+  useEffect(() => {
+    if (isTop) {
+      analytics.logEvent('view_mission_popup');
+    }
+  }, [analytics, isTop]);
 
   const closeMissionPopup = () => {
     localStorage.setItem(
@@ -31,7 +38,9 @@ export const Popup: React.FC<Props> = (props) => {
     props.setShouldMissionPopupShown(false);
   };
   const goToMissionPage = () => {
-    analytics.logEvent('click_mission_button');
+    analytics.logEvent('click_mission_button', {
+      location: 'mission_popup',
+    });
     localStorage.setItem(
       'missionPreference',
       JSON.stringify({

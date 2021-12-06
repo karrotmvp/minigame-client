@@ -20,7 +20,6 @@ export const Mission: React.FC = () => {
   const analytics = useAnalytics();
   const minigameApi = useMinigameApi();
   const { accessToken } = useAccessToken();
-
   const {
     updateMyScore: updateMyGame2048Score,
     updateMyComment: updateMyGame2048Comment,
@@ -31,8 +30,14 @@ export const Mission: React.FC = () => {
     updateMyComment: updateMyKarrotClickerComment,
     setGameTypeToKarrotClicker,
   } = useMyKarrotClickerData();
-
   const { setMissionPreference } = useUser();
+
+  useEffect(() => {
+    if (isTop) {
+      analytics.logEvent('view_mission_page');
+    }
+  }, [analytics, isTop]);
+
   useEffect(() => {
     if (isTop) {
       localStorage.setItem(
@@ -58,6 +63,7 @@ export const Mission: React.FC = () => {
       if (accessToken) {
         analytics.logEvent('click_game_enter_button', {
           game_type: '2048_puzzle',
+          location: 'mission_page',
           is_new_user: false,
         });
         const {
@@ -78,6 +84,7 @@ export const Mission: React.FC = () => {
       } else {
         analytics.logEvent('click_game_enter_button', {
           game_type: '2048_puzzle',
+          location: 'mission_page',
           is_new_user: true,
         });
         replace(`/game-2048`);
@@ -92,6 +99,7 @@ export const Mission: React.FC = () => {
       if (accessToken) {
         analytics.logEvent('click_game_enter_button', {
           game_type: 'karrot_clicker',
+          location: 'mission_page',
           is_new_user: false,
         });
         const {
@@ -109,6 +117,7 @@ export const Mission: React.FC = () => {
       } else {
         analytics.logEvent('click_game_enter_button', {
           game_type: 'karrot_clicker',
+          location: 'mission_page',
           is_new_user: true,
         });
         replace(`/karrot-clicker`);
