@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 import { rem } from 'polished';
 import BadgeUrl from 'assets/svg/game2048/top_badge.svg';
-import { commafy } from 'utils';
+import { commafy } from 'utils/number';
 import React from 'react';
 
 type DistrictProps = {

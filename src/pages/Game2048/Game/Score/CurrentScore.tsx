@@ -1,5 +1,5 @@
 import React from 'react';
-import { commafy } from 'utils';
+import { commafy } from 'utils/number';
 
 type Props = {
   score: number;

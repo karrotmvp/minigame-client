@@ -9,6 +9,7 @@ import { KarrotClickerHome } from 'pages/KarrotClicker/Home';
 import { KarrotClickerGame } from 'pages/KarrotClicker/Game';
 import { KarrotClickerLeaderboard } from 'pages/KarrotClicker/Leaderboard';
 import { Survey } from 'pages/Survey';
+import { Mission } from 'pages/Mission';
 // import { LoadingScreen } from 'components/LoadingScreen';
 
 import {
@@ -42,7 +43,7 @@ const App: React.FC = () => {
     emptyKarrotMarketMini
   );
 
-  const { saveUserInfo } = useUser();
+  const { saveUserInfo, setMissionPreference } = useUser();
 
   // Firebase Analytics가 설정되어 있으면 인스턴스를 초기화하고 교체합니다.
   useEffect(() => {
@@ -117,6 +118,17 @@ const App: React.FC = () => {
     }
   };
 
+  const checkLocalStorage = () => {
+    const missionPreference = localStorage.getItem('missionPreference');
+    if (missionPreference !== null) {
+      const parsedMissionPreference = JSON.parse(missionPreference);
+      setMissionPreference({
+        isMissionChekcedOut: parsedMissionPreference.isMissionCheckedOut,
+        hasMissionPopupSeen: parsedMissionPreference.hasMissionPopupSeen,
+      });
+    }
+  };
+
   useEffect(() => {
     retrieveUUID();
     if (accessToken) {
@@ -147,6 +159,7 @@ const App: React.FC = () => {
         | 'LOGIN'
         | 'UNKNOWN',
     });
+    checkLocalStorage();
     fetchData(
       localStorage.getItem('uuid') as string,
       code as string,
@@ -180,6 +193,7 @@ const App: React.FC = () => {
             component={KarrotClickerLeaderboard}
           />
           <Screen path="/survey" component={Survey} />
+          <Screen path="/mission" component={Mission} />
         </Navigator>
       </KarrotMarketMiniContext.Provider>
     </AnalyticsContext.Provider>

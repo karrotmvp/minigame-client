@@ -12,6 +12,8 @@ import { useAnalytics } from 'services/analytics';
 
 type Props = {
   setShouldModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  score: number;
+  rank: number;
 };
 
 export const PostComment: React.FC<Props> = (props) => {
@@ -21,12 +23,7 @@ export const PostComment: React.FC<Props> = (props) => {
   const minigameApi = useMinigameApi();
   const { townName2: districtName } = useUserData();
   const { isInWebEnvironment } = useMini();
-  const {
-    score,
-    rank,
-    comment: prevComment,
-    updateMyComment,
-  } = useMyGame2048Data();
+  const { comment: prevComment, updateMyComment } = useMyGame2048Data();
   const [currentComment, setCurrentComment] = useState({
     comment: prevComment,
     length: prevComment.length,
@@ -77,8 +74,8 @@ export const PostComment: React.FC<Props> = (props) => {
       if (data.status === 200) {
         analytics.logEvent('click_submit_comment_button', {
           game_type: '2048_puzzle',
-          score: score,
-          rank: rank,
+          score: props.score,
+          rank: props.rank,
         });
         props.setShouldModalOpen(false);
         goToLeaderboardPage();
@@ -108,7 +105,7 @@ export const PostComment: React.FC<Props> = (props) => {
       <Congrats>
         <span>혹시..천재세요?</span>
         <br />
-        <span>{rank}위</span>로 Top 10에 들었어요!
+        <span>{props.rank}위</span>로 Top 10에 들었어요!
       </Congrats>
       <Text>
         전국 Top 10만 쓸 수 있는 한 마디!

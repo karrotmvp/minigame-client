@@ -49,6 +49,8 @@ interface UserState {
     | 'SHARE_COMMUNITY'
     | 'LOGIN'
     | 'UNKNOWN';
+  isMissionChekcedOut: boolean;
+  hasMissionPopupSeen: boolean;
   status: string;
   // payload: {};
 }
@@ -58,6 +60,8 @@ const initialState: UserState = {
   regionId: '',
   isSubscribed: false,
   referer: 'UNKNOWN',
+  isMissionChekcedOut: false,
+  hasMissionPopupSeen: false,
   status: '',
   // payload: {},
 };
@@ -71,6 +75,10 @@ const userSlice = createSlice({
       state.regionId = action.payload.regionId;
       state.isSubscribed = action.payload.isSubscribed;
       state.referer = action.payload.referer;
+    },
+    setMissionPreference(state, action) {
+      state.isMissionChekcedOut = action.payload.isMissionChekcedOut;
+      state.hasMissionPopupSeen = action.payload.hasMissionPopupSeen;
     },
   },
   extraReducers: (builder) => {
@@ -89,5 +97,5 @@ const userSlice = createSlice({
   },
 });
 
-export const { saveUserInfo } = userSlice.actions;
+export const { saveUserInfo, setMissionPreference } = userSlice.actions;
 export default userSlice.reducer;

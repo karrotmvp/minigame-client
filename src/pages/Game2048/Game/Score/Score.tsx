@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from '@emotion/styled';
 import { rem } from 'polished';
-import { commafy } from 'utils';
+import { commafy } from 'utils/number';
 
 type BestScore = {
   myBestScore?: number;

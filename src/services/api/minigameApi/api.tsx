@@ -95,3 +95,5 @@ export const MinigameApiProvider: React.FC = (props) => {
 export function useMinigameApi() {
   return useContext(MinigameApiContext);
 }
+
+export type MinigameApiType = ReturnType<typeof CreateMinigameApi>;

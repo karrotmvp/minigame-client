@@ -4,7 +4,7 @@ import { emphasizedTextStyle, largeTextStyle } from 'styles/textStyle';
 import { ReactComponent as Karrot } from 'assets/svg/KarrotClicker/small_circle_karrot.svg';
 import { useEffect, useState } from 'react';
 import ReactModal from 'react-modal';
-import { commafy } from 'utils/numberFunctions';
+import { commafy } from 'utils/number';
 import { useAnalytics } from 'services/analytics';
 import { OldButton } from 'components/Button';
 import { CommentModal } from './CommentModal';

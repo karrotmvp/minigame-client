@@ -21,8 +21,8 @@ import ArrowKarrotClickerUrl from 'assets/svg/arrow_karrot_clicker.svg';
 import { ReactComponent as Bookmark } from 'assets/svg/bookmark_icon.svg';
 import { ReactComponent as BookmarkDone } from 'assets/svg/bookmark_done_icon.svg';
 import { ReactComponent as Share } from 'assets/svg/share_icon.svg';
-import { ReactComponent as Circle2048Puzzle } from 'assets/svg/circle_2048_puzzle.svg';
-import { ReactComponent as CircleKarrotClicker } from 'assets/svg/circle_karrot_clicker.svg';
+import { ReactComponent as Circle2048Puzzle } from 'assets/svg/platform/comment_icon_2048_puzzle.svg';
+import { ReactComponent as CircleKarrotClicker } from 'assets/svg/platform/comment_icon_karrot_clicker.svg';
 import { NotificationRequestDtoTypeEnum } from 'services/openapi_generator';
 import {
   SubscribeToastContainer,
@@ -34,6 +34,10 @@ import 'swiper/swiper.scss';
 import { Autoplay } from 'swiper';
 import { lastWeek } from 'utils/date';
 import { DistrictName } from 'styles/leaderboard';
+import missionEnvelopeClosed from 'assets/svg/mission/mission_envelope_closed.svg';
+import missionEnvelopeClosed1 from 'assets/svg/mission/mission_envelope_closed_1.svg';
+import ReactModal from 'react-modal';
+import { Popup as MissionPopup } from './Mission';
 
 export const Home: React.FC = () => {
   const analytics = useAnalytics();
@@ -68,7 +72,107 @@ export const Home: React.FC = () => {
     updateMyComment: updateMyKarrotClickerComment,
     setGameTypeToKarrotClicker,
   } = useMyKarrotClickerData();
-  const { uuid, regionId, referer } = useUser();
+  const { uuid, regionId, referer, isMissionChekcedOut, hasMissionPopupSeen } =
+    useUser();
+
+  const [shouldMissionPopupShown, setShouldMissionPopupShown] =
+    useState<boolean>(!hasMissionPopupSeen);
+
+  // Update user info
+  const updateUserInfo = useCallback(
+    async ({ userId }: { userId: string }) => {
+      if (userId) {
+        return;
+      } else {
+        try {
+          const {
+            data: { data },
+          } = await minigameApi.userApi.getUserInfoUsingGET();
+          if (data) {
+            setUserInfo(data.id, data.nickname);
+            // FA: track user with set user id
+            // analytics.setUserId(data.id);
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    },
+    [minigameApi.userApi, setUserInfo]
+  );
+
+  // Track user with uuid
+  const trackUser = useCallback(
+    async ({
+      uUID,
+      regionId,
+      referer,
+    }: {
+      uUID: string;
+      regionId: string;
+      referer?:
+        | 'FEED'
+        | 'NEAR_BY'
+        | 'SHARE_GAME_2048'
+        | 'SHARE_GAME_KARROT'
+        | 'SHARE_PLATFORM'
+        | 'SHARE_COMMUNITY'
+        | 'LOGIN'
+        | 'UNKNOWN';
+    }) => {
+      try {
+        analytics.setUserId(uuid);
+        const data = await minigameApi.visitorApi.visitUsingPOST(
+          uUID,
+          regionId,
+          referer
+        );
+        console.log('trackuser', data);
+        return data;
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    [analytics, minigameApi.visitorApi, uuid]
+  );
+
+  useEffect(() => {
+    trackUser({ uUID: uuid, regionId: regionId, referer: referer });
+  }, [referer, regionId, trackUser, uuid]);
+
+  const checkNotificationStatus = useCallback(async () => {
+    if (isNewGameNotificationOn) {
+      return;
+    } else {
+      try {
+        const {
+          data: { data },
+        } = await minigameApi.notificationApi.checkNotificationUsingGET(
+          'OPEN_GAME'
+        );
+        if (data && data.check) {
+          setIsNewGameNotificationOn(data.check);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  }, [
+    isNewGameNotificationOn,
+    minigameApi.notificationApi,
+    setIsNewGameNotificationOn,
+  ]);
+
+  useEffect(() => {
+    updateUserInfo({ userId: userId });
+    checkNotificationStatus();
+  }, [checkNotificationStatus, updateUserInfo, userId]);
+
+  useEffect(() => {
+    if (isTop) {
+      analytics.logEvent('view_platform_page');
+    }
+  }, [analytics, isTop]);
 
   const leaveMiniApp = () => {
     analytics.logEvent('click_leave_mini_app_button');
@@ -79,6 +183,12 @@ export const Home: React.FC = () => {
   const goToSurveyPage = () => {
     analytics.logEvent('click_survey_button');
     push(`/survey`);
+  };
+  const goToMissionPage = () => {
+    analytics.logEvent('click_mission_button', {
+      location: 'platform_page',
+    });
+    push(`/mission`);
   };
   const goToGame2048 = async () => {
     setGameTypeToGame2048();
@@ -98,7 +208,10 @@ export const Home: React.FC = () => {
         } = await minigameApi.gameUserApi.getMyRankInfoUsingGET('GAME_2048');
         if (data) {
           if (data.score && data.rank) {
-            updateMyGame2048Score(data.score, data.rank);
+            updateMyGame2048Score({
+              score: data.score,
+              rank: data.rank,
+            });
           }
           if (data.comment) {
             updateMyGame2048Comment(data.comment);
@@ -228,95 +341,6 @@ export const Home: React.FC = () => {
       handleThirdPartyAgreement(onSuccessHandler);
     }
   };
-  const checkNotificationStatus = useCallback(async () => {
-    if (isNewGameNotificationOn) {
-      return;
-    } else {
-      try {
-        const {
-          data: { data },
-        } = await minigameApi.notificationApi.checkNotificationUsingGET(
-          'OPEN_GAME'
-        );
-        if (data && data.check) {
-          setIsNewGameNotificationOn(data.check);
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    }
-  }, [
-    isNewGameNotificationOn,
-    minigameApi.notificationApi,
-    setIsNewGameNotificationOn,
-  ]);
-
-  // Update user info
-  const updateUserInfo = useCallback(
-    async ({ userId }: { userId: string }) => {
-      if (userId) {
-        return;
-      } else {
-        try {
-          const {
-            data: { data },
-          } = await minigameApi.userApi.getUserInfoUsingGET();
-          if (data) {
-            setUserInfo(data.id, data.nickname);
-            // FA: track user with set user id
-            // analytics.setUserId(data.id);
-          }
-        } catch (error) {
-          console.error(error);
-        }
-      }
-    },
-    [minigameApi.userApi, setUserInfo]
-  );
-
-  // Track user with uuid
-  const trackUser = useCallback(
-    async ({
-      uUID,
-      regionId,
-      referer,
-    }: {
-      uUID: string;
-      regionId: string;
-      referer?:
-        | 'FEED'
-        | 'NEAR_BY'
-        | 'SHARE_GAME_2048'
-        | 'SHARE_GAME_KARROT'
-        | 'SHARE_PLATFORM'
-        | 'SHARE_COMMUNITY'
-        | 'LOGIN'
-        | 'UNKNOWN';
-    }) => {
-      try {
-        analytics.setUserId(uuid);
-        const data = await minigameApi.visitorApi.visitUsingPOST(
-          uUID,
-          regionId,
-          referer
-        );
-        console.log('trackuser', data);
-        return data;
-      } catch (error) {
-        console.error(error);
-      }
-    },
-    [analytics, minigameApi.visitorApi, uuid]
-  );
-
-  useEffect(() => {
-    trackUser({ uUID: uuid, regionId: regionId, referer: referer });
-  }, [referer, regionId, trackUser, uuid]);
-
-  useEffect(() => {
-    updateUserInfo({ userId: userId });
-    checkNotificationStatus();
-  }, [checkNotificationStatus, updateUserInfo, userId]);
 
   // Last week Top 10 Comments Carousel
   const [top2048PuzzleUsers, setTop2048PuzzleUsers] = useState<any[]>();
@@ -389,269 +413,312 @@ export const Home: React.FC = () => {
     }
   }, [isTop, retreieveTop2048PuzzleUsers, retrieveTopKarrotClickerUsers]);
 
-  useEffect(() => {
-    if (isTop) {
-      analytics.logEvent('view_platform_page');
-    }
-  }, [analytics, isTop]);
-
   return (
-    <>
-      <Nav
-        border={`1px solid #ECECEC`}
-        appendLeft={<CloseIcon />}
-        onClickLeft={leaveMiniApp}
-        appendRight={
-          <div
-            style={{
-              display: `flex`,
-              gap: `14px`,
-              alignItems: `flex-end`,
-            }}
-          >
-            <Share onClick={triggerShareHandler} />
-            {isInstalled ? (
-              <BookmarkDone />
-            ) : (
-              <Bookmark onClick={triggerInstallationHandler} />
-            )}
-          </div>
-        }
-        style={{
-          background: `#fff`,
-        }}
-      />
-      <PageContainer id="platform-page">
-        <Section>
-          <MainText>
-            <span>{townName3}</span> 이웃들과
-            <br />
-            같이 게임해요!
-          </MainText>
-          <CardContainer className="container--games">
-            <Card game={`game-2048`} onClick={goToGame2048}>
-              <img
-                src={Game2048CardImgUrl}
-                alt="2048-puzzle-enter-button"
-                style={{
-                  width: `${rem(80)}`,
-                  height: `${rem(115)}`,
-                  bottom: `10px`,
-                  left: `0`,
-                }}
-              />
-              <h3>
-                2048 퍼즐
-                <img
-                  src={newUrl}
-                  alt=""
-                  style={{
-                    display: 'inline-box',
-                    marginLeft: '5px',
-                  }}
-                />
-              </h3>
-              <p>
-                동네 천재 타이틀을 원한다면?
-                <br />
-                중독성 갑 퍼즐 게임
-              </p>
-              <ActionButton src={ArrowGame2048Url} />
-            </Card>
-            <Card game={`karrot-clicker`} onClick={goToKarrotClicker}>
-              <img
-                src={KarrotClickerCardImgUrl}
-                alt="karrot-clicker-enter-button"
-                style={{
-                  width: `${rem(60)}`,
-                  height: `${rem(130)}`,
-                  bottom: `0`,
-                  left: `23px`,
-                }}
-              />
-              <h3>당근모아</h3>
-              <p>
-                한 번 누르면 멈추기 어려운
-                <br />
-                귀여운 클리커 게임
-              </p>
-              <ActionButton src={ArrowKarrotClickerUrl} />
-            </Card>
-          </CardContainer>
-        </Section>
-        <Break />
-        <Section>
-          <SectionTitle style={{ marginBottom: `10px` }}>
-            지난주 전국 Top 10의 한 마디
-          </SectionTitle>
-          <p
-            style={{
-              fontStyle: 'normal',
-              fontWeight: 'normal',
-              fontSize: `${rem(12)}`,
-              lineHeight: `161.7%`,
-              color: `#9F9F9F`,
-              marginBottom: `20px`,
-            }}
-          >
-            Top 10에 들면 이웃들에게 한 마디 외칠 수 있어요
-          </p>
-          <LastWeekTopComments>
-            <div className="game">
-              <Circle2048Puzzle />
-              <div className="comment-bubble">
-                <Swiper
-                  modules={[Autoplay]}
-                  spaceBetween={30}
-                  centeredSlides={true}
-                  initialSlide={1}
-                  loop={true}
-                  autoplay={{
-                    delay: 2500,
-                    disableOnInteraction: false,
-                  }}
-                  className="mySwiper"
-                >
-                  {top2048PuzzleUsers?.map((user, i) => {
-                    if (user.comment === '' || user.comment === null) {
-                      user.comment = `${user.town.name2} 파이팅!`;
-                    }
-                    return (
-                      <SwiperSlide key={i}>
-                        <TopUserContent>
-                          <div className="user-info">
-                            <p
-                              style={{
-                                color: `#0E74FF`,
-                              }}
-                            >
-                              {user.rank}등 {user.nickname}
-                            </p>
-                            <DistrictName color={`#0E74FF`}>
-                              {user.town.name1}&nbsp;{user.town.name2}
-                            </DistrictName>
-                          </div>
-                          <p className="comment">{user.comment}</p>
-                        </TopUserContent>
-                      </SwiperSlide>
-                    );
-                  })}
-                </Swiper>
-              </div>
+    <div style={{ height: '100%', position: 'relative' }}>
+      <div style={{ height: '100%', overflowY: 'auto' }}>
+        <Nav
+          border={`1px solid #ECECEC`}
+          appendLeft={<CloseIcon />}
+          onClickLeft={leaveMiniApp}
+          appendRight={
+            <div
+              style={{
+                display: `flex`,
+                gap: `14px`,
+                alignItems: `flex-end`,
+              }}
+            >
+              <Share onClick={triggerShareHandler} />
+              {isInstalled ? (
+                <BookmarkDone />
+              ) : (
+                <Bookmark onClick={triggerInstallationHandler} />
+              )}
             </div>
-            <div className="game">
-              <CircleKarrotClicker />
-              <div className="comment-bubble">
-                <Swiper
-                  modules={[Autoplay]}
-                  spaceBetween={30}
-                  centeredSlides={true}
-                  initialSlide={1}
-                  loop={true}
-                  autoplay={{
-                    delay: 2500,
-                    disableOnInteraction: false,
-                  }}
-                  className="mySwiper"
-                >
-                  {topKarrotClickerUsers?.map((user, i) => {
-                    if (user.comment === '' || user.comment === null) {
-                      user.comment = `${user.town.name2} 파이팅!`;
-                    }
-                    return (
-                      <SwiperSlide key={i}>
-                        <TopUserContent>
-                          <div className="user-info">
-                            <p
-                              style={{
-                                color: `#EB5D0E`,
-                              }}
-                            >
-                              {user.rank}등 {user.nickname}
-                            </p>
-                            <DistrictName color={`#EB5D0E`}>
-                              {user.town.name1}&nbsp;{user.town.name2}
-                            </DistrictName>
-                          </div>
-                          <p className="comment">{user.comment}</p>
-                        </TopUserContent>
-                      </SwiperSlide>
-                    );
-                  })}
-                </Swiper>
-              </div>
-            </div>
-          </LastWeekTopComments>
-        </Section>
-        <Break
+          }
           style={{
-            margin: `24px 0 22px`,
+            background: `#fff`,
           }}
         />
-        <Section>
-          <SectionTitle>새로운 게임을 준비 중이에요</SectionTitle>
-          <CardContainer>
-            {isNewGameNotificationOn ? (
-              <Card game={`coming-soon`}>
+        <PageContainer id="platform-page">
+          <Section>
+            <MainText>
+              <span>{townName3}</span> 이웃들과
+              <br />
+              같이 게임해요!
+            </MainText>
+            <CardContainer className="container--games">
+              <Card game={`game-2048`} onClick={goToGame2048}>
                 <img
-                  src={ComingSoonCardImgUrl}
-                  alt="coming-soon-button"
+                  src={Game2048CardImgUrl}
+                  alt="2048-puzzle-enter-button"
                   style={{
-                    width: `${rem(71)}`,
-                    height: `${rem(93)}`,
-                    bottom: `-3px`,
-                    left: `15px`,
+                    width: `${rem(80)}`,
+                    height: `${rem(115)}`,
+                    bottom: `10px`,
+                    left: `0`,
                   }}
                 />
-                <h3>Coming Soon</h3>
+                <h3>
+                  2048 퍼즐
+                  <img
+                    src={newUrl}
+                    alt=""
+                    style={{
+                      display: 'inline-box',
+                      marginLeft: '5px',
+                    }}
+                  />
+                </h3>
                 <p>
-                  오픈 알림 신청 완료!
+                  동네 천재 타이틀을 원한다면?
                   <br />
-                  새로운 게임이 열리면 알려드릴게요
+                  중독성 갑 퍼즐 게임
                 </p>
+                <ActionButton src={ArrowGame2048Url} />
               </Card>
-            ) : (
-              <Card
-                game={`whats-next`}
-                onClick={handleNewGameNotification}
-                style={{
-                  border: `1px solid #ECECEC`,
-                }}
-              >
+              <Card game={`karrot-clicker`} onClick={goToKarrotClicker}>
                 <img
-                  src={WhatsNextCardImgUrl}
-                  alt="whats-next"
+                  src={KarrotClickerCardImgUrl}
+                  alt="karrot-clicker-enter-button"
                   style={{
-                    width: `${rem(71)}`,
-                    height: `${rem(93)}`,
-                    bottom: `-3px`,
-                    left: `15px`,
+                    width: `${rem(60)}`,
+                    height: `${rem(130)}`,
+                    bottom: `0`,
+                    left: `23px`,
                   }}
                 />
-                <h3>What's Next?</h3>
+                <h3>당근모아</h3>
                 <p>
-                  <span>오픈 알림</span>을 신청하면
+                  한 번 누르면 멈추기 어려운
                   <br />
-                  빠르게 대회에 참여할 수 있어요!
+                  귀여운 클리커 게임
                 </p>
-                <ActionButton src={BellUrl} />
+                <ActionButton src={ArrowKarrotClickerUrl} />
               </Card>
-            )}
-          </CardContainer>
-        </Section>
-        <Break />
-        <Section>
-          <SectionTitle>하고 싶은 게임이 있나요?</SectionTitle>
-          <GameSurvey>
-            <ModalOpenButton onClick={goToSurveyPage}>
-              <p className="left-text">예) 테트리스</p>
-              <p className="right-text">보내기</p>
-            </ModalOpenButton>
-          </GameSurvey>
-        </Section>
-      </PageContainer>
+            </CardContainer>
+          </Section>
+          <Break />
+          <Section>
+            <SectionTitle style={{ marginBottom: `10px` }}>
+              지난주 전국 Top 10의 한 마디
+            </SectionTitle>
+            <p
+              style={{
+                fontStyle: 'normal',
+                fontWeight: 'normal',
+                fontSize: `${rem(12)}`,
+                lineHeight: `161.7%`,
+                color: `#9F9F9F`,
+                marginBottom: `20px`,
+              }}
+            >
+              Top 10에 들면 이웃들에게 한 마디 외칠 수 있어요
+            </p>
+            <LastWeekTopComments>
+              <div className="game">
+                <Circle2048Puzzle />
+                <div className="comment-bubble">
+                  <Swiper
+                    modules={[Autoplay]}
+                    spaceBetween={30}
+                    centeredSlides={true}
+                    initialSlide={1}
+                    loop={true}
+                    autoplay={{
+                      delay: 2500,
+                      disableOnInteraction: false,
+                    }}
+                    className="mySwiper"
+                  >
+                    {top2048PuzzleUsers?.map((user, i) => {
+                      if (user.comment === '' || user.comment === null) {
+                        user.comment = `${user.town.name2} 파이팅!`;
+                      }
+                      return (
+                        <SwiperSlide key={i}>
+                          <TopUserContent>
+                            <div className="user-info">
+                              <p
+                                style={{
+                                  color: `#0E74FF`,
+                                }}
+                              >
+                                {user.rank}등 {user.nickname}
+                              </p>
+                              <DistrictName color={`#0E74FF`}>
+                                {user.town.name1}&nbsp;{user.town.name2}
+                              </DistrictName>
+                            </div>
+                            <p className="comment">{user.comment}</p>
+                          </TopUserContent>
+                        </SwiperSlide>
+                      );
+                    })}
+                  </Swiper>
+                </div>
+              </div>
+              <div className="game">
+                <CircleKarrotClicker />
+                <div className="comment-bubble">
+                  <Swiper
+                    modules={[Autoplay]}
+                    spaceBetween={30}
+                    centeredSlides={true}
+                    initialSlide={1}
+                    loop={true}
+                    autoplay={{
+                      delay: 2500,
+                      disableOnInteraction: false,
+                    }}
+                    className="mySwiper"
+                  >
+                    {topKarrotClickerUsers?.map((user, i) => {
+                      if (user.comment === '' || user.comment === null) {
+                        user.comment = `${user.town.name2} 파이팅!`;
+                      }
+                      return (
+                        <SwiperSlide key={i}>
+                          <TopUserContent>
+                            <div className="user-info">
+                              <p
+                                style={{
+                                  color: `#EB5D0E`,
+                                }}
+                              >
+                                {user.rank}등 {user.nickname}
+                              </p>
+                              <DistrictName color={`#EB5D0E`}>
+                                {user.town.name1}&nbsp;{user.town.name2}
+                              </DistrictName>
+                            </div>
+                            <p className="comment">{user.comment}</p>
+                          </TopUserContent>
+                        </SwiperSlide>
+                      );
+                    })}
+                  </Swiper>
+                </div>
+              </div>
+            </LastWeekTopComments>
+          </Section>
+          <Break
+            style={{
+              margin: `24px 0 22px`,
+            }}
+          />
+          <Section>
+            <SectionTitle>새로운 게임을 준비 중이에요</SectionTitle>
+            <CardContainer>
+              {isNewGameNotificationOn ? (
+                <Card game={`coming-soon`}>
+                  <img
+                    src={ComingSoonCardImgUrl}
+                    alt="coming-soon-button"
+                    style={{
+                      width: `${rem(71)}`,
+                      height: `${rem(93)}`,
+                      bottom: `-3px`,
+                      left: `15px`,
+                    }}
+                  />
+                  <h3>Coming Soon</h3>
+                  <p>
+                    오픈 알림 신청 완료!
+                    <br />
+                    새로운 게임이 열리면 알려드릴게요
+                  </p>
+                </Card>
+              ) : (
+                <Card
+                  game={`whats-next`}
+                  onClick={handleNewGameNotification}
+                  style={{
+                    border: `1px solid #ECECEC`,
+                  }}
+                >
+                  <img
+                    src={WhatsNextCardImgUrl}
+                    alt="whats-next"
+                    style={{
+                      width: `${rem(71)}`,
+                      height: `${rem(93)}`,
+                      bottom: `-3px`,
+                      left: `15px`,
+                    }}
+                  />
+                  <h3>What's Next?</h3>
+                  <p>
+                    <span>오픈 알림</span>을 신청하면
+                    <br />
+                    빠르게 대회에 참여할 수 있어요!
+                  </p>
+                  <ActionButton src={BellUrl} />
+                </Card>
+              )}
+            </CardContainer>
+          </Section>
+          <Break />
+          <Section>
+            <SectionTitle>하고 싶은 게임이 있나요?</SectionTitle>
+            <GameSurvey>
+              <ModalOpenButton onClick={goToSurveyPage}>
+                <p className="left-text">예) 테트리스</p>
+                <p className="right-text">보내기</p>
+              </ModalOpenButton>
+            </GameSurvey>
+          </Section>
+        </PageContainer>
+      </div>
+      <button
+        onClick={goToMissionPage}
+        style={{ position: `absolute`, right: 0, bottom: 0, zIndex: 99 }}
+      >
+        {isMissionChekcedOut ? (
+          <img src={missionEnvelopeClosed} alt="mission-button" />
+        ) : (
+          <img
+            src={missionEnvelopeClosed1}
+            alt="mission-button-one-notification"
+          />
+        )}
+      </button>
+      <ReactModal
+        isOpen={shouldMissionPopupShown}
+        shouldCloseOnOverlayClick={false}
+        contentLabel="Mission Pop-up"
+        style={{
+          overlay: {
+            background: 'rgba(90, 90, 90, 0.7)',
+            backdropFilter: `blur(5px)`,
+            zIndex: 1000,
+          },
+          content: {
+            height: `100%`,
+            width: `100%`,
+            top: '50%',
+            left: '50%',
+            right: 'auto',
+            bottom: 'auto',
+            marginRight: '-50%',
+            transform: 'translate(-50%, -50%)',
+
+            padding: `58px 34px`,
+            display: `flex`,
+            flexFlow: `column`,
+
+            justifyContent: 'center',
+            alignItems: 'center',
+            background: 'transparent',
+            border: `none`,
+          },
+        }}
+      >
+        <MissionPopup setShouldMissionPopupShown={setShouldMissionPopupShown} />
+      </ReactModal>
+
       <SubscribeToastContainer />
-    </>
+    </div>
   );
 };
 
@@ -785,6 +852,7 @@ const LastWeekTopComments = styled.div`
   div.game {
     display: flex;
     flex-flow: row;
+    align-items: center;
     gap: 20px;
 
     div.comment-bubble {

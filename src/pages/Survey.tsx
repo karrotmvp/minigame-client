@@ -112,9 +112,6 @@ export const Survey: React.FC = () => {
               보내기
             </Button>
           )}
-          {/* <Button
-       
-          </Button> */}
         </ActionItems>
       </PageContainer>
       <SurveyToastContainer />
