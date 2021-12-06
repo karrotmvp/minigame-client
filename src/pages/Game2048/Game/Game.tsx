@@ -108,27 +108,35 @@ export const Game: React.FC = () => {
     }
   }, [gameType, getMyCurrentRank, isTop]);
   // get rank 1's score
-  const getTownieBestScoreEver = useCallback(
+  const getFirstPlaceScore = useCallback(
     async ({ gameType }: { gameType: 'GAME_KARROT' | 'GAME_2048' }) => {
-      const {
-        data: { data },
-      } = await minigameApi.gameUserApi.getLeaderBoardByUserUsingGET(
-        gameType,
-        undefined,
-        1
-      );
-      if (data && data[0]) {
-        setTownieBestScore(data[0].score);
+      try {
+        const {
+          data: { data },
+        } = await minigameApi.gameUserApi.getLeaderBoardByUserUsingGET(
+          gameType,
+          undefined,
+          1
+        );
+        if (data && data[0]) {
+          setTownieBestScore(data[0].score);
+        }
+      } catch (error) {
+        console.error(error);
+        return;
       }
     },
     [minigameApi.gameUserApi]
   );
 
   useEffect(() => {
-    if (isTop) {
-      getTownieBestScoreEver({ gameType: gameType });
-    }
-  }, [gameType, getTownieBestScoreEver, isTop]);
+    const intervalId = setInterval(() => {
+      getFirstPlaceScore({ gameType: gameType });
+    }, 10000);
+    // getFirstPlaceScore({ gameType: gameType });
+    if (isGameOver) clearInterval(intervalId);
+    return () => clearInterval(intervalId);
+  }, [gameType, getFirstPlaceScore, isGameOver]);
 
   // constantly patch score (score log)
   const debouncedLogScore = useDebouncedCallback(() => {
