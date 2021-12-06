@@ -136,7 +136,7 @@ export const Mission: React.FC = () => {
       />
       <PageContainer>
         <img
-          src="https://minigame-karrot-raise-client-production.s3.ap-northeast-2.amazonaws.com/mission_page.png"
+          src="https://minigame-karrot-raise-client-production.s3.ap-northeast-2.amazonaws.com/mission_page_20211206.png"
           alt="mission-description"
           style={{ marginTop: `-80px` }}
         />
