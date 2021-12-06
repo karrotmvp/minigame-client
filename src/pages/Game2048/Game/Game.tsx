@@ -17,6 +17,7 @@ import {
 import refreshGameUrl from 'assets/svg/game2048/refresh_game.svg';
 import { useAnalytics } from 'services/analytics';
 import { useMini, useUserData } from 'hooks';
+import { useDebouncedCallback } from 'use-debounce';
 
 export const Game: React.FC = () => {
   const analytics = useAnalytics();
@@ -130,6 +131,10 @@ export const Game: React.FC = () => {
   }, [gameType, getTownieBestScoreEver, isTop]);
 
   // constantly patch score (score log)
+  const debouncedLogScore = useDebouncedCallback(() => {
+    logScore({ score: currentScore, gameType: gameType });
+  }, 700);
+
   const logScore = useCallback(
     async ({
       score,
@@ -153,7 +158,7 @@ export const Game: React.FC = () => {
   );
 
   useEffect(() => {
-    logScore({ score: currentScore, gameType: gameType });
+    debouncedLogScore();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentScore]);
 
