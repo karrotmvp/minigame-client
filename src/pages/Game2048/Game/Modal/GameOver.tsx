@@ -144,7 +144,7 @@ export const GameOver: React.FC<Props> = (props) => {
     if (isTop) {
       const timerId1 = setTimeout(() => {
         setShowScore(true);
-      }, 500);
+      }, 300);
       const timerId2 = setTimeout(() => {
         setShowRank(true);
         if (sessionRank.rank) {
@@ -152,7 +152,7 @@ export const GameOver: React.FC<Props> = (props) => {
             ? fireConfetti({ colors: [`#0E74FF`, `#82B6FF`, `#E3EFFF`] })
             : null;
         }
-      }, 1000);
+      }, 600);
       return () => {
         clearTimeout(timerId1);
         clearTimeout(timerId2);
@@ -247,7 +247,7 @@ export const GameOver: React.FC<Props> = (props) => {
           )}
         </AnimatePresence>
       </div>
-      {myCurrentRank.rank! !== 0 && myCurrentRank.rank! <= 10 && (
+      {sessionRank.rank! !== 0 && sessionRank.rank! <= 10 && (
         <TopUserDirection>
           <p>Top10에게 혜택이 있어요!</p>
         </TopUserDirection>
@@ -272,7 +272,6 @@ export const GameOver: React.FC<Props> = (props) => {
         </Button>
       </ActionItems>
       <ReactModal
-        // isOpen={shouldOpen.current}
         isOpen={shouldModalOpen}
         shouldCloseOnOverlayClick={false}
         contentLabel="Post Comment"
@@ -299,7 +298,11 @@ export const GameOver: React.FC<Props> = (props) => {
           },
         }}
       >
-        <PostComment setShouldModalOpen={setShouldModalOpen} />
+        <PostComment
+          setShouldModalOpen={setShouldModalOpen}
+          score={sessionRank.score as number}
+          rank={sessionRank.rank as number}
+        />
       </ReactModal>
     </>
   );
