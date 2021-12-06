@@ -21,8 +21,8 @@ import ArrowKarrotClickerUrl from 'assets/svg/arrow_karrot_clicker.svg';
 import { ReactComponent as Bookmark } from 'assets/svg/bookmark_icon.svg';
 import { ReactComponent as BookmarkDone } from 'assets/svg/bookmark_done_icon.svg';
 import { ReactComponent as Share } from 'assets/svg/share_icon.svg';
-import { ReactComponent as Circle2048Puzzle } from 'assets/svg/circle_2048_puzzle.svg';
-import { ReactComponent as CircleKarrotClicker } from 'assets/svg/circle_karrot_clicker.svg';
+import { ReactComponent as Circle2048Puzzle } from 'assets/svg/platform/comment_icon_2048_puzzle.svg';
+import { ReactComponent as CircleKarrotClicker } from 'assets/svg/platform/comment_icon_karrot_clicker.svg';
 import { NotificationRequestDtoTypeEnum } from 'services/openapi_generator';
 import {
   SubscribeToastContainer,
@@ -34,8 +34,8 @@ import 'swiper/swiper.scss';
 import { Autoplay } from 'swiper';
 import { lastWeek } from 'utils/date';
 import { DistrictName } from 'styles/leaderboard';
-import missionEnvelopeClosed from 'assets/svg/mission_envelope_closed.svg';
-import missionEnvelopeClosed1 from 'assets/svg/mission_envelope_closed_1.svg';
+import missionEnvelopeClosed from 'assets/svg/mission/mission_envelope_closed.svg';
+import missionEnvelopeClosed1 from 'assets/svg/mission/mission_envelope_closed_1.svg';
 import ReactModal from 'react-modal';
 import { Popup as MissionPopup } from './Mission';
 
@@ -849,6 +849,7 @@ const LastWeekTopComments = styled.div`
   div.game {
     display: flex;
     flex-flow: row;
+    align-items: center;
     gap: 20px;
 
     div.comment-bubble {
