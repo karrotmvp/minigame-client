@@ -135,6 +135,8 @@ export const Game: React.FC = () => {
     }, 10000);
     // getFirstPlaceScore({ gameType: gameType });
     if (isGameOver) clearInterval(intervalId);
+    getFirstPlaceScore({ gameType: gameType });
+
     return () => clearInterval(intervalId);
   }, [gameType, getFirstPlaceScore, isGameOver]);
 
