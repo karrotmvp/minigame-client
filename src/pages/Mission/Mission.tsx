@@ -48,7 +48,7 @@ export const Mission: React.FC = () => {
         })
       );
       setMissionPreference({
-        isMissionChekcedOut: true,
+        isMissionCheckedOut: true,
         hasMissionPopupSeen: true,
       });
     }

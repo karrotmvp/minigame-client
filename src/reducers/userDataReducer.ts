@@ -3,8 +3,7 @@ export const SET_USER_INFO = 'userData/SET_USER_INFO' as const;
 export const SET_REGION_INFO = 'userData/SET_REGION_INFO' as const;
 export const SET_TOWN_INFO = 'userData/SET_TOWN_INFO' as const;
 export const SET_IS_INSTALLED = 'userData/SET_IS_INSTALLED' as const;
-export const SET_IS_NEW_GAME_NOTIFICATION_ON =
-  'userData/SET_IS_NEW_GAME_NOTIFICATION_ON' as const;
+
 // actions,
 export const setUserInfoAction = (userId: string, nickname: string) => ({
   type: SET_USER_INFO,
@@ -43,21 +42,11 @@ export const setIsInstalledAction = (isInstalled: boolean) => ({
   },
 });
 
-export const setIsNewGameNotificationOnAction = (
-  isNewGameNotificationOn: boolean
-) => ({
-  type: SET_IS_NEW_GAME_NOTIFICATION_ON,
-  payload: {
-    isNewGameNotificationOn,
-  },
-});
-
 type UserDataAction =
   | ReturnType<typeof setUserInfoAction>
   | ReturnType<typeof setRegionInfoAction>
   | ReturnType<typeof setTownInfoAction>
-  | ReturnType<typeof setIsInstalledAction>
-  | ReturnType<typeof setIsNewGameNotificationOnAction>;
+  | ReturnType<typeof setIsInstalledAction>;
 
 // initial state
 type UserDataState = {
@@ -69,7 +58,6 @@ type UserDataState = {
   townName2: string;
   townName3: string;
   isInstalled: boolean;
-  isNewGameNotificationOn: boolean;
 };
 const initialState: UserDataState = {
   userId: '',
@@ -80,7 +68,6 @@ const initialState: UserDataState = {
   townName2: '',
   townName3: '',
   isInstalled: false,
-  isNewGameNotificationOn: false,
 };
 
 // reducer
@@ -113,11 +100,6 @@ const userDataReducer = (
       return {
         ...state,
         isInstalled: action.payload.isInstalled,
-      };
-    case SET_IS_NEW_GAME_NOTIFICATION_ON:
-      return {
-        ...state,
-        isNewGameNotificationOn: action.payload.isNewGameNotificationOn,
       };
     default:
       return state;

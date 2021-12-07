@@ -7,10 +7,9 @@ import { rem } from 'polished';
 import { color, PageContainer } from 'styles';
 import { Button } from 'components/Button';
 import { useMinigameApi } from 'services/api/minigameApi';
-import { useUserData } from 'hooks';
+import { useUserData, useUser } from 'hooks';
 import { SurveyToastContainer, surveyToastEmitter } from 'components/Toast';
 import { useAnalytics } from 'services/analytics';
-import { useUser } from 'redux/user';
 
 export const Survey: React.FC = () => {
   const analytics = useAnalytics();

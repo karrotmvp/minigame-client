@@ -26,11 +26,15 @@ import {
   loadFromEnv as loadKarrotMarketMiniConfig,
 } from 'services/karrotMarket/mini';
 
-import { useAccessToken, useSignAccessToken, useUserData } from 'hooks';
+import {
+  useAccessToken,
+  useSignAccessToken,
+  useUserData,
+  useUser,
+} from 'hooks';
 import { useMinigameApi } from 'services/api/minigameApi';
 
 import { v4 as uuidv4 } from 'uuid';
-import { useUser } from 'redux/user';
 
 const App: React.FC = () => {
   // const dispatch = useDispatch();
@@ -123,7 +127,7 @@ const App: React.FC = () => {
     if (missionPreference !== null) {
       const parsedMissionPreference = JSON.parse(missionPreference);
       setMissionPreference({
-        isMissionChekcedOut: parsedMissionPreference.isMissionCheckedOut,
+        isMissionCheckedOut: parsedMissionPreference.isMissionCheckedOut,
         hasMissionPopupSeen: parsedMissionPreference.hasMissionPopupSeen,
       });
     }

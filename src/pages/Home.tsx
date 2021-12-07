@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
 import { useMinigameApi } from 'services/api/minigameApi';
-import { useAccessToken, useMini, useUserData } from 'hooks';
+import { useAccessToken, useMini, useUserData, useUser } from 'hooks';
 import { Nav } from 'components/Navigation/Nav';
 import { CloseIcon } from 'assets/Icon';
 import { rem } from 'polished';
@@ -28,7 +28,6 @@ import {
   SubscribeToastContainer,
   subscribeToastEmitter,
 } from 'components/Toast';
-import { useUser } from 'redux/user';
 import { Swiper, SwiperSlide } from 'swiper/react/swiper-react.js';
 import 'swiper/swiper.scss';
 import { Autoplay } from 'swiper';
@@ -48,7 +47,7 @@ export const Home: React.FC = () => {
     isInWebEnvironment,
     ejectApp,
     handleThirdPartyAgreement,
-    handleInstallation,
+    handleSubscribe,
     shareApp,
   } = useMini();
   const { accessToken } = useAccessToken();
@@ -58,9 +57,7 @@ export const Home: React.FC = () => {
     setUserInfo,
     townName3,
     isInstalled,
-    isNewGameNotificationOn,
     setIsInstalled,
-    setIsNewGameNotificationOn,
   } = useUserData();
   const {
     updateMyScore: updateMyGame2048Score,
@@ -72,8 +69,15 @@ export const Home: React.FC = () => {
     updateMyComment: updateMyKarrotClickerComment,
     setGameTypeToKarrotClicker,
   } = useMyKarrotClickerData();
-  const { uuid, regionId, referer, isMissionChekcedOut, hasMissionPopupSeen } =
-    useUser();
+  const {
+    uuid,
+    regionId,
+    referer,
+    isMissionCheckedOut,
+    hasMissionPopupSeen,
+    notification,
+    setNotificationPreference,
+  } = useUser();
 
   const [shouldMissionPopupShown, setShouldMissionPopupShown] =
     useState<boolean>(!hasMissionPopupSeen);
@@ -141,7 +145,7 @@ export const Home: React.FC = () => {
   }, [referer, regionId, trackUser, uuid]);
 
   const checkNotificationStatus = useCallback(async () => {
-    if (isNewGameNotificationOn) {
+    if (notification.newGame.isNotificationOn) {
       return;
     } else {
       try {
@@ -151,16 +155,18 @@ export const Home: React.FC = () => {
           'OPEN_GAME'
         );
         if (data && data.check) {
-          setIsNewGameNotificationOn(data.check);
+          setNotificationPreference({
+            isNewGameNotificationOn: data.check,
+          });
         }
       } catch (error) {
         console.error(error);
       }
     }
   }, [
-    isNewGameNotificationOn,
     minigameApi.notificationApi,
-    setIsNewGameNotificationOn,
+    notification.newGame.isNotificationOn,
+    setNotificationPreference,
   ]);
 
   useEffect(() => {
@@ -306,11 +312,11 @@ export const Home: React.FC = () => {
       location: 'platform_page',
       button_type: 'subscribe_button',
     });
-    handleInstallation(onSubscribeSucess);
+    handleSubscribe(onSubscribeSucess);
   };
   const triggerInstallationHandler = () => {
     if (accessToken) {
-      handleInstallation(onSubscribeSucess);
+      handleSubscribe(onSubscribeSucess);
     } else {
       handleThirdPartyAgreement(runOnSuccess);
     }
@@ -323,7 +329,9 @@ export const Home: React.FC = () => {
       location: 'platform_page',
       button_type: 'notification_button',
     });
-    setIsNewGameNotificationOn(true);
+    setNotificationPreference({
+      isNewGameNotificationOn: true,
+    });
   };
   const handleNewGameNotification = async () => {
     if (accessToken) {
@@ -335,7 +343,9 @@ export const Home: React.FC = () => {
         analytics.logEvent('click_notification_button', {
           notification_type: 'new_game',
         });
-        setIsNewGameNotificationOn(true);
+        setNotificationPreference({
+          isNewGameNotificationOn: true,
+        });
       }
     } else {
       handleThirdPartyAgreement(onSuccessHandler);
@@ -610,7 +620,7 @@ export const Home: React.FC = () => {
           <Section>
             <SectionTitle>새로운 게임을 준비 중이에요</SectionTitle>
             <CardContainer>
-              {isNewGameNotificationOn ? (
+              {notification.newGame.isNotificationOn ? (
                 <Card game={`coming-soon`}>
                   <img
                     src={ComingSoonCardImgUrl}
@@ -674,7 +684,7 @@ export const Home: React.FC = () => {
         onClick={goToMissionPage}
         style={{ position: `absolute`, right: 0, bottom: 0, zIndex: 99 }}
       >
-        {isMissionChekcedOut ? (
+        {isMissionCheckedOut ? (
           <img src={missionEnvelopeClosed} alt="mission-button" />
         ) : (
           <img
