@@ -52,6 +52,9 @@ export const useUser = () => {
       isSubscribed?: boolean;
       referer?:
         | 'FEED'
+        | 'SUBSCRIBE_FEED_1'
+        | 'SUBSCRIBE_FEED_2'
+        | 'SUBSCRIBE_FEED_3'
         | 'NEAR_BY'
         | 'SHARE_GAME_2048'
         | 'SHARE_GAME_KARROT'

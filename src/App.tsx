@@ -155,6 +155,9 @@ const App: React.FC = () => {
       isSubscribed: isSubscribed(installed),
       referer: referer?.toUpperCase() as
         | 'FEED'
+        | 'SUBSCRIBE_FEED_1'
+        | 'SUBSCRIBE_FEED_2'
+        | 'SUBSCRIBE_FEED_3'
         | 'NEAR_BY'
         | 'SHARE_GAME_2048'
         | 'SHARE_GAME_KARROT'
