@@ -144,30 +144,62 @@ export const Home: React.FC = () => {
     trackUser({ uUID: uuid, regionId: regionId, referer: referer });
   }, [referer, regionId, trackUser, uuid]);
 
+  // const checkNotificationStatus = useCallback(async () => {
+  //   if (notification.newGame.isNotificationOn) {
+  //     return;
+  //   } else {
+  //     try {
+  //       const {
+  //         data: { data },
+  //       } = await minigameApi.notificationApi.checkNotificationUsingGET(
+  //         'OPEN_GAME'
+  //       );
+  //       if (data && data.check) {
+  //         setNotificationPreference({
+  //           isNewGameNotificationOn: data.check,
+  //         });
+  //       }
+  //     } catch (error) {
+  //       console.error(error);
+  //     }
+  //   }
+  // }, [
+  //   minigameApi.notificationApi,
+  //   notification.newGame.isNotificationOn,
+  //   setNotificationPreference,
+  // ]);
+
+  // const newGameNotificationPromise = () => {
+  //   if (notification.newGame.isNotificationOn) {
+  //     return notification.newGame.isNotificationOn;
+  //   } else {
+  //     const data =
+  //       minigameApi.notificationApi.checkNotificationUsingGET('OPEN_GAME');
+  //     if (data !== undefined) return data;
+  //   }
+  // };
+
+  // Check user's notification status
+  // available notifications: new-game, next-mission
   const checkNotificationStatus = useCallback(async () => {
-    if (notification.newGame.isNotificationOn) {
-      return;
-    } else {
-      try {
-        const {
-          data: { data },
-        } = await minigameApi.notificationApi.checkNotificationUsingGET(
-          'OPEN_GAME'
-        );
-        if (data && data.check) {
-          setNotificationPreference({
-            isNewGameNotificationOn: data.check,
-          });
-        }
-      } catch (error) {
-        console.error(error);
-      }
+    const newGameNotificationPromise =
+      minigameApi.notificationApi.checkNotificationUsingGET('OPEN_GAME');
+    const nextMissionNotificationPromise =
+      minigameApi.notificationApi.checkNotificationUsingGET('NEXT_MISSION');
+    const notificationPromise = Promise.all([
+      newGameNotificationPromise,
+      nextMissionNotificationPromise,
+    ]);
+    try {
+      const notificationStatus = await notificationPromise;
+      setNotificationPreference({
+        isNewGameNotificationOn: notificationStatus[0].data.data?.check,
+        isNextMissionNotificationOn: notificationStatus[1].data.data?.check,
+      });
+    } catch (error) {
+      console.error(error);
     }
-  }, [
-    minigameApi.notificationApi,
-    notification.newGame.isNotificationOn,
-    setNotificationPreference,
-  ]);
+  }, [minigameApi.notificationApi, setNotificationPreference]);
 
   useEffect(() => {
     updateUserInfo({ userId: userId });
