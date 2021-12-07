@@ -736,6 +736,7 @@ export const Home: React.FC = () => {
           overlay: {
             background: 'rgba(90, 90, 90, 0.7)',
             backdropFilter: `blur(5px)`,
+            WebkitBackdropFilter: `blur(5px)`,
             zIndex: 1000,
           },
           content: {
