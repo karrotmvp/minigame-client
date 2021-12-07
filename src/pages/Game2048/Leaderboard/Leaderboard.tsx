@@ -25,7 +25,7 @@ export const Leaderboard = () => {
   const { replace, push } = useNavigator();
   const minigameApi = useMinigameApi();
   const analytics = useAnalytics();
-  const { shareApp, handleInstallation } = useMini();
+  const { shareApp, handleSubscribe } = useMini();
   const { nickname, isInstalled, setIsInstalled } = useUserData();
 
   const {
@@ -194,7 +194,7 @@ export const Leaderboard = () => {
             location: 'leaderboard_page',
             is_voluntary: false,
           });
-          handleInstallation(onSubscribeSuccess, turnOffSubscribeNotification);
+          handleSubscribe(onSubscribeSuccess, turnOffSubscribeNotification);
         }
       }
     };
@@ -202,6 +202,30 @@ export const Leaderboard = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // const turnOffSubscribeSuggestion = () => {
+  //   localStorage.setItem(
+  //     'subscribePreference',
+  //     JSON.stringify({
+  //       hasSuggestionSeen: true,
+  //     })
+  //   );
+  // };
+  // const showSubscribe = useCallback(() => {
+  //   const subscribePreference = localStorage.getItem('subscribePreference');
+  //   const parsedSubscribePreference = JSON.parse(subscribePreference!);
+  //   if (isInstalled === false && parsedSubscribePreference.hasSuggestionSeen) {
+  //     analytics.logEvent('show_subscribe_button', {
+  //       game_type: '2048_puzzle',
+  //       location: 'leaderboard_page',
+  //       is_voluntary: false,
+  //     });
+  //     handleSubscribe(onSubscribeSuccess, turnOffSubscribeSuggestion);
+  //   }
+  // }, [analytics, handleSubscribe, isInstalled, onSubscribeSuccess]);
+
+  // useEffect(() => {
+  //   showSubscribe();
+  // }, [showSubscribe]);
   return (
     <div
       id="game-2048-leaderboard-page"

@@ -5,11 +5,10 @@ import {
   saveUserInfo as saveUserInfoAction,
   trackVisitor as trackVisitorAction,
   setMissionPreference as setMissionPreferenceAction,
-} from './user';
+  setNotificationPreference as setNotificationPreferenceAction,
+} from '../redux/user/user';
 
 export const useUser = () => {
-  // const minigameApi = useMinigameApi();
-
   const { uuid, regionId, isSubscribed, referer } = useSelector(
     (state: RootState) => ({
       uuid: state.user.uuid,
@@ -20,13 +19,24 @@ export const useUser = () => {
     shallowEqual
   );
 
-  const { isMissionChekcedOut, hasMissionPopupSeen } = useSelector(
+  const { isMissionCheckedOut, hasMissionPopupSeen } = useSelector(
     (state: RootState) => ({
-      isMissionChekcedOut: state.user.isMissionChekcedOut,
+      isMissionCheckedOut: state.user.isMissionCheckedOut,
       hasMissionPopupSeen: state.user.hasMissionPopupSeen,
     }),
     shallowEqual
   );
+
+  const { notification } = useSelector((state: RootState) => ({
+    notification: {
+      newGame: {
+        isNotificationOn: state.user.notification.newGame.isNotificationOn,
+      },
+      nextMission: {
+        isNotificationOn: state.user.notification.nextMission.isNotificationOn,
+      },
+    },
+  }));
 
   const dispatch = useDispatch();
 
@@ -42,6 +52,9 @@ export const useUser = () => {
       isSubscribed?: boolean;
       referer?:
         | 'FEED'
+        | 'SUBSCRIBE_FEED_1'
+        | 'SUBSCRIBE_FEED_2'
+        | 'SUBSCRIBE_FEED_3'
         | 'NEAR_BY'
         | 'SHARE_GAME_2048'
         | 'SHARE_GAME_KARROT'
@@ -61,28 +74,47 @@ export const useUser = () => {
 
   const setMissionPreference = useCallback(
     ({
-      isMissionChekcedOut,
+      isMissionCheckedOut,
       hasMissionPopupSeen,
     }: {
-      isMissionChekcedOut?: boolean;
+      isMissionCheckedOut?: boolean;
       hasMissionPopupSeen?: boolean;
     }) => {
       dispatch(
-        setMissionPreferenceAction({ isMissionChekcedOut, hasMissionPopupSeen })
+        setMissionPreferenceAction({ isMissionCheckedOut, hasMissionPopupSeen })
       );
     },
     [dispatch]
   );
 
+  const setNotificationPreference = useCallback(
+    ({
+      isNewGameNotificationOn,
+      isNextMissionNotificationOn,
+    }: {
+      isNewGameNotificationOn?: boolean;
+      isNextMissionNotificationOn?: boolean;
+    }) => {
+      dispatch(
+        setNotificationPreferenceAction({
+          isNewGameNotificationOn,
+          isNextMissionNotificationOn,
+        })
+      );
+    },
+    [dispatch]
+  );
   return {
     uuid,
     regionId,
     isSubscribed,
     referer,
-    isMissionChekcedOut,
+    isMissionCheckedOut,
     hasMissionPopupSeen,
+    notification,
     saveUserInfo,
     trackVisitor,
     setMissionPreference,
+    setNotificationPreference,
   };
 };

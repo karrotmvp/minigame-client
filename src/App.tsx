@@ -26,11 +26,15 @@ import {
   loadFromEnv as loadKarrotMarketMiniConfig,
 } from 'services/karrotMarket/mini';
 
-import { useAccessToken, useSignAccessToken, useUserData } from 'hooks';
+import {
+  useAccessToken,
+  useSignAccessToken,
+  useUserData,
+  useUser,
+} from 'hooks';
 import { useMinigameApi } from 'services/api/minigameApi';
 
 import { v4 as uuidv4 } from 'uuid';
-import { useUser } from 'redux/user';
 
 const App: React.FC = () => {
   // const dispatch = useDispatch();
@@ -123,7 +127,7 @@ const App: React.FC = () => {
     if (missionPreference !== null) {
       const parsedMissionPreference = JSON.parse(missionPreference);
       setMissionPreference({
-        isMissionChekcedOut: parsedMissionPreference.isMissionCheckedOut,
+        isMissionCheckedOut: parsedMissionPreference.isMissionCheckedOut,
         hasMissionPopupSeen: parsedMissionPreference.hasMissionPopupSeen,
       });
     }
@@ -151,6 +155,9 @@ const App: React.FC = () => {
       isSubscribed: isSubscribed(installed),
       referer: referer?.toUpperCase() as
         | 'FEED'
+        | 'SUBSCRIBE_FEED_1'
+        | 'SUBSCRIBE_FEED_2'
+        | 'SUBSCRIBE_FEED_3'
         | 'NEAR_BY'
         | 'SHARE_GAME_2048'
         | 'SHARE_GAME_KARROT'

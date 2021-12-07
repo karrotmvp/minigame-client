@@ -7,8 +7,7 @@ import missionEnvelopeOpened from 'assets/svg/mission/mission_envelope_opened.sv
 import missionEnvelopeClosed1 from 'assets/svg/mission/mission_envelope_closed_1_outline.svg';
 import xCircle from 'assets/svg/x_circle.svg';
 import effect1 from 'assets/svg/effect1.svg';
-import { setMissionPreference } from 'redux/user';
-import { useUserData } from 'hooks';
+import { useUserData, useUser } from 'hooks';
 
 type Props = {
   setShouldMissionPopupShown: React.Dispatch<React.SetStateAction<boolean>>;
@@ -18,7 +17,7 @@ export const Popup: React.FC<Props> = (props) => {
   const { isTop } = useCurrentScreen();
   const { push } = useNavigator();
   const { nickname } = useUserData();
-
+  const { setMissionPreference } = useUser();
   useEffect(() => {
     if (isTop) {
       analytics.logEvent('view_mission_popup');
@@ -39,6 +38,7 @@ export const Popup: React.FC<Props> = (props) => {
     });
     props.setShouldMissionPopupShown(false);
   };
+
   const goToMissionPage = () => {
     analytics.logEvent('click_mission_button', {
       location: 'mission_popup',
@@ -51,7 +51,7 @@ export const Popup: React.FC<Props> = (props) => {
       })
     );
     setMissionPreference({
-      isMissionChekcedOut: true,
+      isMissionCheckedOut: true,
       hasMissionPopupSeen: true,
     });
     props.setShouldMissionPopupShown(false);

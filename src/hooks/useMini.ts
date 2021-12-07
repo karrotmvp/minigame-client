@@ -1,6 +1,5 @@
-import { useSignAccessToken, useUserData } from 'hooks';
-import { useUser } from 'redux/user';
-// import { useAnalytics } from 'services/analytics';
+import { useSignAccessToken, useUserData, useUser } from 'hooks';
+import { useCallback } from 'react';
 import { useMinigameApi } from 'services/api/minigameApi';
 import {
   getMini,
@@ -72,27 +71,27 @@ export const useMini = () => {
   };
 
   // Installation handler
-  const handleInstallation = async (
-    runOnSuccess?: () => void,
-    runOnClose?: () => void
-  ) => {
-    mini.startPreset({
-      preset: installationUrl!,
-      onSuccess: async function (result) {
-        if (result.ok) {
-          if (runOnSuccess) {
-            runOnSuccess();
+  const handleSubscribe = useCallback(
+    async (runOnSuccess?: () => void, runOnClose?: () => void) => {
+      mini.startPreset({
+        preset: installationUrl!,
+        onSuccess: async function (result) {
+          if (result.ok) {
+            if (runOnSuccess) {
+              runOnSuccess();
+            }
           }
-        }
-      },
-      onFailure: async function () {},
-      onClose: () => {
-        if (runOnClose) {
-          runOnClose();
-        }
-      },
-    });
-  };
+        },
+        onFailure: async function () {},
+        onClose: () => {
+          if (runOnClose) {
+            runOnClose();
+          }
+        },
+      });
+    },
+    [installationUrl, mini]
+  );
 
   // Share handler
   const shareApp = (url: string, text: string) => {
@@ -106,7 +105,7 @@ export const useMini = () => {
     isInWebEnvironment,
     ejectApp,
     handleThirdPartyAgreement,
-    handleInstallation,
+    handleSubscribe,
     shareApp,
   };
 };

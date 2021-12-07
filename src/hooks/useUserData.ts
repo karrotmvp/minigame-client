@@ -6,7 +6,6 @@ import {
   setRegionInfoAction,
   setTownInfoAction,
   setIsInstalledAction,
-  setIsNewGameNotificationOnAction,
 } from 'reducers/userDataReducer';
 
 export const useUserData = () => {
@@ -19,7 +18,6 @@ export const useUserData = () => {
     townName2,
     townName3,
     isInstalled,
-    isNewGameNotificationOn,
   } = useSelector((state: RootState) => ({
     userId: state.userDataReducer.userId,
     nickname: state.userDataReducer.nickname,
@@ -29,7 +27,6 @@ export const useUserData = () => {
     townName2: state.userDataReducer.townName2,
     townName3: state.userDataReducer.townName3,
     isInstalled: state.userDataReducer.isInstalled,
-    isNewGameNotificationOn: state.userDataReducer.isNewGameNotificationOn,
   }));
   const dispatch = useDispatch();
 
@@ -66,12 +63,6 @@ export const useUserData = () => {
     [dispatch]
   );
 
-  const setIsNewGameNotificationOn = useCallback(
-    (isNewGameNotificationOn: boolean) => {
-      dispatch(setIsNewGameNotificationOnAction(isNewGameNotificationOn));
-    },
-    [dispatch]
-  );
   return {
     userId,
     nickname,
@@ -81,12 +72,10 @@ export const useUserData = () => {
     townName2,
     townName3,
     isInstalled,
-    isNewGameNotificationOn,
 
     setRegionInfo,
     setTownInfo,
     setUserInfo,
     setIsInstalled,
-    setIsNewGameNotificationOn,
   };
 };

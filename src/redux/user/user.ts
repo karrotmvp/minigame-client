@@ -16,6 +16,9 @@ export const trackVisitor = createAsyncThunk(
       regionId: string;
       referer:
         | 'FEED'
+        | 'SUBSCRIBE_FEED_1'
+        | 'SUBSCRIBE_FEED_2'
+        | 'SUBSCRIBE_FEED_3'
         | 'NEAR_BY'
         | 'SHARE_GAME_2048'
         | 'SHARE_GAME_KARROT'
@@ -42,6 +45,9 @@ interface UserState {
   isSubscribed: boolean;
   referer:
     | 'FEED'
+    | 'SUBSCRIBE_FEED_1'
+    | 'SUBSCRIBE_FEED_2'
+    | 'SUBSCRIBE_FEED_3'
     | 'NEAR_BY'
     | 'SHARE_GAME_2048'
     | 'SHARE_GAME_KARROT'
@@ -49,8 +55,16 @@ interface UserState {
     | 'SHARE_COMMUNITY'
     | 'LOGIN'
     | 'UNKNOWN';
-  isMissionChekcedOut: boolean;
+  isMissionCheckedOut: boolean;
   hasMissionPopupSeen: boolean;
+  notification: {
+    nextMission: {
+      isNotificationOn: boolean;
+    };
+    newGame: {
+      isNotificationOn: boolean;
+    };
+  };
   status: string;
   // payload: {};
 }
@@ -60,8 +74,17 @@ const initialState: UserState = {
   regionId: '',
   isSubscribed: false,
   referer: 'UNKNOWN',
-  isMissionChekcedOut: false,
+  isMissionCheckedOut: false,
   hasMissionPopupSeen: false,
+  notification: {
+    nextMission: {
+      isNotificationOn: false,
+    },
+    newGame: {
+      isNotificationOn: false,
+    },
+  },
+
   status: '',
   // payload: {},
 };
@@ -77,8 +100,14 @@ const userSlice = createSlice({
       state.referer = action.payload.referer;
     },
     setMissionPreference(state, action) {
-      state.isMissionChekcedOut = action.payload.isMissionChekcedOut;
+      state.isMissionCheckedOut = action.payload.isMissionCheckedOut;
       state.hasMissionPopupSeen = action.payload.hasMissionPopupSeen;
+    },
+    setNotificationPreference(state, action) {
+      state.notification.newGame.isNotificationOn =
+        action.payload.isNewGameNotificationOn;
+      state.notification.nextMission.isNotificationOn =
+        action.payload.isNextMissionNotificationOn;
     },
   },
   extraReducers: (builder) => {
@@ -97,5 +126,6 @@ const userSlice = createSlice({
   },
 });
 
-export const { saveUserInfo, setMissionPreference } = userSlice.actions;
+export const { saveUserInfo, setMissionPreference, setNotificationPreference } =
+  userSlice.actions;
 export default userSlice.reducer;
