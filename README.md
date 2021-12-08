@@ -1,5 +1,6 @@
-# 미니게임: 당근키우기
+# 동네대회 (미니게임)
 
+[![Main-branch (Production) deploy actions](https://github.com/karrotmvp/minigame-client/actions/workflows/main-deploy.yml/badge.svg?branch=main)](https://github.com/karrotmvp/minigame-client/actions/workflows/main-deploy.yml)
 
 ### Environment variables
 - BASE_URL: backend server url
