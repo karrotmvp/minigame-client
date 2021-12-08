@@ -91,8 +91,8 @@ export const Mission: React.FC = () => {
           }}
         >
           <img
-            src="https://minigame-karrot-raise-client-production.s3.ap-northeast-2.amazonaws.com/mission/mission_1.png"
-            alt="mission-description"
+            src="https://minigame-karrot-raise-client-production.s3.ap-northeast-2.amazonaws.com/assets/mission/mission_1.png"
+            alt="first-mission-information"
             style={{ width: `100%`, maxWidth: `100vw`, marginTop: `-80px` }}
           />
         </div>
@@ -106,8 +106,8 @@ export const Mission: React.FC = () => {
           }}
         >
           <img
-            src="https://minigame-karrot-raise-client-production.s3.ap-northeast-2.amazonaws.com/mission/mission_list.png"
-            alt="mission-list"
+            src="https://minigame-karrot-raise-client-production.s3.ap-northeast-2.amazonaws.com/assets/mission/mission_list.png"
+            alt="upcoming-mission-list"
             style={{ width: `100%`, maxWidth: `100vw`, maxHeight: `100%` }}
           />
 
