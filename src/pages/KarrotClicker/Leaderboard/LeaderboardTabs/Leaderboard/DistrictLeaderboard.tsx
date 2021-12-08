@@ -78,24 +78,23 @@ export const DistrictLeaderboard: React.FC = () => {
       </Refresh>
 
       <div css={leaderboardWrapperStyle}>
-        {districtRankData.slice(0, 10).map((district) => {
+        {districtRankData.slice(0, 10).map((district, i) => {
           return (
             <TopDistrictRow
-              key={district.name2}
+              key={i}
               rank={district.rank}
               cityName={district.name1}
               districtName={district.name2}
               playerCount={district.playerCount}
-              // participant={district.participant}
               score={district.score}
             />
           );
         })}
 
-        {districtRankData.slice(10).map((district) => {
+        {districtRankData.slice(10).map((district, i) => {
           return (
             <DefaultDistrictRow
-              key={district.name2}
+              key={i}
               rank={district.rank}
               cityName={district.name1}
               districtName={district.name2}

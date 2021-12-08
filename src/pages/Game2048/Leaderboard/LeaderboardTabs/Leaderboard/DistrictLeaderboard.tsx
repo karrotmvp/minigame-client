@@ -29,10 +29,10 @@ const DistrictLeaderboard: React.FC<Props> = (props) => {
       }}
     >
       <SwiperSlide>
-        {props.districtLeaderboardData.slice(0, 10).map((district) => {
+        {props.districtLeaderboardData.slice(0, 10).map((district, i) => {
           return myTown === district.name2 ? (
             <TopDistrictRow
-              key={district.name2}
+              key={i}
               rank={district.rank}
               cityName={district.name1}
               districtName={district.name2}
@@ -44,7 +44,7 @@ const DistrictLeaderboard: React.FC<Props> = (props) => {
             />
           ) : (
             <TopDistrictRow
-              key={district.name2}
+              key={i}
               rank={district.rank}
               cityName={district.name1}
               districtName={district.name2}
@@ -53,10 +53,10 @@ const DistrictLeaderboard: React.FC<Props> = (props) => {
             />
           );
         })}
-        {props.districtLeaderboardData.slice(10).map((district) => {
+        {props.districtLeaderboardData.slice(10).map((district, i) => {
           return myTown === district.name2 ? (
             <DefaultDistrictRow
-              key={district.name2}
+              key={i}
               rank={district.rank}
               cityName={district.name1}
               districtName={district.name2}
@@ -68,7 +68,7 @@ const DistrictLeaderboard: React.FC<Props> = (props) => {
             />
           ) : (
             <DefaultDistrictRow
-              key={district.name2}
+              key={i}
               rank={district.rank}
               cityName={district.name1}
               districtName={district.name2}

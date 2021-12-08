@@ -101,10 +101,10 @@ export const IndividualLeaderboard: React.FC = () => {
       </Refresh>
 
       <LeaderboardWrapper>
-        {individualRankData.slice(0, 10).map((user) => {
+        {individualRankData.slice(0, 10).map((user, i) => {
           return (
             <TopUserRow
-              key={user.userId}
+              key={i}
               rank={user.rank}
               nickname={user.nickname}
               comment={user.comment}
@@ -118,10 +118,10 @@ export const IndividualLeaderboard: React.FC = () => {
           <br />
           이웃들에게 한 마디를 남겨보세요!
         </p>
-        {individualRankData.slice(10).map((user) => {
+        {individualRankData.slice(10).map((user, i) => {
           return (
             <DefaultUserRow
-              key={user.userId}
+              key={i}
               rank={user.rank}
               nickname={user.nickname}
               score={user.score}
