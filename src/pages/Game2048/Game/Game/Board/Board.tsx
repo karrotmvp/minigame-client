@@ -1,10 +1,10 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { useLayoutEffect, useRef, useState } from 'react';
 import styled from '@emotion/styled';
 import { MemoizedTile as Tile, TileProps } from '../Tile';
-import { animationDuration, boardMargin, boardPadding } from '../styles';
+import { boardMargin, boardPadding } from '../styles';
 import { useSwipeable } from 'react-swipeable';
 import { Guide } from './Guide';
-import { useThrottledCallback } from 'use-debounce/lib';
+
 import { MemoizedGrid as Grid } from '.';
 
 type Props = {
@@ -23,7 +23,7 @@ export const Board: React.FC<Props> = (props) => {
     handlers.ref(el);
     tileContainerRef.current = el;
   };
-  // =================================================================
+
   // mobile(touch) friendly
   const handlers = useSwipeable({
     onSwipeStart: (eventData) => {
@@ -46,36 +46,6 @@ export const Board: React.FC<Props> = (props) => {
     preventDefaultTouchmoveEvent: true,
     trackTouch: true,
   });
-  // desktop(keyboard) friendly
-  const handleKeyDown = useThrottledCallback(
-    (e: KeyboardEvent) => {
-      // disables page scrolling with keyboard arrows
-      e.preventDefault();
-      switch (e.code) {
-        case 'ArrowRight':
-          props.moveRight();
-          break;
-        case 'ArrowLeft':
-          props.moveLeft();
-          break;
-        case 'ArrowUp':
-          props.moveUp();
-          break;
-        case 'ArrowDown':
-          props.moveDown();
-          break;
-      }
-    },
-    animationDuration
-    // { leading: true, trailing: false }
-  );
-  useEffect(() => {
-    window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [handleKeyDown]);
-  // =================================================================
 
   // change board & tile size responsively to window size
   useLayoutEffect(() => {

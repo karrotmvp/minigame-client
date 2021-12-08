@@ -33,7 +33,7 @@ body {
 #root {
   height: 100%;
 }
-*:not(input) {
+*:not(input, textarea) {
   user-select: none;
 }
 *:focus {

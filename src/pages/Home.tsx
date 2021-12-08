@@ -452,11 +452,9 @@ export const Home: React.FC = () => {
   }, [getLastWeekTopUsers]);
 
   useEffect(() => {
-    if (isTop) {
-      retreieveTop2048PuzzleUsers();
-      retrieveTopKarrotClickerUsers();
-    }
-  }, [isTop, retreieveTop2048PuzzleUsers, retrieveTopKarrotClickerUsers]);
+    retreieveTop2048PuzzleUsers();
+    retrieveTopKarrotClickerUsers();
+  }, [retreieveTop2048PuzzleUsers, retrieveTopKarrotClickerUsers]);
 
   return (
     <div style={{ height: '100%', position: 'relative' }}>

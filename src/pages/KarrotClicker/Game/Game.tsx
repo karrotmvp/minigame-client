@@ -18,7 +18,7 @@ import { useMinigameApi } from 'services/api/minigameApi';
 
 Modal.setAppElement(document.createElement('div'));
 
-export const Game = () => {
+export const Game: React.FC = () => {
   const { isTop } = useCurrentScreen();
   const analytics = useAnalytics();
   const { userId, setUserInfo } = useUserData();

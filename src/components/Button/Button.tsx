@@ -190,7 +190,7 @@ const ButtonComponent: React.FC<Props> = (props) => {
 
 export const Button = React.memo(ButtonComponent);
 
-export const DisabledButton: React.FC<Props> = (props) => {
+const DisabledButtonComponent: React.FC<Props> = (props) => {
   return (
     <CustomButton
       size={props.size}
@@ -202,3 +202,5 @@ export const DisabledButton: React.FC<Props> = (props) => {
     </CustomButton>
   );
 };
+
+export const DisabledButton = React.memo(DisabledButtonComponent);

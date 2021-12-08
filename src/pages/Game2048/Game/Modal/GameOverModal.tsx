@@ -1,8 +1,7 @@
-import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
 import styled from '@emotion/styled';
 import React, { useState, useEffect, useCallback } from 'react';
-import ReactModal from 'react-modal';
-import { PostComment } from './PostComment';
+import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
+import { CommentModal } from './CommentModal';
 import gameOverSvgUrl from 'assets/svg/game2048/gameover.svg';
 import { Button } from 'components/Button';
 import { useMinigameApi } from 'services/api/minigameApi';
@@ -17,11 +16,14 @@ import {
   fireRandomDirectionConfetti,
 } from 'utils/functions/confetti';
 import { useThrottledCallback } from 'use-debounce/lib';
+import ReactModal from 'react-modal';
+
 type Props = {
   myPreviousRank: number;
   currentScore: number;
 };
-export const GameOver: React.FC<Props> = (props) => {
+
+export const GameOverModal: React.FC<Props> = (props) => {
   const { isTop } = useCurrentScreen();
   const { replace } = useNavigator();
   const analytics = useAnalytics();
@@ -29,7 +31,8 @@ export const GameOver: React.FC<Props> = (props) => {
   const { isInWebEnvironment, shareApp } = useMini();
   const { nickname } = useUserData();
   const { gameType } = useMyGame2048Data();
-  const [shouldModalOpen, setShouldModalOpen] = useState<boolean>(false);
+  // const [shouldModalOpen, setShouldModalOpen] = useState<boolean>(false);
+  const [isCommentModalOpen, setIsCommentModalOpen] = useState<boolean>(false);
   const [sessionRank, setSessionRank] = useState<{
     rank: number | undefined;
     score: number | undefined;
@@ -91,18 +94,16 @@ export const GameOver: React.FC<Props> = (props) => {
   );
 
   useEffect(() => {
-    if (isTop) {
-      getSessionRank({ gameType: gameType, score: props.currentScore });
-      getMyCurrentRank({
-        gameType: gameType,
-        previousRank: props.myPreviousRank,
-      });
-    }
+    getSessionRank({ gameType: gameType, score: props.currentScore });
+    getMyCurrentRank({
+      gameType: gameType,
+      previousRank: props.myPreviousRank,
+    });
   }, [
     gameType,
     getMyCurrentRank,
     getSessionRank,
-    isTop,
+
     props.currentScore,
     props.myPreviousRank,
   ]);
@@ -123,8 +124,10 @@ export const GameOver: React.FC<Props> = (props) => {
 
   // button to view leaderbaord (open commment modal if condition is met)
   const handleViewLeaderboard = () => {
+    setIsCommentModalOpen(true);
     if (isInWebEnvironment) {
-      goToLeaderboardPage();
+      // goToLeaderboardPage();
+      setIsCommentModalOpen(true);
       return;
     }
     analytics.logEvent('click_view_leaderboard_button', {
@@ -132,7 +135,7 @@ export const GameOver: React.FC<Props> = (props) => {
     });
     if (sessionRank.rank !== undefined) {
       sessionRank.rank > 0 && sessionRank.rank <= 10
-        ? setShouldModalOpen(true)
+        ? setIsCommentModalOpen(true)
         : goToLeaderboardPage();
     }
   };
@@ -166,6 +169,7 @@ export const GameOver: React.FC<Props> = (props) => {
       colors: [`#0E74FF`, `#82B6FF`, `#E3EFFF`],
     });
   }, 3000);
+
   return (
     <>
       <div
@@ -272,9 +276,8 @@ export const GameOver: React.FC<Props> = (props) => {
         </Button>
       </ActionItems>
       <ReactModal
-        isOpen={shouldModalOpen}
-        shouldCloseOnOverlayClick={false}
-        contentLabel="Post Comment"
+        isOpen={isCommentModalOpen}
+        contentLabel="2048-puzzle-comment-modal"
         style={{
           overlay: {
             background: 'rgba(40, 40, 40, 0.8)',
@@ -298,10 +301,10 @@ export const GameOver: React.FC<Props> = (props) => {
           },
         }}
       >
-        <PostComment
-          setShouldModalOpen={setShouldModalOpen}
-          score={sessionRank.score as number}
+        <CommentModal
+          setShouldModalOpen={setIsCommentModalOpen}
           rank={sessionRank.rank as number}
+          score={sessionRank.score as number}
         />
       </ReactModal>
     </>
