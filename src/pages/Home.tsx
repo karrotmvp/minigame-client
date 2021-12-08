@@ -18,16 +18,11 @@ import WhatsNextCardImgUrl from 'assets/svg/whats_next_card_img.svg';
 import ComingSoonCardImgUrl from 'assets/svg/coming_soon_card_img.svg';
 import ArrowGame2048Url from 'assets/svg/arrow_game_2048.svg';
 import ArrowKarrotClickerUrl from 'assets/svg/arrow_karrot_clicker.svg';
-import { ReactComponent as Bookmark } from 'assets/svg/bookmark_icon.svg';
-import { ReactComponent as BookmarkDone } from 'assets/svg/bookmark_done_icon.svg';
 import { ReactComponent as Share } from 'assets/svg/share_icon.svg';
 import { ReactComponent as Circle2048Puzzle } from 'assets/svg/platform/comment_icon_2048_puzzle.svg';
 import { ReactComponent as CircleKarrotClicker } from 'assets/svg/platform/comment_icon_karrot_clicker.svg';
 import { NotificationRequestDtoTypeEnum } from 'services/openapi_generator';
-import {
-  SubscribeToastContainer,
-  subscribeToastEmitter,
-} from 'components/Toast';
+import { SubscribeToastContainer } from 'components/Toast';
 import { Swiper, SwiperSlide } from 'swiper/react/swiper-react.js';
 import 'swiper/swiper.scss';
 import { Autoplay } from 'swiper';
@@ -43,22 +38,10 @@ export const Home: React.FC = () => {
   const minigameApi = useMinigameApi();
   const { isTop } = useCurrentScreen();
   const { push } = useNavigator();
-  const {
-    isInWebEnvironment,
-    ejectApp,
-    handleThirdPartyAgreement,
-    handleSubscribe,
-    shareApp,
-  } = useMini();
+  const { isInWebEnvironment, ejectApp, handleThirdPartyAgreement, shareApp } =
+    useMini();
   const { accessToken } = useAccessToken();
-  const {
-    userId,
-    nickname,
-    setUserInfo,
-    townName3,
-    isInstalled,
-    setIsInstalled,
-  } = useUserData();
+  const { userId, nickname, setUserInfo, townName3 } = useUserData();
   const {
     updateMyScore: updateMyGame2048Score,
     updateMyComment: updateMyGame2048Comment,
@@ -332,31 +315,6 @@ export const Home: React.FC = () => {
     }
   };
 
-  // Installation handler
-  // =================================================================
-  const onSubscribeSucess = () => {
-    analytics.logEvent('click_subscribe_button', {
-      location: 'platform_page',
-      is_voluntary: true,
-    });
-    setIsInstalled(true);
-    subscribeToastEmitter();
-  };
-  const runOnSuccess = () => {
-    analytics.logEvent('click_third_party_agreement_button', {
-      location: 'platform_page',
-      button_type: 'subscribe_button',
-    });
-    handleSubscribe(onSubscribeSucess);
-  };
-  const triggerInstallationHandler = () => {
-    if (accessToken) {
-      handleSubscribe(onSubscribeSucess);
-    } else {
-      handleThirdPartyAgreement(runOnSuccess);
-    }
-  };
-
   // New game notification handler
   // =================================================================
   const onSuccessHandler = () => {
@@ -463,22 +421,8 @@ export const Home: React.FC = () => {
           border={`1px solid #ECECEC`}
           appendLeft={<CloseIcon />}
           onClickLeft={leaveMiniApp}
-          appendRight={
-            <div
-              style={{
-                display: `flex`,
-                gap: `14px`,
-                alignItems: `flex-end`,
-              }}
-            >
-              <Share onClick={triggerShareHandler} />
-              {isInstalled ? (
-                <BookmarkDone />
-              ) : (
-                <Bookmark onClick={triggerInstallationHandler} />
-              )}
-            </div>
-          }
+          appendRight={<Share />}
+          onClickRight={triggerShareHandler}
           style={{
             background: `#fff`,
           }}
