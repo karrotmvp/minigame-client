@@ -16,7 +16,7 @@ type Props = {
   rank: number;
 };
 
-export const PostComment: React.FC<Props> = (props) => {
+export const CommentModal: React.FC<Props> = (props) => {
   const analytics = useAnalytics();
   const { isTop } = useCurrentScreen();
   const { replace } = useNavigator();
@@ -24,51 +24,28 @@ export const PostComment: React.FC<Props> = (props) => {
   const { townName2: districtName } = useUserData();
   const { isInWebEnvironment } = useMini();
   const { comment: prevComment, updateMyComment } = useMyGame2048Data();
-  const [currentComment, setCurrentComment] = useState({
-    comment: prevComment,
-    length: prevComment.length,
-  });
+  const [comment, setComment] = useState('');
   // Page navigation
   const goToLeaderboardPage = () => {
     replace(`/game-2048/leaderboard`);
   };
-
-  const handleDeleteCharacter = (e: any) => {
-    console.log('onKeyDown', e, e.keyCode, e.key);
-    if (e.keyCode === 8 || e.key === 'Backspace') {
-      if (e.target.defaultValue === '') {
-        setCurrentComment({
-          comment: '',
-          length: 0,
-        });
-      } else {
-        setCurrentComment((prevState) => ({
-          comment: prevState.comment.slice(0, -1),
-          length: prevState.length - 1,
-        }));
-      }
-    }
-  };
-
   const handleCommentInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCurrentComment({
-      comment: e.target.value.slice(0, 19),
-      length: e.target.value.length,
-    });
+    const { value, maxLength } = e.target;
+    setComment(value.slice(0, maxLength));
   };
 
-  const patchComment = async () => {
+  const patchComment = async ({ comment }: { comment: string }) => {
     if (isInWebEnvironment) {
-      updateMyComment(currentComment.comment);
+      updateMyComment(comment);
       goToLeaderboardPage();
       return;
     }
     try {
-      updateMyComment(currentComment.comment);
+      updateMyComment(comment);
       const { data } = await minigameApi.gamePlayApi.addCommentUsingPATCH(
         'GAME_2048',
         {
-          comment: currentComment.comment,
+          comment: comment,
         }
       );
       if (data.status === 200) {
@@ -118,19 +95,22 @@ export const PostComment: React.FC<Props> = (props) => {
             autoFocus
             type="text"
             maxLength={20}
-            placeholder={`예) 오예~${districtName}짱! :)`}
-            onChange={handleCommentInput}
-            onKeyDown={handleDeleteCharacter}
-            value={currentComment.comment}
+            placeholder={
+              prevComment === '' || prevComment === null
+                ? `예) 오예~${districtName}짱! :)`
+                : `${prevComment}`
+            }
+            onChange={(e) => handleCommentInput(e)}
+            value={comment}
           />
-          <span>{currentComment.length}/20</span>
+          <span>{comment.length}/20</span>
         </CommentInput>
-        {currentComment.length > 0 ? (
+        {comment.length > 0 ? (
           <Button
             size={`large`}
             fontSize={rem(16)}
             color={`primary`}
-            onClick={patchComment}
+            onClick={() => patchComment({ comment: comment })}
           >
             등록하기
           </Button>

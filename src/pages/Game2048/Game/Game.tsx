@@ -3,12 +3,11 @@ import { useCurrentScreen } from '@karrotframe/navigator';
 import { Button } from 'components/Button';
 import { rem } from 'polished';
 import React, { useCallback, useEffect, useState } from 'react';
-import ReactModal from 'react-modal';
 import { useMinigameApi } from 'services/api/minigameApi';
 import { useMyGame2048Data } from '../hooks';
 import { Board } from './Game/Board';
 import { useGame } from './hooks';
-import { GameOver } from './Modal';
+import { GameOverModal } from './Modal';
 import {
   MemoizedCurrentScore as CurrentScore,
   MemoizedMyBestScore as MyBestScore,
@@ -18,6 +17,7 @@ import refreshGameUrl from 'assets/svg/game2048/refresh_game.svg';
 import { useAnalytics } from 'services/analytics';
 import { useMini, useUserData } from 'hooks';
 import { useDebouncedCallback } from 'use-debounce';
+import ReactModal from 'react-modal';
 
 export const Game: React.FC = () => {
   const analytics = useAnalytics();
@@ -364,8 +364,7 @@ export const Game: React.FC = () => {
 
       <ReactModal
         isOpen={isGameOver}
-        shouldCloseOnOverlayClick={false}
-        contentLabel="Game Over"
+        contentLabel="2048-puzzle-gameover-modal"
         style={{
           overlay: {
             background: 'rgba(90, 90, 90, 0.7)',
@@ -394,7 +393,10 @@ export const Game: React.FC = () => {
           },
         }}
       >
-        <GameOver myPreviousRank={myCurrentRank} currentScore={currentScore} />
+        <GameOverModal
+          myPreviousRank={myCurrentRank}
+          currentScore={currentScore}
+        />
       </ReactModal>
     </>
   );

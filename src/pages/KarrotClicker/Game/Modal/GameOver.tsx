@@ -14,7 +14,6 @@ import { useMinigameApi } from 'services/api/minigameApi';
 import { useMini } from 'hooks';
 import { useGame } from '../hooks';
 import { rem } from 'polished';
-
 ReactModal.setAppElement(document.createElement('div'));
 
 type Props = {
@@ -39,6 +38,7 @@ export const GameOver: React.FC<Props> = (props) => {
     if (isInWebEnvironment) {
       props.setIsGameOver(false);
       goToLeaderboardPage();
+
       return;
     }
     try {

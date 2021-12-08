@@ -67,7 +67,7 @@ export const CommentModal: React.FC<Props> = (props) => {
         game_type: 'karrot_clicker',
       });
     }
-  }, [analytics, isTop, prevComment, rank]);
+  }, [analytics, isTop]);
 
   return (
     <>
