@@ -91,11 +91,11 @@ export const Home: React.FC = () => {
   // Track user with uuid
   const trackUser = useCallback(
     async ({
-      uUID,
+      uuid,
       regionId,
       referer,
     }: {
-      uUID: string;
+      uuid: string;
       regionId: string;
       referer?:
         | 'FEED'
@@ -113,7 +113,7 @@ export const Home: React.FC = () => {
       try {
         analytics.setUserId(uuid);
         const data = await minigameApi.visitorApi.visitUsingPOST(
-          uUID,
+          uuid,
           regionId,
           referer
         );
@@ -123,11 +123,11 @@ export const Home: React.FC = () => {
         console.error(error);
       }
     },
-    [analytics, minigameApi.visitorApi, uuid]
+    [analytics, minigameApi.visitorApi]
   );
 
   useEffect(() => {
-    trackUser({ uUID: uuid, regionId: regionId, referer: referer });
+    trackUser({ uuid: uuid, regionId: regionId, referer: referer });
   }, [referer, regionId, trackUser, uuid]);
 
   // const checkNotificationStatus = useCallback(async () => {
