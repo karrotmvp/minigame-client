@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import '@karrotframe/navigator/index.css';
 import { Navigator, Screen } from '@karrotframe/navigator';
 import { Home } from 'pages/Home';
@@ -10,68 +10,26 @@ import { KarrotClickerGame } from 'pages/KarrotClicker/Game';
 import { KarrotClickerLeaderboard } from 'pages/KarrotClicker/Leaderboard';
 import { Survey } from 'pages/Survey';
 import { Mission } from 'pages/Mission';
-// import { LoadingScreen } from 'components/LoadingScreen';
-
-import {
-  createFirebaseAnalytics,
-  loadFromEnv as loadFirebaseAnalyticsConfig,
-} from 'services/analytics/firebase';
-import { AnalyticsContext, emptyAnalytics } from 'services/analytics';
-import {
-  KarrotMarketMiniContext,
-  emptyKarrotMarketMini,
-} from 'services/karrotMarketMini';
-import {
-  createKarrotMarketMini,
-  loadFromEnv as loadKarrotMarketMiniConfig,
-} from 'services/karrotMarket/mini';
-
 import {
   useAccessToken,
   useSignAccessToken,
   useUserData,
   useUser,
+  useMini,
 } from 'hooks';
 import { useMinigameApi } from 'services/api/minigameApi';
-
+import { useAnalytics } from 'services/analytics/firebase';
 import { v4 as uuidv4 } from 'uuid';
 
 const App: React.FC = () => {
   // const dispatch = useDispatch();
+  const karrotMini = useMini();
   const minigameApi = useMinigameApi();
+  const analytics = useAnalytics();
   const { setRegionInfo, setTownInfo, setIsInstalled } = useUserData();
   const { accessToken } = useAccessToken();
   const { signAccessToken, removeCookie } = useSignAccessToken();
-  const [analytics, setAnalytics] = useState(emptyAnalytics);
-  const [karrotMarketMini, setKarrotMarketMini] = useState(
-    emptyKarrotMarketMini
-  );
-
   const { saveUserInfo, setMissionPreference } = useUser();
-
-  // Firebase Analytics가 설정되어 있으면 인스턴스를 초기화하고 교체합니다.
-  useEffect(() => {
-    try {
-      // check analytics
-      const config = loadFirebaseAnalyticsConfig();
-      const analytics = createFirebaseAnalytics(config);
-      setAnalytics(analytics);
-    } catch (error) {
-      console.error(error);
-    }
-  }, []);
-  // Mini...
-  useEffect(() => {
-    try {
-      // check karrot-mini
-      const karrotMarketMiniConfig = loadKarrotMarketMiniConfig();
-      const karrotMarketMini = createKarrotMarketMini(karrotMarketMiniConfig);
-      setKarrotMarketMini(karrotMarketMini);
-    } catch (error) {
-      console.error(error);
-      // no-op
-    }
-  }, []);
 
   const getQueryParams = () => {
     const searchParams = new URLSearchParams(window.location.search);
@@ -176,34 +134,27 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <AnalyticsContext.Provider value={analytics}>
-      <KarrotMarketMiniContext.Provider value={karrotMarketMini}>
-        <Navigator
-          theme="Cupertino"
-          onClose={() => {
-            karrotMarketMini.close();
-          }}
-        >
-          <Screen path="/" component={Home} />
-          {/* Game 2048 */}
-          <Screen path="/game-2048" component={Game2048Home} />
-          <Screen path="/game-2048/game" component={Game2048Game} />
-          <Screen
-            path="/game-2048/leaderboard"
-            component={Game2048Leaderboard}
-          />
-          {/* Karrot Clicker */}
-          <Screen path="/karrot-clicker" component={KarrotClickerHome} />
-          <Screen path="/karrot-clicker/game" component={KarrotClickerGame} />
-          <Screen
-            path="/karrot-clicker/leaderboard"
-            component={KarrotClickerLeaderboard}
-          />
-          <Screen path="/survey" component={Survey} />
-          <Screen path="/mission" component={Mission} />
-        </Navigator>
-      </KarrotMarketMiniContext.Provider>
-    </AnalyticsContext.Provider>
+    <Navigator
+      theme="Cupertino"
+      onClose={() => {
+        karrotMini.ejectApp();
+      }}
+    >
+      <Screen path="/" component={Home} />
+      {/* Game 2048 */}
+      <Screen path="/game-2048" component={Game2048Home} />
+      <Screen path="/game-2048/game" component={Game2048Game} />
+      <Screen path="/game-2048/leaderboard" component={Game2048Leaderboard} />
+      {/* Karrot Clicker */}
+      <Screen path="/karrot-clicker" component={KarrotClickerHome} />
+      <Screen path="/karrot-clicker/game" component={KarrotClickerGame} />
+      <Screen
+        path="/karrot-clicker/leaderboard"
+        component={KarrotClickerLeaderboard}
+      />
+      <Screen path="/survey" component={Survey} />
+      <Screen path="/mission" component={Mission} />
+    </Navigator>
   );
 };
 
