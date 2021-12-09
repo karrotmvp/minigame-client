@@ -22,14 +22,13 @@ import { useAnalytics } from 'services/analytics/firebase';
 import { v4 as uuidv4 } from 'uuid';
 
 const App: React.FC = () => {
-  // const dispatch = useDispatch();
   const karrotMini = useMini();
   const minigameApi = useMinigameApi();
   const analytics = useAnalytics();
-  const { setRegionInfo, setTownInfo, setIsInstalled } = useUserData();
+  const { setRegionInfo, setTownInfo } = useUserData();
   const { accessToken } = useAccessToken();
   const { signAccessToken, removeCookie } = useSignAccessToken();
-  const { saveUserInfo, setMissionPreference } = useUser();
+  const { saveQueryString, setMission } = useUser();
 
   const getQueryParams = () => {
     const searchParams = new URLSearchParams(window.location.search);
@@ -84,9 +83,9 @@ const App: React.FC = () => {
     const missionPreference = localStorage.getItem('missionPreference');
     if (missionPreference !== null) {
       const parsedMissionPreference = JSON.parse(missionPreference);
-      setMissionPreference({
-        isMissionCheckedOut: parsedMissionPreference.isMissionCheckedOut,
-        hasMissionPopupSeen: parsedMissionPreference.hasMissionPopupSeen,
+      setMission({
+        page: { isCheckedOut: parsedMissionPreference.isMissionCheckedOut },
+        popup: { hasSeen: parsedMissionPreference.hasMissionPopupSeen },
       });
     }
   };
@@ -104,10 +103,9 @@ const App: React.FC = () => {
 
     setRegionInfo(regionId as string);
     getDistrictInfo(regionId as string);
-    setIsInstalled(isSubscribed(installed));
     console.log(preload, code, regionId, installed, referer);
 
-    saveUserInfo({
+    saveQueryString({
       uuid: localStorage.getItem('uuid'),
       regionId: regionId as string,
       isSubscribed: isSubscribed(installed),

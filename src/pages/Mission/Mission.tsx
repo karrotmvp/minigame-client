@@ -16,8 +16,7 @@ export const Mission: React.FC = () => {
   const minigameApi = useMinigameApi();
   const { accessToken } = useAccessToken();
   const { handleThirdPartyAgreement } = useMini();
-  const { notification, setMissionPreference, setNotificationPreference } =
-    useUser();
+  const { notification, setMission, setNotification } = useUser();
 
   useEffect(() => {
     if (isTop) {
@@ -34,12 +33,12 @@ export const Mission: React.FC = () => {
           hasMissionPopupSeen: true,
         })
       );
-      setMissionPreference({
-        isMissionCheckedOut: true,
-        hasMissionPopupSeen: true,
+      setMission({
+        page: { isCheckedOut: true },
+        popup: { hasSeen: true },
       });
     }
-  }, [setMissionPreference, isTop]);
+  }, [setMission, isTop]);
 
   const goBackToPlatform = () => {
     pop();
@@ -51,7 +50,7 @@ export const Mission: React.FC = () => {
       location: 'platform_page',
       button_type: 'notification_button',
     });
-    setNotificationPreference({
+    setNotification({
       isNextMissionNotificationOn: true,
     });
   };
@@ -65,7 +64,7 @@ export const Mission: React.FC = () => {
         analytics.logEvent('click_notification_button', {
           notification_type: 'next_mission',
         });
-        setNotificationPreference({
+        setNotification({
           isNextMissionNotificationOn: true,
         });
       }

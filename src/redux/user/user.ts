@@ -1,48 +1,23 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { useMinigameApi } from 'services/api/minigameApi';
+import { createSlice } from '@reduxjs/toolkit';
 
-const MinigameApi = () => {
-  const minigameApi = useMinigameApi();
-  return {
-    minigameApi,
+export interface Subscription {
+  isSubscribed?: boolean;
+}
+
+export interface Mission {
+  notification?: {
+    isOn: boolean;
   };
-};
-
-export const trackVisitor = createAsyncThunk(
-  'user/trackVisitor',
-  async (_args, { getState }) => {
-    const { uuid, regionId, referer } = getState() as {
-      uuid: string;
-      regionId: string;
-      referer:
-        | 'FEED'
-        | 'SUBSCRIBE_FEED_1'
-        | 'SUBSCRIBE_FEED_2'
-        | 'SUBSCRIBE_FEED_3'
-        | 'NEAR_BY'
-        | 'SHARE_GAME_2048'
-        | 'SHARE_GAME_KARROT'
-        | 'SHARE_PLATFORM'
-        | 'SHARE_COMMUNITY'
-        | 'LOGIN'
-        | 'UNKNOWN';
-    };
-
-    console.log(uuid, regionId, referer);
-    const data = await MinigameApi().minigameApi.visitorApi.visitUsingPOST(
-      uuid,
-      regionId,
-      referer
-    );
-    // .visitUsingPOST(uuid, regionId, referer);
-    return data;
-  }
-);
-
+  page?: {
+    isCheckedOut: boolean;
+  };
+  popup?: {
+    hasSeen: boolean;
+  };
+}
 interface UserState {
   uuid: string;
   regionId: string;
-  isSubscribed: boolean;
   referer:
     | 'FEED'
     | 'SUBSCRIBE_FEED_1'
@@ -55,8 +30,8 @@ interface UserState {
     | 'SHARE_COMMUNITY'
     | 'LOGIN'
     | 'UNKNOWN';
-  isMissionCheckedOut: boolean;
-  hasMissionPopupSeen: boolean;
+  subscription: Subscription;
+  mission: Mission;
   notification: {
     nextMission: {
       isNotificationOn: boolean;
@@ -65,17 +40,27 @@ interface UserState {
       isNotificationOn: boolean;
     };
   };
-  status: string;
-  // payload: {};
 }
 
 const initialState: UserState = {
   uuid: '',
   regionId: '',
-  isSubscribed: false,
+
   referer: 'UNKNOWN',
-  isMissionCheckedOut: false,
-  hasMissionPopupSeen: false,
+  subscription: {
+    isSubscribed: false,
+  },
+  mission: {
+    notification: {
+      isOn: false,
+    },
+    page: {
+      isCheckedOut: false,
+    },
+    popup: {
+      hasSeen: false,
+    },
+  },
   notification: {
     nextMission: {
       isNotificationOn: false,
@@ -84,48 +69,36 @@ const initialState: UserState = {
       isNotificationOn: false,
     },
   },
-
-  status: '',
-  // payload: {},
 };
 
 const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    saveUserInfo(state, action) {
+    saveQueryString(state, action) {
       state.uuid = action.payload.uuid;
       state.regionId = action.payload.regionId;
-      state.isSubscribed = action.payload.isSubscribed;
+      state.subscription.isSubscribed = action.payload.isSubscribed;
       state.referer = action.payload.referer;
     },
-    setMissionPreference(state, action) {
-      state.isMissionCheckedOut = action.payload.isMissionCheckedOut;
-      state.hasMissionPopupSeen = action.payload.hasMissionPopupSeen;
+    setMission(state, action) {
+      state.mission.notification = action.payload.notification;
+      state.mission.page = action.payload.page;
+      state.mission.popup = action.payload.popup;
     },
-    setNotificationPreference(state, action) {
+    setSubscription(state, action) {
+      state.subscription.isSubscribed = action.payload.isSubscribed;
+    },
+    setNotification(state, action) {
       state.notification.newGame.isNotificationOn =
         action.payload.isNewGameNotificationOn;
       state.notification.nextMission.isNotificationOn =
         action.payload.isNextMissionNotificationOn;
     },
   },
-  extraReducers: (builder) => {
-    builder.addCase(trackVisitor.pending, (state) => {
-      state.status = 'loading';
-    });
-
-    builder.addCase(trackVisitor.fulfilled, (state, { payload }) => {
-      state.status = 'success';
-      // state.payload = payload;
-    });
-
-    builder.addCase(trackVisitor.rejected, (state, { payload }) => {
-      state.status = 'failed';
-    });
-  },
 });
 
-export const { saveUserInfo, setMissionPreference, setNotificationPreference } =
+export const { saveQueryString, setMission, setSubscription, setNotification } =
   userSlice.actions;
+
 export default userSlice.reducer;

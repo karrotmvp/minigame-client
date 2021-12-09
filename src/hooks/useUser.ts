@@ -2,30 +2,28 @@ import { useCallback } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { RootState } from 'store';
 import {
-  saveUserInfo as saveUserInfoAction,
-  trackVisitor as trackVisitorAction,
-  setMissionPreference as setMissionPreferenceAction,
-  setNotificationPreference as setNotificationPreferenceAction,
+  saveQueryString as saveQueryStringAction,
+  setMission as setMissionAction,
+  setSubscription as setSubscriptionAction,
+  setNotification as setNotificationAction,
 } from '../redux/user/user';
+import type { Mission, Subscription } from '../redux/user';
 
 export const useUser = () => {
-  const { uuid, regionId, isSubscribed, referer } = useSelector(
+  const { uuid, regionId, referer } = useSelector(
     (state: RootState) => ({
       uuid: state.user.uuid,
       regionId: state.user.regionId,
-      isSubscribed: state.user.isSubscribed,
+
       referer: state.user.referer,
     }),
     shallowEqual
   );
 
-  const { isMissionCheckedOut, hasMissionPopupSeen } = useSelector(
-    (state: RootState) => ({
-      isMissionCheckedOut: state.user.isMissionCheckedOut,
-      hasMissionPopupSeen: state.user.hasMissionPopupSeen,
-    }),
-    shallowEqual
+  const subscription = useSelector(
+    (state: RootState) => state.user.subscription
   );
+  const mission = useSelector((state: RootState) => state.user.mission);
 
   const { notification } = useSelector((state: RootState) => ({
     notification: {
@@ -40,7 +38,7 @@ export const useUser = () => {
 
   const dispatch = useDispatch();
 
-  const saveUserInfo = useCallback(
+  const saveQueryString = useCallback(
     ({
       uuid,
       regionId,
@@ -63,31 +61,26 @@ export const useUser = () => {
         | 'LOGIN'
         | 'UNKNOWN';
     }) => {
-      dispatch(saveUserInfoAction({ uuid, regionId, isSubscribed, referer }));
-    },
-    [dispatch]
-  );
-
-  const trackVisitor = () => {
-    dispatch(trackVisitorAction());
-  };
-
-  const setMissionPreference = useCallback(
-    ({
-      isMissionCheckedOut,
-      hasMissionPopupSeen,
-    }: {
-      isMissionCheckedOut?: boolean;
-      hasMissionPopupSeen?: boolean;
-    }) => {
       dispatch(
-        setMissionPreferenceAction({ isMissionCheckedOut, hasMissionPopupSeen })
+        saveQueryStringAction({ uuid, regionId, isSubscribed, referer })
       );
     },
     [dispatch]
   );
 
-  const setNotificationPreference = useCallback(
+  const setMission = useCallback(
+    ({ notification, page, popup }: Mission) => {
+      dispatch(setMissionAction({ notification, page, popup }));
+    },
+    [dispatch]
+  );
+  const setSubscription = useCallback(
+    ({ isSubscribed }: Subscription) => {
+      dispatch(setSubscriptionAction({ isSubscribed }));
+    },
+    [dispatch]
+  );
+  const setNotification = useCallback(
     ({
       isNewGameNotificationOn,
       isNextMissionNotificationOn,
@@ -96,7 +89,7 @@ export const useUser = () => {
       isNextMissionNotificationOn?: boolean;
     }) => {
       dispatch(
-        setNotificationPreferenceAction({
+        setNotificationAction({
           isNewGameNotificationOn,
           isNextMissionNotificationOn,
         })
@@ -107,14 +100,13 @@ export const useUser = () => {
   return {
     uuid,
     regionId,
-    isSubscribed,
     referer,
-    isMissionCheckedOut,
-    hasMissionPopupSeen,
+    subscription,
+    mission,
     notification,
-    saveUserInfo,
-    trackVisitor,
-    setMissionPreference,
-    setNotificationPreference,
+    saveQueryString,
+    setMission,
+    setSubscription,
+    setNotification,
   };
 };

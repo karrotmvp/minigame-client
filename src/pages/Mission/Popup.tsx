@@ -17,7 +17,7 @@ export const Popup: React.FC<Props> = (props) => {
   const { isTop } = useCurrentScreen();
   const { push } = useNavigator();
   const { nickname } = useUserData();
-  const { setMissionPreference } = useUser();
+  const { setMission } = useUser();
   useEffect(() => {
     if (isTop) {
       analytics.logEvent('view_mission_popup');
@@ -32,9 +32,9 @@ export const Popup: React.FC<Props> = (props) => {
         hasMissionPopupSeen: true,
       })
     );
-    setMissionPreference({
-      isMissionCheckedOut: false,
-      hasMissionPopupSeen: true,
+    setMission({
+      page: { isCheckedOut: false },
+      popup: { hasSeen: true },
     });
     props.setShouldMissionPopupShown(false);
   };
@@ -50,9 +50,9 @@ export const Popup: React.FC<Props> = (props) => {
         hasMissionPopupSeen: true,
       })
     );
-    setMissionPreference({
-      isMissionCheckedOut: true,
-      hasMissionPopupSeen: true,
+    setMission({
+      page: { isCheckedOut: true },
+      popup: { hasSeen: true },
     });
     props.setShouldMissionPopupShown(false);
     push(`/mission`);

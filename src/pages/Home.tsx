@@ -52,18 +52,11 @@ export const Home: React.FC = () => {
     updateMyComment: updateMyKarrotClickerComment,
     setGameTypeToKarrotClicker,
   } = useMyKarrotClickerData();
-  const {
-    uuid,
-    regionId,
-    referer,
-    isMissionCheckedOut,
-    hasMissionPopupSeen,
-    notification,
-    setNotificationPreference,
-  } = useUser();
+  const { uuid, regionId, referer, mission, notification, setNotification } =
+    useUser();
 
   const [shouldMissionPopupShown, setShouldMissionPopupShown] =
-    useState<boolean>(!hasMissionPopupSeen);
+    useState<boolean>(!mission.popup?.hasSeen);
 
   // Update user info
   const updateUserInfo = useCallback(
@@ -141,7 +134,7 @@ export const Home: React.FC = () => {
   //         'OPEN_GAME'
   //       );
   //       if (data && data.check) {
-  //         setNotificationPreference({
+  //         setNotification({
   //           isNewGameNotificationOn: data.check,
   //         });
   //       }
@@ -152,7 +145,7 @@ export const Home: React.FC = () => {
   // }, [
   //   minigameApi.notificationApi,
   //   notification.newGame.isNotificationOn,
-  //   setNotificationPreference,
+  //   setNotification,
   // ]);
 
   // const newGameNotificationPromise = () => {
@@ -178,14 +171,14 @@ export const Home: React.FC = () => {
     ]);
     try {
       const notificationStatus = await notificationPromise;
-      setNotificationPreference({
+      setNotification({
         isNewGameNotificationOn: notificationStatus[0].data.data?.check,
         isNextMissionNotificationOn: notificationStatus[1].data.data?.check,
       });
     } catch (error) {
       console.error(error);
     }
-  }, [minigameApi.notificationApi, setNotificationPreference]);
+  }, [minigameApi.notificationApi, setNotification]);
 
   useEffect(() => {
     updateUserInfo({ userId: userId });
@@ -322,7 +315,7 @@ export const Home: React.FC = () => {
       location: 'platform_page',
       button_type: 'notification_button',
     });
-    setNotificationPreference({
+    setNotification({
       isNewGameNotificationOn: true,
     });
   };
@@ -336,7 +329,7 @@ export const Home: React.FC = () => {
         analytics.logEvent('click_notification_button', {
           notification_type: 'new_game',
         });
-        setNotificationPreference({
+        setNotification({
           isNewGameNotificationOn: true,
         });
       }
@@ -661,7 +654,7 @@ export const Home: React.FC = () => {
         onClick={goToMissionPage}
         style={{ position: `absolute`, right: 0, bottom: 0, zIndex: 99 }}
       >
-        {isMissionCheckedOut ? (
+        {mission.notification?.isOn ? (
           <img src={missionEnvelopeClosed} alt="mission-button" />
         ) : (
           <img

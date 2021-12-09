@@ -35,18 +35,10 @@ export const setTownInfoAction = (
   },
 });
 
-export const setIsInstalledAction = (isInstalled: boolean) => ({
-  type: SET_IS_INSTALLED,
-  payload: {
-    isInstalled,
-  },
-});
-
 type UserDataAction =
   | ReturnType<typeof setUserInfoAction>
   | ReturnType<typeof setRegionInfoAction>
-  | ReturnType<typeof setTownInfoAction>
-  | ReturnType<typeof setIsInstalledAction>;
+  | ReturnType<typeof setTownInfoAction>;
 
 // initial state
 type UserDataState = {
@@ -57,7 +49,6 @@ type UserDataState = {
   townName1: string;
   townName2: string;
   townName3: string;
-  isInstalled: boolean;
 };
 const initialState: UserDataState = {
   userId: '',
@@ -67,7 +58,6 @@ const initialState: UserDataState = {
   townName1: '',
   townName2: '',
   townName3: '',
-  isInstalled: false,
 };
 
 // reducer
@@ -96,11 +86,7 @@ const userDataReducer = (
         townName2: action.payload.townName2,
         townName3: action.payload.townName3,
       };
-    case SET_IS_INSTALLED:
-      return {
-        ...state,
-        isInstalled: action.payload.isInstalled,
-      };
+
     default:
       return state;
   }
