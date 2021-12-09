@@ -5,11 +5,12 @@ import {
   saveQueryString as saveQueryStringAction,
   setMission as setMissionAction,
   setSubscription as setSubscriptionAction,
-  setNotification as setNotificationAction,
+  setNewGame as setNewGameAction,
 } from '../redux/user/user';
-import type { Mission, Subscription } from '../redux/user';
+import type { Mission, Subscription, NewGame } from '../redux/user';
 
 export const useUser = () => {
+  // state
   const { uuid, regionId, referer } = useSelector(
     (state: RootState) => ({
       uuid: state.user.uuid,
@@ -24,18 +25,9 @@ export const useUser = () => {
     (state: RootState) => state.user.subscription
   );
   const mission = useSelector((state: RootState) => state.user.mission);
+  const newGame = useSelector((state: RootState) => state.user.newGame);
 
-  const { notification } = useSelector((state: RootState) => ({
-    notification: {
-      newGame: {
-        isNotificationOn: state.user.notification.newGame.isNotificationOn,
-      },
-      nextMission: {
-        isNotificationOn: state.user.notification.nextMission.isNotificationOn,
-      },
-    },
-  }));
-
+  // dispatch
   const dispatch = useDispatch();
 
   const saveQueryString = useCallback(
@@ -80,20 +72,10 @@ export const useUser = () => {
     },
     [dispatch]
   );
-  const setNotification = useCallback(
-    ({
-      isNewGameNotificationOn,
-      isNextMissionNotificationOn,
-    }: {
-      isNewGameNotificationOn?: boolean;
-      isNextMissionNotificationOn?: boolean;
-    }) => {
-      dispatch(
-        setNotificationAction({
-          isNewGameNotificationOn,
-          isNextMissionNotificationOn,
-        })
-      );
+
+  const setNewGame = useCallback(
+    ({ notification }: NewGame) => {
+      dispatch(setNewGameAction({ notification }));
     },
     [dispatch]
   );
@@ -103,10 +85,10 @@ export const useUser = () => {
     referer,
     subscription,
     mission,
-    notification,
+    newGame,
     saveQueryString,
     setMission,
     setSubscription,
-    setNotification,
+    setNewGame,
   };
 };

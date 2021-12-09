@@ -52,7 +52,7 @@ export const Home: React.FC = () => {
     updateMyComment: updateMyKarrotClickerComment,
     setGameTypeToKarrotClicker,
   } = useMyKarrotClickerData();
-  const { uuid, regionId, referer, mission, notification, setNotification } =
+  const { uuid, regionId, referer, mission, newGame, setMission, setNewGame } =
     useUser();
 
   const [shouldMissionPopupShown, setShouldMissionPopupShown] =
@@ -123,41 +123,6 @@ export const Home: React.FC = () => {
     trackUser({ uuid: uuid, regionId: regionId, referer: referer });
   }, [referer, regionId, trackUser, uuid]);
 
-  // const checkNotificationStatus = useCallback(async () => {
-  //   if (notification.newGame.isNotificationOn) {
-  //     return;
-  //   } else {
-  //     try {
-  //       const {
-  //         data: { data },
-  //       } = await minigameApi.notificationApi.checkNotificationUsingGET(
-  //         'OPEN_GAME'
-  //       );
-  //       if (data && data.check) {
-  //         setNotification({
-  //           isNewGameNotificationOn: data.check,
-  //         });
-  //       }
-  //     } catch (error) {
-  //       console.error(error);
-  //     }
-  //   }
-  // }, [
-  //   minigameApi.notificationApi,
-  //   notification.newGame.isNotificationOn,
-  //   setNotification,
-  // ]);
-
-  // const newGameNotificationPromise = () => {
-  //   if (notification.newGame.isNotificationOn) {
-  //     return notification.newGame.isNotificationOn;
-  //   } else {
-  //     const data =
-  //       minigameApi.notificationApi.checkNotificationUsingGET('OPEN_GAME');
-  //     if (data !== undefined) return data;
-  //   }
-  // };
-
   // Check user's notification status
   // available notifications: new-game, next-mission
   const checkNotificationStatus = useCallback(async () => {
@@ -171,14 +136,20 @@ export const Home: React.FC = () => {
     ]);
     try {
       const notificationStatus = await notificationPromise;
-      setNotification({
-        isNewGameNotificationOn: notificationStatus[0].data.data?.check,
-        isNextMissionNotificationOn: notificationStatus[1].data.data?.check,
+      setNewGame({
+        notification: {
+          isOn: notificationStatus[0].data.data?.check as boolean,
+        },
+      });
+      setMission({
+        notification: {
+          isOn: notificationStatus[1].data.data?.check as boolean,
+        },
       });
     } catch (error) {
       console.error(error);
     }
-  }, [minigameApi.notificationApi, setNotification]);
+  }, [minigameApi.notificationApi, setMission, setNewGame]);
 
   useEffect(() => {
     updateUserInfo({ userId: userId });
@@ -315,9 +286,7 @@ export const Home: React.FC = () => {
       location: 'platform_page',
       button_type: 'notification_button',
     });
-    setNotification({
-      isNewGameNotificationOn: true,
-    });
+    setNewGame({ notification: { isOn: true } });
   };
   const handleNewGameNotification = async () => {
     if (accessToken) {
@@ -329,9 +298,7 @@ export const Home: React.FC = () => {
         analytics.logEvent('click_notification_button', {
           notification_type: 'new_game',
         });
-        setNotification({
-          isNewGameNotificationOn: true,
-        });
+        setNewGame({ notification: { isOn: true } });
       }
     } else {
       handleThirdPartyAgreement(onSuccessHandler);
@@ -590,7 +557,7 @@ export const Home: React.FC = () => {
           <Section>
             <SectionTitle>새로운 게임을 준비 중이에요</SectionTitle>
             <CardContainer>
-              {notification.newGame.isNotificationOn ? (
+              {newGame.notification?.isOn ? (
                 <Card game={`coming-soon`}>
                   <img
                     src={ComingSoonCardImgUrl}

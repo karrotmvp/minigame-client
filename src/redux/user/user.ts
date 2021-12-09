@@ -15,6 +15,13 @@ export interface Mission {
     hasSeen: boolean;
   };
 }
+
+export interface NewGame {
+  notification?: {
+    isOn: boolean;
+  };
+}
+
 interface UserState {
   uuid: string;
   regionId: string;
@@ -32,14 +39,7 @@ interface UserState {
     | 'UNKNOWN';
   subscription: Subscription;
   mission: Mission;
-  notification: {
-    nextMission: {
-      isNotificationOn: boolean;
-    };
-    newGame: {
-      isNotificationOn: boolean;
-    };
-  };
+  newGame: NewGame;
 }
 
 const initialState: UserState = {
@@ -61,12 +61,9 @@ const initialState: UserState = {
       hasSeen: false,
     },
   },
-  notification: {
-    nextMission: {
-      isNotificationOn: false,
-    },
-    newGame: {
-      isNotificationOn: false,
+  newGame: {
+    notification: {
+      isOn: false,
     },
   },
 };
@@ -89,16 +86,13 @@ const userSlice = createSlice({
     setSubscription(state, action) {
       state.subscription.isSubscribed = action.payload.isSubscribed;
     },
-    setNotification(state, action) {
-      state.notification.newGame.isNotificationOn =
-        action.payload.isNewGameNotificationOn;
-      state.notification.nextMission.isNotificationOn =
-        action.payload.isNextMissionNotificationOn;
+    setNewGame(state, action) {
+      state.newGame.notification = action.payload.notification;
     },
   },
 });
 
-export const { saveQueryString, setMission, setSubscription, setNotification } =
+export const { saveQueryString, setMission, setSubscription, setNewGame } =
   userSlice.actions;
 
 export default userSlice.reducer;
