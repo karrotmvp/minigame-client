@@ -26,9 +26,7 @@ export const Leaderboard = () => {
   const minigameApi = useMinigameApi();
   const analytics = useAnalytics();
   const { shareApp, handleSubscribe } = useMini();
-  const { nickname } = useUserData();
-  const { subscription, setSubscription } = useUser();
-
+  const { user, subscription, setSubscription } = useUser();
   const {
     rank,
     gameType,
@@ -155,7 +153,7 @@ export const Leaderboard = () => {
       location: 'leaderboard_page',
     });
     const url = 'https://daangn.onelink.me/HhUa/37719e67';
-    const text = `${nickname}님은 2048 퍼즐에서 전국 ${rank}등!`;
+    const text = `${user.nickname}님은 2048 퍼즐에서 전국 ${rank}등!`;
     shareApp(url, text);
   };
 

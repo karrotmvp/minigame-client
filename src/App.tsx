@@ -20,15 +20,16 @@ import {
 import { useMinigameApi } from 'services/api/minigameApi';
 import { useAnalytics } from 'services/analytics/firebase';
 import { v4 as uuidv4 } from 'uuid';
+import { RefererEnum } from 'redux/user';
 
 const App: React.FC = () => {
   const karrotMini = useMini();
   const minigameApi = useMinigameApi();
   const analytics = useAnalytics();
-  const { setRegionInfo, setTownInfo } = useUserData();
+  const { setTownInfo } = useUserData();
   const { accessToken } = useAccessToken();
   const { signAccessToken, removeCookie } = useSignAccessToken();
-  const { saveQueryString, setMission } = useUser();
+  const { setUser, setMission, setSubscription } = useUser();
 
   const getQueryParams = () => {
     const searchParams = new URLSearchParams(window.location.search);
@@ -79,6 +80,20 @@ const App: React.FC = () => {
     }
   };
 
+  const saveQueryString = ({
+    uuid,
+    regionId,
+    isSubscribed,
+    referer,
+  }: {
+    uuid: string;
+    regionId: string;
+    isSubscribed: boolean;
+    referer: RefererEnum;
+  }) => {
+    setUser({ id: { uuid }, regionId, referer });
+    setSubscription({ isSubscribed });
+  };
   const checkLocalStorage = () => {
     const missionPreference = localStorage.getItem('missionPreference');
     if (missionPreference !== null) {
@@ -101,26 +116,15 @@ const App: React.FC = () => {
 
     analytics.logEvent('launch_app');
 
-    setRegionInfo(regionId as string);
+    setUser({ regionId: regionId as string });
     getDistrictInfo(regionId as string);
     console.log(preload, code, regionId, installed, referer);
 
     saveQueryString({
-      uuid: localStorage.getItem('uuid'),
+      uuid: localStorage.getItem('uuid') as string,
       regionId: regionId as string,
       isSubscribed: isSubscribed(installed),
-      referer: referer?.toUpperCase() as
-        | 'FEED'
-        | 'SUBSCRIBE_FEED_1'
-        | 'SUBSCRIBE_FEED_2'
-        | 'SUBSCRIBE_FEED_3'
-        | 'NEAR_BY'
-        | 'SHARE_GAME_2048'
-        | 'SHARE_GAME_KARROT'
-        | 'SHARE_PLATFORM'
-        | 'SHARE_COMMUNITY'
-        | 'LOGIN'
-        | 'UNKNOWN',
+      referer: referer?.toUpperCase() as RefererEnum,
     });
     checkLocalStorage();
     fetchData(

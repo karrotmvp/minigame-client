@@ -1,4 +1,4 @@
-import { useSignAccessToken, useUserData, useUser } from 'hooks';
+import { useSignAccessToken, useUser } from 'hooks';
 import { useCallback } from 'react';
 import { useMinigameApi } from 'services/api/minigameApi';
 import {
@@ -8,24 +8,20 @@ import {
 
 export const useMini = () => {
   const mini = getMini();
-  // const analytics = useAnalytics();
   const minigameApi = useMinigameApi();
-  const { regionId, setUserInfo } = useUserData();
   const { signAccessToken } = useSignAccessToken();
+  const { user, setUser } = useUser();
+
   const appId = karrotMarketMiniConfig().appId;
   const presetUrl = karrotMarketMiniConfig().presetUrl;
   const installationUrl = karrotMarketMiniConfig().installationUrl;
-
-  const { uuid } = useUser();
 
   const updateUserInfo = async () => {
     const {
       data: { data },
     } = await minigameApi.userApi.getUserInfoUsingGET();
     if (data) {
-      setUserInfo(data.id, data.nickname);
-      // FA: track user with set user id
-      // analytics.setUserId(data.id);
+      setUser({ id: { userId: data.id }, nickname: data.nickname });
     }
   };
 
@@ -51,7 +47,11 @@ export const useMini = () => {
       onSuccess: async function (result) {
         if (result && result.code) {
           // console.log('1', result.code);
-          const response = await signAccessToken(uuid, result.code, regionId);
+          const response = await signAccessToken(
+            user.id?.uuid as string,
+            result.code,
+            user.regionId as string
+          );
           // console.log('2', response);
           if (response === true) {
             // console.log('3');

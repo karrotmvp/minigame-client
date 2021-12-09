@@ -1,26 +1,24 @@
 import { useCallback } from 'react';
-import { useDispatch, useSelector, shallowEqual } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'store';
 import {
-  saveQueryString as saveQueryStringAction,
+  // saveQueryString as saveQueryStringAction,
+  setUser as setUserAction,
   setMission as setMissionAction,
   setSubscription as setSubscriptionAction,
   setNewGame as setNewGameAction,
 } from '../redux/user/user';
-import type { Mission, Subscription, NewGame } from '../redux/user';
+import type {
+  User,
+  Mission,
+  Subscription,
+  NewGame,
+  RefererEnum,
+} from '../redux/user';
 
 export const useUser = () => {
   // state
-  const { uuid, regionId, referer } = useSelector(
-    (state: RootState) => ({
-      uuid: state.user.uuid,
-      regionId: state.user.regionId,
-
-      referer: state.user.referer,
-    }),
-    shallowEqual
-  );
-
+  const user = useSelector((state: RootState) => state.user.user);
   const subscription = useSelector(
     (state: RootState) => state.user.subscription
   );
@@ -30,31 +28,34 @@ export const useUser = () => {
   // dispatch
   const dispatch = useDispatch();
 
-  const saveQueryString = useCallback(
-    ({
-      uuid,
-      regionId,
-      isSubscribed,
-      referer,
-    }: {
-      uuid?: string | null;
-      regionId?: string;
-      isSubscribed?: boolean;
-      referer?:
-        | 'FEED'
-        | 'SUBSCRIBE_FEED_1'
-        | 'SUBSCRIBE_FEED_2'
-        | 'SUBSCRIBE_FEED_3'
-        | 'NEAR_BY'
-        | 'SHARE_GAME_2048'
-        | 'SHARE_GAME_KARROT'
-        | 'SHARE_PLATFORM'
-        | 'SHARE_COMMUNITY'
-        | 'LOGIN'
-        | 'UNKNOWN';
-    }) => {
+  // const saveQueryString = useCallback(
+  //   ({
+  //     uuid,
+  //     regionId,
+  //     referer,
+  //     isSubscribed,
+  //   }: {
+  //     uuid?: string | null;
+  //     regionId?: string;
+  //     referer?: RefererEnum;
+  //     isSubscribed?: boolean;
+  //   }) => {
+  //     dispatch(
+  //       saveQueryStringAction({
+  //         uuid,
+  //         regionId,
+  //         referer,
+  //         isSubscribed,
+  //       })
+  //     );
+  //   },
+  //   [dispatch]
+  // );
+
+  const setUser = useCallback(
+    ({ id, regionId, referer, nickname, referralCode }: User) => {
       dispatch(
-        saveQueryStringAction({ uuid, regionId, isSubscribed, referer })
+        setUserAction({ id, regionId, referer, nickname, referralCode })
       );
     },
     [dispatch]
@@ -80,13 +81,12 @@ export const useUser = () => {
     [dispatch]
   );
   return {
-    uuid,
-    regionId,
-    referer,
+    user,
     subscription,
     mission,
     newGame,
-    saveQueryString,
+    // saveQueryString,
+    setUser,
     setMission,
     setSubscription,
     setNewGame,

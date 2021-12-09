@@ -6,7 +6,7 @@ import gameOverSvgUrl from 'assets/svg/game2048/gameover.svg';
 import { Button } from 'components/Button';
 import { useMinigameApi } from 'services/api/minigameApi';
 import { useMyGame2048Data } from 'pages/Game2048/hooks';
-import { useMini, useUserData } from 'hooks';
+import { useMini, useUser } from 'hooks';
 import { rem } from 'polished';
 import { useAnalytics } from 'services/analytics';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -29,7 +29,7 @@ export const GameOverModal: React.FC<Props> = (props) => {
   const analytics = useAnalytics();
   const minigameApi = useMinigameApi();
   const { isInWebEnvironment, shareApp } = useMini();
-  const { nickname } = useUserData();
+  const { user } = useUser();
   const { gameType } = useMyGame2048Data();
   // const [shouldModalOpen, setShouldModalOpen] = useState<boolean>(false);
   const [isCommentModalOpen, setIsCommentModalOpen] = useState<boolean>(false);
@@ -118,7 +118,7 @@ export const GameOverModal: React.FC<Props> = (props) => {
       location: 'game_over_modal',
     });
     const url = 'https://daangn.onelink.me/HhUa/37719e67';
-    const text = `${nickname}님은 2048 퍼즐에서 전국 ${myCurrentRank.rank}등!`;
+    const text = `${user.nickname}님은 2048 퍼즐에서 전국 ${myCurrentRank.rank}등!`;
     shareApp(url, text);
   };
 

@@ -3,9 +3,8 @@ import { css } from '@emotion/react';
 import { useCurrentScreen } from '@karrotframe/navigator';
 import { ReactComponent as PointingFinger } from 'assets/svg/KarrotClicker/pointing_finger.svg';
 import { OldButton } from 'components/Button/Button';
-import { useUserData } from 'hooks';
+import { useUser } from 'hooks';
 import { useEffect } from 'react';
-// import { useAnalytics } from 'services/analytics';
 import { useMinigameApi } from 'services/api/minigameApi';
 import { useGame } from '../hooks';
 
@@ -26,9 +25,8 @@ type Props = {
 };
 export const Guide: React.FC<Props> = (props) => {
   const { isTop } = useCurrentScreen();
-  // const analytics = useAnalytics();
   const minigameApi = useMinigameApi();
-  const { setUserInfo } = useUserData();
+  const { setUser } = useUser();
   const { updateAnimationPlayState } = useGame();
 
   const updateUserInfo = async () => {
@@ -36,9 +34,7 @@ export const Guide: React.FC<Props> = (props) => {
       data: { data },
     } = await minigameApi.userApi.getUserInfoUsingGET();
     if (data) {
-      setUserInfo(data.id, data.nickname);
-      // FA: track user with set user id
-      // analytics.setUserId(data.id);
+      setUser({ id: { userId: data.id }, nickname: data.nickname });
     }
   };
 

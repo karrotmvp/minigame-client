@@ -1,5 +1,29 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+export type RefererEnum =
+  | 'FEED'
+  | 'SUBSCRIBE_FEED_1'
+  | 'SUBSCRIBE_FEED_2'
+  | 'SUBSCRIBE_FEED_3'
+  | 'NEAR_BY'
+  | 'SHARE_GAME_2048'
+  | 'SHARE_GAME_KARROT'
+  | 'SHARE_PLATFORM'
+  | 'SHARE_COMMUNITY'
+  | 'LOGIN'
+  | 'UNKNOWN';
+
+export interface User {
+  id?: {
+    uuid?: string;
+    userId?: string;
+  };
+  regionId?: string;
+  referer?: RefererEnum;
+  nickname?: string;
+  referralCode?: string;
+}
+
 export interface Subscription {
   isSubscribed?: boolean;
 }
@@ -23,30 +47,23 @@ export interface NewGame {
 }
 
 interface UserState {
-  uuid: string;
-  regionId: string;
-  referer:
-    | 'FEED'
-    | 'SUBSCRIBE_FEED_1'
-    | 'SUBSCRIBE_FEED_2'
-    | 'SUBSCRIBE_FEED_3'
-    | 'NEAR_BY'
-    | 'SHARE_GAME_2048'
-    | 'SHARE_GAME_KARROT'
-    | 'SHARE_PLATFORM'
-    | 'SHARE_COMMUNITY'
-    | 'LOGIN'
-    | 'UNKNOWN';
+  user: User;
   subscription: Subscription;
   mission: Mission;
   newGame: NewGame;
 }
 
 const initialState: UserState = {
-  uuid: '',
-  regionId: '',
-
-  referer: 'UNKNOWN',
+  user: {
+    id: {
+      uuid: '',
+      userId: '',
+    },
+    regionId: '',
+    nickname: '',
+    referer: 'UNKNOWN',
+    referralCode: '',
+  },
   subscription: {
     isSubscribed: false,
   },
@@ -72,11 +89,18 @@ const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    saveQueryString(state, action) {
-      state.uuid = action.payload.uuid;
-      state.regionId = action.payload.regionId;
-      state.subscription.isSubscribed = action.payload.isSubscribed;
-      state.referer = action.payload.referer;
+    // saveQueryString(state, action) {
+    //   state.user.id = action.payload.id.uuid;
+    //   state.user.regionId = action.payload.regionId;
+    //   state.user.referer = action.payload.referer;
+    //   state.subscription.isSubscribed = action.payload.isSubscribed;
+    // },
+    setUser(state, action) {
+      state.user.id = action.payload.id;
+      state.user.regionId = action.payload.regionId;
+      state.user.referer = action.payload.referer;
+      state.user.nickname = action.payload.nickname;
+      state.user.referralCode = action.payload.referralCode;
     },
     setMission(state, action) {
       state.mission.notification = action.payload.notification;
@@ -92,7 +116,12 @@ const userSlice = createSlice({
   },
 });
 
-export const { saveQueryString, setMission, setSubscription, setNewGame } =
-  userSlice.actions;
+export const {
+  // saveQueryString,
+  setUser,
+  setMission,
+  setSubscription,
+  setNewGame,
+} = userSlice.actions;
 
 export default userSlice.reducer;

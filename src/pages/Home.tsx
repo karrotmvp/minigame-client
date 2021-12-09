@@ -32,7 +32,7 @@ import missionEnvelopeClosed from 'assets/svg/mission/mission_envelope_closed.sv
 import missionEnvelopeClosed1 from 'assets/svg/mission/mission_envelope_closed_1.svg';
 import ReactModal from 'react-modal';
 import { Popup as MissionPopup } from './Mission';
-
+import { RefererEnum } from 'redux/user';
 export const Home: React.FC = () => {
   const analytics = useAnalytics();
   const minigameApi = useMinigameApi();
@@ -41,7 +41,7 @@ export const Home: React.FC = () => {
   const { isInWebEnvironment, ejectApp, handleThirdPartyAgreement, shareApp } =
     useMini();
   const { accessToken } = useAccessToken();
-  const { userId, nickname, setUserInfo, townName3 } = useUserData();
+  const { townName3 } = useUserData();
   const {
     updateMyScore: updateMyGame2048Score,
     updateMyComment: updateMyGame2048Comment,
@@ -52,8 +52,7 @@ export const Home: React.FC = () => {
     updateMyComment: updateMyKarrotClickerComment,
     setGameTypeToKarrotClicker,
   } = useMyKarrotClickerData();
-  const { uuid, regionId, referer, mission, newGame, setMission, setNewGame } =
-    useUser();
+  const { user, setUser, mission, newGame, setMission, setNewGame } = useUser();
 
   const [shouldMissionPopupShown, setShouldMissionPopupShown] =
     useState<boolean>(!mission.popup?.hasSeen);
@@ -69,16 +68,14 @@ export const Home: React.FC = () => {
             data: { data },
           } = await minigameApi.userApi.getUserInfoUsingGET();
           if (data) {
-            setUserInfo(data.id, data.nickname);
-            // FA: track user with set user id
-            // analytics.setUserId(data.id);
+            setUser({ id: { userId: data.id }, nickname: data.nickname });
           }
         } catch (error) {
           console.error(error);
         }
       }
     },
-    [minigameApi.userApi, setUserInfo]
+    [minigameApi.userApi, setUser]
   );
 
   // Track user with uuid
@@ -90,18 +87,7 @@ export const Home: React.FC = () => {
     }: {
       uuid: string;
       regionId: string;
-      referer?:
-        | 'FEED'
-        | 'SUBSCRIBE_FEED_1'
-        | 'SUBSCRIBE_FEED_2'
-        | 'SUBSCRIBE_FEED_3'
-        | 'NEAR_BY'
-        | 'SHARE_GAME_2048'
-        | 'SHARE_GAME_KARROT'
-        | 'SHARE_PLATFORM'
-        | 'SHARE_COMMUNITY'
-        | 'LOGIN'
-        | 'UNKNOWN';
+      referer?: RefererEnum;
     }) => {
       try {
         analytics.setUserId(uuid);
@@ -120,8 +106,12 @@ export const Home: React.FC = () => {
   );
 
   useEffect(() => {
-    trackUser({ uuid: uuid, regionId: regionId, referer: referer });
-  }, [referer, regionId, trackUser, uuid]);
+    trackUser({
+      uuid: user.id?.uuid as string,
+      regionId: user.regionId as string,
+      referer: user.referer,
+    });
+  }, [trackUser, user.id?.uuid, user.referer, user.regionId]);
 
   // Check user's notification status
   // available notifications: new-game, next-mission
@@ -152,9 +142,9 @@ export const Home: React.FC = () => {
   }, [minigameApi.notificationApi, setMission, setNewGame]);
 
   useEffect(() => {
-    updateUserInfo({ userId: userId });
+    updateUserInfo({ userId: user.id?.userId as string });
     checkNotificationStatus();
-  }, [checkNotificationStatus, updateUserInfo, userId]);
+  }, [checkNotificationStatus, updateUserInfo, user.id?.userId]);
 
   useEffect(() => {
     if (isTop) {
@@ -268,7 +258,7 @@ export const Home: React.FC = () => {
       location: 'platform_page',
     });
     const url = 'https://daangn.onelink.me/HhUa/2da74f80';
-    const text = `${nickname}님이 이웃님을 동네대회에 초대했어요! 같이 게임할래요?`;
+    const text = `${user.nickname}님이 이웃님을 동네대회에 초대했어요! 같이 게임할래요?`;
     shareApp(url, text);
   };
   const triggerShareHandler = () => {

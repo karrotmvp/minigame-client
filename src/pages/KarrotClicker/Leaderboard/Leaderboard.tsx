@@ -5,7 +5,7 @@ import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
 import { OldButton } from 'components/Button';
 import { DefaultUserRow, TopUserRow } from './LeaderboardTabs/Row';
 import { LeaderboardTabs } from './LeaderboardTabs';
-import { useMini, useUserData } from 'hooks';
+import { useMini, useUserData, useUser } from 'hooks';
 import { useMyKarrotClickerData } from '../hooks';
 import { useMinigameApi } from 'services/api/minigameApi';
 import { Nav } from 'components/Navigation/Nav';
@@ -50,7 +50,8 @@ export const Leaderboard = () => {
   const analytics = useAnalytics();
   const minigameApi = useMinigameApi();
   const karrotMarketMini = useMini();
-  const { nickname, townName2: districtName } = useUserData();
+  const { user } = useUser();
+  const { townName2: districtName } = useUserData();
   const { gameType, score, rank, comment, updateMyKarrotClickerData } =
     useMyKarrotClickerData();
   const { onResetCount, resumeGame } = useGame();
@@ -79,7 +80,7 @@ export const Leaderboard = () => {
 
   const handleShare = () => {
     const url = 'https://daangn.onelink.me/HhUa/8db9923d';
-    const text = `${nickname}님은 당근모아에서 전국 ${rank}등!`;
+    const text = `${user.nickname}님은 당근모아에서 전국 ${rank}등!`;
     karrotMarketMini.shareApp(url, text);
     analytics.logEvent('click_share_button', {
       game_type: 'karrot_clicker',
@@ -116,7 +117,7 @@ export const Leaderboard = () => {
       <Nav appendLeft={<CloseIcon />} onClickLeft={goBackToPlatform} />
       {score === 0 ? null : (
         <Heading>
-          <EmphasizedSpan>{nickname}</EmphasizedSpan>님은
+          <EmphasizedSpan>{user.nickname}</EmphasizedSpan>님은
           <EmphasizedSpan> {rank}위</EmphasizedSpan>
           에요!
         </Heading>
@@ -125,7 +126,7 @@ export const Leaderboard = () => {
       <MyRow>
         {score === 0 ? null : (
           <UserScoreExists
-            nickname={nickname}
+            nickname={user.nickname as string}
             rank={rank}
             score={score}
             comment={comment}

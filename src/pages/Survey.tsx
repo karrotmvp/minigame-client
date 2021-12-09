@@ -7,7 +7,7 @@ import { rem } from 'polished';
 import { color, PageContainer } from 'styles';
 import { Button } from 'components/Button';
 import { useMinigameApi } from 'services/api/minigameApi';
-import { useUserData, useUser } from 'hooks';
+import { useUser } from 'hooks';
 import { SurveyToastContainer, surveyToastEmitter } from 'components/Toast';
 import { useAnalytics } from 'services/analytics';
 
@@ -16,11 +16,10 @@ export const Survey: React.FC = () => {
   const { isTop } = useCurrentScreen();
   const { pop } = useNavigator();
   const minigameApi = useMinigameApi();
-  const { regionId } = useUserData();
   const [gameSurveyInput, setGameSurveyInput] = useState('');
   const inputRef = useRef<any>();
 
-  const { uuid } = useUser();
+  const { user } = useUser();
 
   const goToPlatformPage = () => {
     pop();
@@ -56,8 +55,8 @@ export const Survey: React.FC = () => {
   const submitGameSurvey = async () => {
     inputRef.current.focus();
     const response = await postGameSurvey({
-      uuid: uuid,
-      regionId: regionId,
+      uuid: user.id?.uuid as string,
+      regionId: user.regionId as string,
       content: gameSurveyInput,
     });
     if (response?.status === 200) {
