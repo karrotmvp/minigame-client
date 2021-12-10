@@ -10,26 +10,19 @@ import { KarrotClickerGame } from 'pages/KarrotClicker/Game';
 import { KarrotClickerLeaderboard } from 'pages/KarrotClicker/Leaderboard';
 import { Survey } from 'pages/Survey';
 import { Mission } from 'pages/Mission';
-import {
-  useAccessToken,
-  useSignAccessToken,
-  useUserData,
-  useUser,
-  useMini,
-} from 'hooks';
+import { useAccessToken, useSignAccessToken, useUser, useMini } from 'hooks';
 import { useMinigameApi } from 'services/api/minigameApi';
 import { useAnalytics } from 'services/analytics/firebase';
 import { v4 as uuidv4 } from 'uuid';
+import { RefererEnum } from 'redux/user';
 
 const App: React.FC = () => {
-  // const dispatch = useDispatch();
   const karrotMini = useMini();
   const minigameApi = useMinigameApi();
   const analytics = useAnalytics();
-  const { setRegionInfo, setTownInfo, setIsInstalled } = useUserData();
   const { accessToken } = useAccessToken();
   const { signAccessToken, removeCookie } = useSignAccessToken();
-  const { saveUserInfo, setMissionPreference } = useUser();
+  const { setUser, setTown, setMission, setSubscription } = useUser();
 
   const getQueryParams = () => {
     const searchParams = new URLSearchParams(window.location.search);
@@ -48,14 +41,19 @@ const App: React.FC = () => {
           data: { data },
         } = await minigameApi.regionApi.getTownInfoUsingGET(regionId);
         if (data) {
-          setTownInfo(data.townId, data.name1, data.name2, data.name3);
+          setTown({
+            id: data.townId,
+            name1: data.name1,
+            name2: data.name2,
+            name3: data.name3,
+          });
         }
       } catch (error) {
         console.error(error);
       }
     },
 
-    [minigameApi.regionApi, setTownInfo]
+    [minigameApi.regionApi, setTown]
   );
 
   const isSubscribed = (installed: string | null) => {
@@ -80,56 +78,61 @@ const App: React.FC = () => {
     }
   };
 
+  const saveQueryString = ({
+    uuid,
+    regionId,
+    isSubscribed,
+    referer,
+  }: {
+    uuid: string;
+    regionId: string;
+    isSubscribed: boolean;
+    referer: RefererEnum;
+  }) => {
+    setUser({ uuid, regionId, referer });
+    setSubscription({ isSubscribed });
+  };
   const checkLocalStorage = () => {
     const missionPreference = localStorage.getItem('missionPreference');
     if (missionPreference !== null) {
       const parsedMissionPreference = JSON.parse(missionPreference);
-      setMissionPreference({
-        isMissionCheckedOut: parsedMissionPreference.isMissionCheckedOut,
-        hasMissionPopupSeen: parsedMissionPreference.hasMissionPopupSeen,
+      setMission({
+        page: { isCheckedOut: parsedMissionPreference.isMissionCheckedOut },
+        popup: { hasSeen: parsedMissionPreference.hasMissionPopupSeen },
       });
     }
   };
 
   useEffect(() => {
-    retrieveUUID();
-    if (accessToken) {
-      removeCookie('accessToken');
-    }
     const [preload, code, regionId, installed, referer] = getQueryParams();
     // if (code)... returning user handler
     // else... new user handler
 
-    analytics.logEvent('launch_app');
+    if (preload === null) {
+      retrieveUUID();
+      if (accessToken) {
+        removeCookie('accessToken');
+      }
+      analytics.logEvent('launch_app');
 
-    setRegionInfo(regionId as string);
-    getDistrictInfo(regionId as string);
-    setIsInstalled(isSubscribed(installed));
-    console.log(preload, code, regionId, installed, referer);
+      setUser({ regionId: regionId as string });
+      getDistrictInfo(regionId as string);
+      console.log(preload, code, regionId, installed, referer);
 
-    saveUserInfo({
-      uuid: localStorage.getItem('uuid'),
-      regionId: regionId as string,
-      isSubscribed: isSubscribed(installed),
-      referer: referer?.toUpperCase() as
-        | 'FEED'
-        | 'SUBSCRIBE_FEED_1'
-        | 'SUBSCRIBE_FEED_2'
-        | 'SUBSCRIBE_FEED_3'
-        | 'NEAR_BY'
-        | 'SHARE_GAME_2048'
-        | 'SHARE_GAME_KARROT'
-        | 'SHARE_PLATFORM'
-        | 'SHARE_COMMUNITY'
-        | 'LOGIN'
-        | 'UNKNOWN',
-    });
-    checkLocalStorage();
-    fetchData(
-      localStorage.getItem('uuid') as string,
-      code as string,
-      regionId as string
-    );
+      saveQueryString({
+        uuid: localStorage.getItem('uuid') as string,
+        regionId: regionId as string,
+        isSubscribed: isSubscribed(installed),
+        referer: referer?.toUpperCase() as RefererEnum,
+      });
+      checkLocalStorage();
+      fetchData(
+        localStorage.getItem('uuid') as string,
+        code as string,
+        regionId as string
+      );
+    }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

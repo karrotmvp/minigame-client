@@ -15,7 +15,7 @@ import {
 } from './Score';
 import refreshGameUrl from 'assets/svg/game2048/refresh_game.svg';
 import { useAnalytics } from 'services/analytics';
-import { useMini, useUserData } from 'hooks';
+import { useMini, useUser } from 'hooks';
 import { useDebouncedCallback } from 'use-debounce';
 import ReactModal from 'react-modal';
 
@@ -24,7 +24,7 @@ export const Game: React.FC = () => {
   const { isTop } = useCurrentScreen();
   const minigameApi = useMinigameApi();
   const { isInWebEnvironment } = useMini();
-  const { userId, setUserInfo } = useUserData();
+  const { user, setUser } = useUser();
   const {
     score: myBestScore,
     rank: myCurrentRank,
@@ -49,30 +49,31 @@ export const Game: React.FC = () => {
   const [isGameOver, setIsGameOver] = useState(gameOverStatus);
 
   // update user-info
-  const updateUserInfo = useCallback(async () => {
-    if (userId) {
-      return;
-    } else {
-      try {
-        const {
-          data: { data },
-        } = await minigameApi.userApi.getUserInfoUsingGET();
-        if (data) {
-          setUserInfo(data.id, data.nickname);
-          // FA: track user with set user id
-          // analytics.setUserId(data.id);
+  const updateUserInfo = useCallback(
+    async ({ userId }: { userId: string }) => {
+      if (userId) {
+        return;
+      } else {
+        try {
+          const {
+            data: { data },
+          } = await minigameApi.userApi.getUserInfoUsingGET();
+          if (data) {
+            setUser({ userId: data.id, nickname: data.nickname });
+          }
+        } catch (error) {
+          console.error(error);
         }
-      } catch (error) {
-        console.error(error);
       }
-    }
-  }, [minigameApi.userApi, setUserInfo, userId]);
+    },
+    [minigameApi.userApi, setUser]
+  );
 
   useEffect(() => {
-    if (userId === '') {
-      updateUserInfo();
+    if (user.userId === '') {
+      updateUserInfo({ userId: user.userId });
     }
-  }, [updateUserInfo, userId]);
+  }, [updateUserInfo, user.userId]);
 
   // FA view_game_page
   useEffect(() => {

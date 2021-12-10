@@ -1,120 +1,80 @@
 import { useCallback } from 'react';
-import { useDispatch, useSelector, shallowEqual } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'store';
 import {
-  saveUserInfo as saveUserInfoAction,
-  trackVisitor as trackVisitorAction,
-  setMissionPreference as setMissionPreferenceAction,
-  setNotificationPreference as setNotificationPreferenceAction,
+  setUser as setUserAction,
+  setTown as setTownAction,
+  setMission as setMissionAction,
+  setSubscription as setSubscriptionAction,
+  setNewGame as setNewGameAction,
 } from '../redux/user/user';
+import type { User, Town, Mission, Subscription, NewGame } from '../redux/user';
 
 export const useUser = () => {
-  const { uuid, regionId, isSubscribed, referer } = useSelector(
-    (state: RootState) => ({
-      uuid: state.user.uuid,
-      regionId: state.user.regionId,
-      isSubscribed: state.user.isSubscribed,
-      referer: state.user.referer,
-    }),
-    shallowEqual
+  // state
+  const user = useSelector((state: RootState) => state.user.user);
+  const town = useSelector((state: RootState) => state.user.town);
+  const subscription = useSelector(
+    (state: RootState) => state.user.subscription
   );
+  const mission = useSelector((state: RootState) => state.user.mission);
+  const newGame = useSelector((state: RootState) => state.user.newGame);
 
-  const { isMissionCheckedOut, hasMissionPopupSeen } = useSelector(
-    (state: RootState) => ({
-      isMissionCheckedOut: state.user.isMissionCheckedOut,
-      hasMissionPopupSeen: state.user.hasMissionPopupSeen,
-    }),
-    shallowEqual
-  );
-
-  const { notification } = useSelector((state: RootState) => ({
-    notification: {
-      newGame: {
-        isNotificationOn: state.user.notification.newGame.isNotificationOn,
-      },
-      nextMission: {
-        isNotificationOn: state.user.notification.nextMission.isNotificationOn,
-      },
-    },
-  }));
-
+  // dispatch
   const dispatch = useDispatch();
 
-  const saveUserInfo = useCallback(
-    ({
-      uuid,
-      regionId,
-      isSubscribed,
-      referer,
-    }: {
-      uuid?: string | null;
-      regionId?: string;
-      isSubscribed?: boolean;
-      referer?:
-        | 'FEED'
-        | 'SUBSCRIBE_FEED_1'
-        | 'SUBSCRIBE_FEED_2'
-        | 'SUBSCRIBE_FEED_3'
-        | 'NEAR_BY'
-        | 'SHARE_GAME_2048'
-        | 'SHARE_GAME_KARROT'
-        | 'SHARE_PLATFORM'
-        | 'SHARE_COMMUNITY'
-        | 'LOGIN'
-        | 'UNKNOWN';
-    }) => {
-      dispatch(saveUserInfoAction({ uuid, regionId, isSubscribed, referer }));
-    },
-    [dispatch]
-  );
-
-  const trackVisitor = () => {
-    dispatch(trackVisitorAction());
-  };
-
-  const setMissionPreference = useCallback(
-    ({
-      isMissionCheckedOut,
-      hasMissionPopupSeen,
-    }: {
-      isMissionCheckedOut?: boolean;
-      hasMissionPopupSeen?: boolean;
-    }) => {
+  const setUser = useCallback(
+    ({ uuid, userId, regionId, referer, nickname, referralCode }: User) => {
       dispatch(
-        setMissionPreferenceAction({ isMissionCheckedOut, hasMissionPopupSeen })
-      );
-    },
-    [dispatch]
-  );
-
-  const setNotificationPreference = useCallback(
-    ({
-      isNewGameNotificationOn,
-      isNextMissionNotificationOn,
-    }: {
-      isNewGameNotificationOn?: boolean;
-      isNextMissionNotificationOn?: boolean;
-    }) => {
-      dispatch(
-        setNotificationPreferenceAction({
-          isNewGameNotificationOn,
-          isNextMissionNotificationOn,
+        setUserAction({
+          uuid,
+          userId,
+          regionId,
+          referer,
+          nickname,
+          referralCode,
         })
       );
     },
     [dispatch]
   );
+
+  const setTown = useCallback(
+    ({ id, name1, name2, name3 }: Town) => {
+      dispatch(setTownAction({ id, name1, name2, name3 }));
+    },
+    [dispatch]
+  );
+
+  const setMission = useCallback(
+    ({ notification, page, popup }: Mission) => {
+      dispatch(setMissionAction({ notification, page, popup }));
+    },
+    [dispatch]
+  );
+  const setSubscription = useCallback(
+    ({ isSubscribed }: Subscription) => {
+      dispatch(setSubscriptionAction({ isSubscribed }));
+    },
+    [dispatch]
+  );
+
+  const setNewGame = useCallback(
+    ({ notification }: NewGame) => {
+      dispatch(setNewGameAction({ notification }));
+    },
+    [dispatch]
+  );
   return {
-    uuid,
-    regionId,
-    isSubscribed,
-    referer,
-    isMissionCheckedOut,
-    hasMissionPopupSeen,
-    notification,
-    saveUserInfo,
-    trackVisitor,
-    setMissionPreference,
-    setNotificationPreference,
+    user,
+    town,
+    subscription,
+    mission,
+    newGame,
+    setUser,
+    setTown,
+    setMission,
+    setSubscription,
+    setNewGame,
   };
 };

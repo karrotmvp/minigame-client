@@ -9,7 +9,7 @@ import { CloseIcon } from 'assets/Icon';
 import { MyInfo } from './MyInfo';
 import { useMinigameApi } from 'services/api/minigameApi';
 import { useMyGame2048Data } from '../hooks';
-import { useMini, useUserData } from 'hooks';
+import { useMini, useUser } from 'hooks';
 import { Refresh } from './Refresh';
 import { useThrottledCallback } from 'use-debounce/lib';
 import { useAnalytics } from 'services/analytics';
@@ -26,8 +26,7 @@ export const Leaderboard = () => {
   const minigameApi = useMinigameApi();
   const analytics = useAnalytics();
   const { shareApp, handleSubscribe } = useMini();
-  const { nickname, isInstalled, setIsInstalled } = useUserData();
-
+  const { user, subscription, setSubscription } = useUser();
   const {
     rank,
     gameType,
@@ -154,7 +153,7 @@ export const Leaderboard = () => {
       location: 'leaderboard_page',
     });
     const url = 'https://daangn.onelink.me/HhUa/37719e67';
-    const text = `${nickname}님은 2048 퍼즐에서 전국 ${rank}등!`;
+    const text = `${user.nickname}님은 2048 퍼즐에서 전국 ${rank}등!`;
     shareApp(url, text);
   };
 
@@ -175,18 +174,19 @@ export const Leaderboard = () => {
       location: 'leaderboard_page',
       is_voluntary: false,
     });
-    setIsInstalled(true);
+    setSubscription({ isSubscribed: true });
     subscribeToastEmitter();
-  }, [analytics, setIsInstalled]);
+  }, [analytics, setSubscription]);
 
   const turnOffSubscribeNotification = useCallback(async () => {
     await minigameApi.notificationApi.saveNotificationUsingPOST({
       type: 'SUBSCRIBE_OFF' as NotificationRequestDtoTypeEnum,
     });
   }, [minigameApi.notificationApi]);
+
   useEffect(() => {
     const showSubscribe = async () => {
-      if (isInstalled === false) {
+      if (subscription.isSubscribed === false) {
         const response = await isSubscribeNotificationOff();
         if (response !== undefined && response === false) {
           analytics.logEvent('show_subscribe_button', {
@@ -202,30 +202,6 @@ export const Leaderboard = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // const turnOffSubscribeSuggestion = () => {
-  //   localStorage.setItem(
-  //     'subscribePreference',
-  //     JSON.stringify({
-  //       hasSuggestionSeen: true,
-  //     })
-  //   );
-  // };
-  // const showSubscribe = useCallback(() => {
-  //   const subscribePreference = localStorage.getItem('subscribePreference');
-  //   const parsedSubscribePreference = JSON.parse(subscribePreference!);
-  //   if (isInstalled === false && parsedSubscribePreference.hasSuggestionSeen) {
-  //     analytics.logEvent('show_subscribe_button', {
-  //       game_type: '2048_puzzle',
-  //       location: 'leaderboard_page',
-  //       is_voluntary: false,
-  //     });
-  //     handleSubscribe(onSubscribeSuccess, turnOffSubscribeSuggestion);
-  //   }
-  // }, [analytics, handleSubscribe, isInstalled, onSubscribeSuccess]);
-
-  // useEffect(() => {
-  //   showSubscribe();
-  // }, [showSubscribe]);
   return (
     <div
       id="game-2048-leaderboard-page"

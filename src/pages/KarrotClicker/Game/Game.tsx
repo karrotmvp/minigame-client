@@ -13,7 +13,7 @@ import { useCurrentScreen } from '@karrotframe/navigator';
 import { useMyKarrotClickerData } from '../hooks';
 import { GameOver, GamePause } from './Modal';
 import { useGame } from './hooks';
-import { useUserData } from 'hooks';
+import { useUser } from 'hooks';
 import { useMinigameApi } from 'services/api/minigameApi';
 
 Modal.setAppElement(document.createElement('div'));
@@ -21,9 +21,9 @@ Modal.setAppElement(document.createElement('div'));
 export const Game: React.FC = () => {
   const { isTop } = useCurrentScreen();
   const analytics = useAnalytics();
-  const { userId, setUserInfo } = useUserData();
   const minigameApi = useMinigameApi();
   const { score } = useMyKarrotClickerData();
+  const { user, setUser } = useUser();
   const { clickCount, updateAnimationPlayState, shouldPause } = useGame();
 
   const [isPaused, setIsPaused] = useState<boolean>(false);
@@ -51,30 +51,31 @@ export const Game: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [score]);
 
-  const updateUserInfo = useCallback(async () => {
-    if (userId) {
-      return;
-    } else {
-      try {
-        const {
-          data: { data },
-        } = await minigameApi.userApi.getUserInfoUsingGET();
-        if (data) {
-          setUserInfo(data.id, data.nickname);
-          // FA: track user with set user id
-          // analytics.setUserId(data.id);
+  const updateUserInfo = useCallback(
+    async ({ userId }: { userId: string }) => {
+      if (userId) {
+        return;
+      } else {
+        try {
+          const {
+            data: { data },
+          } = await minigameApi.userApi.getUserInfoUsingGET();
+          if (data) {
+            setUser({ userId: data.id, nickname: data.nickname });
+          }
+        } catch (error) {
+          console.error(error);
         }
-      } catch (error) {
-        console.error(error);
       }
-    }
-  }, [minigameApi.userApi, setUserInfo, userId]);
+    },
+    [minigameApi.userApi, setUser]
+  );
 
   useEffect(() => {
-    if (userId === '') {
-      updateUserInfo();
+    if (user.userId === '') {
+      updateUserInfo({ userId: user.userId });
     }
-  }, [updateUserInfo, userId]);
+  }, [updateUserInfo, user.userId]);
 
   useEffect(() => {
     if (isTop) {

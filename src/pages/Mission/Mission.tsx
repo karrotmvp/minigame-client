@@ -16,8 +16,7 @@ export const Mission: React.FC = () => {
   const minigameApi = useMinigameApi();
   const { accessToken } = useAccessToken();
   const { handleThirdPartyAgreement } = useMini();
-  const { notification, setMissionPreference, setNotificationPreference } =
-    useUser();
+  const { mission, setMission } = useUser();
 
   useEffect(() => {
     if (isTop) {
@@ -34,12 +33,12 @@ export const Mission: React.FC = () => {
           hasMissionPopupSeen: true,
         })
       );
-      setMissionPreference({
-        isMissionCheckedOut: true,
-        hasMissionPopupSeen: true,
+      setMission({
+        page: { isCheckedOut: true },
+        popup: { hasSeen: true },
       });
     }
-  }, [setMissionPreference, isTop]);
+  }, [setMission, isTop]);
 
   const goBackToPlatform = () => {
     pop();
@@ -51,9 +50,7 @@ export const Mission: React.FC = () => {
       location: 'platform_page',
       button_type: 'notification_button',
     });
-    setNotificationPreference({
-      isNextMissionNotificationOn: true,
-    });
+    setMission({ notification: { isOn: true } });
   };
   const turnNextMissionNotificationOn = async () => {
     if (accessToken) {
@@ -65,9 +62,7 @@ export const Mission: React.FC = () => {
         analytics.logEvent('click_notification_button', {
           notification_type: 'next_mission',
         });
-        setNotificationPreference({
-          isNextMissionNotificationOn: true,
-        });
+        setMission({ notification: { isOn: true } });
       }
     } else {
       handleThirdPartyAgreement(onSuccessHandler);
@@ -111,7 +106,7 @@ export const Mission: React.FC = () => {
             style={{ width: `100%`, maxWidth: `100vw`, maxHeight: `100%` }}
           />
 
-          {notification.nextMission.isNotificationOn ? (
+          {mission.notification?.isOn ? (
             <button
               style={{
                 position: `absolute`,
