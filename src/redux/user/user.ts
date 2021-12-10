@@ -97,16 +97,28 @@ const userSlice = createSlice({
           : state.user.referralCode,
       };
     },
-    setMission(state, action) {
-      state.mission.notification = action.payload.notification;
-      state.mission.page = action.payload.page;
-      state.mission.popup = action.payload.popup;
+    setMission(state, { payload }) {
+      state.mission = {
+        notification: payload.notification
+          ? payload.notification
+          : state.mission.notification,
+        page: payload.page ? payload.page : state.mission.page,
+        popup: payload.popup ? payload.popup : state.mission.popup,
+      };
     },
-    setSubscription(state, action) {
-      state.subscription.isSubscribed = action.payload.isSubscribed;
+    setSubscription(state, { payload }) {
+      state.subscription = {
+        isSubscribed: payload.isSubscribed
+          ? payload.isSubscribed
+          : state.subscription.isSubscribed,
+      };
     },
-    setNewGame(state, action) {
-      state.newGame.notification = action.payload.notification;
+    setNewGame(state, { payload }) {
+      state.newGame = {
+        notification: payload.notification
+          ? payload.notification
+          : state.newGame.notification,
+      };
     },
   },
 });
