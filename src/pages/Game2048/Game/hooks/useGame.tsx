@@ -9,8 +9,9 @@ import {
   resetGameAction,
   updateScoreAction,
   updateTileAction,
+  setGameDataAction,
 } from '../reducers';
-import { TileProps } from '../Game/Tile';
+import type { TileProps } from '../Game/Tile';
 import { useUniqueId } from './useUniqueId';
 import { animationDuration } from '../Game/styles';
 import { useMyGame2048Data } from 'pages/Game2048/hooks';
@@ -405,6 +406,17 @@ export const useGame = () => {
   const moveUp = moveUpFactory(retrieveTileMap());
   const moveDown = moveDownFactory(retrieveTileMap());
 
+  const boardByValue = retrieveTileMapByValue();
+  const setGameData = useCallback(
+    (
+      tiles: {
+        [id: number]: TileProps;
+      },
+      byIds: number[],
+      score: number
+    ) => dispatch(setGameDataAction(tiles, byIds, score)),
+    []
+  );
   return {
     score,
     tileList,
@@ -414,6 +426,8 @@ export const useGame = () => {
     moveDown,
     resetGame,
     isGameOver,
+    boardByValue,
+    setGameData,
   };
 };
 
