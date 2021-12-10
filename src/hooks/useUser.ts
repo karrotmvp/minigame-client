@@ -2,19 +2,12 @@ import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'store';
 import {
-  // saveQueryString as saveQueryStringAction,
   setUser as setUserAction,
   setMission as setMissionAction,
   setSubscription as setSubscriptionAction,
   setNewGame as setNewGameAction,
 } from '../redux/user/user';
-import type {
-  User,
-  Mission,
-  Subscription,
-  NewGame,
-  RefererEnum,
-} from '../redux/user';
+import type { User, Mission, Subscription, NewGame } from '../redux/user';
 
 export const useUser = () => {
   // state
@@ -53,9 +46,16 @@ export const useUser = () => {
   // );
 
   const setUser = useCallback(
-    ({ id, regionId, referer, nickname, referralCode }: User) => {
+    ({ uuid, userId, regionId, referer, nickname, referralCode }: User) => {
       dispatch(
-        setUserAction({ id, regionId, referer, nickname, referralCode })
+        setUserAction({
+          uuid,
+          userId,
+          regionId,
+          referer,
+          nickname,
+          referralCode,
+        })
       );
     },
     [dispatch]

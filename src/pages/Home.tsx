@@ -68,7 +68,7 @@ export const Home: React.FC = () => {
             data: { data },
           } = await minigameApi.userApi.getUserInfoUsingGET();
           if (data) {
-            setUser({ id: { userId: data.id }, nickname: data.nickname });
+            setUser({ userId: data.id, nickname: data.nickname });
           }
         } catch (error) {
           console.error(error);
@@ -107,11 +107,11 @@ export const Home: React.FC = () => {
 
   useEffect(() => {
     trackUser({
-      uuid: user.id?.uuid as string,
+      uuid: user.uuid as string,
       regionId: user.regionId as string,
       referer: user.referer,
     });
-  }, [trackUser, user.id?.uuid, user.referer, user.regionId]);
+  }, [trackUser, user.uuid, user.referer, user.regionId]);
 
   // Check user's notification status
   // available notifications: new-game, next-mission
@@ -142,9 +142,9 @@ export const Home: React.FC = () => {
   }, [minigameApi.notificationApi, setMission, setNewGame]);
 
   useEffect(() => {
-    updateUserInfo({ userId: user.id?.userId as string });
+    updateUserInfo({ userId: user.userId as string });
     checkNotificationStatus();
-  }, [checkNotificationStatus, updateUserInfo, user.id?.userId]);
+  }, [checkNotificationStatus, updateUserInfo, user.userId]);
 
   useEffect(() => {
     if (isTop) {

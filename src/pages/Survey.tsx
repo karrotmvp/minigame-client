@@ -55,7 +55,7 @@ export const Survey: React.FC = () => {
   const submitGameSurvey = async () => {
     inputRef.current.focus();
     const response = await postGameSurvey({
-      uuid: user.id?.uuid as string,
+      uuid: user.uuid as string,
       regionId: user.regionId as string,
       content: gameSurveyInput,
     });

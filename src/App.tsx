@@ -91,7 +91,7 @@ const App: React.FC = () => {
     isSubscribed: boolean;
     referer: RefererEnum;
   }) => {
-    setUser({ id: { uuid }, regionId, referer });
+    setUser({ uuid, regionId, referer });
     setSubscription({ isSubscribed });
   };
   const checkLocalStorage = () => {
@@ -106,32 +106,35 @@ const App: React.FC = () => {
   };
 
   useEffect(() => {
-    retrieveUUID();
-    if (accessToken) {
-      removeCookie('accessToken');
-    }
     const [preload, code, regionId, installed, referer] = getQueryParams();
     // if (code)... returning user handler
     // else... new user handler
 
-    analytics.logEvent('launch_app');
+    if (preload === null) {
+      retrieveUUID();
+      if (accessToken) {
+        removeCookie('accessToken');
+      }
+      analytics.logEvent('launch_app');
 
-    setUser({ regionId: regionId as string });
-    getDistrictInfo(regionId as string);
-    console.log(preload, code, regionId, installed, referer);
+      setUser({ regionId: regionId as string });
+      getDistrictInfo(regionId as string);
+      console.log(preload, code, regionId, installed, referer);
 
-    saveQueryString({
-      uuid: localStorage.getItem('uuid') as string,
-      regionId: regionId as string,
-      isSubscribed: isSubscribed(installed),
-      referer: referer?.toUpperCase() as RefererEnum,
-    });
-    checkLocalStorage();
-    fetchData(
-      localStorage.getItem('uuid') as string,
-      code as string,
-      regionId as string
-    );
+      saveQueryString({
+        uuid: localStorage.getItem('uuid') as string,
+        regionId: regionId as string,
+        isSubscribed: isSubscribed(installed),
+        referer: referer?.toUpperCase() as RefererEnum,
+      });
+      checkLocalStorage();
+      fetchData(
+        localStorage.getItem('uuid') as string,
+        code as string,
+        regionId as string
+      );
+    }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

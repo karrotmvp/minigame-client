@@ -14,10 +14,8 @@ export type RefererEnum =
   | 'UNKNOWN';
 
 export interface User {
-  id?: {
-    uuid?: string;
-    userId?: string;
-  };
+  uuid?: string;
+  userId?: string;
   regionId?: string;
   referer?: RefererEnum;
   nickname?: string;
@@ -55,10 +53,8 @@ interface UserState {
 
 const initialState: UserState = {
   user: {
-    id: {
-      uuid: '',
-      userId: '',
-    },
+    uuid: '',
+    userId: '',
     regionId: '',
     nickname: '',
     referer: 'UNKNOWN',
@@ -89,18 +85,17 @@ const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    // saveQueryString(state, action) {
-    //   state.user.id = action.payload.id.uuid;
-    //   state.user.regionId = action.payload.regionId;
-    //   state.user.referer = action.payload.referer;
-    //   state.subscription.isSubscribed = action.payload.isSubscribed;
-    // },
-    setUser(state, action) {
-      state.user.id = action.payload.id;
-      state.user.regionId = action.payload.regionId;
-      state.user.referer = action.payload.referer;
-      state.user.nickname = action.payload.nickname;
-      state.user.referralCode = action.payload.referralCode;
+    setUser(state, { payload }) {
+      state.user = {
+        uuid: payload.uuid ? payload.uuid : state.user.uuid,
+        userId: payload.userId ? payload.userId : state.user.userId,
+        regionId: payload.regionId ? payload.regionId : state.user.regionId,
+        referer: payload.referer ? payload.referer : state.user.referer,
+        nickname: payload.nickname ? payload.nickname : state.user.nickname,
+        referralCode: payload.referralCode
+          ? payload.referralCode
+          : state.user.referralCode,
+      };
     },
     setMission(state, action) {
       state.mission.notification = action.payload.notification;

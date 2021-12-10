@@ -61,7 +61,7 @@ export const Game: React.FC = () => {
             data: { data },
           } = await minigameApi.userApi.getUserInfoUsingGET();
           if (data) {
-            setUser({ id: { userId: data.id }, nickname: data.nickname });
+            setUser({ userId: data.id, nickname: data.nickname });
           }
         } catch (error) {
           console.error(error);
@@ -72,10 +72,10 @@ export const Game: React.FC = () => {
   );
 
   useEffect(() => {
-    if (user.id?.userId === '') {
-      updateUserInfo({ userId: user.id?.userId });
+    if (user.userId === '') {
+      updateUserInfo({ userId: user.userId });
     }
-  }, [updateUserInfo, user.id?.userId]);
+  }, [updateUserInfo, user.userId]);
 
   useEffect(() => {
     if (isTop) {

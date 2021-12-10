@@ -34,7 +34,7 @@ export const Guide: React.FC<Props> = (props) => {
       data: { data },
     } = await minigameApi.userApi.getUserInfoUsingGET();
     if (data) {
-      setUser({ id: { userId: data.id }, nickname: data.nickname });
+      setUser({ userId: data.id, nickname: data.nickname });
     }
   };
 

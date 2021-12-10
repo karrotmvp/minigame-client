@@ -21,7 +21,7 @@ export const useMini = () => {
       data: { data },
     } = await minigameApi.userApi.getUserInfoUsingGET();
     if (data) {
-      setUser({ id: { userId: data.id }, nickname: data.nickname });
+      setUser({ userId: data.id, nickname: data.nickname });
     }
   };
 
@@ -48,7 +48,7 @@ export const useMini = () => {
         if (result && result.code) {
           // console.log('1', result.code);
           const response = await signAccessToken(
-            user.id?.uuid as string,
+            user.uuid as string,
             result.code,
             user.regionId as string
           );
