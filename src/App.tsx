@@ -10,13 +10,7 @@ import { KarrotClickerGame } from 'pages/KarrotClicker/Game';
 import { KarrotClickerLeaderboard } from 'pages/KarrotClicker/Leaderboard';
 import { Survey } from 'pages/Survey';
 import { Mission } from 'pages/Mission';
-import {
-  useAccessToken,
-  useSignAccessToken,
-  useUserData,
-  useUser,
-  useMini,
-} from 'hooks';
+import { useAccessToken, useSignAccessToken, useUser, useMini } from 'hooks';
 import { useMinigameApi } from 'services/api/minigameApi';
 import { useAnalytics } from 'services/analytics/firebase';
 import { v4 as uuidv4 } from 'uuid';
@@ -26,10 +20,9 @@ const App: React.FC = () => {
   const karrotMini = useMini();
   const minigameApi = useMinigameApi();
   const analytics = useAnalytics();
-  const { setTownInfo } = useUserData();
   const { accessToken } = useAccessToken();
   const { signAccessToken, removeCookie } = useSignAccessToken();
-  const { setUser, setMission, setSubscription } = useUser();
+  const { setUser, setTown, setMission, setSubscription } = useUser();
 
   const getQueryParams = () => {
     const searchParams = new URLSearchParams(window.location.search);
@@ -48,14 +41,19 @@ const App: React.FC = () => {
           data: { data },
         } = await minigameApi.regionApi.getTownInfoUsingGET(regionId);
         if (data) {
-          setTownInfo(data.townId, data.name1, data.name2, data.name3);
+          setTown({
+            id: data.townId,
+            name1: data.name1,
+            name2: data.name2,
+            name3: data.name3,
+          });
         }
       } catch (error) {
         console.error(error);
       }
     },
 
-    [minigameApi.regionApi, setTownInfo]
+    [minigameApi.regionApi, setTown]
   );
 
   const isSubscribed = (installed: string | null) => {

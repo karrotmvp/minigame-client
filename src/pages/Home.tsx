@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
 import { useMinigameApi } from 'services/api/minigameApi';
-import { useAccessToken, useMini, useUserData, useUser } from 'hooks';
+import { useAccessToken, useMini, useUser } from 'hooks';
 import { Nav } from 'components/Navigation/Nav';
 import { CloseIcon } from 'assets/Icon';
 import { rem } from 'polished';
@@ -41,7 +41,6 @@ export const Home: React.FC = () => {
   const { isInWebEnvironment, ejectApp, handleThirdPartyAgreement, shareApp } =
     useMini();
   const { accessToken } = useAccessToken();
-  const { townName3 } = useUserData();
   const {
     updateMyScore: updateMyGame2048Score,
     updateMyComment: updateMyGame2048Comment,
@@ -52,7 +51,8 @@ export const Home: React.FC = () => {
     updateMyComment: updateMyKarrotClickerComment,
     setGameTypeToKarrotClicker,
   } = useMyKarrotClickerData();
-  const { user, setUser, mission, newGame, setMission, setNewGame } = useUser();
+  const { user, town, mission, newGame, setUser, setMission, setNewGame } =
+    useUser();
 
   const [shouldMissionPopupShown, setShouldMissionPopupShown] =
     useState<boolean>(!mission.popup?.hasSeen);
@@ -380,7 +380,7 @@ export const Home: React.FC = () => {
         <PageContainer id="platform-page">
           <Section>
             <MainText>
-              <span>{townName3}</span> 이웃들과
+              <span>{town.name3}</span> 이웃들과
               <br />
               같이 게임해요!
             </MainText>

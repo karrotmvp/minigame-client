@@ -5,7 +5,7 @@ import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
 import { OldButton } from 'components/Button';
 import { DefaultUserRow, TopUserRow } from './LeaderboardTabs/Row';
 import { LeaderboardTabs } from './LeaderboardTabs';
-import { useMini, useUserData, useUser } from 'hooks';
+import { useMini, useUser } from 'hooks';
 import { useMyKarrotClickerData } from '../hooks';
 import { useMinigameApi } from 'services/api/minigameApi';
 import { Nav } from 'components/Navigation/Nav';
@@ -50,8 +50,7 @@ export const Leaderboard = () => {
   const analytics = useAnalytics();
   const minigameApi = useMinigameApi();
   const karrotMarketMini = useMini();
-  const { user } = useUser();
-  const { townName2: districtName } = useUserData();
+  const { user, town } = useUser();
   const { gameType, score, rank, comment, updateMyKarrotClickerData } =
     useMyKarrotClickerData();
   const { onResetCount, resumeGame } = useGame();
@@ -130,7 +129,7 @@ export const Leaderboard = () => {
             rank={rank}
             score={score}
             comment={comment}
-            districtName={districtName}
+            districtName={town.name2 as string}
           />
         )}
       </MyRow>

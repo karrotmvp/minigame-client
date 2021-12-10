@@ -7,7 +7,7 @@ import karrotImageUrl from 'assets/svg/KarrotClicker/small_circle_karrot.svg';
 import React, { useEffect, useState } from 'react';
 import { OldButton, OldDisabledButton } from 'components/Button';
 import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
-import { useUserData } from 'hooks';
+import { useUser } from 'hooks';
 import { useMyKarrotClickerData } from 'pages/KarrotClicker/hooks';
 import { useMinigameApi } from 'services/api/minigameApi';
 import { useAnalytics } from 'services/analytics';
@@ -21,6 +21,7 @@ export const CommentModal: React.FC<Props> = (props) => {
   const { replace } = useNavigator();
   const minigameApi = useMinigameApi();
   const analytics = useAnalytics();
+  const { town } = useUser();
   const {
     score,
     rank,
@@ -33,7 +34,6 @@ export const CommentModal: React.FC<Props> = (props) => {
     length: prevComment.length,
   });
 
-  const { townName2: districtName } = useUserData();
   // Page navigation
   const goToLeaderboardPage = () => {
     replace(`/karrot-clicker/leaderboard`);
@@ -84,7 +84,7 @@ export const CommentModal: React.FC<Props> = (props) => {
       </h1>
       <hr css={horizontalLine} />
       <p css={infoText}>
-        {districtName} 이웃들에게
+        {town.name2} 이웃들에게
         <br />
         하고 싶은 말을 남겨보세요
       </p>
@@ -95,7 +95,7 @@ export const CommentModal: React.FC<Props> = (props) => {
             type="text"
             onChange={handleCommentInput}
             value={currentComment.comment}
-            placeholder={`예) 내가 ${districtName}짱!`}
+            placeholder={`예) 내가 ${town.name2}짱!`}
             maxLength={20}
           />
           <p css={commentLengthCount}>{currentComment.length}/20</p>

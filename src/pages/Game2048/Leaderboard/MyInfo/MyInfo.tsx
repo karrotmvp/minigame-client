@@ -2,12 +2,11 @@ import React from 'react';
 import styled from '@emotion/styled';
 import { rem } from 'polished';
 import { commafy } from 'utils/number';
-import { useUserData, useUser } from 'hooks';
+import { useUser } from 'hooks';
 import { useMyGame2048Data } from 'pages/Game2048/hooks';
 
 export const MyInfo: React.FC = () => {
-  const { user } = useUser();
-  const { townName1: cityName, townName2: districtName } = useUserData();
+  const { user, town } = useUser();
   const { score, rank, highestScore, highestRank } = useMyGame2048Data();
 
   return (
@@ -18,8 +17,11 @@ export const MyInfo: React.FC = () => {
           <Name>
             {user.nickname}
             <District>
-              {cityName.replace(/(특별시|광역시|특별자치시|특별자치도)$/, '')}
-              &nbsp;{districtName}
+              {town.name1!.replace(
+                /(특별시|광역시|특별자치시|특별자치도)$/,
+                ''
+              )}
+              &nbsp;{town.name2}
             </District>
           </Name>
         </Info>

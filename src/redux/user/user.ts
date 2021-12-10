@@ -22,6 +22,13 @@ export interface User {
   referralCode?: string;
 }
 
+export interface Town {
+  id?: string;
+  name1?: string;
+  name2?: string;
+  name3?: string;
+}
+
 export interface Subscription {
   isSubscribed?: boolean;
 }
@@ -46,6 +53,7 @@ export interface NewGame {
 
 interface UserState {
   user: User;
+  town: Town;
   subscription: Subscription;
   mission: Mission;
   newGame: NewGame;
@@ -59,6 +67,12 @@ const initialState: UserState = {
     nickname: '',
     referer: 'UNKNOWN',
     referralCode: '',
+  },
+  town: {
+    id: '',
+    name1: '',
+    name2: '',
+    name3: '',
   },
   subscription: {
     isSubscribed: false,
@@ -97,6 +111,14 @@ const userSlice = createSlice({
           : state.user.referralCode,
       };
     },
+    setTown(state, { payload }) {
+      state.town = {
+        id: payload.id ? payload.id : state.town.id,
+        name1: payload.name1 ? payload.name1 : state.town.name1,
+        name2: payload.name2 ? payload.name2 : state.town.name2,
+        name3: payload.name3 ? payload.name3 : state.town.name3,
+      };
+    },
     setMission(state, { payload }) {
       state.mission = {
         notification: payload.notification
@@ -123,12 +145,7 @@ const userSlice = createSlice({
   },
 });
 
-export const {
-  // saveQueryString,
-  setUser,
-  setMission,
-  setSubscription,
-  setNewGame,
-} = userSlice.actions;
+export const { setUser, setTown, setMission, setSubscription, setNewGame } =
+  userSlice.actions;
 
 export default userSlice.reducer;

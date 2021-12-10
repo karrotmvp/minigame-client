@@ -3,15 +3,17 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'store';
 import {
   setUser as setUserAction,
+  setTown as setTownAction,
   setMission as setMissionAction,
   setSubscription as setSubscriptionAction,
   setNewGame as setNewGameAction,
 } from '../redux/user/user';
-import type { User, Mission, Subscription, NewGame } from '../redux/user';
+import type { User, Town, Mission, Subscription, NewGame } from '../redux/user';
 
 export const useUser = () => {
   // state
   const user = useSelector((state: RootState) => state.user.user);
+  const town = useSelector((state: RootState) => state.user.town);
   const subscription = useSelector(
     (state: RootState) => state.user.subscription
   );
@@ -20,30 +22,6 @@ export const useUser = () => {
 
   // dispatch
   const dispatch = useDispatch();
-
-  // const saveQueryString = useCallback(
-  //   ({
-  //     uuid,
-  //     regionId,
-  //     referer,
-  //     isSubscribed,
-  //   }: {
-  //     uuid?: string | null;
-  //     regionId?: string;
-  //     referer?: RefererEnum;
-  //     isSubscribed?: boolean;
-  //   }) => {
-  //     dispatch(
-  //       saveQueryStringAction({
-  //         uuid,
-  //         regionId,
-  //         referer,
-  //         isSubscribed,
-  //       })
-  //     );
-  //   },
-  //   [dispatch]
-  // );
 
   const setUser = useCallback(
     ({ uuid, userId, regionId, referer, nickname, referralCode }: User) => {
@@ -57,6 +35,13 @@ export const useUser = () => {
           referralCode,
         })
       );
+    },
+    [dispatch]
+  );
+
+  const setTown = useCallback(
+    ({ id, name1, name2, name3 }: Town) => {
+      dispatch(setTownAction({ id, name1, name2, name3 }));
     },
     [dispatch]
   );
@@ -82,11 +67,12 @@ export const useUser = () => {
   );
   return {
     user,
+    town,
     subscription,
     mission,
     newGame,
-    // saveQueryString,
     setUser,
+    setTown,
     setMission,
     setSubscription,
     setNewGame,

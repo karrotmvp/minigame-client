@@ -9,7 +9,7 @@ import { CloseIcon } from 'assets/Icon';
 import { MyInfo } from './MyInfo';
 import { useMinigameApi } from 'services/api/minigameApi';
 import { useMyGame2048Data } from '../hooks';
-import { useMini, useUserData, useUser } from 'hooks';
+import { useMini, useUser } from 'hooks';
 import { Refresh } from './Refresh';
 import { useThrottledCallback } from 'use-debounce/lib';
 import { useAnalytics } from 'services/analytics';

@@ -1,8 +1,7 @@
 // import styled from '@emotion/styled';
 import React from 'react';
 import { DefaultDistrictRow, TopDistrictRow } from '../Row';
-import { useUserData } from 'hooks';
-
+import { useUser } from 'hooks';
 import { FreeMode, Scrollbar, Mousewheel } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/react/swiper-react.js';
 import 'swiper/swiper.scss'; // core Swiper
@@ -15,7 +14,7 @@ type Props = {
   isRanked: boolean;
 };
 const DistrictLeaderboard: React.FC<Props> = (props) => {
-  const { townName2: myTown } = useUserData();
+  const { town } = useUser();
   return (
     <Swiper
       modules={[FreeMode, Scrollbar, Mousewheel]}
@@ -30,7 +29,7 @@ const DistrictLeaderboard: React.FC<Props> = (props) => {
     >
       <SwiperSlide>
         {props.districtLeaderboardData.slice(0, 10).map((district, i) => {
-          return myTown === district.name2 ? (
+          return town.name2 === district.name2 ? (
             <TopDistrictRow
               key={i}
               rank={district.rank}
@@ -54,7 +53,7 @@ const DistrictLeaderboard: React.FC<Props> = (props) => {
           );
         })}
         {props.districtLeaderboardData.slice(10).map((district, i) => {
-          return myTown === district.name2 ? (
+          return town.name2 === district.name2 ? (
             <DefaultDistrictRow
               key={i}
               rank={district.rank}
