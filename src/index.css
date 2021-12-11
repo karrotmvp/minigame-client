@@ -19,6 +19,8 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  font-style: normal;
+  font-weight: normal;
   font-size: 16px;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
   color: inherit;

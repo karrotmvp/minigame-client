@@ -678,6 +678,7 @@ const MainText = styled.div`
   margin: 20px 0 30px;
   span {
     color: #0e74ff;
+    font-weight: bold;
     font-size: ${rem(34)};
   }
 `;

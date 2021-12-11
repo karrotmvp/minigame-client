@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { useCurrentScreen } from '@karrotframe/navigator';
+import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
 import { Button } from 'components/Button';
 import { rem } from 'polished';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -11,7 +11,7 @@ import { GameOverModal } from './Modal';
 import {
   MemoizedCurrentScore as CurrentScore,
   MemoizedMyBestScore as MyBestScore,
-  MemoizedTownieBestScore as TownieBestScore,
+  // MemoizedTownieBestScore as TownieBestScore,
 } from './Score';
 import refreshGameUrl from 'assets/svg/game2048/refresh_game.svg';
 import { useAnalytics } from 'services/analytics';
@@ -22,6 +22,7 @@ import { TileProps } from './Game/Tile';
 
 export const Game: React.FC = () => {
   const analytics = useAnalytics();
+  const { pop } = useNavigator();
   const { isTop } = useCurrentScreen();
   const minigameApi = useMinigameApi();
   const { isInWebEnvironment } = useMini();
@@ -46,19 +47,10 @@ export const Game: React.FC = () => {
     setGameData,
   } = useGame();
   const [isUserNew, setIsUserNew] = useState<boolean>(false);
-  const [townieBestScore, setTownieBestScore] = useState<number>(0);
+  // const [townieBestScore, setTownieBestScore] = useState<number>(0);
   const [myBestScoreDisplay, setMyBestScoreDisplay] =
     useState<number>(myBestScore);
   const [isGameOver, setIsGameOver] = useState(gameOverStatus);
-
-  // FA view_game_page
-  useEffect(() => {
-    if (isTop) {
-      analytics.logEvent('view_game_page', {
-        game_type: '2048_puzzle',
-      });
-    }
-  }, [analytics, isTop]);
 
   // update user-info
   const updateUserInfo = useCallback(
@@ -419,7 +411,7 @@ export const Game: React.FC = () => {
             }}
           >
             <MyBestScore myBestScore={myBestScoreDisplay} />
-            <TownieBestScore townieBestScore={townieBestScore} />
+            {/* <TownieBestScore townieBestScore={townieBestScore} /> */}
           </div>
           <div
             style={{
@@ -471,6 +463,7 @@ export const Game: React.FC = () => {
               그만하기
             </Button>
 
+            <button onClick={() => pop()}>뒤로가기</button>
             <p>본 게임은 오픈소스(play2048.co)로 제작되었습니다</p>
           </BottomWrapper>
         </div>

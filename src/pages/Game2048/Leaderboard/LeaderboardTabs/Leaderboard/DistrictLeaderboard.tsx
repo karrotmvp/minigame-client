@@ -1,6 +1,5 @@
-// import styled from '@emotion/styled';
 import React from 'react';
-import { DefaultDistrictRow, TopDistrictRow } from '../Row';
+import { MemoizedTownRow as TownRow } from '../Row';
 import { useUser } from 'hooks';
 import { FreeMode, Scrollbar, Mousewheel } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/react/swiper-react.js';
@@ -28,9 +27,9 @@ const DistrictLeaderboard: React.FC<Props> = (props) => {
       }}
     >
       <SwiperSlide>
-        {props.districtLeaderboardData.slice(0, 10).map((district, i) => {
+        {props.districtLeaderboardData.map((district, i) => {
           return town.name2 === district.name2 ? (
-            <TopDistrictRow
+            <TownRow
               key={i}
               rank={district.rank}
               cityName={district.name1}
@@ -42,31 +41,7 @@ const DistrictLeaderboard: React.FC<Props> = (props) => {
               }}
             />
           ) : (
-            <TopDistrictRow
-              key={i}
-              rank={district.rank}
-              cityName={district.name1}
-              districtName={district.name2}
-              playerCount={district.playerCount}
-              score={district.score}
-            />
-          );
-        })}
-        {props.districtLeaderboardData.slice(10).map((district, i) => {
-          return town.name2 === district.name2 ? (
-            <DefaultDistrictRow
-              key={i}
-              rank={district.rank}
-              cityName={district.name1}
-              districtName={district.name2}
-              playerCount={district.playerCount}
-              score={district.score}
-              style={{
-                border: `1px solid #4694FF`,
-              }}
-            />
-          ) : (
-            <DefaultDistrictRow
+            <TownRow
               key={i}
               rank={district.rank}
               cityName={district.name1}
