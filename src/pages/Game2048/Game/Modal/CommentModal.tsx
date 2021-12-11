@@ -2,7 +2,7 @@ import styled from '@emotion/styled';
 import { useEffect, useState } from 'react';
 import { Button, DisabledButton } from 'components/Button';
 import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
-import { useUserData } from 'hooks';
+import { useUser } from 'hooks';
 import { useMyGame2048Data } from 'pages/Game2048/hooks';
 import { rem } from 'polished';
 import { ReactComponent as Wow } from 'assets/svg/game2048/wow.svg';
@@ -21,7 +21,7 @@ export const CommentModal: React.FC<Props> = (props) => {
   const { isTop } = useCurrentScreen();
   const { replace } = useNavigator();
   const minigameApi = useMinigameApi();
-  const { townName2: districtName } = useUserData();
+  const { town } = useUser();
   const { isInWebEnvironment } = useMini();
   const { comment: prevComment, updateMyComment } = useMyGame2048Data();
   const [comment, setComment] = useState('');
@@ -97,7 +97,7 @@ export const CommentModal: React.FC<Props> = (props) => {
             maxLength={20}
             placeholder={
               prevComment === '' || prevComment === null
-                ? `예) 오예~${districtName}짱! :)`
+                ? `예) 오예~${town.name2}짱! :)`
                 : `${prevComment}`
             }
             onChange={(e) => handleCommentInput(e)}

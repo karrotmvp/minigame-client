@@ -4,10 +4,9 @@ import { BackIcon } from 'assets/Icon';
 import { ActiveUserCount } from 'components/ActiveUserCount';
 import { OldButton } from 'components/Button';
 import { Nav } from 'components/Navigation/Nav';
-import { useAccessToken, useMini, useUserData } from 'hooks';
+import { useAccessToken, useMini, useUser } from 'hooks';
 import { rem } from 'polished';
 import { useAnalytics } from 'services/analytics';
-// import { useMinigameApi } from 'services/api/minigameApi';
 import { useGame } from '../Game/hooks';
 import { useMyKarrotClickerData } from '../hooks';
 import { LeaderboardTabs } from '../Leaderboard/LeaderboardTabs';
@@ -55,7 +54,7 @@ export const Home = () => {
   const { accessToken } = useAccessToken();
   const minigameApi = useMinigameApi();
   const { isInWebEnvironment, handleThirdPartyAgreement } = useMini();
-  const { nickname, townName2: districtName } = useUserData();
+  const { user, town } = useUser();
   const { gameType, rank, score, comment } = useMyKarrotClickerData();
   const { resumeGame, onResetCount } = useGame();
 
@@ -135,11 +134,11 @@ export const Home = () => {
       <MyRow>
         {score === 0 ? null : (
           <UserScoreExists
-            nickname={nickname}
+            nickname={user.nickname as string}
             rank={rank}
             score={score}
             comment={comment}
-            districtName={districtName}
+            districtName={town.name2 as string}
           />
         )}
       </MyRow>

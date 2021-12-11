@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
 import { useMinigameApi } from 'services/api/minigameApi';
-import { useAccessToken, useMini, useUserData, useUser } from 'hooks';
+import { useAccessToken, useMini, useUser } from 'hooks';
 import { Nav } from 'components/Navigation/Nav';
 import { CloseIcon } from 'assets/Icon';
 import { rem } from 'polished';
@@ -18,16 +18,11 @@ import WhatsNextCardImgUrl from 'assets/svg/whats_next_card_img.svg';
 import ComingSoonCardImgUrl from 'assets/svg/coming_soon_card_img.svg';
 import ArrowGame2048Url from 'assets/svg/arrow_game_2048.svg';
 import ArrowKarrotClickerUrl from 'assets/svg/arrow_karrot_clicker.svg';
-import { ReactComponent as Bookmark } from 'assets/svg/bookmark_icon.svg';
-import { ReactComponent as BookmarkDone } from 'assets/svg/bookmark_done_icon.svg';
 import { ReactComponent as Share } from 'assets/svg/share_icon.svg';
 import { ReactComponent as Circle2048Puzzle } from 'assets/svg/platform/comment_icon_2048_puzzle.svg';
 import { ReactComponent as CircleKarrotClicker } from 'assets/svg/platform/comment_icon_karrot_clicker.svg';
 import { NotificationRequestDtoTypeEnum } from 'services/openapi_generator';
-import {
-  SubscribeToastContainer,
-  subscribeToastEmitter,
-} from 'components/Toast';
+import { SubscribeToastContainer } from 'components/Toast';
 import { Swiper, SwiperSlide } from 'swiper/react/swiper-react.js';
 import 'swiper/swiper.scss';
 import { Autoplay } from 'swiper';
@@ -37,28 +32,15 @@ import missionEnvelopeClosed from 'assets/svg/mission/mission_envelope_closed.sv
 import missionEnvelopeClosed1 from 'assets/svg/mission/mission_envelope_closed_1.svg';
 import ReactModal from 'react-modal';
 import { Popup as MissionPopup } from './Mission';
-
+import { RefererEnum } from 'redux/user';
 export const Home: React.FC = () => {
   const analytics = useAnalytics();
   const minigameApi = useMinigameApi();
   const { isTop } = useCurrentScreen();
   const { push } = useNavigator();
-  const {
-    isInWebEnvironment,
-    ejectApp,
-    handleThirdPartyAgreement,
-    handleSubscribe,
-    shareApp,
-  } = useMini();
+  const { isInWebEnvironment, ejectApp, handleThirdPartyAgreement, shareApp } =
+    useMini();
   const { accessToken } = useAccessToken();
-  const {
-    userId,
-    nickname,
-    setUserInfo,
-    townName3,
-    isInstalled,
-    setIsInstalled,
-  } = useUserData();
   const {
     updateMyScore: updateMyGame2048Score,
     updateMyComment: updateMyGame2048Comment,
@@ -69,18 +51,11 @@ export const Home: React.FC = () => {
     updateMyComment: updateMyKarrotClickerComment,
     setGameTypeToKarrotClicker,
   } = useMyKarrotClickerData();
-  const {
-    uuid,
-    regionId,
-    referer,
-    isMissionCheckedOut,
-    hasMissionPopupSeen,
-    notification,
-    setNotificationPreference,
-  } = useUser();
+  const { user, town, mission, newGame, setUser, setMission, setNewGame } =
+    useUser();
 
   const [shouldMissionPopupShown, setShouldMissionPopupShown] =
-    useState<boolean>(!hasMissionPopupSeen);
+    useState<boolean>(!mission.popup?.hasSeen);
 
   // Update user info
   const updateUserInfo = useCallback(
@@ -93,44 +68,31 @@ export const Home: React.FC = () => {
             data: { data },
           } = await minigameApi.userApi.getUserInfoUsingGET();
           if (data) {
-            setUserInfo(data.id, data.nickname);
-            // FA: track user with set user id
-            // analytics.setUserId(data.id);
+            setUser({ userId: data.id, nickname: data.nickname });
           }
         } catch (error) {
           console.error(error);
         }
       }
     },
-    [minigameApi.userApi, setUserInfo]
+    [minigameApi.userApi, setUser]
   );
 
   // Track user with uuid
   const trackUser = useCallback(
     async ({
-      uUID,
+      uuid,
       regionId,
       referer,
     }: {
-      uUID: string;
+      uuid: string;
       regionId: string;
-      referer?:
-        | 'FEED'
-        | 'SUBSCRIBE_FEED_1'
-        | 'SUBSCRIBE_FEED_2'
-        | 'SUBSCRIBE_FEED_3'
-        | 'NEAR_BY'
-        | 'SHARE_GAME_2048'
-        | 'SHARE_GAME_KARROT'
-        | 'SHARE_PLATFORM'
-        | 'SHARE_COMMUNITY'
-        | 'LOGIN'
-        | 'UNKNOWN';
+      referer?: RefererEnum;
     }) => {
       try {
         analytics.setUserId(uuid);
         const data = await minigameApi.visitorApi.visitUsingPOST(
-          uUID,
+          uuid,
           regionId,
           referer
         );
@@ -140,47 +102,16 @@ export const Home: React.FC = () => {
         console.error(error);
       }
     },
-    [analytics, minigameApi.visitorApi, uuid]
+    [analytics, minigameApi.visitorApi]
   );
 
   useEffect(() => {
-    trackUser({ uUID: uuid, regionId: regionId, referer: referer });
-  }, [referer, regionId, trackUser, uuid]);
-
-  // const checkNotificationStatus = useCallback(async () => {
-  //   if (notification.newGame.isNotificationOn) {
-  //     return;
-  //   } else {
-  //     try {
-  //       const {
-  //         data: { data },
-  //       } = await minigameApi.notificationApi.checkNotificationUsingGET(
-  //         'OPEN_GAME'
-  //       );
-  //       if (data && data.check) {
-  //         setNotificationPreference({
-  //           isNewGameNotificationOn: data.check,
-  //         });
-  //       }
-  //     } catch (error) {
-  //       console.error(error);
-  //     }
-  //   }
-  // }, [
-  //   minigameApi.notificationApi,
-  //   notification.newGame.isNotificationOn,
-  //   setNotificationPreference,
-  // ]);
-
-  // const newGameNotificationPromise = () => {
-  //   if (notification.newGame.isNotificationOn) {
-  //     return notification.newGame.isNotificationOn;
-  //   } else {
-  //     const data =
-  //       minigameApi.notificationApi.checkNotificationUsingGET('OPEN_GAME');
-  //     if (data !== undefined) return data;
-  //   }
-  // };
+    trackUser({
+      uuid: user.uuid as string,
+      regionId: user.regionId as string,
+      referer: user.referer,
+    });
+  }, [trackUser, user.uuid, user.referer, user.regionId]);
 
   // Check user's notification status
   // available notifications: new-game, next-mission
@@ -195,19 +126,25 @@ export const Home: React.FC = () => {
     ]);
     try {
       const notificationStatus = await notificationPromise;
-      setNotificationPreference({
-        isNewGameNotificationOn: notificationStatus[0].data.data?.check,
-        isNextMissionNotificationOn: notificationStatus[1].data.data?.check,
+      setNewGame({
+        notification: {
+          isOn: notificationStatus[0].data.data?.check as boolean,
+        },
+      });
+      setMission({
+        notification: {
+          isOn: notificationStatus[1].data.data?.check as boolean,
+        },
       });
     } catch (error) {
       console.error(error);
     }
-  }, [minigameApi.notificationApi, setNotificationPreference]);
+  }, [minigameApi.notificationApi, setMission, setNewGame]);
 
   useEffect(() => {
-    updateUserInfo({ userId: userId });
+    updateUserInfo({ userId: user.userId as string });
     checkNotificationStatus();
-  }, [checkNotificationStatus, updateUserInfo, userId]);
+  }, [checkNotificationStatus, updateUserInfo, user.userId]);
 
   useEffect(() => {
     if (isTop) {
@@ -321,7 +258,7 @@ export const Home: React.FC = () => {
       location: 'platform_page',
     });
     const url = 'https://daangn.onelink.me/HhUa/2da74f80';
-    const text = `${nickname}님이 이웃님을 동네대회에 초대했어요! 같이 게임할래요?`;
+    const text = `${user.nickname}님이 이웃님을 동네대회에 초대했어요! 같이 게임할래요?`;
     shareApp(url, text);
   };
   const triggerShareHandler = () => {
@@ -332,31 +269,6 @@ export const Home: React.FC = () => {
     }
   };
 
-  // Installation handler
-  // =================================================================
-  const onSubscribeSucess = () => {
-    analytics.logEvent('click_subscribe_button', {
-      location: 'platform_page',
-      is_voluntary: true,
-    });
-    setIsInstalled(true);
-    subscribeToastEmitter();
-  };
-  const runOnSuccess = () => {
-    analytics.logEvent('click_third_party_agreement_button', {
-      location: 'platform_page',
-      button_type: 'subscribe_button',
-    });
-    handleSubscribe(onSubscribeSucess);
-  };
-  const triggerInstallationHandler = () => {
-    if (accessToken) {
-      handleSubscribe(onSubscribeSucess);
-    } else {
-      handleThirdPartyAgreement(runOnSuccess);
-    }
-  };
-
   // New game notification handler
   // =================================================================
   const onSuccessHandler = () => {
@@ -364,9 +276,7 @@ export const Home: React.FC = () => {
       location: 'platform_page',
       button_type: 'notification_button',
     });
-    setNotificationPreference({
-      isNewGameNotificationOn: true,
-    });
+    setNewGame({ notification: { isOn: true } });
   };
   const handleNewGameNotification = async () => {
     if (accessToken) {
@@ -378,9 +288,7 @@ export const Home: React.FC = () => {
         analytics.logEvent('click_notification_button', {
           notification_type: 'new_game',
         });
-        setNotificationPreference({
-          isNewGameNotificationOn: true,
-        });
+        setNewGame({ notification: { isOn: true } });
       }
     } else {
       handleThirdPartyAgreement(onSuccessHandler);
@@ -463,22 +371,8 @@ export const Home: React.FC = () => {
           border={`1px solid #ECECEC`}
           appendLeft={<CloseIcon />}
           onClickLeft={leaveMiniApp}
-          appendRight={
-            <div
-              style={{
-                display: `flex`,
-                gap: `14px`,
-                alignItems: `flex-end`,
-              }}
-            >
-              <Share onClick={triggerShareHandler} />
-              {isInstalled ? (
-                <BookmarkDone />
-              ) : (
-                <Bookmark onClick={triggerInstallationHandler} />
-              )}
-            </div>
-          }
+          appendRight={<Share />}
+          onClickRight={triggerShareHandler}
           style={{
             background: `#fff`,
           }}
@@ -486,7 +380,7 @@ export const Home: React.FC = () => {
         <PageContainer id="platform-page">
           <Section>
             <MainText>
-              <span>{townName3}</span> 이웃들과
+              <span>{town.name3}</span> 이웃들과
               <br />
               같이 게임해요!
             </MainText>
@@ -653,7 +547,7 @@ export const Home: React.FC = () => {
           <Section>
             <SectionTitle>새로운 게임을 준비 중이에요</SectionTitle>
             <CardContainer>
-              {notification.newGame.isNotificationOn ? (
+              {newGame.notification?.isOn ? (
                 <Card game={`coming-soon`}>
                   <img
                     src={ComingSoonCardImgUrl}
@@ -717,7 +611,7 @@ export const Home: React.FC = () => {
         onClick={goToMissionPage}
         style={{ position: `absolute`, right: 0, bottom: 0, zIndex: 99 }}
       >
-        {isMissionCheckedOut ? (
+        {mission.notification?.isOn ? (
           <img src={missionEnvelopeClosed} alt="mission-button" />
         ) : (
           <img

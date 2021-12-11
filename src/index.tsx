@@ -1,9 +1,10 @@
 import React from 'react';
-import { CookiesProvider } from 'react-cookie';
 import ReactDOM from 'react-dom';
+import { CookiesProvider } from 'react-cookie';
 import { Provider } from 'react-redux';
-import { MinigameApiProvider } from 'services/api/minigameApi';
 import store from 'store';
+import { MinigameApiProvider } from 'services/api/minigameApi';
+import { AnalyticsProvider } from 'services/analytics/firebase';
 import App from './App';
 import './index.css';
 
@@ -12,7 +13,9 @@ ReactDOM.render(
     <CookiesProvider>
       <Provider store={store}>
         <MinigameApiProvider>
-          <App />
+          <AnalyticsProvider>
+            <App />
+          </AnalyticsProvider>
         </MinigameApiProvider>
       </Provider>
     </CookiesProvider>

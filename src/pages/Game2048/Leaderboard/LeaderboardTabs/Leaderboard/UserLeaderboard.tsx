@@ -24,10 +24,10 @@ const UserLeaderboard: React.FC<Props> = (props) => {
       }}
     >
       <SwiperSlide>
-        {props.userLeaderboardData.slice(0, 10).map((user) => {
+        {props.userLeaderboardData.slice(0, 10).map((user, i) => {
           return (
             <TopUserRow
-              key={user.userId}
+              key={i}
               rank={user.rank}
               nickname={user.nickname}
               comment={user.comment}
@@ -54,10 +54,10 @@ const UserLeaderboard: React.FC<Props> = (props) => {
           이웃들에게 한 마디를 남겨보세요!
         </p>
 
-        {props.userLeaderboardData.slice(10).map((user) => {
+        {props.userLeaderboardData.slice(10).map((user, i) => {
           return (
             <DefaultUserRow
-              key={user.userId}
+              key={i}
               rank={user.rank}
               nickname={user.nickname}
               score={user.score}
