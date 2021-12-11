@@ -9,7 +9,7 @@ import { useMini, useUser } from 'hooks';
 import { useMyKarrotClickerData } from '../hooks';
 import { useMinigameApi } from 'services/api/minigameApi';
 import { Nav } from 'components/Navigation/Nav';
-import { CloseIcon } from 'assets/Icon';
+import { CloseIcon } from 'assets/icon';
 import { useGame } from '../Game/hooks';
 import { rem } from 'polished';
 interface UserScoreExistsProps {

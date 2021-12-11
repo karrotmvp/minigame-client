@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styled from '@emotion/styled';
 import { Nav } from 'components/Navigation/Nav';
-import { BackIcon } from 'assets/Icon';
+import { BackIcon } from 'assets/icon';
 import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
 import { rem } from 'polished';
 import { color, PageContainer } from 'styles';

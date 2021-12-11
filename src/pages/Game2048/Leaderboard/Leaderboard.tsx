@@ -5,7 +5,7 @@ import { rem } from 'polished';
 import { Button } from 'components/Button';
 import { useCallback, useEffect, useState } from 'react';
 import { Nav } from 'components/Navigation/Nav';
-import { CloseIcon } from 'assets/Icon';
+import { CloseIcon } from 'assets/icon';
 import { MyInfo } from './MyInfo';
 import { useMinigameApi } from 'services/api/minigameApi';
 import { useMyGame2048Data } from '../hooks';

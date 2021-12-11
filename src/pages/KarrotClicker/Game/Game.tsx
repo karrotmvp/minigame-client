@@ -8,7 +8,7 @@ import { useAnalytics } from 'services/analytics';
 import gameBackgroundUrl from 'assets/images/KarrotClicker/game_background.png';
 import { Guide } from './NewUser';
 import BigKarrot from './Animation/BigKarrot';
-import { PauseIcon } from 'assets/Icon';
+import { PauseIcon } from 'assets/icon';
 import { useCurrentScreen } from '@karrotframe/navigator';
 import { useMyKarrotClickerData } from '../hooks';
 import { GameOver, GamePause } from './Modal';

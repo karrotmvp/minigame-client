@@ -17,6 +17,8 @@ import {
 } from 'utils/functions/confetti';
 import { useThrottledCallback } from 'use-debounce/lib';
 import ReactModal from 'react-modal';
+import iconLeave from 'assets/icon/svg/icon_leave.svg';
+import iconReplay from 'assets/icon/svg/icon_replay.svg';
 
 type Props = {
   myPreviousRank: number;
@@ -181,7 +183,6 @@ export const GameOverModal: React.FC<Props> = (props) => {
           justifyContent: 'center',
           width: '100%',
           gap: `8px`,
-          marginBottom: `20%`,
         }}
         onClick={fireThrottledRandomDirectionConfetti}
       >
@@ -189,7 +190,8 @@ export const GameOverModal: React.FC<Props> = (props) => {
           src={gameOverSvgUrl}
           alt="gameOverSvgUrl"
           style={{
-            marginBottom: `50px`,
+            position: 'absolute',
+            top: '58px',
           }}
         />
 
@@ -264,7 +266,25 @@ export const GameOverModal: React.FC<Props> = (props) => {
           color={`secondary1`}
           onClick={handleViewLeaderboard}
         >
-          랭킹보기
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+            }}
+          >
+            <img src={iconReplay} alt="replay-icon" />
+            <p
+              style={{
+                fontWeight: 'bold',
+                fontSize: `${rem(18)}`,
+              }}
+            >
+              다시하기
+            </p>
+          </div>
         </Button>
         <Button
           size={`large`}
@@ -272,7 +292,25 @@ export const GameOverModal: React.FC<Props> = (props) => {
           color={`primary`}
           onClick={handleShare}
         >
-          자랑하기
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+            }}
+          >
+            <img src={iconLeave} alt="leave-icon" />
+            <p
+              style={{
+                fontWeight: 'bold',
+                fontSize: `${rem(18)}`,
+              }}
+            >
+              게임종료
+            </p>
+          </div>
         </Button>
       </ActionItems>
       <ReactModal

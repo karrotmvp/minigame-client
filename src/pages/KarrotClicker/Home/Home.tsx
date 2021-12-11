@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
 import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
-import { BackIcon } from 'assets/Icon';
+import { BackIcon } from 'assets/icon';
 import { ActiveUserCount } from 'components/ActiveUserCount';
 import { OldButton } from 'components/Button';
 import { Nav } from 'components/Navigation/Nav';

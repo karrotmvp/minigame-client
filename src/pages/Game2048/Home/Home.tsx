@@ -13,7 +13,7 @@ import { rem } from 'polished';
 import { Button } from 'components/Button';
 import { useCallback, useEffect, useState } from 'react';
 import { Nav } from 'components/Navigation/Nav';
-import { BackIcon } from 'assets/Icon';
+import { BackIcon } from 'assets/icon';
 import { ReactComponent as BannerImage } from 'assets/svg/game2048/home_top_banner.svg';
 import { Refresh } from '../Leaderboard/Refresh';
 import { MyInfo } from '../Leaderboard/MyInfo';

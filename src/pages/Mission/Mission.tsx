@@ -1,5 +1,5 @@
 import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
-import { CircleBackIcon } from 'assets/Icon';
+import { CircleBackIcon } from 'assets/icon';
 import { Nav } from 'components/Navigation';
 import React, { useEffect } from 'react';
 import { PageContainer } from 'styles';
