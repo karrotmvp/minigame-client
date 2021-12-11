@@ -210,6 +210,68 @@ export interface BaseResponseRegionDto {
 /**
  * 
  * @export
+ * @interface BaseResponseScoreDto
+ */
+export interface BaseResponseScoreDto {
+    /**
+     * 
+     * @type {ScoreDto}
+     * @memberof BaseResponseScoreDto
+     */
+    'data'?: ScoreDto;
+    /**
+     * 
+     * @type {string}
+     * @memberof BaseResponseScoreDto
+     */
+    'message'?: string;
+    /**
+     * 
+     * @type {number}
+     * @memberof BaseResponseScoreDto
+     */
+    'status': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof BaseResponseScoreDto
+     */
+    'timestamp': string;
+}
+/**
+ * 
+ * @export
+ * @interface BaseResponseScoreLogDto
+ */
+export interface BaseResponseScoreLogDto {
+    /**
+     * 
+     * @type {ScoreLogDto}
+     * @memberof BaseResponseScoreLogDto
+     */
+    'data'?: ScoreLogDto;
+    /**
+     * 
+     * @type {string}
+     * @memberof BaseResponseScoreLogDto
+     */
+    'message'?: string;
+    /**
+     * 
+     * @type {number}
+     * @memberof BaseResponseScoreLogDto
+     */
+    'status': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof BaseResponseScoreLogDto
+     */
+    'timestamp': string;
+}
+/**
+ * 
+ * @export
  * @interface BaseResponseTokenDto
  */
 export interface BaseResponseTokenDto {
@@ -468,15 +530,34 @@ export interface RegionDto {
 /**
  * 
  * @export
- * @interface ScoreRequestDto
+ * @interface ScoreDto
  */
-export interface ScoreRequestDto {
+export interface ScoreDto {
     /**
      * 
      * @type {number}
-     * @memberof ScoreRequestDto
+     * @memberof ScoreDto
      */
-    'score'?: number;
+    'score': number;
+}
+/**
+ * 
+ * @export
+ * @interface ScoreLogDto
+ */
+export interface ScoreLogDto {
+    /**
+     * 
+     * @type {Array<number>}
+     * @memberof ScoreLogDto
+     */
+    'board': Array<number>;
+    /**
+     * 
+     * @type {number}
+     * @memberof ScoreLogDto
+     */
+    'score': number;
 }
 /**
  * 
@@ -674,6 +755,50 @@ export const GamePlayApiAxiosParamCreator = function (configuration?: Configurat
         },
         /**
          * 
+         * @summary 요청된 점수보다 높은 등수의 점수 조회하기
+         * @param {'GAME_KARROT' | 'GAME_2048'} gameType gameType
+         * @param {number} score score
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getHigherScoreUsingGET: async (gameType: 'GAME_KARROT' | 'GAME_2048', score: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'gameType' is not null or undefined
+            assertParamExists('getHigherScoreUsingGET', 'gameType', gameType)
+            // verify required parameter 'score' is not null or undefined
+            assertParamExists('getHigherScoreUsingGET', 'score', score)
+            const localVarPath = `/api/games/{gameType}/higher-score`
+                .replace(`{${"gameType"}}`, encodeURIComponent(String(gameType)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication JWT required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+            if (score !== undefined) {
+                localVarQueryParameter['score'] = score;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary 요청된 점수의 랭킹 조회하기
          * @param {'GAME_KARROT' | 'GAME_2048'} gameType gameType
          * @param {number} score score
@@ -794,11 +919,11 @@ export const GamePlayApiAxiosParamCreator = function (configuration?: Configurat
          * 
          * @summary 스코어 갱신
          * @param {'GAME_KARROT' | 'GAME_2048'} gameType gameType
-         * @param {ScoreRequestDto} requestDto requestDto
+         * @param {ScoreDto} requestDto requestDto
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateScoreUsingPATCH: async (gameType: 'GAME_KARROT' | 'GAME_2048', requestDto: ScoreRequestDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        updateScoreUsingPATCH: async (gameType: 'GAME_KARROT' | 'GAME_2048', requestDto: ScoreDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'gameType' is not null or undefined
             assertParamExists('updateScoreUsingPATCH', 'gameType', gameType)
             // verify required parameter 'requestDto' is not null or undefined
@@ -857,6 +982,18 @@ export const GamePlayApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary 요청된 점수보다 높은 등수의 점수 조회하기
+         * @param {'GAME_KARROT' | 'GAME_2048'} gameType gameType
+         * @param {number} score score
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getHigherScoreUsingGET(gameType: 'GAME_KARROT' | 'GAME_2048', score: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseResponseScoreDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getHigherScoreUsingGET(gameType, score, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @summary 요청된 점수의 랭킹 조회하기
          * @param {'GAME_KARROT' | 'GAME_2048'} gameType gameType
          * @param {number} score score
@@ -893,11 +1030,11 @@ export const GamePlayApiFp = function(configuration?: Configuration) {
          * 
          * @summary 스코어 갱신
          * @param {'GAME_KARROT' | 'GAME_2048'} gameType gameType
-         * @param {ScoreRequestDto} requestDto requestDto
+         * @param {ScoreDto} requestDto requestDto
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async updateScoreUsingPATCH(gameType: 'GAME_KARROT' | 'GAME_2048', requestDto: ScoreRequestDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseResponseUnit>> {
+        async updateScoreUsingPATCH(gameType: 'GAME_KARROT' | 'GAME_2048', requestDto: ScoreDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseResponseUnit>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.updateScoreUsingPATCH(gameType, requestDto, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -921,6 +1058,17 @@ export const GamePlayApiFactory = function (configuration?: Configuration, baseP
          */
         addCommentUsingPATCH(gameType: 'GAME_KARROT' | 'GAME_2048', requestDto: CommentRequestDto, options?: any): AxiosPromise<BaseResponseUnit> {
             return localVarFp.addCommentUsingPATCH(gameType, requestDto, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 요청된 점수보다 높은 등수의 점수 조회하기
+         * @param {'GAME_KARROT' | 'GAME_2048'} gameType gameType
+         * @param {number} score score
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getHigherScoreUsingGET(gameType: 'GAME_KARROT' | 'GAME_2048', score: number, options?: any): AxiosPromise<BaseResponseScoreDto> {
+            return localVarFp.getHigherScoreUsingGET(gameType, score, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -957,11 +1105,11 @@ export const GamePlayApiFactory = function (configuration?: Configuration, baseP
          * 
          * @summary 스코어 갱신
          * @param {'GAME_KARROT' | 'GAME_2048'} gameType gameType
-         * @param {ScoreRequestDto} requestDto requestDto
+         * @param {ScoreDto} requestDto requestDto
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateScoreUsingPATCH(gameType: 'GAME_KARROT' | 'GAME_2048', requestDto: ScoreRequestDto, options?: any): AxiosPromise<BaseResponseUnit> {
+        updateScoreUsingPATCH(gameType: 'GAME_KARROT' | 'GAME_2048', requestDto: ScoreDto, options?: any): AxiosPromise<BaseResponseUnit> {
             return localVarFp.updateScoreUsingPATCH(gameType, requestDto, options).then((request) => request(axios, basePath));
         },
     };
@@ -985,6 +1133,19 @@ export class GamePlayApi extends BaseAPI {
      */
     public addCommentUsingPATCH(gameType: 'GAME_KARROT' | 'GAME_2048', requestDto: CommentRequestDto, options?: AxiosRequestConfig) {
         return GamePlayApiFp(this.configuration).addCommentUsingPATCH(gameType, requestDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 요청된 점수보다 높은 등수의 점수 조회하기
+     * @param {'GAME_KARROT' | 'GAME_2048'} gameType gameType
+     * @param {number} score score
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof GamePlayApi
+     */
+    public getHigherScoreUsingGET(gameType: 'GAME_KARROT' | 'GAME_2048', score: number, options?: AxiosRequestConfig) {
+        return GamePlayApiFp(this.configuration).getHigherScoreUsingGET(gameType, score, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -1028,12 +1189,12 @@ export class GamePlayApi extends BaseAPI {
      * 
      * @summary 스코어 갱신
      * @param {'GAME_KARROT' | 'GAME_2048'} gameType gameType
-     * @param {ScoreRequestDto} requestDto requestDto
+     * @param {ScoreDto} requestDto requestDto
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof GamePlayApi
      */
-    public updateScoreUsingPATCH(gameType: 'GAME_KARROT' | 'GAME_2048', requestDto: ScoreRequestDto, options?: AxiosRequestConfig) {
+    public updateScoreUsingPATCH(gameType: 'GAME_KARROT' | 'GAME_2048', requestDto: ScoreDto, options?: AxiosRequestConfig) {
         return GamePlayApiFp(this.configuration).updateScoreUsingPATCH(gameType, requestDto, options).then((request) => request(this.axios, this.basePath));
     }
 }
@@ -1829,13 +1990,51 @@ export const ScoreLogApiAxiosParamCreator = function (configuration?: Configurat
     return {
         /**
          * 
-         * @summary 게임 점수 기록(2048)
-         * @param {ScoreRequestDto} requestDto requestDto
+         * @summary 최근 점수 기록/보드 조회(2048)
          * @param {'GAME_KARROT' | 'GAME_2048'} [gameType] gameType
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        logScoreUsingPOST: async (requestDto: ScoreRequestDto, gameType?: 'GAME_KARROT' | 'GAME_2048', options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getCurrentLogScoreUsingGET: async (gameType?: 'GAME_KARROT' | 'GAME_2048', options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/log/score/current`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication JWT required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+            if (gameType !== undefined) {
+                localVarQueryParameter['gameType'] = gameType;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 게임 점수/보드 기록(2048)
+         * @param {ScoreLogDto} requestDto requestDto
+         * @param {'GAME_KARROT' | 'GAME_2048'} [gameType] gameType
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        logScoreUsingPOST: async (requestDto: ScoreLogDto, gameType?: 'GAME_KARROT' | 'GAME_2048', options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'requestDto' is not null or undefined
             assertParamExists('logScoreUsingPOST', 'requestDto', requestDto)
             const localVarPath = `/api/log/score`;
@@ -1883,13 +2082,24 @@ export const ScoreLogApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
-         * @summary 게임 점수 기록(2048)
-         * @param {ScoreRequestDto} requestDto requestDto
+         * @summary 최근 점수 기록/보드 조회(2048)
          * @param {'GAME_KARROT' | 'GAME_2048'} [gameType] gameType
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async logScoreUsingPOST(requestDto: ScoreRequestDto, gameType?: 'GAME_KARROT' | 'GAME_2048', options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseResponseUnit>> {
+        async getCurrentLogScoreUsingGET(gameType?: 'GAME_KARROT' | 'GAME_2048', options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseResponseScoreLogDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getCurrentLogScoreUsingGET(gameType, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary 게임 점수/보드 기록(2048)
+         * @param {ScoreLogDto} requestDto requestDto
+         * @param {'GAME_KARROT' | 'GAME_2048'} [gameType] gameType
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async logScoreUsingPOST(requestDto: ScoreLogDto, gameType?: 'GAME_KARROT' | 'GAME_2048', options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseResponseUnit>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.logScoreUsingPOST(requestDto, gameType, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -1905,13 +2115,23 @@ export const ScoreLogApiFactory = function (configuration?: Configuration, baseP
     return {
         /**
          * 
-         * @summary 게임 점수 기록(2048)
-         * @param {ScoreRequestDto} requestDto requestDto
+         * @summary 최근 점수 기록/보드 조회(2048)
          * @param {'GAME_KARROT' | 'GAME_2048'} [gameType] gameType
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        logScoreUsingPOST(requestDto: ScoreRequestDto, gameType?: 'GAME_KARROT' | 'GAME_2048', options?: any): AxiosPromise<BaseResponseUnit> {
+        getCurrentLogScoreUsingGET(gameType?: 'GAME_KARROT' | 'GAME_2048', options?: any): AxiosPromise<BaseResponseScoreLogDto> {
+            return localVarFp.getCurrentLogScoreUsingGET(gameType, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 게임 점수/보드 기록(2048)
+         * @param {ScoreLogDto} requestDto requestDto
+         * @param {'GAME_KARROT' | 'GAME_2048'} [gameType] gameType
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        logScoreUsingPOST(requestDto: ScoreLogDto, gameType?: 'GAME_KARROT' | 'GAME_2048', options?: any): AxiosPromise<BaseResponseUnit> {
             return localVarFp.logScoreUsingPOST(requestDto, gameType, options).then((request) => request(axios, basePath));
         },
     };
@@ -1926,14 +2146,26 @@ export const ScoreLogApiFactory = function (configuration?: Configuration, baseP
 export class ScoreLogApi extends BaseAPI {
     /**
      * 
-     * @summary 게임 점수 기록(2048)
-     * @param {ScoreRequestDto} requestDto requestDto
+     * @summary 최근 점수 기록/보드 조회(2048)
      * @param {'GAME_KARROT' | 'GAME_2048'} [gameType] gameType
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ScoreLogApi
      */
-    public logScoreUsingPOST(requestDto: ScoreRequestDto, gameType?: 'GAME_KARROT' | 'GAME_2048', options?: AxiosRequestConfig) {
+    public getCurrentLogScoreUsingGET(gameType?: 'GAME_KARROT' | 'GAME_2048', options?: AxiosRequestConfig) {
+        return ScoreLogApiFp(this.configuration).getCurrentLogScoreUsingGET(gameType, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 게임 점수/보드 기록(2048)
+     * @param {ScoreLogDto} requestDto requestDto
+     * @param {'GAME_KARROT' | 'GAME_2048'} [gameType] gameType
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ScoreLogApi
+     */
+    public logScoreUsingPOST(requestDto: ScoreLogDto, gameType?: 'GAME_KARROT' | 'GAME_2048', options?: AxiosRequestConfig) {
         return ScoreLogApiFp(this.configuration).logScoreUsingPOST(requestDto, gameType, options).then((request) => request(this.axios, this.basePath));
     }
 }

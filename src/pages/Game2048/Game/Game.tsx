@@ -18,6 +18,7 @@ import { useAnalytics } from 'services/analytics';
 import { useMini, useUser } from 'hooks';
 import { useDebouncedCallback } from 'use-debounce';
 import ReactModal from 'react-modal';
+import { TileProps } from './Game/Tile';
 
 export const Game: React.FC = () => {
   const analytics = useAnalytics();
@@ -36,17 +37,28 @@ export const Game: React.FC = () => {
     score: currentScore,
     isGameOver: gameOverStatus,
     tileList,
+    boardByValue,
     moveRight,
     moveLeft,
     moveUp,
     moveDown,
     resetGame,
+    setGameData,
   } = useGame();
   const [isUserNew, setIsUserNew] = useState<boolean>(false);
   const [townieBestScore, setTownieBestScore] = useState<number>(0);
   const [myBestScoreDisplay, setMyBestScoreDisplay] =
     useState<number>(myBestScore);
   const [isGameOver, setIsGameOver] = useState(gameOverStatus);
+
+  // FA view_game_page
+  useEffect(() => {
+    if (isTop) {
+      analytics.logEvent('view_game_page', {
+        game_type: '2048_puzzle',
+      });
+    }
+  }, [analytics, isTop]);
 
   // update user-info
   const updateUserInfo = useCallback(
@@ -75,15 +87,7 @@ export const Game: React.FC = () => {
     }
   }, [updateUserInfo, user.userId]);
 
-  // FA view_game_page
-  useEffect(() => {
-    if (isTop) {
-      analytics.logEvent('view_game_page', {
-        game_type: '2048_puzzle',
-      });
-    }
-  }, [analytics, isTop]);
-
+  // get my current rank
   const getMyCurrentRank = useCallback(
     async ({
       gameType,
@@ -108,6 +112,7 @@ export const Game: React.FC = () => {
       getMyCurrentRank({ gameType: gameType, type: 'CURRENT' });
     }
   }, [gameType, getMyCurrentRank, isTop]);
+
   // get rank 1's score
   const getFirstPlaceScore = useCallback(
     async ({ gameType }: { gameType: 'GAME_KARROT' | 'GAME_2048' }) => {
@@ -140,38 +145,6 @@ export const Game: React.FC = () => {
 
     return () => clearInterval(intervalId);
   }, [gameType, getFirstPlaceScore, isGameOver]);
-
-  // constantly patch score (score log)
-  const debouncedLogScore = useDebouncedCallback(() => {
-    logScore({ score: currentScore, gameType: gameType });
-  }, 700);
-
-  const logScore = useCallback(
-    async ({
-      score,
-      gameType,
-    }: {
-      score: number;
-      gameType: 'GAME_KARROT' | 'GAME_2048';
-    }) => {
-      try {
-        const response = await minigameApi.scoreLogApi.logScoreUsingPOST(
-          { score: score },
-          gameType
-        );
-        console.log(response);
-        return response;
-      } catch (error) {
-        console.error(error);
-      }
-    },
-    [minigameApi.scoreLogApi]
-  );
-
-  useEffect(() => {
-    debouncedLogScore();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentScore]);
 
   // display current score as my best score if current score is greater than best score in db
   useEffect(() => {
@@ -281,6 +254,100 @@ export const Game: React.FC = () => {
       }
     }
   }, [highestScore, isTop]);
+
+  const indexTocoordinate = (index: number) => {
+    const x = index % 4;
+    const y = Math.floor(index / 4);
+    return [x, y] as [number, number];
+  };
+  //   {
+  //     [id: number]: TileProps;
+  // },
+
+  const convertArrayToObject = (array: any[], key: any) => {
+    const initialValue = {};
+    return array.reduce((obj, item) => {
+      return {
+        ...obj,
+        [item[key]]: item,
+      };
+    }, initialValue);
+  };
+
+  const getMyGameData = useCallback(
+    async ({ gameType }: { gameType: 'GAME_KARROT' | 'GAME_2048' }) => {
+      const {
+        data: { data },
+      } = await minigameApi.scoreLogApi.getCurrentLogScoreUsingGET(gameType);
+      if (data?.board && data.score) {
+        let savedBoard = data.board;
+        let savedScore = data.score;
+        let tiles: {
+          [id: number]: TileProps;
+        } = convertArrayToObject(
+          savedBoard
+            .map((value, i) => {
+              return {
+                id: i,
+                coordinate: indexTocoordinate(i),
+                value: value,
+              };
+            })
+            .filter((item) => item.value > 0),
+          'id'
+        );
+        let byIds: number[] = [];
+        for (let i = 0; i < tiles.length; i++) {
+          byIds.push(tiles[i].id);
+        }
+        console.log(tiles, byIds, savedScore);
+        setGameData(tiles, byIds, savedScore);
+      }
+    },
+    [minigameApi.scoreLogApi, setGameData]
+  );
+
+  useEffect(() => {
+    getMyGameData({ gameType: gameType });
+  }, [gameType, getMyGameData]);
+
+  // constantly post board & score (debounced 1sec)
+  const debouncedGetMyGameData = useDebouncedCallback(() => {
+    console.log(boardByValue, currentScore);
+    postMyGameData({
+      board: boardByValue,
+      score: currentScore,
+      gameType: gameType,
+    });
+  }, 1000);
+
+  const postMyGameData = useCallback(
+    async ({
+      board,
+      score,
+      gameType,
+    }: {
+      board: number[];
+      score: number;
+      gameType: 'GAME_KARROT' | 'GAME_2048';
+    }) => {
+      try {
+        const response = await minigameApi.scoreLogApi.logScoreUsingPOST(
+          { board, score },
+          gameType
+        );
+        console.log(response);
+        return response;
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    [minigameApi.scoreLogApi]
+  );
+
+  useEffect(() => {
+    debouncedGetMyGameData();
+  }, [currentScore, debouncedGetMyGameData]);
 
   // Action buttons
   const handlePlayAgain = () => {

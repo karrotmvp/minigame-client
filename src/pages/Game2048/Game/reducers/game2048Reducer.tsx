@@ -1,4 +1,4 @@
-import { TileProps } from '../Game/Tile';
+import type { TileProps } from '../Game/Tile';
 // action types
 export const RESET = 'game2048/RESET' as const;
 export const CREATE_TILE = 'game2048/CREATE_TILE' as const;
@@ -7,6 +7,7 @@ export const MERGE_TILE = 'game2048/MERGE_TILE' as const;
 export const MOVE_START = 'game2048/MOVE_START' as const;
 export const MOVE_END = 'game2048/MOVE_END' as const;
 export const UPDATE_SCORE = 'game2048/UPDATE_SCORE' as const;
+export const SET_GAME_DATA = 'game2048/SET_GAME_DATA' as const;
 // actions
 export const resetGameAction = () => ({
   type: RESET,
@@ -42,6 +43,20 @@ export const updateScoreAction = (score: number) => ({
     score,
   },
 });
+export const setGameDataAction = (
+  tiles: {
+    [id: number]: TileProps;
+  },
+  byIds: number[],
+  score: number
+) => ({
+  type: SET_GAME_DATA,
+  payload: {
+    tiles,
+    byIds,
+    score,
+  },
+});
 type Game2048Action =
   | ReturnType<typeof resetGameAction>
   | ReturnType<typeof createTileAction>
@@ -49,7 +64,8 @@ type Game2048Action =
   | ReturnType<typeof mergeTileAction>
   | ReturnType<typeof moveStartAction>
   | ReturnType<typeof moveEndAction>
-  | ReturnType<typeof updateScoreAction>;
+  | ReturnType<typeof updateScoreAction>
+  | ReturnType<typeof setGameDataAction>;
 
 export type Game2048State = {
   tiles: {
@@ -119,6 +135,15 @@ export const game2048Reducer = (
       return {
         ...state,
         score: state.score + action.payload.score,
+      };
+    case SET_GAME_DATA:
+      return {
+        ...state,
+        tiles: action.payload.tiles,
+        byIds: action.payload.byIds,
+        score: action.payload.score,
+        hasChanged: false,
+        inMotion: false,
       };
     case MOVE_START:
       return {
