@@ -6,7 +6,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useMinigameApi } from 'services/api/minigameApi';
 import { useMyGame2048Data } from '../hooks';
 import { Board } from './Game/Board';
-import { useGame } from './hooks';
+import { indexTocoordinate, useGame } from './hooks';
 import { GameOverModal } from './Modal';
 import {
   MemoizedCurrentScore as CurrentScore,
@@ -107,72 +107,62 @@ export const Game: React.FC = () => {
     },
     [minigameApi, updateMyScore]
   );
-  useEffect(() => {
-    if (isTop) {
-      getMyCurrentRank({ gameType: gameType, type: 'CURRENT' });
-    }
-  }, [gameType, getMyCurrentRank, isTop]);
 
   // get rank 1's score
-  const getFirstPlaceScore = useCallback(
-    async ({ gameType }: { gameType: 'GAME_KARROT' | 'GAME_2048' }) => {
+  // const getFirstPlaceScore = useCallback(
+  //   async ({ gameType }: { gameType: 'GAME_KARROT' | 'GAME_2048' }) => {
+  //     try {
+  //       const {
+  //         data: { data },
+  //       } = await minigameApi.gameUserApi.getLeaderBoardByUserUsingGET(
+  //         gameType,
+  //         undefined,
+  //         1
+  //       );
+  //       if (data && data[0]) {
+  //         setTownieBestScore(data[0].score);
+  //       }
+  //     } catch (error) {
+  //       console.error(error);
+  //       return;
+  //     }
+  //   },
+  //   [minigameApi.gameUserApi]
+  // );
+
+  // useEffect(() => {
+  //   const intervalId = setInterval(() => {
+  //     getFirstPlaceScore({ gameType: gameType });
+  //   }, 10000);
+  //   // getFirstPlaceScore({ gameType: gameType });
+  //   if (isGameOver) clearInterval(intervalId);
+  //   getFirstPlaceScore({ gameType: gameType });
+
+  //   return () => clearInterval(intervalId);
+  // }, [gameType, getFirstPlaceScore, isGameOver]);
+
+  const updateMyBestScore = useCallback(
+    async ({
+      score,
+      gameType,
+    }: {
+      score: number;
+      gameType: 'GAME_KARROT' | 'GAME_2048';
+    }) => {
       try {
-        const {
-          data: { data },
-        } = await minigameApi.gameUserApi.getLeaderBoardByUserUsingGET(
+        const data = await minigameApi.gamePlayApi.updateScoreUsingPATCH(
           gameType,
-          undefined,
-          1
+          {
+            score: score,
+          }
         );
-        if (data && data[0]) {
-          setTownieBestScore(data[0].score);
-        }
+        return data;
       } catch (error) {
         console.error(error);
-        return;
       }
     },
-    [minigameApi.gameUserApi]
+    [minigameApi.gamePlayApi]
   );
-
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      getFirstPlaceScore({ gameType: gameType });
-    }, 10000);
-    // getFirstPlaceScore({ gameType: gameType });
-    if (isGameOver) clearInterval(intervalId);
-    getFirstPlaceScore({ gameType: gameType });
-
-    return () => clearInterval(intervalId);
-  }, [gameType, getFirstPlaceScore, isGameOver]);
-
-  // display current score as my best score if current score is greater than best score in db
-  useEffect(() => {
-    if (currentScore > myBestScore) {
-      setMyBestScoreDisplay(currentScore);
-    }
-  }, [currentScore, myBestScore]);
-
-  // handle game-over OR game-end
-  const updateMyBestScore = async ({
-    score,
-    gameType,
-  }: {
-    score: number;
-    gameType: 'GAME_KARROT' | 'GAME_2048';
-  }) => {
-    try {
-      const data = await minigameApi.gamePlayApi.updateScoreUsingPATCH(
-        gameType,
-        {
-          score: score,
-        }
-      );
-      return data;
-    } catch (error) {
-      console.error(error);
-    }
-  };
   // game-end
   const handleGameEnd = async ({
     currentScore,
@@ -183,6 +173,7 @@ export const Game: React.FC = () => {
     myBestScore: number;
     gameType: 'GAME_KARROT' | 'GAME_2048';
   }) => {
+    console.log('a');
     if (isInWebEnvironment) {
       setIsGameOver(true);
       return;
@@ -192,6 +183,7 @@ export const Game: React.FC = () => {
       button_type: 'game_end',
     });
     if (currentScore > myBestScore) {
+      console.log('b');
       const response = await updateMyBestScore({
         score: currentScore,
         gameType: gameType,
@@ -203,18 +195,18 @@ export const Game: React.FC = () => {
       setIsGameOver(true);
     }
   };
+
   // game-over
-  const handleGameOver = async ({
-    currentScore,
-    myBestScore,
-    gameType,
-  }: {
-    currentScore: number;
-    myBestScore: number;
-    gameType: 'GAME_KARROT' | 'GAME_2048';
-  }) => {
-    // let timerId: NodeJS.Timeout;
-    if (gameOverStatus) {
+  const handleGameOver = useCallback(
+    async ({
+      currentScore,
+      myBestScore,
+      gameType,
+    }: {
+      currentScore: number;
+      myBestScore: number;
+      gameType: 'GAME_KARROT' | 'GAME_2048';
+    }) => {
       analytics.logEvent('handle_game_over', {
         game_type: '2048_puzzle',
       });
@@ -235,34 +227,15 @@ export const Game: React.FC = () => {
           clearTimeout(timerId);
         }, 1500);
       }
-    }
-  };
-  useEffect(() => {
-    handleGameOver({
-      currentScore: currentScore,
-      myBestScore: myBestScore,
-      gameType: gameType,
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [gameOverStatus]);
+    },
+    [analytics, updateMyBestScore]
+  );
 
-  // new user guide
-  useEffect(() => {
-    if (isTop) {
-      if (highestScore === 0) {
-        setIsUserNew(true);
-      }
-    }
-  }, [highestScore, isTop]);
-
-  const indexTocoordinate = (index: number) => {
-    const x = index % 4;
-    const y = Math.floor(index / 4);
-    return [x, y] as [number, number];
-  };
-  //   {
-  //     [id: number]: TileProps;
-  // },
+  // const indexTocoordinate = (index: number) => {
+  //   const x = index % 4;
+  //   const y = Math.floor(index / 4);
+  //   return [x, y] as [number, number];
+  // };
 
   const convertArrayToObject = (array: any[], key: any) => {
     const initialValue = {};
@@ -274,42 +247,63 @@ export const Game: React.FC = () => {
     }, initialValue);
   };
 
-  const getMyGameData = useCallback(
-    async ({ gameType }: { gameType: 'GAME_KARROT' | 'GAME_2048' }) => {
-      const {
-        data: { data },
-      } = await minigameApi.scoreLogApi.getCurrentLogScoreUsingGET(gameType);
-      if (data?.board && data.score) {
-        let savedBoard = data.board;
-        let savedScore = data.score;
-        let tiles: {
-          [id: number]: TileProps;
-        } = convertArrayToObject(
-          savedBoard
-            .map((value, i) => {
-              return {
-                id: i,
-                coordinate: indexTocoordinate(i),
-                value: value,
-              };
-            })
-            .filter((item) => item.value > 0),
-          'id'
-        );
-        let byIds: number[] = [];
-        for (let i = 0; i < tiles.length; i++) {
-          byIds.push(tiles[i].id);
-        }
-        console.log(tiles, byIds, savedScore);
-        setGameData(tiles, byIds, savedScore);
-      }
-    },
-    [minigameApi.scoreLogApi, setGameData]
-  );
+  // Retrieve and set my saved game data from database
+  const getMyGameData = async ({
+    gameType,
+  }: {
+    gameType: 'GAME_KARROT' | 'GAME_2048';
+  }) => {
+    const {
+      data: { data },
+    } = await minigameApi.scoreLogApi.getCurrentLogScoreUsingGET(gameType);
+    if (data?.board && data.score) {
+      const savedGameData = {
+        board: data.board,
+        score: data.score,
+      };
+      return savedGameData;
+    } else {
+      return null;
+    }
+  };
 
-  useEffect(() => {
-    getMyGameData({ gameType: gameType });
-  }, [gameType, getMyGameData]);
+  const setMyGameData = async ({
+    gameData,
+  }: {
+    gameData: { board: number[]; score: number };
+  }) => {
+    const tiles: {
+      [id: number]: TileProps;
+    } = convertArrayToObject(
+      gameData.board
+        .map((value, i) => {
+          return {
+            id: i + 1,
+            coordinate: indexTocoordinate({
+              index: i,
+              tileCountPerRowOrColumn: 4,
+            }),
+            value: value,
+          };
+        })
+        .filter((item) => item.value > 0),
+      'id'
+    );
+    const byIds: number[] = Object.keys(tiles).map(Number);
+    console.log(tiles, byIds, gameData.score);
+    setGameData(tiles, byIds, gameData.score);
+  };
+
+  const retrieveMyGameData = async () => {
+    const response = await getMyGameData({ gameType: gameType });
+    console.log('my previous unfinished game data', response);
+    if (response) {
+      setMyGameData({ gameData: response });
+      return;
+    } else {
+      resetGame();
+    }
+  };
 
   // constantly post board & score (debounced 1sec)
   const debouncedGetMyGameData = useDebouncedCallback(() => {
@@ -345,10 +339,6 @@ export const Game: React.FC = () => {
     [minigameApi.scoreLogApi]
   );
 
-  useEffect(() => {
-    debouncedGetMyGameData();
-  }, [currentScore, debouncedGetMyGameData]);
-
   // Action buttons
   const handlePlayAgain = () => {
     analytics.logEvent('click_game_play_again_button', {
@@ -357,6 +347,62 @@ export const Game: React.FC = () => {
     });
     resetGame();
   };
+
+  // // Get unfinished game data
+  // useEffect(() => {
+  //   getMyGameData({ gameType: gameType });
+  // }, [gameType, getMyGameData]);
+
+  // useEffect(() => {
+  //   getMyCurrentRank({ gameType: gameType, type: 'CURRENT' });
+  // }, [gameType, getMyCurrentRank]);
+
+  // Set up board & score
+  useEffect(() => {
+    if (isTop) {
+      retrieveMyGameData();
+    }
+  }, [isTop]);
+
+  // new user guide
+  useEffect(() => {
+    if (highestScore === 0) {
+      setIsUserNew(true);
+    }
+  }, [highestScore]);
+
+  // display current score as my best score if current score is greater than best score in db
+  useEffect(() => {
+    console.log('1');
+    debouncedGetMyGameData();
+    if (currentScore > myBestScore) {
+      console.log('2');
+      setMyBestScoreDisplay(currentScore);
+    }
+  }, [currentScore, debouncedGetMyGameData, myBestScore]);
+
+  useEffect(() => {
+    console.log('3');
+    if (gameOverStatus) {
+      handleGameOver({
+        currentScore: currentScore,
+        myBestScore: myBestScore,
+        gameType: gameType,
+      });
+    }
+  }, [gameOverStatus]);
+
+  useEffect(() => {
+    console.log(gameOverStatus);
+  }, [gameOverStatus]);
+  // FA view_game_page
+  useEffect(() => {
+    if (isTop) {
+      analytics.logEvent('view_game_page', {
+        game_type: '2048_puzzle',
+      });
+    }
+  }, [analytics, isTop]);
 
   return (
     <>
@@ -464,6 +510,8 @@ export const Game: React.FC = () => {
         <GameOverModal
           myPreviousRank={myCurrentRank}
           currentScore={currentScore}
+          setIsGameOver={setIsGameOver}
+          retrieveMyGameData={retrieveMyGameData}
         />
       </ReactModal>
     </>

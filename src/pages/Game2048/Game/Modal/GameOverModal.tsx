@@ -19,20 +19,24 @@ import { useThrottledCallback } from 'use-debounce/lib';
 import ReactModal from 'react-modal';
 import iconLeave from 'assets/icon/svg/icon_leave.svg';
 import iconReplay from 'assets/icon/svg/icon_replay.svg';
+import { useGame } from '../hooks';
 
 type Props = {
   myPreviousRank: number;
   currentScore: number;
+  setIsGameOver: React.Dispatch<React.SetStateAction<boolean>>;
+  retrieveMyGameData: () => void;
 };
 
 export const GameOverModal: React.FC<Props> = (props) => {
   const { isTop } = useCurrentScreen();
-  const { replace } = useNavigator();
+  const { pop, replace } = useNavigator();
   const analytics = useAnalytics();
   const minigameApi = useMinigameApi();
   const { isInWebEnvironment, shareApp } = useMini();
   const { user } = useUser();
   const { gameType } = useMyGame2048Data();
+  const { score: currentScore, boardByValue, resetGame } = useGame();
   // const [shouldModalOpen, setShouldModalOpen] = useState<boolean>(false);
   const [isCommentModalOpen, setIsCommentModalOpen] = useState<boolean>(false);
   const [sessionRank, setSessionRank] = useState<{
@@ -105,43 +109,92 @@ export const GameOverModal: React.FC<Props> = (props) => {
     gameType,
     getMyCurrentRank,
     getSessionRank,
-
     props.currentScore,
     props.myPreviousRank,
   ]);
 
-  const goToLeaderboardPage = () => {
-    replace(`/game-2048/leaderboard`);
-  };
+  // const goToLeaderboardPage = () => {
+  //   replace(`/game-2048/leaderboard`);
+  // };
 
-  const handleShare = () => {
-    analytics.logEvent('click_share_button', {
-      game_type: '2048_puzzle',
-      location: 'game_over_modal',
-    });
-    const url = 'https://daangn.onelink.me/HhUa/37719e67';
-    const text = `${user.nickname}님은 2048 퍼즐에서 전국 ${myCurrentRank.rank}등!`;
-    shareApp(url, text);
-  };
+  // const handleShare = () => {
+  //   analytics.logEvent('click_share_button', {
+  //     game_type: '2048_puzzle',
+  //     location: 'game_over_modal',
+  //   });
+  //   const url = 'https://daangn.onelink.me/HhUa/37719e67';
+  //   const text = `${user.nickname}님은 2048 퍼즐에서 전국 ${myCurrentRank.rank}등!`;
+  //   shareApp(url, text);
+  // };
 
   // button to view leaderbaord (open commment modal if condition is met)
-  const handleViewLeaderboard = () => {
-    setIsCommentModalOpen(true);
-    if (isInWebEnvironment) {
-      // goToLeaderboardPage();
-      setIsCommentModalOpen(true);
-      return;
-    }
-    analytics.logEvent('click_view_leaderboard_button', {
-      game_type: '2048_puzzle',
+  // const handleViewLeaderboard = () => {
+  //   setIsCommentModalOpen(true);
+  //   if (isInWebEnvironment) {
+  //     // goToLeaderboardPage();
+  //     setIsCommentModalOpen(true);
+  //     return;
+  //   }
+  //   analytics.logEvent('click_view_leaderboard_button', {
+  //     game_type: '2048_puzzle',
+  //   });
+  //   if (sessionRank.rank !== undefined) {
+  //     sessionRank.rank > 0 && sessionRank.rank <= 10
+  //       ? setIsCommentModalOpen(true)
+  //       : goToLeaderboardPage();
+  //   }
+  // };
+
+  const postMyGameData = useCallback(
+    async ({
+      board,
+      score,
+      gameType,
+    }: {
+      board: number[];
+      score: number;
+      gameType: 'GAME_KARROT' | 'GAME_2048';
+    }) => {
+      console.log(board, score);
+      try {
+        const { data } = await minigameApi.scoreLogApi.logScoreUsingPOST(
+          { board, score },
+          gameType
+        );
+        return data.status === 200 ? 'success' : 'fail';
+      } catch (error) {
+        console.error(error);
+        return 'fail';
+      }
+    },
+    [minigameApi.scoreLogApi]
+  );
+
+  const newGame = async () => {
+    resetGame();
+    const response = await postMyGameData({
+      board: boardByValue,
+      score: currentScore,
+      gameType: gameType,
     });
-    if (sessionRank.rank !== undefined) {
-      sessionRank.rank > 0 && sessionRank.rank <= 10
-        ? setIsCommentModalOpen(true)
-        : goToLeaderboardPage();
+    if (response === 'success') {
+      props.retrieveMyGameData();
+      props.setIsGameOver(false);
     }
   };
 
+  const playAgain = async () => {
+    analytics.logEvent('click_game_play_again_button', {
+      game_type: '2048_puzzle',
+      button_type: 'refresh',
+    });
+    newGame();
+  };
+
+  const leaveGame = () => {
+    newGame();
+    pop();
+  };
   // animation handler
   const [showScore, setShowScore] = useState(false);
   const [showRank, setShowRank] = useState(false);
@@ -264,7 +317,7 @@ export const GameOverModal: React.FC<Props> = (props) => {
           size={`large`}
           fontSize={rem(16)}
           color={`secondary1`}
-          onClick={handleViewLeaderboard}
+          onClick={playAgain}
         >
           <div
             style={{
@@ -290,7 +343,7 @@ export const GameOverModal: React.FC<Props> = (props) => {
           size={`large`}
           fontSize={rem(16)}
           color={`primary`}
-          onClick={handleShare}
+          onClick={leaveGame}
         >
           <div
             style={{
