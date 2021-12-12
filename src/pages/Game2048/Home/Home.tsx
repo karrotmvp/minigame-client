@@ -1,24 +1,31 @@
+import React, { useCallback, useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
-import { MemoizedLeaderboardTabs as LeaderboardTabs } from 'pages/Game2048/Leaderboard/LeaderboardTabs';
 import { rem } from 'polished';
+import { useAnalytics } from 'services/analytics';
+import { useMinigameApi } from 'services/api/minigameApi';
+import {
+  useLeaderboard,
+  useMini,
+  useUser,
+  useMyGameData,
+  useAccessToken,
+} from 'hooks';
+import type { TownLeaderboardType } from 'hooks';
 import { Button } from 'components/Button';
-import { useCallback, useEffect, useState } from 'react';
 import { Nav } from 'components/Navigation/Nav';
 import { ReactComponent as IconArrowBack } from 'assets/icon/svg/icon_arrow_back.svg';
+import { MemoizedLeaderboardTabs as LeaderboardTabs } from 'pages/Game2048/Leaderboard/LeaderboardTabs';
 import { MemoizedRefresh as Refresh } from '../Leaderboard/Refresh';
 import { MemoizedMyInfo as MyInfo, NotLoggedIn } from '../Leaderboard/MyInfo';
-import { useMinigameApi } from 'services/api/minigameApi';
 import { ActiveUserCount } from 'components/ActiveUserCount';
-import { useAccessToken } from 'hooks/useAccessToken';
 import { useMyGame2048Data } from '../hooks';
-import { useLeaderboard, useMini, useUser, useMyGameData } from 'hooks';
 import { useThrottledCallback } from 'use-debounce/lib';
-import { useAnalytics } from 'services/analytics';
 import { navHeight, PageContainer, pageHeight } from 'styles';
-import type { TownLeaderboardType } from 'hooks';
+import ReactModal from 'react-modal';
+import { CommentModal } from './Modal';
 
-export const Home = () => {
+export const Home: React.FC = () => {
   const { isTop } = useCurrentScreen();
   const { push, pop } = useNavigator();
   const analytics = useAnalytics();
@@ -38,6 +45,7 @@ export const Home = () => {
     rank: undefined,
     score: undefined,
   });
+  const [isCommentModalOpen, setIsCommentModalOpen] = useState<boolean>(false);
 
   const goToPlatformPage = () => {
     analytics.logEvent('click_leave_game_button', {
@@ -191,88 +199,122 @@ export const Home = () => {
   }, [analytics, isTop]);
 
   return (
-    <div style={{ display: `flex`, flexFlow: `column` }}>
-      <div
-        style={{
-          height: `calc(100vh - 90px)`,
-          overflow: `hidden`,
-          overscrollBehavior: `contain`,
-        }}
-      >
-        <PageContainer
-          id="home-page__2048-puzzle"
-          onScroll={onScroll}
-          style={{
-            height: `100%`,
-            overflow: `auto`,
-          }}
-        >
-          <Nav
-            appendLeft={<IconArrowBack />}
-            onClickLeft={goToPlatformPage}
-            appendCenter={
-              <>
-                <p
-                  style={{
-                    fontWeight: `bold`,
-                    fontSize: `${rem(16)}`,
-                    color: '#FFFFFF',
-                    marginBottom: `4px`,
-                  }}
-                >
-                  이번주 랭킹
-                </p>
-                <Refresh handleRefresh={throttledRefresh} />
-              </>
-            }
-            appendRight={<button>초대하기</button>}
-            style={{ backgroundColor: 'transparent' }}
-          />
-          <Top className="top">
-            <div className="top__my-info">
-              {isRanked ? (
-                <MyInfo
-                  myTownRank={myTownData.rank as number}
-                  myTownScore={myTownData.score as number}
-                />
-              ) : (
-                <NotLoggedIn
-                  myTownRank={myTownData.rank as number}
-                  myTownScore={myTownData.score as number}
-                />
-              )}
-            </div>
-          </Top>
-          <Bottom className="bottom">
-            <LeaderboardTabs
-              townLeaderboard={townLeaderboard}
-              userLeaderboard={userLeaderboard}
-              isRanked={isRanked}
-            />
-          </Bottom>
-        </PageContainer>
-      </div>
-      <ActionItem>
+    <>
+      <div style={{ display: `flex`, flexFlow: `column` }}>
         <div
           style={{
-            position: 'absolute',
-            bottom: '90px',
-            right: '24px',
-            zIndex: 101,
+            height: `calc(100vh - 90px)`,
+            overflow: `hidden`,
+            overscrollBehavior: `contain`,
           }}
         >
-          <ActiveUserCount gameType="GAME_2048" />
+          <PageContainer
+            id="home-page__2048-puzzle"
+            onScroll={onScroll}
+            style={{
+              height: `100%`,
+              overflow: `auto`,
+            }}
+          >
+            <Nav
+              appendLeft={<IconArrowBack />}
+              onClickLeft={goToPlatformPage}
+              appendCenter={
+                <>
+                  <p
+                    style={{
+                      fontWeight: `bold`,
+                      fontSize: `${rem(16)}`,
+                      color: '#FFFFFF',
+                      marginBottom: `4px`,
+                    }}
+                  >
+                    이번주 랭킹
+                  </p>
+                  <Refresh />
+                </>
+              }
+              appendRight={<button>초대하기</button>}
+              style={{ backgroundColor: 'transparent' }}
+            />
+            <Top className="top">
+              <div className="top__my-info">
+                {true ? (
+                  <MyInfo
+                    myTownRank={myTownData.rank as number}
+                    myTownScore={myTownData.score as number}
+                    setIsCommentModalOpen={setIsCommentModalOpen}
+                  />
+                ) : (
+                  <NotLoggedIn
+                    myTownRank={myTownData.rank as number}
+                    myTownScore={myTownData.score as number}
+                  />
+                )}
+              </div>
+            </Top>
+            <Bottom className="bottom">
+              <LeaderboardTabs
+                townLeaderboard={townLeaderboard}
+                userLeaderboard={userLeaderboard}
+                isRanked={isRanked}
+              />
+            </Bottom>
+          </PageContainer>
         </div>
-        <Button
-          size={`large`}
-          fontSize={rem(20)}
-          color={`primary`}
-          onClick={handleGameStart}
-        >
-          게임 시작
-        </Button>
-      </ActionItem>
-    </div>
+        <ActionItem>
+          <div
+            style={{
+              position: 'absolute',
+              bottom: '90px',
+              right: '24px',
+              zIndex: 101,
+            }}
+          >
+            <ActiveUserCount gameType="GAME_2048" />
+          </div>
+          <Button
+            size={`large`}
+            fontSize={rem(20)}
+            color={`primary`}
+            onClick={handleGameStart}
+          >
+            게임 시작
+          </Button>
+        </ActionItem>
+      </div>
+      <ReactModal
+        isOpen={isCommentModalOpen}
+        contentLabel="2048-puzzle-comment-modal"
+        style={{
+          overlay: {
+            zIndex: 100,
+            background: 'rgba(40, 40, 40, 0.9)',
+            backdropFilter: `blur(5px)`,
+            WebkitBackdropFilter: `blur(5px)`,
+          },
+          content: {
+            width: '100%',
+            height: '100%',
+            inset: '50% auto auto 50%',
+            marginRight: '-50%',
+            transform: 'translate(-50%, -50%)',
+            padding: 'none',
+            display: `flex`,
+            flexFlow: `column`,
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: 'transparent',
+            border: 'none',
+          },
+        }}
+      >
+        <CommentModal
+          setIsCommentModalOpen={setIsCommentModalOpen}
+          handleRefresh={handleRefresh}
+        />
+      </ReactModal>
+    </>
   );
 };
 

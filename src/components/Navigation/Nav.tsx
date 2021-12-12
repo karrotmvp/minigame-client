@@ -65,7 +65,7 @@ const NavContainer = styled.div<{
 
   div.centered {
     position: absolute;
-    inset: 14px 0 0;
+    inset: 0;
     margin-left: auto;
     margin-right: auto;
     display: flex;

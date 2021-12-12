@@ -8,6 +8,7 @@ import { DistrictName } from 'styles/leaderboard';
 import { ReactComponent as IconPencil } from 'assets/icon/svg/icon_pencil.svg';
 
 interface Props {
+  setIsCommentModalOpen?: React.Dispatch<React.SetStateAction<boolean>>;
   myTownRank: number;
   myTownScore: number;
 }
@@ -76,6 +77,9 @@ export const NotLoggedIn: React.FC<Props> = (props) => {
 const MyInfo: React.FC<Props> = (props) => {
   const { user, town } = useUser();
   const { score: myScore, rank: myRank, comment } = useMyGame2048Data();
+  const openCommentModal = () => {
+    if (props.setIsCommentModalOpen) props.setIsCommentModalOpen(true);
+  };
   return (
     <Container className="my-info">
       <div className="my-info__data">
@@ -105,7 +109,7 @@ const MyInfo: React.FC<Props> = (props) => {
               ? '오른쪽 버튼을 눌러 한마디를 작성할 수 있어요'
               : comment}
           </p>
-          <IconPencil />
+          <IconPencil onClick={openCommentModal} />
         </div>
       </div>
       <div

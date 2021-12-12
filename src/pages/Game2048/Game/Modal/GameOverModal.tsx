@@ -1,12 +1,10 @@
 import styled from '@emotion/styled';
 import React, { useState, useEffect, useCallback } from 'react';
 import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
-import { CommentModal } from './CommentModal';
 import gameOverSvgUrl from 'assets/svg/game2048/gameover.svg';
 import { Button } from 'components/Button';
 import { useMinigameApi } from 'services/api/minigameApi';
 import { useMyGame2048Data } from 'pages/Game2048/hooks';
-import { useMini, useUser } from 'hooks';
 import { rem } from 'polished';
 import { useAnalytics } from 'services/analytics';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -16,7 +14,6 @@ import {
   fireRandomDirectionConfetti,
 } from 'utils/functions/confetti';
 import { useThrottledCallback } from 'use-debounce/lib';
-import ReactModal from 'react-modal';
 import iconLeave from 'assets/icon/svg/icon_leave.svg';
 import iconReplay from 'assets/icon/svg/icon_replay.svg';
 import { useGame } from '../hooks';
@@ -30,15 +27,11 @@ type Props = {
 
 export const GameOverModal: React.FC<Props> = (props) => {
   const { isTop } = useCurrentScreen();
-  const { pop, replace } = useNavigator();
+  const { pop } = useNavigator();
   const analytics = useAnalytics();
   const minigameApi = useMinigameApi();
-  const { isInWebEnvironment, shareApp } = useMini();
-  const { user } = useUser();
   const { gameType } = useMyGame2048Data();
   const { score: currentScore, boardByValue, resetGame } = useGame();
-  // const [shouldModalOpen, setShouldModalOpen] = useState<boolean>(false);
-  const [isCommentModalOpen, setIsCommentModalOpen] = useState<boolean>(false);
   const [sessionRank, setSessionRank] = useState<{
     rank: number | undefined;
     score: number | undefined;
@@ -112,38 +105,6 @@ export const GameOverModal: React.FC<Props> = (props) => {
     props.currentScore,
     props.myPreviousRank,
   ]);
-
-  // const goToLeaderboardPage = () => {
-  //   replace(`/game-2048/leaderboard`);
-  // };
-
-  // const handleShare = () => {
-  //   analytics.logEvent('click_share_button', {
-  //     game_type: '2048_puzzle',
-  //     location: 'game_over_modal',
-  //   });
-  //   const url = 'https://daangn.onelink.me/HhUa/37719e67';
-  //   const text = `${user.nickname}님은 2048 퍼즐에서 전국 ${myCurrentRank.rank}등!`;
-  //   shareApp(url, text);
-  // };
-
-  // button to view leaderbaord (open commment modal if condition is met)
-  // const handleViewLeaderboard = () => {
-  //   setIsCommentModalOpen(true);
-  //   if (isInWebEnvironment) {
-  //     // goToLeaderboardPage();
-  //     setIsCommentModalOpen(true);
-  //     return;
-  //   }
-  //   analytics.logEvent('click_view_leaderboard_button', {
-  //     game_type: '2048_puzzle',
-  //   });
-  //   if (sessionRank.rank !== undefined) {
-  //     sessionRank.rank > 0 && sessionRank.rank <= 10
-  //       ? setIsCommentModalOpen(true)
-  //       : goToLeaderboardPage();
-  //   }
-  // };
 
   const postMyGameData = useCallback(
     async ({
@@ -366,38 +327,6 @@ export const GameOverModal: React.FC<Props> = (props) => {
           </div>
         </Button>
       </ActionItems>
-      <ReactModal
-        isOpen={isCommentModalOpen}
-        contentLabel="2048-puzzle-comment-modal"
-        style={{
-          overlay: {
-            background: 'rgba(40, 40, 40, 0.8)',
-            zIndex: 100,
-          },
-          content: {
-            height: `fit-content`,
-            width: `80%`,
-            top: '50%',
-            left: '50%',
-            right: 'auto',
-            bottom: 'auto',
-            marginRight: '-50%',
-            transform: 'translate(-50%, -50%)',
-            borderRadius: `21px`,
-            padding: `24px 18px`,
-            display: `flex`,
-            flexFlow: `column`,
-            justifyContent: 'center',
-            alignItems: 'center',
-          },
-        }}
-      >
-        <CommentModal
-          setShouldModalOpen={setIsCommentModalOpen}
-          rank={sessionRank.rank as number}
-          score={sessionRank.score as number}
-        />
-      </ReactModal>
     </>
   );
 };

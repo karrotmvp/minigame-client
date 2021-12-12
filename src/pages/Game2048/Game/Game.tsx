@@ -11,7 +11,6 @@ import { GameOverModal } from './Modal';
 import {
   MemoizedCurrentScore as CurrentScore,
   MemoizedMyBestScore as MyBestScore,
-  // MemoizedTownieBestScore as TownieBestScore,
 } from './Score';
 import refreshGameUrl from 'assets/svg/game2048/refresh_game.svg';
 import { useAnalytics } from 'services/analytics';
