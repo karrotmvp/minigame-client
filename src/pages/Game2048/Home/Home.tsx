@@ -24,6 +24,9 @@ import { useThrottledCallback } from 'use-debounce/lib';
 import { navHeight, PageContainer, pageHeight } from 'styles';
 import ReactModal from 'react-modal';
 import { CommentModal } from './Modal';
+import '@karrotframe/pulltorefresh/index.css';
+import { PullToRefresh } from '@karrotframe/pulltorefresh';
+import { css } from '@emotion/css';
 
 export const Home: React.FC = () => {
   const { isTop } = useCurrentScreen();
@@ -200,66 +203,89 @@ export const Home: React.FC = () => {
 
   return (
     <>
-      <div style={{ display: `flex`, flexFlow: `column` }}>
+      <div
+        style={{
+          display: `flex`,
+          flexFlow: `column`,
+          background: `linear-gradient(180deg, #82b6ff 180px, #fff 0)`,
+        }}
+      >
         <div
           style={{
             height: `calc(100vh - 90px)`,
             overflow: `hidden`,
             overscrollBehavior: `contain`,
+            background: `transparent`,
           }}
         >
+          <Nav
+            appendLeft={<IconArrowBack />}
+            onClickLeft={goToPlatformPage}
+            appendCenter={
+              <>
+                <p
+                  style={{
+                    fontWeight: `bold`,
+                    fontSize: `${rem(16)}`,
+                    color: '#FFFFFF',
+                    marginBottom: `4px`,
+                  }}
+                >
+                  이번주 랭킹
+                </p>
+                <Refresh />
+              </>
+            }
+            appendRight={<button>초대하기</button>}
+            style={{ backgroundColor: 'transparent' }}
+          />
+
           <PageContainer
             id="home-page__2048-puzzle"
             onScroll={onScroll}
             style={{
               height: `100%`,
               overflow: `auto`,
+              background: `transparent`,
+              position: 'relative',
             }}
           >
-            <Nav
-              appendLeft={<IconArrowBack />}
-              onClickLeft={goToPlatformPage}
-              appendCenter={
-                <>
-                  <p
-                    style={{
-                      fontWeight: `bold`,
-                      fontSize: `${rem(16)}`,
-                      color: '#FFFFFF',
-                      marginBottom: `4px`,
-                    }}
-                  >
-                    이번주 랭킹
-                  </p>
-                  <Refresh />
-                </>
-              }
-              appendRight={<button>초대하기</button>}
-              style={{ backgroundColor: 'transparent' }}
-            />
-            <Top className="top">
-              <div className="top__my-info">
-                {true ? (
-                  <MyInfo
-                    myTownRank={myTownData.rank as number}
-                    myTownScore={myTownData.score as number}
-                    setIsCommentModalOpen={setIsCommentModalOpen}
-                  />
-                ) : (
-                  <NotLoggedIn
-                    myTownRank={myTownData.rank as number}
-                    myTownScore={myTownData.score as number}
-                  />
-                )}
-              </div>
-            </Top>
-            <Bottom className="bottom">
-              <LeaderboardTabs
-                townLeaderboard={townLeaderboard}
-                userLeaderboard={userLeaderboard}
-                isRanked={isRanked}
-              />
-            </Bottom>
+            <PullToRefresh
+              onPull={(dispose) => {
+                handleRefresh().then(() => {
+                  dispose();
+                });
+              }}
+              className={css`
+                --kf_pulltorefresh_backgroundColor: transparent;
+                --kf_pulltorefresh_backgroundLowColor: transparent;
+                --kf_pulltorefresh_fallbackSpinner-color: #ffffff;
+              `}
+            >
+              <Top className="top">
+                <div className="top__my-info">
+                  {true ? (
+                    <MyInfo
+                      myTownRank={myTownData.rank as number}
+                      myTownScore={myTownData.score as number}
+                      setIsCommentModalOpen={setIsCommentModalOpen}
+                    />
+                  ) : (
+                    <NotLoggedIn
+                      myTownRank={myTownData.rank as number}
+                      myTownScore={myTownData.score as number}
+                    />
+                  )}
+                </div>
+              </Top>
+              <Bottom className="bottom">
+                <LeaderboardTabs
+                  townLeaderboard={townLeaderboard}
+                  userLeaderboard={userLeaderboard}
+                  isRanked={isRanked}
+                />
+              </Bottom>
+            </PullToRefresh>
           </PageContainer>
         </div>
         <ActionItem>
@@ -283,6 +309,7 @@ export const Home: React.FC = () => {
           </Button>
         </ActionItem>
       </div>
+
       <ReactModal
         isOpen={isCommentModalOpen}
         contentLabel="2048-puzzle-comment-modal"
@@ -320,13 +347,13 @@ export const Home: React.FC = () => {
 
 const Top = styled.div`
   width: 100%;
-  background: linear-gradient(180deg, #82b6ff 180px, #fff 0);
+  // background: linear-gradient(180deg, #82b6ff 180px, #fff 0);
   position: relative;
-  top: -${navHeight};
-  padding-top: ${navHeight};
+  // top: -${navHeight};
+  // padding-top: ${navHeight};
 
   div.top__my-info {
-    padding: 20px 20px 0;
+    padding: 0 20px;
   }
 `;
 
@@ -334,7 +361,7 @@ const Bottom = styled.div`
   flex: 1;
   background: #fff;
   position: sticky;
-  height: calc(${pageHeight} - 90px);
+  height: calc(${pageHeight} - 40px);
   top: ${navHeight};
 `;
 
