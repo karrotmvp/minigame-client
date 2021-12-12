@@ -55,31 +55,31 @@ export interface BaseResponseListTownRankingDto {
 /**
  * 
  * @export
- * @interface BaseResponseListUserRankingDto
+ * @interface BaseResponseListUserRankingDtoWithTown
  */
-export interface BaseResponseListUserRankingDto {
+export interface BaseResponseListUserRankingDtoWithTown {
     /**
      * 
-     * @type {Array<UserRankingDto>}
-     * @memberof BaseResponseListUserRankingDto
+     * @type {Array<UserRankingDtoWithTown>}
+     * @memberof BaseResponseListUserRankingDtoWithTown
      */
-    'data'?: Array<UserRankingDto>;
+    'data'?: Array<UserRankingDtoWithTown>;
     /**
      * 
      * @type {string}
-     * @memberof BaseResponseListUserRankingDto
+     * @memberof BaseResponseListUserRankingDtoWithTown
      */
     'message'?: string;
     /**
      * 
      * @type {number}
-     * @memberof BaseResponseListUserRankingDto
+     * @memberof BaseResponseListUserRankingDtoWithTown
      */
     'status': number;
     /**
      * 
      * @type {string}
-     * @memberof BaseResponseListUserRankingDto
+     * @memberof BaseResponseListUserRankingDtoWithTown
      */
     'timestamp': string;
 }
@@ -117,6 +117,37 @@ export interface BaseResponseNotificationCheckDto {
 /**
  * 
  * @export
+ * @interface BaseResponseRankDto
+ */
+export interface BaseResponseRankDto {
+    /**
+     * 
+     * @type {RankDto}
+     * @memberof BaseResponseRankDto
+     */
+    'data'?: RankDto;
+    /**
+     * 
+     * @type {string}
+     * @memberof BaseResponseRankDto
+     */
+    'message'?: string;
+    /**
+     * 
+     * @type {number}
+     * @memberof BaseResponseRankDto
+     */
+    'status': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof BaseResponseRankDto
+     */
+    'timestamp': string;
+}
+/**
+ * 
+ * @export
  * @interface BaseResponseRankingDto
  */
 export interface BaseResponseRankingDto {
@@ -148,37 +179,6 @@ export interface BaseResponseRankingDto {
 /**
  * 
  * @export
- * @interface BaseResponseRankingWithCommentDto
- */
-export interface BaseResponseRankingWithCommentDto {
-    /**
-     * 
-     * @type {RankingWithCommentDto}
-     * @memberof BaseResponseRankingWithCommentDto
-     */
-    'data'?: RankingWithCommentDto;
-    /**
-     * 
-     * @type {string}
-     * @memberof BaseResponseRankingWithCommentDto
-     */
-    'message'?: string;
-    /**
-     * 
-     * @type {number}
-     * @memberof BaseResponseRankingWithCommentDto
-     */
-    'status': number;
-    /**
-     * 
-     * @type {string}
-     * @memberof BaseResponseRankingWithCommentDto
-     */
-    'timestamp': string;
-}
-/**
- * 
- * @export
  * @interface BaseResponseRegionDto
  */
 export interface BaseResponseRegionDto {
@@ -204,37 +204,6 @@ export interface BaseResponseRegionDto {
      * 
      * @type {string}
      * @memberof BaseResponseRegionDto
-     */
-    'timestamp': string;
-}
-/**
- * 
- * @export
- * @interface BaseResponseScoreDto
- */
-export interface BaseResponseScoreDto {
-    /**
-     * 
-     * @type {ScoreDto}
-     * @memberof BaseResponseScoreDto
-     */
-    'data'?: ScoreDto;
-    /**
-     * 
-     * @type {string}
-     * @memberof BaseResponseScoreDto
-     */
-    'message'?: string;
-    /**
-     * 
-     * @type {number}
-     * @memberof BaseResponseScoreDto
-     */
-    'status': number;
-    /**
-     * 
-     * @type {string}
-     * @memberof BaseResponseScoreDto
      */
     'timestamp': string;
 }
@@ -365,6 +334,37 @@ export interface BaseResponseUserDto {
 /**
  * 
  * @export
+ * @interface BaseResponseUserRankingDto
+ */
+export interface BaseResponseUserRankingDto {
+    /**
+     * 
+     * @type {UserRankingDto}
+     * @memberof BaseResponseUserRankingDto
+     */
+    'data'?: UserRankingDto;
+    /**
+     * 
+     * @type {string}
+     * @memberof BaseResponseUserRankingDto
+     */
+    'message'?: string;
+    /**
+     * 
+     * @type {number}
+     * @memberof BaseResponseUserRankingDto
+     */
+    'status': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof BaseResponseUserRankingDto
+     */
+    'timestamp': string;
+}
+/**
+ * 
+ * @export
  * @interface BaseResponseint
  */
 export interface BaseResponseint {
@@ -461,38 +461,38 @@ export enum NotificationRequestDtoTypeEnum {
 /**
  * 
  * @export
- * @interface RankingDto
+ * @interface RankDto
  */
-export interface RankingDto {
+export interface RankDto {
     /**
      * 
      * @type {number}
-     * @memberof RankingDto
+     * @memberof RankDto
      */
     'rank': number;
 }
 /**
  * 
  * @export
- * @interface RankingWithCommentDto
+ * @interface RankingDto
  */
-export interface RankingWithCommentDto {
+export interface RankingDto {
     /**
      * 
      * @type {string}
-     * @memberof RankingWithCommentDto
+     * @memberof RankingDto
      */
     'comment'?: string;
     /**
      * 
      * @type {number}
-     * @memberof RankingWithCommentDto
+     * @memberof RankingDto
      */
     'rank': number;
     /**
      * 
      * @type {number}
-     * @memberof RankingWithCommentDto
+     * @memberof RankingDto
      */
     'score': number;
 }
@@ -538,7 +538,7 @@ export interface ScoreDto {
      * @type {number}
      * @memberof ScoreDto
      */
-    'score': number;
+    'score'?: number;
 }
 /**
  * 
@@ -640,6 +640,12 @@ export interface TownRankingDto {
      * @memberof TownRankingDto
      */
     'score': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof TownRankingDto
+     */
+    'townId': string;
 }
 /**
  * 
@@ -683,29 +689,54 @@ export interface UserRankingDto {
      * @type {string}
      * @memberof UserRankingDto
      */
-    'comment'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof UserRankingDto
-     */
     'nickname': string;
     /**
      * 
      * @type {number}
      * @memberof UserRankingDto
      */
+    'rank': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof UserRankingDto
+     */
+    'score': number;
+}
+/**
+ * 
+ * @export
+ * @interface UserRankingDtoWithTown
+ */
+export interface UserRankingDtoWithTown {
+    /**
+     * 
+     * @type {string}
+     * @memberof UserRankingDtoWithTown
+     */
+    'comment'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof UserRankingDtoWithTown
+     */
+    'nickname': string;
+    /**
+     * 
+     * @type {number}
+     * @memberof UserRankingDtoWithTown
+     */
     'score': number;
     /**
      * 
      * @type {TownDto}
-     * @memberof UserRankingDto
+     * @memberof UserRankingDtoWithTown
      */
     'town': TownDto;
     /**
      * 
      * @type {string}
-     * @memberof UserRankingDto
+     * @memberof UserRankingDtoWithTown
      */
     'userId'?: string;
 }
@@ -772,7 +803,7 @@ export const GamePlayApiAxiosParamCreator = function (configuration?: Configurat
             assertParamExists('getHigherScoreUsingGET', 'gameType', gameType)
             // verify required parameter 'score' is not null or undefined
             assertParamExists('getHigherScoreUsingGET', 'score', score)
-            const localVarPath = `/api/games/{gameType}/higher-score`
+            const localVarPath = `/api/games/{gameType}/ranking/higher`
                 .replace(`{${"gameType"}}`, encodeURIComponent(String(gameType)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -994,7 +1025,7 @@ export const GamePlayApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getHigherScoreUsingGET(gameType: 'GAME_KARROT' | 'GAME_2048', score: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseResponseScoreDto>> {
+        async getHigherScoreUsingGET(gameType: 'GAME_KARROT' | 'GAME_2048', score: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseResponseUserRankingDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getHigherScoreUsingGET(gameType, score, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -1006,7 +1037,7 @@ export const GamePlayApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getRankByScoreUsingGET(gameType: 'GAME_KARROT' | 'GAME_2048', score: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseResponseRankingDto>> {
+        async getRankByScoreUsingGET(gameType: 'GAME_KARROT' | 'GAME_2048', score: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseResponseRankDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getRankByScoreUsingGET(gameType, score, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -1073,7 +1104,7 @@ export const GamePlayApiFactory = function (configuration?: Configuration, baseP
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getHigherScoreUsingGET(gameType: 'GAME_KARROT' | 'GAME_2048', score: number, options?: any): AxiosPromise<BaseResponseScoreDto> {
+        getHigherScoreUsingGET(gameType: 'GAME_KARROT' | 'GAME_2048', score: number, options?: any): AxiosPromise<BaseResponseUserRankingDto> {
             return localVarFp.getHigherScoreUsingGET(gameType, score, options).then((request) => request(axios, basePath));
         },
         /**
@@ -1084,7 +1115,7 @@ export const GamePlayApiFactory = function (configuration?: Configuration, baseP
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getRankByScoreUsingGET(gameType: 'GAME_KARROT' | 'GAME_2048', score: number, options?: any): AxiosPromise<BaseResponseRankingDto> {
+        getRankByScoreUsingGET(gameType: 'GAME_KARROT' | 'GAME_2048', score: number, options?: any): AxiosPromise<BaseResponseRankDto> {
             return localVarFp.getRankByScoreUsingGET(gameType, score, options).then((request) => request(axios, basePath));
         },
         /**
@@ -1472,7 +1503,7 @@ export const GameUserApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getLeaderBoardByUserUsingGET(gameType: 'GAME_KARROT' | 'GAME_2048', month?: number, size?: number, week?: number, year?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseResponseListUserRankingDto>> {
+        async getLeaderBoardByUserUsingGET(gameType: 'GAME_KARROT' | 'GAME_2048', month?: number, size?: number, week?: number, year?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseResponseListUserRankingDtoWithTown>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getLeaderBoardByUserUsingGET(gameType, month, size, week, year, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -1484,7 +1515,7 @@ export const GameUserApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getMyRankInfoUsingGET(gameType: 'GAME_KARROT' | 'GAME_2048', type?: 'BEST' | 'CURRENT', options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseResponseRankingWithCommentDto>> {
+        async getMyRankInfoUsingGET(gameType: 'GAME_KARROT' | 'GAME_2048', type?: 'BEST' | 'CURRENT', options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseResponseRankingDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getMyRankInfoUsingGET(gameType, type, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -1509,7 +1540,7 @@ export const GameUserApiFactory = function (configuration?: Configuration, baseP
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getLeaderBoardByUserUsingGET(gameType: 'GAME_KARROT' | 'GAME_2048', month?: number, size?: number, week?: number, year?: number, options?: any): AxiosPromise<BaseResponseListUserRankingDto> {
+        getLeaderBoardByUserUsingGET(gameType: 'GAME_KARROT' | 'GAME_2048', month?: number, size?: number, week?: number, year?: number, options?: any): AxiosPromise<BaseResponseListUserRankingDtoWithTown> {
             return localVarFp.getLeaderBoardByUserUsingGET(gameType, month, size, week, year, options).then((request) => request(axios, basePath));
         },
         /**
@@ -1520,7 +1551,7 @@ export const GameUserApiFactory = function (configuration?: Configuration, baseP
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getMyRankInfoUsingGET(gameType: 'GAME_KARROT' | 'GAME_2048', type?: 'BEST' | 'CURRENT', options?: any): AxiosPromise<BaseResponseRankingWithCommentDto> {
+        getMyRankInfoUsingGET(gameType: 'GAME_KARROT' | 'GAME_2048', type?: 'BEST' | 'CURRENT', options?: any): AxiosPromise<BaseResponseRankingDto> {
             return localVarFp.getMyRankInfoUsingGET(gameType, type, options).then((request) => request(axios, basePath));
         },
     };
