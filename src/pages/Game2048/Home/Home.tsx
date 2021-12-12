@@ -5,7 +5,6 @@ import { rem } from 'polished';
 import { Button } from 'components/Button';
 import { useCallback, useEffect, useState } from 'react';
 import { Nav } from 'components/Navigation/Nav';
-// import { BackIcon } from 'assets/icon';
 import { ReactComponent as IconArrowBack } from 'assets/icon/svg/icon_arrow_back.svg';
 import { MemoizedRefresh as Refresh } from '../Leaderboard/Refresh';
 import { MemoizedMyInfo as MyInfo, NotLoggedIn } from '../Leaderboard/MyInfo';
@@ -13,10 +12,11 @@ import { useMinigameApi } from 'services/api/minigameApi';
 import { ActiveUserCount } from 'components/ActiveUserCount';
 import { useAccessToken } from 'hooks/useAccessToken';
 import { useMyGame2048Data } from '../hooks';
-import { useLeaderboard, useMini, useMyGameData } from 'hooks';
+import { useLeaderboard, useMini, useUser, useMyGameData } from 'hooks';
 import { useThrottledCallback } from 'use-debounce/lib';
 import { useAnalytics } from 'services/analytics';
 import { navHeight, PageContainer, pageHeight } from 'styles';
+import type { TownLeaderboardType } from 'hooks';
 
 export const Home = () => {
   const { isTop } = useCurrentScreen();
@@ -24,20 +24,20 @@ export const Home = () => {
   const analytics = useAnalytics();
   const minigameApi = useMinigameApi();
   const { accessToken } = useAccessToken();
-  // const { resetGame } = useGame();
   const { isInWebEnvironment, handleThirdPartyAgreement } = useMini();
-  const {
-    rank,
-    gameType,
-    updateMyScore,
-    updateMyComment,
-    updateMyHighestScore,
-  } = useMyGame2048Data();
+  const { town } = useUser();
+  const { rank, gameType } = useMyGame2048Data();
   const { townLeaderboard, userLeaderboard, updateLeaderboard } =
     useLeaderboard();
   const { updateMyGameData } = useMyGameData();
   const [isRanked, setIsRanked] = useState<boolean>(false);
-  const [myTownRank, setMyTownRank] = useState<number | undefined>(undefined);
+  const [myTownData, setMyTownData] = useState<{
+    rank: number | undefined;
+    score: number | undefined;
+  }>({
+    rank: undefined,
+    score: undefined,
+  });
 
   const goToPlatformPage = () => {
     analytics.logEvent('click_leave_game_button', {
@@ -104,45 +104,59 @@ export const Home = () => {
     }
   };
 
-  // refresh button handler
-  // const updateMyGameData = useCallback(async () => {
-  //   const {
-  //     data: { data },
-  //   } = await minigameApi.gameUserApi.getMyRankInfoUsingGET(gameType);
-  //   if (data) {
-  //     if (data.score && data.rank) {
-  //       updateMyScore({
-  //         score: data.score,
-  //         rank: data.rank,
-  //       });
-  //       if (data.comment) {
-  //         updateMyComment(data.comment);
-  //       }
-  //       return 'success';
-  //     }
-  //   }
-  //   return 'fail';
-  // },[]);
-  // const getMyBestScoreEver = async () => {
-  //   const {
-  //     data: { data },
-  //   } = await minigameApi.gameUserApi.getMyRankInfoUsingGET(gameType, 'BEST');
-  //   if (data) {
-  //     updateMyHighestScore(data.score, data.rank);
-  //   }
-  // };
+  const updateMyTownData = useCallback(
+    ({
+      townLeaderboard,
+      myTownId,
+    }: {
+      townLeaderboard: TownLeaderboardType[];
+      myTownId: string;
+    }) => {
+      const myTown = townLeaderboard.find((town) => town.townId === myTownId);
+      setMyTownData({
+        rank: myTown?.rank,
+        score: myTown?.score,
+      });
+    },
+    []
+  );
 
+  // refresh leaderboard
   const handleRefresh = useCallback(async () => {
-    const response = await updateMyGameData({ gameType: gameType });
-    if (response === 'success') {
-      updateLeaderboard({ gameType: 'GAME_2048', size: 1000 });
+    if (isRanked) {
+      const response = await updateMyGameData({ gameType: gameType });
+      if (response === 'success') {
+        const leaderboard = await updateLeaderboard({
+          gameType: 'GAME_2048',
+          size: 1000,
+        });
+        updateMyTownData({
+          townLeaderboard: leaderboard?.townLeaderboard!,
+          myTownId: town.id!,
+        });
+        return;
+      }
+    } else {
+      const leaderboard = await updateLeaderboard({
+        gameType: 'GAME_2048',
+        size: 1000,
+      });
+      updateMyTownData({
+        townLeaderboard: leaderboard?.townLeaderboard!,
+        myTownId: town.id!,
+      });
     }
-  }, [gameType, updateLeaderboard, updateMyGameData]);
+  }, [
+    gameType,
+    isRanked,
+    town.id,
+    updateLeaderboard,
+    updateMyGameData,
+    updateMyTownData,
+  ]);
 
-  useEffect(() => {}, []);
   // Throttle refresh for 5 seconds
   const throttledRefresh = useThrottledCallback(handleRefresh, 3000);
-  // =================================================================
 
   useEffect(() => {
     if (isTop) {
@@ -217,16 +231,22 @@ export const Home = () => {
           <Top className="top">
             <div className="top__my-info">
               {isRanked ? (
-                <MyInfo myTownRank={myTownRank as number} />
+                <MyInfo
+                  myTownRank={myTownData.rank as number}
+                  myTownScore={myTownData.score as number}
+                />
               ) : (
-                <NotLoggedIn myTownRank={myTownRank as number} />
+                <NotLoggedIn
+                  myTownRank={myTownData.rank as number}
+                  myTownScore={myTownData.score as number}
+                />
               )}
             </div>
           </Top>
           <Bottom className="bottom">
             <LeaderboardTabs
-              districtLeaderboardData={townLeaderboard}
-              userLeaderboardData={userLeaderboard}
+              townLeaderboard={townLeaderboard}
+              userLeaderboard={userLeaderboard}
               isRanked={isRanked}
             />
           </Bottom>

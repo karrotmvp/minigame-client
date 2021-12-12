@@ -661,6 +661,12 @@ export interface UserDto {
     'nickname': string;
     /**
      * 
+     * @type {string}
+     * @memberof UserDto
+     */
+    'referralCode': string;
+    /**
+     * 
      * @type {TownDto}
      * @memberof UserDto
      */
@@ -1867,6 +1873,114 @@ export class Oauth2Api extends BaseAPI {
      */
     public karrotLoginUsingPOST(uUID: string, regionId: string, requestDto: KarrotCodeRequestDto, options?: AxiosRequestConfig) {
         return Oauth2ApiFp(this.configuration).karrotLoginUsingPOST(uUID, regionId, requestDto, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+/**
+ * ReferralApi - axios parameter creator
+ * @export
+ */
+export const ReferralApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @summary 추천인 코드 입력
+         * @param {string} referralCode referralCode
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        registerRefereeUsingPOST: async (referralCode: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'referralCode' is not null or undefined
+            assertParamExists('registerRefereeUsingPOST', 'referralCode', referralCode)
+            const localVarPath = `/api/referrals/{referralCode}`
+                .replace(`{${"referralCode"}}`, encodeURIComponent(String(referralCode)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication JWT required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * ReferralApi - functional programming interface
+ * @export
+ */
+export const ReferralApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = ReferralApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @summary 추천인 코드 입력
+         * @param {string} referralCode referralCode
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async registerRefereeUsingPOST(referralCode: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseResponseUnit>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.registerRefereeUsingPOST(referralCode, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+    }
+};
+
+/**
+ * ReferralApi - factory interface
+ * @export
+ */
+export const ReferralApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = ReferralApiFp(configuration)
+    return {
+        /**
+         * 
+         * @summary 추천인 코드 입력
+         * @param {string} referralCode referralCode
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        registerRefereeUsingPOST(referralCode: string, options?: any): AxiosPromise<BaseResponseUnit> {
+            return localVarFp.registerRefereeUsingPOST(referralCode, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * ReferralApi - object-oriented interface
+ * @export
+ * @class ReferralApi
+ * @extends {BaseAPI}
+ */
+export class ReferralApi extends BaseAPI {
+    /**
+     * 
+     * @summary 추천인 코드 입력
+     * @param {string} referralCode referralCode
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ReferralApi
+     */
+    public registerRefereeUsingPOST(referralCode: string, options?: AxiosRequestConfig) {
+        return ReferralApiFp(this.configuration).registerRefereeUsingPOST(referralCode, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

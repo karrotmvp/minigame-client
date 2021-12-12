@@ -1,5 +1,16 @@
 import { useCallback, useState } from 'react';
 import { useMinigameApi } from 'services/api/minigameApi';
+import type {
+  TownRankingDto,
+  UserRankingDtoWithTown,
+} from 'services/openapi_generator/api';
+
+export interface TownLeaderboardType extends TownRankingDto {
+  rank: number;
+}
+export interface UserLeaderboardType extends UserRankingDtoWithTown {
+  rank: number;
+}
 
 export const useLeaderboard = () => {
   const minigameApi = useMinigameApi();
@@ -13,7 +24,7 @@ export const useLeaderboard = () => {
       } = await minigameApi.gameTownApi.getLeaderBoardByTownUsingGET(gameType);
       if (data) {
         const indexedDistrictRankData = data.map(
-          (item: any, index: number) => ({
+          (item: TownRankingDto, index: number) => ({
             ...item,
             rank: index + 1,
             name1: item.name1.replace(
@@ -46,17 +57,20 @@ export const useLeaderboard = () => {
         size
       );
       if (data) {
-        const indexedUserRankData = data.map((item: any, index: number) => ({
-          ...item,
-          rank: index + 1,
-          town: {
-            ...item.town,
-            name1: item.town.name1.replace(
-              /(특별시|광역시|특별자치시|특별자치도)$/,
-              ''
-            ),
-          },
-        }));
+        const indexedUserRankData = data.map(
+          (item: UserRankingDtoWithTown, index: number) => ({
+            ...item,
+            rank: index + 1,
+            town: {
+              ...item.town,
+              name1: item.town.name1.replace(
+                /(특별시|광역시|특별자치시|특별자치도)$/,
+                ''
+              ),
+            },
+          })
+        );
+
         return indexedUserRankData;
       } else {
         return undefined;
@@ -80,6 +94,7 @@ export const useLeaderboard = () => {
       if (userLeaderboard && townLeaderboard) {
         setTownLeaderboard(townLeaderboard);
         setUserLeaderboard(userLeaderboard);
+        return { townLeaderboard, userLeaderboard };
       }
     } catch (error) {
       console.error(error);

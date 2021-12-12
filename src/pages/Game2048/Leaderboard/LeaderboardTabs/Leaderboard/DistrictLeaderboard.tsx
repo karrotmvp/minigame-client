@@ -7,13 +7,13 @@ import 'swiper/swiper.scss'; // core Swiper
 import 'swiper/modules/free-mode/free-mode.scss';
 import 'swiper/modules/scrollbar/scrollbar.scss';
 import 'swiper/modules/mousewheel/mousewheel.scss';
-
+import type { TownLeaderboardType } from 'hooks';
 type Props = {
-  districtLeaderboardData: any[];
+  townLeaderboard: TownLeaderboardType[];
   isRanked: boolean;
 };
 const DistrictLeaderboard: React.FC<Props> = (props) => {
-  const { town } = useUser();
+  const { town: userTown } = useUser();
   return (
     <Swiper
       modules={[FreeMode, Scrollbar, Mousewheel]}
@@ -27,27 +27,27 @@ const DistrictLeaderboard: React.FC<Props> = (props) => {
       }}
     >
       <SwiperSlide>
-        {props.districtLeaderboardData.map((district, i) => {
-          return town.name2 === district.name2 ? (
+        {props.townLeaderboard.map((town) => {
+          return userTown.id === town.townId ? (
             <TownRow
-              key={i}
-              rank={district.rank}
-              cityName={district.name1}
-              districtName={district.name2}
-              playerCount={district.playerCount}
-              score={district.score}
+              key={town.townId}
+              rank={town.rank}
+              cityName={town.name1}
+              districtName={town.name2}
+              playerCount={town.playerCount as number}
+              score={town.score}
               style={{
                 border: `1px solid #4694FF`,
               }}
             />
           ) : (
             <TownRow
-              key={i}
-              rank={district.rank}
-              cityName={district.name1}
-              districtName={district.name2}
-              playerCount={district.playerCount}
-              score={district.score}
+              key={town.townId}
+              rank={town.rank}
+              cityName={town.name1}
+              districtName={town.name2}
+              playerCount={town.playerCount as number}
+              score={town.score}
             />
           );
         })}

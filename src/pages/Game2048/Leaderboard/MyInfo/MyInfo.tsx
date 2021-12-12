@@ -9,6 +9,7 @@ import { ReactComponent as IconPencil } from 'assets/icon/svg/icon_pencil.svg';
 
 interface Props {
   myTownRank: number;
+  myTownScore: number;
 }
 export const NotLoggedIn: React.FC<Props> = (props) => {
   const { town } = useUser();
@@ -71,6 +72,7 @@ export const NotLoggedIn: React.FC<Props> = (props) => {
     </div>
   );
 };
+
 const MyInfo: React.FC<Props> = (props) => {
   const { user, town } = useUser();
   const { score: myScore, rank: myRank, comment } = useMyGame2048Data();
@@ -123,7 +125,7 @@ const MyInfo: React.FC<Props> = (props) => {
             </p>
           </div>
           <div className="ranking__score">
-            <p>{commafy(237489)}점</p>
+            <p>{commafy(props.myTownScore)}점</p>
           </div>
         </div>
         <div

@@ -5,11 +5,8 @@ import { useMinigameApi } from 'services/api/minigameApi';
 export const useMyGameData = () => {
   const minigameApi = useMinigameApi();
   const {
-    rank,
-    gameType,
     updateMyScore: updateMy2048PuzzleScore,
     updateMyComment: updateMy2048PuzzleComment,
-    updateMyHighestScore,
   } = useMyGame2048Data();
 
   const updateMyGameData = useCallback(

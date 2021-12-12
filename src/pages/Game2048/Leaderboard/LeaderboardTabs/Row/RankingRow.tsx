@@ -8,13 +8,13 @@ import { rem } from 'polished';
 import { DistrictName } from 'styles/leaderboard';
 
 interface UserRowProps {
-  me?: boolean;
   rank: number;
   nickname: string;
   score: number;
   comment: string | null;
   cityName: string;
   districtName: string;
+  style?: React.CSSProperties;
 }
 
 interface TownRowProps {
@@ -34,7 +34,7 @@ const UserRow: React.FC<UserRowProps> = (props) => {
     userComment = `${props.comment}`;
   }
   return (
-    <Container me={props.me} rank={props.rank}>
+    <Container rank={props.rank} style={props.style}>
       <div className="rank">{props.rank <= 3 ? ' ' : commafy(props.rank)}</div>
       <div className="info">
         <div className="info__data">
@@ -85,7 +85,7 @@ const Container = styled.div<{ me?: boolean; rank?: number }>`
 
   width: 100%;
   border-radius: 10px;
-  border: 1px solid ${(props) => (props.me === true ? '#EBE0DB' : '#ececec')};
+  border: 1px solid #ececec;
   background-color: #fff;
 
   position: relative;
