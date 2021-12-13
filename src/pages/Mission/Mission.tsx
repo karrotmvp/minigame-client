@@ -1,5 +1,5 @@
 import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
-import { CircleBackIcon } from 'assets/icon';
+import { ReactComponent as IconArrowBackCircle } from 'assets/icon/svg/icon_arrow_back_circle.svg';
 import { Nav } from 'components/Navigation';
 import React, { useEffect } from 'react';
 import { PageContainer } from 'styles';
@@ -72,7 +72,7 @@ export const Mission: React.FC = () => {
   return (
     <>
       <Nav
-        appendLeft={<CircleBackIcon />}
+        appendLeft={<IconArrowBackCircle />}
         onClickLeft={goBackToPlatform}
         style={{ alignItems: 'center', height: '80px' }}
       />
