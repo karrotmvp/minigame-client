@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
 import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
-import { ReactComponent as IconArrowBack } from 'assets/icon/svg/icon_arrow_back.svg';
+import { ReactComponent as IconClose } from 'assets/icon/svg/icon_close.svg';
 import { ActiveUserCount } from 'components/ActiveUserCount';
 import { OldButton } from 'components/Button';
 import { Nav } from 'components/Navigation/Nav';
@@ -123,7 +123,7 @@ export const Home = () => {
   }, [analytics, isTop]);
   return (
     <Page className="karrot-clicker-home-page">
-      <Nav appendLeft={<IconArrowBack />} onClickLeft={goToPlatformPage} />
+      <Nav appendLeft={<IconClose />} onClickLeft={goToPlatformPage} />
       <Banner className="banner">
         <BannerImage
           style={{
