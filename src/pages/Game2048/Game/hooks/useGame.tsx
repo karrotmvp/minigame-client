@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useReducer, useRef, useState } from 'react';
+import { useCallback, useEffect, useReducer, useState } from 'react';
 import {
   game2048Reducer,
   initialState,
@@ -9,11 +9,12 @@ import {
   resetGameAction,
   updateScoreAction,
   updateTileAction,
+  setGameDataAction,
 } from '../reducers';
-import { TileProps } from '../Game/Tile';
+import type { TileProps } from '../Game/Tile';
 import { useUniqueId } from './useUniqueId';
 import { animationDuration } from '../Game/styles';
-import { useMyGame2048Data } from 'pages/Game2048/hooks';
+// import { useMyGame2048Data } from 'pages/Game2048/hooks';
 
 const tileCountPerRowOrColumn = 4;
 
@@ -21,16 +22,21 @@ const coordinateToIndex = (coordinate: [number, number]) => {
   return coordinate[1] * tileCountPerRowOrColumn + coordinate[0];
 };
 
-const indexTocoordinate = (index: number) => {
+export const indexTocoordinate = ({
+  index,
+  tileCountPerRowOrColumn,
+}: {
+  index: number;
+  tileCountPerRowOrColumn: number;
+}) => {
   const x = index % tileCountPerRowOrColumn;
   const y = Math.floor(index / tileCountPerRowOrColumn);
   return [x, y];
 };
 
 export const useGame = () => {
-  const isInitialRender = useRef(true);
   const nextId = useUniqueId();
-  const { highestScore } = useMyGame2048Data();
+  // const { highestScore } = useMyGame2048Data();
   const [state, dispatch] = useReducer(game2048Reducer, initialState);
   const { score, tiles, byIds, hasChanged, inMotion } = state;
   const [isGameOver, setIsGameOver] = useState<boolean>(false);
@@ -108,7 +114,13 @@ export const useGame = () => {
 
     const emptyTiles = tileMap.reduce((result, tileId, index) => {
       if (tileId === 0) {
-        return [...result, indexTocoordinate(index) as [number, number]];
+        return [
+          ...result,
+          indexTocoordinate({ index: index, tileCountPerRowOrColumn: 4 }) as [
+            number,
+            number
+          ],
+        ];
       }
 
       return result;
@@ -118,6 +130,7 @@ export const useGame = () => {
   }, [retrieveTileMap]);
 
   const generateRandomTile = useCallback(() => {
+    console.log('generate tile');
     const emptyTiles = findEmptyTiles();
     if (emptyTiles.length > 0) {
       const index = Math.floor(Math.random() * emptyTiles.length);
@@ -196,14 +209,15 @@ export const useGame = () => {
           // else - previous and current tiles are different - move the tile to the first free space.
           const tile = {
             ...currentTile,
-            coordinate: indexTocoordinate(
-              calculateFirstFreeIndex(
+            coordinate: indexTocoordinate({
+              index: calculateFirstFreeIndex(
                 rowOrColumnIndex,
                 nonEmptyTileIndex,
                 mergedTilesCount,
                 maxIndex
-              )
-            ),
+              ),
+              tileCountPerRowOrColumn: 4,
+            }),
           } as TileProps;
 
           // previous tile become the current tile to check if the next tile can be merged with this one.
@@ -229,7 +243,6 @@ export const useGame = () => {
   // move-factory
   const moveLeftFactory = (board: number[]) => {
     const retrieveTileIdsByRow = (rowIndex: number) => {
-      // const tileMap = retrieveTileMap();
       const tileMap = board;
       const tileIdsInRow = [
         tileMap[rowIndex * tileCountPerRowOrColumn + 0],
@@ -347,17 +360,22 @@ export const useGame = () => {
   };
 
   // reset-game
-  const resetGame = () => {
-    isInitialRender.current = true;
+  const resetGame = useCallback(async () => {
+    console.log('reset-game');
+    setIsGameOver(false);
+    // isInitialRender.current = true;
     dispatch(resetGameAction());
-    if (highestScore === 0) {
-      createTile({ coordinate: [1, 1], value: 2 });
-      createTile({ coordinate: [3, 1], value: 2 });
-    } else {
-      generateRandomTile();
-      generateRandomTile();
-    }
-  };
+    // if (highestScore === 0) {
+    //   createTile({ coordinate: [1, 1], value: 2 });
+    //   createTile({ coordinate: [3, 1], value: 2 });
+    //   return 'success';
+    // } else {
+    generateRandomTile();
+    generateRandomTile();
+    // const board = retrieveTileMapByValue();
+    // console.log(board);
+    // return board;
+  }, [generateRandomTile]);
 
   // game-over
   function transpose(matrix: number[][]) {
@@ -385,17 +403,13 @@ export const useGame = () => {
     return true;
   };
   useEffect(() => {
-    if (isInitialRender.current) {
-      resetGame();
-      isInitialRender.current = false;
-      return;
-    }
     if (!inMotion && hasChanged) {
       generateRandomTile();
     }
     if (findEmptyTiles().length === 0) {
       setIsGameOver(checkGameOver());
     }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasChanged, inMotion]);
 
@@ -405,6 +419,17 @@ export const useGame = () => {
   const moveUp = moveUpFactory(retrieveTileMap());
   const moveDown = moveDownFactory(retrieveTileMap());
 
+  const boardByValue = retrieveTileMapByValue();
+  const setGameData = useCallback(
+    (
+      tiles: {
+        [id: number]: TileProps;
+      },
+      byIds: number[],
+      score: number
+    ) => dispatch(setGameDataAction(tiles, byIds, score)),
+    []
+  );
   return {
     score,
     tileList,
@@ -414,24 +439,7 @@ export const useGame = () => {
     moveDown,
     resetGame,
     isGameOver,
+    boardByValue,
+    setGameData,
   };
 };
-
-// export const GameContext = createContext(CreateGame());
-
-// export const GameProvider: React.FC = (props) => {
-//   // const [state, dispatch] = useReducer(game2048Reducer, initialState);
-//   // // (**)
-//   // const contextValue = useMemo(() => {
-//   //   return { state, dispatch };
-//   // }, [state, dispatch]);
-
-//   const contextValue = useMemo(() => CreateGame(), []);
-//   return (
-//     <GameContext.Provider value={contextValue}>
-//       {props.children}
-//     </GameContext.Provider>
-//   );
-// };
-
-// export const useGame = () => useContext(GameContext);

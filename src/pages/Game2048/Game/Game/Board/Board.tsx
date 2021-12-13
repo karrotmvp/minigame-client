@@ -1,10 +1,10 @@
 import React, { useLayoutEffect, useRef, useState } from 'react';
 import styled from '@emotion/styled';
-import { MemoizedTile as Tile, TileProps } from '../Tile';
+import { MemoizedTile as Tile } from '../Tile';
+import type { TileProps } from '../Tile';
 import { boardMargin, boardPadding } from '../styles';
 import { useSwipeable } from 'react-swipeable';
-import { Guide } from './Guide';
-
+// import { Guide } from './Guide';
 import { MemoizedGrid as Grid } from '.';
 
 type Props = {
@@ -68,9 +68,9 @@ export const Board: React.FC<Props> = (props) => {
         onPointerDown={() => props.setIsUserNew(false)}
       >
         {props.tileList.map(({ id, ...rest }) => (
-          <Tile id={id} key={`tile-${id}`} {...rest} cellWidth={cellWidth} />
+          <Tile id={id} key={id} {...rest} cellWidth={cellWidth} />
         ))}
-        {props.isUserNew ? <Guide cellWidth={cellWidth} /> : null}
+        {/* {props.isUserNew ? <Guide cellWidth={cellWidth} /> : null} */}
       </TileContainer>
     </Grid>
   );

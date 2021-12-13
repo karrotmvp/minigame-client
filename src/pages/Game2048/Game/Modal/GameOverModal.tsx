@@ -1,12 +1,10 @@
 import styled from '@emotion/styled';
 import React, { useState, useEffect, useCallback } from 'react';
 import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
-import { CommentModal } from './CommentModal';
 import gameOverSvgUrl from 'assets/svg/game2048/gameover.svg';
 import { Button } from 'components/Button';
 import { useMinigameApi } from 'services/api/minigameApi';
 import { useMyGame2048Data } from 'pages/Game2048/hooks';
-import { useMini, useUser } from 'hooks';
 import { rem } from 'polished';
 import { useAnalytics } from 'services/analytics';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -16,23 +14,22 @@ import {
   fireRandomDirectionConfetti,
 } from 'utils/functions/confetti';
 import { useThrottledCallback } from 'use-debounce/lib';
-import ReactModal from 'react-modal';
+import iconLeave from 'assets/icon/svg/icon_leave.svg';
+import iconReplay from 'assets/icon/svg/icon_replay.svg';
 
 type Props = {
   myPreviousRank: number;
-  currentScore: number;
+  gameOverScore: number;
+  setIsGameOver: React.Dispatch<React.SetStateAction<boolean>>;
+  reset: () => void;
 };
 
 export const GameOverModal: React.FC<Props> = (props) => {
   const { isTop } = useCurrentScreen();
-  const { replace } = useNavigator();
+  const { pop } = useNavigator();
   const analytics = useAnalytics();
   const minigameApi = useMinigameApi();
-  const { isInWebEnvironment, shareApp } = useMini();
-  const { user } = useUser();
   const { gameType } = useMyGame2048Data();
-  // const [shouldModalOpen, setShouldModalOpen] = useState<boolean>(false);
-  const [isCommentModalOpen, setIsCommentModalOpen] = useState<boolean>(false);
   const [sessionRank, setSessionRank] = useState<{
     rank: number | undefined;
     score: number | undefined;
@@ -94,7 +91,7 @@ export const GameOverModal: React.FC<Props> = (props) => {
   );
 
   useEffect(() => {
-    getSessionRank({ gameType: gameType, score: props.currentScore });
+    getSessionRank({ gameType: gameType, score: props.gameOverScore });
     getMyCurrentRank({
       gameType: gameType,
       previousRank: props.myPreviousRank,
@@ -103,41 +100,21 @@ export const GameOverModal: React.FC<Props> = (props) => {
     gameType,
     getMyCurrentRank,
     getSessionRank,
-
-    props.currentScore,
+    props.gameOverScore,
     props.myPreviousRank,
   ]);
 
-  const goToLeaderboardPage = () => {
-    replace(`/game-2048/leaderboard`);
+  const playAgain = async () => {
+    analytics.logEvent('click_game_play_again_button', {
+      game_type: '2048_puzzle',
+      button_type: 'refresh',
+    });
+    props.setIsGameOver(false);
   };
 
-  const handleShare = () => {
-    analytics.logEvent('click_share_button', {
-      game_type: '2048_puzzle',
-      location: 'game_over_modal',
-    });
-    const url = 'https://daangn.onelink.me/HhUa/37719e67';
-    const text = `${user.nickname}님은 2048 퍼즐에서 전국 ${myCurrentRank.rank}등!`;
-    shareApp(url, text);
-  };
-
-  // button to view leaderbaord (open commment modal if condition is met)
-  const handleViewLeaderboard = () => {
-    setIsCommentModalOpen(true);
-    if (isInWebEnvironment) {
-      // goToLeaderboardPage();
-      setIsCommentModalOpen(true);
-      return;
-    }
-    analytics.logEvent('click_view_leaderboard_button', {
-      game_type: '2048_puzzle',
-    });
-    if (sessionRank.rank !== undefined) {
-      sessionRank.rank > 0 && sessionRank.rank <= 10
-        ? setIsCommentModalOpen(true)
-        : goToLeaderboardPage();
-    }
+  const leaveGame = () => {
+    props.setIsGameOver(false);
+    pop();
   };
 
   // animation handler
@@ -181,7 +158,6 @@ export const GameOverModal: React.FC<Props> = (props) => {
           justifyContent: 'center',
           width: '100%',
           gap: `8px`,
-          marginBottom: `20%`,
         }}
         onClick={fireThrottledRandomDirectionConfetti}
       >
@@ -189,7 +165,8 @@ export const GameOverModal: React.FC<Props> = (props) => {
           src={gameOverSvgUrl}
           alt="gameOverSvgUrl"
           style={{
-            marginBottom: `50px`,
+            position: 'absolute',
+            top: '58px',
           }}
         />
 
@@ -251,62 +228,66 @@ export const GameOverModal: React.FC<Props> = (props) => {
           )}
         </AnimatePresence>
       </div>
-      {sessionRank.rank! !== 0 && sessionRank.rank! <= 10 && (
+      {/* {sessionRank.rank! !== 0 && sessionRank.rank! <= 10 && (
         <TopUserDirection>
           <p>Top10에게 혜택이 있어요!</p>
         </TopUserDirection>
-      )}
+      )} */}
 
       <ActionItems>
         <Button
           size={`large`}
           fontSize={rem(16)}
           color={`secondary1`}
-          onClick={handleViewLeaderboard}
+          onClick={playAgain}
         >
-          랭킹보기
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+            }}
+          >
+            <img src={iconReplay} alt="replay-icon" />
+            <p
+              style={{
+                fontWeight: 'bold',
+                fontSize: `${rem(18)}`,
+              }}
+            >
+              다시하기
+            </p>
+          </div>
         </Button>
         <Button
           size={`large`}
           fontSize={rem(16)}
           color={`primary`}
-          onClick={handleShare}
+          onClick={leaveGame}
         >
-          자랑하기
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+            }}
+          >
+            <img src={iconLeave} alt="leave-icon" />
+            <p
+              style={{
+                fontWeight: 'bold',
+                fontSize: `${rem(18)}`,
+              }}
+            >
+              게임종료
+            </p>
+          </div>
         </Button>
       </ActionItems>
-      <ReactModal
-        isOpen={isCommentModalOpen}
-        contentLabel="2048-puzzle-comment-modal"
-        style={{
-          overlay: {
-            background: 'rgba(40, 40, 40, 0.8)',
-            zIndex: 100,
-          },
-          content: {
-            height: `fit-content`,
-            width: `80%`,
-            top: '50%',
-            left: '50%',
-            right: 'auto',
-            bottom: 'auto',
-            marginRight: '-50%',
-            transform: 'translate(-50%, -50%)',
-            borderRadius: `21px`,
-            padding: `24px 18px`,
-            display: `flex`,
-            flexFlow: `column`,
-            justifyContent: 'center',
-            alignItems: 'center',
-          },
-        }}
-      >
-        <CommentModal
-          setShouldModalOpen={setIsCommentModalOpen}
-          rank={sessionRank.rank as number}
-          score={sessionRank.score as number}
-        />
-      </ReactModal>
     </>
   );
 };
@@ -423,50 +404,50 @@ const ActionItems = styled.div`
   width: 100%;
 `;
 
-const TopUserDirection = styled.div`
-  position: relative;
-  margin-bottom: 14px;
-  align-self: flex-start;
-  background: #e3efff;
-  border-radius: 5px;
+// const TopUserDirection = styled.div`
+//   position: relative;
+//   margin-bottom: 14px;
+//   align-self: flex-start;
+//   background: #e3efff;
+//   border-radius: 5px;
 
-  font-family: Cafe24SsurroundAir;
-  font-style: normal;
-  font-size: ${rem(10)};
-  line-height: 161.7%;
+//   font-family: Cafe24SsurroundAir;
+//   font-style: normal;
+//   font-size: ${rem(10)};
+//   line-height: 161.7%;
 
-  color: #ffffff;
+//   color: #ffffff;
 
-  width: fit-content;
-  padding: 5px 10px;
+//   width: fit-content;
+//   padding: 5px 10px;
 
-  &:after {
-    z-index: 1000;
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    width: 0;
-    height: 0;
-    border-style: solid;
-    border-color: transparent;
-    border-width: 14px 8px;
-    border-radius: 10px;
-    border-top-color: #e3efff;
-    border-bottom: 0;
+//   &:after {
+//     z-index: 1000;
+//     content: '';
+//     position: absolute;
+//     bottom: 0;
+//     left: 50%;
+//     width: 0;
+//     height: 0;
+//     border-style: solid;
+//     border-color: transparent;
+//     border-width: 14px 8px;
+//     border-radius: 10px;
+//     border-top-color: #e3efff;
+//     border-bottom: 0;
 
-    margin-left: -15px;
-    margin-bottom: -8px;
-  }
+//     margin-left: -15px;
+//     margin-bottom: -8px;
+//   }
 
-  p {
-    font-family: Cafe24SsurroundAir;
-    font-style: normal;
-    font-weight: normal;
-    font-size: ${rem(10)};
-    line-height: 161.7%;
-    /* or 16px */
+//   p {
+//     font-family: Cafe24SsurroundAir;
+//     font-style: normal;
+//     font-weight: normal;
+//     font-size: ${rem(10)};
+//     line-height: 161.7%;
+//     /* or 16px */
 
-    color: #0e74ff;
-  }
-`;
+//     color: #0e74ff;
+//   }
+// `;

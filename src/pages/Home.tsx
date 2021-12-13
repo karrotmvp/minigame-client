@@ -4,7 +4,7 @@ import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
 import { useMinigameApi } from 'services/api/minigameApi';
 import { useAccessToken, useMini, useUser } from 'hooks';
 import { Nav } from 'components/Navigation/Nav';
-import { CloseIcon } from 'assets/Icon';
+import { CloseIcon } from 'assets/icon';
 import { rem } from 'polished';
 import { useMyGame2048Data } from './Game2048/hooks';
 import { useMyKarrotClickerData } from './KarrotClicker/hooks';
@@ -678,6 +678,7 @@ const MainText = styled.div`
   margin: 20px 0 30px;
   span {
     color: #0e74ff;
+    font-weight: bold;
     font-size: ${rem(34)};
   }
 `;
