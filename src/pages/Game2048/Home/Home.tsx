@@ -252,7 +252,7 @@ export const Home: React.FC = () => {
           >
             <PullToRefresh
               onPull={(dispose) => {
-                handleRefresh().then(() => {
+                throttledRefresh()!.then(() => {
                   dispose();
                 });
               }}

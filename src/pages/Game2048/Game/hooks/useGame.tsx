@@ -14,7 +14,7 @@ import {
 import type { TileProps } from '../Game/Tile';
 import { useUniqueId } from './useUniqueId';
 import { animationDuration } from '../Game/styles';
-import { useMyGame2048Data } from 'pages/Game2048/hooks';
+// import { useMyGame2048Data } from 'pages/Game2048/hooks';
 
 const tileCountPerRowOrColumn = 4;
 
@@ -36,7 +36,7 @@ export const indexTocoordinate = ({
 
 export const useGame = () => {
   const nextId = useUniqueId();
-  const { highestScore } = useMyGame2048Data();
+  // const { highestScore } = useMyGame2048Data();
   const [state, dispatch] = useReducer(game2048Reducer, initialState);
   const { score, tiles, byIds, hasChanged, inMotion } = state;
   const [isGameOver, setIsGameOver] = useState<boolean>(false);
@@ -360,19 +360,22 @@ export const useGame = () => {
   };
 
   // reset-game
-  const resetGame = () => {
+  const resetGame = useCallback(async () => {
     console.log('reset-game');
     setIsGameOver(false);
     // isInitialRender.current = true;
     dispatch(resetGameAction());
-    if (highestScore === 0) {
-      createTile({ coordinate: [1, 1], value: 2 });
-      createTile({ coordinate: [3, 1], value: 2 });
-    } else {
-      generateRandomTile();
-      generateRandomTile();
-    }
-  };
+    // if (highestScore === 0) {
+    //   createTile({ coordinate: [1, 1], value: 2 });
+    //   createTile({ coordinate: [3, 1], value: 2 });
+    //   return 'success';
+    // } else {
+    generateRandomTile();
+    generateRandomTile();
+    // const board = retrieveTileMapByValue();
+    // console.log(board);
+    // return board;
+  }, [generateRandomTile]);
 
   // game-over
   function transpose(matrix: number[][]) {

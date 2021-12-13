@@ -16,13 +16,12 @@ import {
 import { useThrottledCallback } from 'use-debounce/lib';
 import iconLeave from 'assets/icon/svg/icon_leave.svg';
 import iconReplay from 'assets/icon/svg/icon_replay.svg';
-import { useGame } from '../hooks';
 
 type Props = {
   myPreviousRank: number;
-  currentScore: number;
+  gameOverScore: number;
   setIsGameOver: React.Dispatch<React.SetStateAction<boolean>>;
-  retrieveMyGameData: () => void;
+  reset: () => void;
 };
 
 export const GameOverModal: React.FC<Props> = (props) => {
@@ -31,7 +30,6 @@ export const GameOverModal: React.FC<Props> = (props) => {
   const analytics = useAnalytics();
   const minigameApi = useMinigameApi();
   const { gameType } = useMyGame2048Data();
-  const { score: currentScore, boardByValue, resetGame } = useGame();
   const [sessionRank, setSessionRank] = useState<{
     rank: number | undefined;
     score: number | undefined;
@@ -93,7 +91,7 @@ export const GameOverModal: React.FC<Props> = (props) => {
   );
 
   useEffect(() => {
-    getSessionRank({ gameType: gameType, score: props.currentScore });
+    getSessionRank({ gameType: gameType, score: props.gameOverScore });
     getMyCurrentRank({
       gameType: gameType,
       previousRank: props.myPreviousRank,
@@ -102,60 +100,23 @@ export const GameOverModal: React.FC<Props> = (props) => {
     gameType,
     getMyCurrentRank,
     getSessionRank,
-    props.currentScore,
+    props.gameOverScore,
     props.myPreviousRank,
   ]);
-
-  const postMyGameData = useCallback(
-    async ({
-      board,
-      score,
-      gameType,
-    }: {
-      board: number[];
-      score: number;
-      gameType: 'GAME_KARROT' | 'GAME_2048';
-    }) => {
-      console.log(board, score);
-      try {
-        const { data } = await minigameApi.scoreLogApi.logScoreUsingPOST(
-          { board, score },
-          gameType
-        );
-        return data.status === 200 ? 'success' : 'fail';
-      } catch (error) {
-        console.error(error);
-        return 'fail';
-      }
-    },
-    [minigameApi.scoreLogApi]
-  );
-
-  const newGame = async () => {
-    resetGame();
-    const response = await postMyGameData({
-      board: boardByValue,
-      score: currentScore,
-      gameType: gameType,
-    });
-    if (response === 'success') {
-      props.retrieveMyGameData();
-      props.setIsGameOver(false);
-    }
-  };
 
   const playAgain = async () => {
     analytics.logEvent('click_game_play_again_button', {
       game_type: '2048_puzzle',
       button_type: 'refresh',
     });
-    newGame();
+    props.setIsGameOver(false);
   };
 
   const leaveGame = () => {
-    newGame();
+    props.setIsGameOver(false);
     pop();
   };
+
   // animation handler
   const [showScore, setShowScore] = useState(false);
   const [showRank, setShowRank] = useState(false);
@@ -267,11 +228,11 @@ export const GameOverModal: React.FC<Props> = (props) => {
           )}
         </AnimatePresence>
       </div>
-      {sessionRank.rank! !== 0 && sessionRank.rank! <= 10 && (
+      {/* {sessionRank.rank! !== 0 && sessionRank.rank! <= 10 && (
         <TopUserDirection>
           <p>Top10에게 혜택이 있어요!</p>
         </TopUserDirection>
-      )}
+      )} */}
 
       <ActionItems>
         <Button
@@ -443,50 +404,50 @@ const ActionItems = styled.div`
   width: 100%;
 `;
 
-const TopUserDirection = styled.div`
-  position: relative;
-  margin-bottom: 14px;
-  align-self: flex-start;
-  background: #e3efff;
-  border-radius: 5px;
+// const TopUserDirection = styled.div`
+//   position: relative;
+//   margin-bottom: 14px;
+//   align-self: flex-start;
+//   background: #e3efff;
+//   border-radius: 5px;
 
-  font-family: Cafe24SsurroundAir;
-  font-style: normal;
-  font-size: ${rem(10)};
-  line-height: 161.7%;
+//   font-family: Cafe24SsurroundAir;
+//   font-style: normal;
+//   font-size: ${rem(10)};
+//   line-height: 161.7%;
 
-  color: #ffffff;
+//   color: #ffffff;
 
-  width: fit-content;
-  padding: 5px 10px;
+//   width: fit-content;
+//   padding: 5px 10px;
 
-  &:after {
-    z-index: 1000;
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    width: 0;
-    height: 0;
-    border-style: solid;
-    border-color: transparent;
-    border-width: 14px 8px;
-    border-radius: 10px;
-    border-top-color: #e3efff;
-    border-bottom: 0;
+//   &:after {
+//     z-index: 1000;
+//     content: '';
+//     position: absolute;
+//     bottom: 0;
+//     left: 50%;
+//     width: 0;
+//     height: 0;
+//     border-style: solid;
+//     border-color: transparent;
+//     border-width: 14px 8px;
+//     border-radius: 10px;
+//     border-top-color: #e3efff;
+//     border-bottom: 0;
 
-    margin-left: -15px;
-    margin-bottom: -8px;
-  }
+//     margin-left: -15px;
+//     margin-bottom: -8px;
+//   }
 
-  p {
-    font-family: Cafe24SsurroundAir;
-    font-style: normal;
-    font-weight: normal;
-    font-size: ${rem(10)};
-    line-height: 161.7%;
-    /* or 16px */
+//   p {
+//     font-family: Cafe24SsurroundAir;
+//     font-style: normal;
+//     font-weight: normal;
+//     font-size: ${rem(10)};
+//     line-height: 161.7%;
+//     /* or 16px */
 
-    color: #0e74ff;
-  }
-`;
+//     color: #0e74ff;
+//   }
+// `;
