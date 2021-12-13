@@ -106,9 +106,9 @@ export const OldButton = ({ size, color, text, onClick }: ButtonProps) => {
 };
 
 const CustomButton = styled.a<{
-  size: string;
-  fontSize: string;
-  color: string;
+  size?: string;
+  fontSize?: string;
+  color?: string;
 }>`
   text-align: center;
   border: none;
@@ -164,9 +164,9 @@ const CustomButton = styled.a<{
 `;
 
 type Props = {
-  size: string;
-  fontSize: string;
-  color: string;
+  size?: string;
+  fontSize?: string;
+  color?: string;
   onClick?: any;
   children?: React.ReactNode;
   type?: string;

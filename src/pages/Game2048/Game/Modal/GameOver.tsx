@@ -24,7 +24,7 @@ type Props = {
   reset: () => void;
 };
 
-export const GameOverModal: React.FC<Props> = (props) => {
+export const GameOver: React.FC<Props> = (props) => {
   const { isTop } = useCurrentScreen();
   const { pop } = useNavigator();
   const analytics = useAnalytics();

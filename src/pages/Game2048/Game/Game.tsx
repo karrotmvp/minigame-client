@@ -7,7 +7,7 @@ import { useMinigameApi } from 'services/api/minigameApi';
 import { useMyGame2048Data } from '../hooks';
 import { Board } from './Game/Board';
 import { indexTocoordinate, useGame } from './hooks';
-import { GameOverModal } from './Modal';
+import { GameOver, HowToPlay } from './Modal';
 import {
   MemoizedCurrentScore as CurrentScore,
   MemoizedMyBestScore as MyBestScore,
@@ -74,6 +74,7 @@ export const Game: React.FC = () => {
   });
   const [isGameOver, setIsGameOver] = useState(gameOverStatus);
   const [gameOverScore, setGameOverScore] = useState<number>(currentScore);
+  const [showHowToPlay, setShowHowToPlay] = useState<boolean>(false);
   // reset game
   const reset = useCallback(() => {
     resetGame();
@@ -367,6 +368,28 @@ export const Game: React.FC = () => {
             />
           }
           onClickLeft={() => pop()}
+          appendRight={
+            <div
+              style={{
+                display: 'flex',
+                flexFlow: 'row',
+                gap: '16px',
+              }}
+            >
+              <Button onClick={() => setShowHowToPlay(true)}>게임방법</Button>
+              <Button
+                onClick={() =>
+                  handleGameEnd({
+                    currentScore: currentScore,
+                    myBestScore: myBestScore,
+                    gameType: gameType,
+                  })
+                }
+              >
+                처음부터
+              </Button>
+            </div>
+          }
         />
         <PageContainer>
           {/*           
@@ -455,13 +478,45 @@ export const Game: React.FC = () => {
           },
         }}
       >
-        <GameOverModal
+        <GameOver
           myPreviousRank={myCurrentRank}
           gameOverScore={gameOverScore}
           setIsGameOver={setIsGameOver}
           // updateMyGameData={updateMyGameData}
           reset={reset}
         />
+      </ReactModal>
+
+      <ReactModal
+        isOpen={showHowToPlay}
+        contentLabel="2048-puzzle how to play"
+        style={{
+          overlay: {
+            background: 'rgba(90, 90, 90, 0.7)',
+            backdropFilter: `blur(5px)`,
+            WebkitBackdropFilter: `blur(5px)`,
+            zIndex: 100,
+          },
+          content: {
+            width: `80%`,
+            top: '50%',
+            left: '50%',
+            right: 'auto',
+            bottom: 'auto',
+            marginRight: '-50%',
+            transform: 'translate(-50%, -50%)',
+            padding: 0,
+            display: `flex`,
+            flexFlow: `column`,
+            justifyContent: 'center',
+            alignItems: 'center',
+            border: `1px solid #0E74FF`,
+            boxSizing: `border-box`,
+            borderRadius: `10px`,
+          },
+        }}
+      >
+        <HowToPlay setShowHowToPlay={setShowHowToPlay} />
       </ReactModal>
     </>
   );
