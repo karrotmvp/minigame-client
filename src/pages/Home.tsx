@@ -9,7 +9,7 @@ import { useMyGame2048Data } from './Game2048/hooks';
 import { useMyKarrotClickerData } from './KarrotClicker/hooks';
 import { useAnalytics } from 'services/analytics';
 import { color, PageContainer } from 'styles';
-import { CloseIcon } from 'assets/icon';
+import { CloseIcon } from 'assets/icon/CloseIcon';
 import newUrl from 'assets/svg/new.svg';
 import BellUrl from 'assets/svg/bell.svg';
 import Game2048CardImgUrl from 'assets/svg/game2048/game_2048_card_img.svg';
