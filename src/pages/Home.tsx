@@ -9,7 +9,7 @@ import { useMyGame2048Data } from './Game2048/hooks';
 import { useMyKarrotClickerData } from './KarrotClicker/hooks';
 import { useAnalytics } from 'services/analytics';
 import { color, PageContainer } from 'styles';
-import { CloseIcon } from 'assets/icon/CloseIcon';
+import { ReactComponent as IconClose } from 'assets/icon/svg/icon_close.svg';
 import newUrl from 'assets/svg/new.svg';
 import BellUrl from 'assets/svg/bell.svg';
 import Game2048CardImgUrl from 'assets/svg/game2048/game_2048_card_img.svg';
@@ -369,7 +369,7 @@ export const Home: React.FC = () => {
       <div style={{ height: '100%', overflowY: 'auto' }}>
         <Nav
           border={`1px solid #ECECEC`}
-          appendLeft={<CloseIcon />}
+          appendLeft={<IconClose />}
           onClickLeft={leaveMiniApp}
           appendRight={<Share />}
           onClickRight={triggerShareHandler}

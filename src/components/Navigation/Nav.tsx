@@ -48,7 +48,7 @@ const NavContainer = styled.div<{
 
   display: flex;
   flex-flow: row;
-  align-items: flex-end;
+  align-items: center;
   justify-content: space-between;
 
   border-bottom: ${(props) => (props.border ? props.border : `none`)};
