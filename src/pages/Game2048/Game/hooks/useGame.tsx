@@ -12,7 +12,7 @@ import {
   setGameDataAction,
 } from '../reducers';
 import type { TileProps } from '../Game/Tile';
-import { useUniqueId } from './useUniqueId';
+// import { useUniqueId } from './useUniqueId';
 import { animationDuration } from '../Game/styles';
 // import { useMyGame2048Data } from 'pages/Game2048/hooks';
 
@@ -35,11 +35,16 @@ export const indexTocoordinate = ({
 };
 
 export const useGame = () => {
-  const nextId = useUniqueId();
+  // const nextId = useUniqueId();
   // const { highestScore } = useMyGame2048Data();
   const [state, dispatch] = useReducer(game2048Reducer, initialState);
-  const { score, tiles, byIds, hasChanged, inMotion } = state;
+  const { score, tiles, byIds, hasChanged, inMotion, startId } = state;
   const [isGameOver, setIsGameOver] = useState<boolean>(false);
+
+  let uniqueId = startId + 1;
+  const nextId = useCallback(() => {
+    return uniqueId++;
+  }, [uniqueId]);
 
   const createTile = useCallback(
     ({ coordinate, value }: Partial<TileProps>) => {
@@ -372,8 +377,7 @@ export const useGame = () => {
     // } else {
     generateRandomTile();
     generateRandomTile();
-    // const board = retrieveTileMapByValue();
-    // console.log(board);
+
     // return board;
   }, [generateRandomTile]);
 
@@ -426,8 +430,9 @@ export const useGame = () => {
         [id: number]: TileProps;
       },
       byIds: number[],
-      score: number
-    ) => dispatch(setGameDataAction(tiles, byIds, score)),
+      score: number,
+      startId: number
+    ) => dispatch(setGameDataAction(tiles, byIds, score, startId)),
     []
   );
   return {

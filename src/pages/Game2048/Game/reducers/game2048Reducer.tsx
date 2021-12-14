@@ -48,13 +48,15 @@ export const setGameDataAction = (
     [id: number]: TileProps;
   },
   byIds: number[],
-  score: number
+  score: number,
+  startId: number
 ) => ({
   type: SET_GAME_DATA,
   payload: {
     tiles,
     byIds,
     score,
+    startId,
   },
 });
 type Game2048Action =
@@ -75,6 +77,7 @@ export type Game2048State = {
   hasChanged: boolean;
   byIds: number[];
   score: number;
+  startId: number;
 };
 
 export const initialState: Game2048State = {
@@ -83,6 +86,7 @@ export const initialState: Game2048State = {
   hasChanged: false,
   inMotion: false,
   score: 0,
+  startId: 1,
 };
 
 export const game2048Reducer = (
@@ -138,12 +142,12 @@ export const game2048Reducer = (
       };
     case SET_GAME_DATA:
       return {
-        ...state,
         tiles: action.payload.tiles,
         byIds: action.payload.byIds,
         score: action.payload.score,
         hasChanged: false,
         inMotion: false,
+        startId: action.payload.startId,
       };
     case MOVE_START:
       return {

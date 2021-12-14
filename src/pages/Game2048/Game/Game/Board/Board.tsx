@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import styled from '@emotion/styled';
 import { MemoizedTile as Tile } from '../Tile';
 import type { TileProps } from '../Tile';
@@ -59,6 +59,9 @@ export const Board: React.FC<Props> = (props) => {
     return () => window.removeEventListener('resize', updateSize);
   }, []);
 
+  useEffect(() => {
+    console.log(props.tileList);
+  }, [props.tileList]);
   return (
     <Grid cellWidth={cellWidth}>
       <TileContainer
