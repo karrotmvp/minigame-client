@@ -422,17 +422,7 @@ export const Game: React.FC = () => {
               <TopButton onClick={() => setShowHowToPlay(true)}>
                 게임방법
               </TopButton>
-              <TopButton
-                onClick={() =>
-                  handleGameEnd({
-                    currentScore: currentScore,
-                    myBestScore: myBestScore,
-                    gameType: gameType,
-                  })
-                }
-              >
-                처음부터
-              </TopButton>
+              <TopButton onClick={() => handlePlayAgain()}>처음부터</TopButton>
             </div>
           }
         />
@@ -458,10 +448,7 @@ export const Game: React.FC = () => {
             <MyBestScore score={myBestScore} />
           )}
 
-          <CurrentScore
-            score={currentScore}
-            handlePlayAgain={handlePlayAgain}
-          />
+          <CurrentScore score={currentScore} />
 
           <Board
             isUserNew={isUserNew}
