@@ -2,28 +2,13 @@ import React from 'react';
 import styled from '@emotion/styled';
 import { commafy } from 'utils/number';
 import { rem } from 'polished';
-import refreshGameUrl from 'assets/svg/game2048/refresh_game.svg';
 
 type Props = {
   score: number;
-  handlePlayAgain: () => void;
 };
 const CurrentScore: React.FC<Props> = (props) => {
-  const resetGame = () => {
-    props.handlePlayAgain();
-  };
   return (
     <CurrentScoreWrapper>
-      <img
-        src={refreshGameUrl}
-        alt="refresh-game"
-        onClick={resetGame}
-        style={{
-          position: 'absolute',
-          top: 14,
-          right: 14,
-        }}
-      />
       <p className="text">Score</p>
       <p className="score">{commafy(props.score)}</p>
     </CurrentScoreWrapper>

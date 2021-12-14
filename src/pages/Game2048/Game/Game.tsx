@@ -1,6 +1,5 @@
 import styled from '@emotion/styled';
 import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
-import { Button } from 'components/Button';
 import { rem } from 'polished';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useMinigameApi } from 'services/api/minigameApi';
@@ -13,7 +12,6 @@ import {
   MemoizedMyBestScore as MyBestScore,
   // MemoizedUserInFront as UserInFront,
 } from './Score';
-
 import { useAnalytics } from 'services/analytics';
 import { useMini, useUser, useRank, useMyGameData } from 'hooks';
 import { useDebouncedCallback } from 'use-debounce';
@@ -21,8 +19,40 @@ import ReactModal from 'react-modal';
 import { TileProps } from './Game/Tile';
 import { Nav } from 'components/Navigation';
 import { PageContainer } from 'styles';
-import iconArrowBack from 'assets/icon/svg/icon_arrow_back.svg';
+import iconArrowBack from 'assets/icon/svg/icon_arrow_back_blue.svg';
 import { useHistory } from 'react-router';
+
+type TopButtonProps = {
+  onClick: () => void;
+};
+
+const TopButton: React.FC<TopButtonProps> = (props) => {
+  return (
+    <div
+      onClick={props.onClick}
+      style={{
+        height: '34px',
+        background: '#FFF',
+        border: '1px solid #C8D8EE',
+        boxSizing: 'border-box',
+        borderRadius: '10px',
+        padding: '4px 10px',
+        boxShadow: '0px 4px 0px 0px #C8D8EE',
+      }}
+    >
+      <p
+        style={{
+          color: '#82B6FF',
+          fontSize: `${rem(14)}`,
+          lineHeight: '161.7%',
+          fontWeight: 'bold',
+        }}
+      >
+        {props.children}
+      </p>
+    </div>
+  );
+};
 
 const convertArrayToObject = (array: any[], key: any) => {
   const initialValue = {};
@@ -364,12 +394,25 @@ export const Game: React.FC = () => {
     <>
       <Page className="game-page">
         <Nav
+          style={{
+            height: '80px',
+            paddingTop: '36px',
+            alignItems: 'flex-end',
+          }}
           appendLeft={
-            <img
-              src={iconArrowBack}
-              alt="go-back"
-              style={{ background: '#82B6FF' }}
-            />
+            <div
+              style={{
+                height: '34px',
+                background: '#FFF',
+                border: '1px solid #C8D8EE',
+                boxSizing: 'border-box',
+                borderRadius: '10px',
+                padding: '6px',
+                boxShadow: '0px 4px 0px 0px #C8D8EE',
+              }}
+            >
+              <img src={iconArrowBack} alt="go-back" />
+            </div>
           }
           onClickLeft={() => pop()}
           appendRight={
@@ -380,22 +423,18 @@ export const Game: React.FC = () => {
                 gap: '16px',
               }}
             >
-              <div onClick={() => setShowHowToPlay(true)}>게임방법</div>
-              <div
-                onClick={() =>
-                  handleGameEnd({
-                    currentScore: currentScore,
-                    myBestScore: myBestScore,
-                    gameType: gameType,
-                  })
-                }
-              >
-                처음부터
-              </div>
+              <TopButton onClick={() => setShowHowToPlay(true)}>
+                게임방법
+              </TopButton>
+              <TopButton onClick={() => handlePlayAgain()}>처음부터</TopButton>
             </div>
           }
         />
-        <PageContainer>
+        <PageContainer
+          style={{
+            justifyContent: 'center',
+          }}
+        >
           {/*           
           {currentScore >= myBestScore ? (
             <UserInFront
@@ -406,16 +445,14 @@ export const Game: React.FC = () => {
           ) : (
             <MyBestScore score={myBestScore} />
           )} */}
+
           {currentScore > myBestScore ? (
             <MyBestScore score={currentScore} />
           ) : (
             <MyBestScore score={myBestScore} />
           )}
 
-          <CurrentScore
-            score={currentScore}
-            handlePlayAgain={handlePlayAgain}
-          />
+          <CurrentScore score={currentScore} />
 
           <Board
             isUserNew={isUserNew}
@@ -427,27 +464,16 @@ export const Game: React.FC = () => {
             moveDown={moveDown}
           />
 
-          <BottomWrapper>
-            <Button
-              size={`tiny`}
-              fontSize={rem(14)}
-              color={`secondary2`}
-              onClick={() =>
-                handleGameEnd({
-                  currentScore: currentScore,
-                  myBestScore: myBestScore,
-                  gameType: gameType,
-                })
-              }
-              style={{
-                border: `1px solid #C8D8EE`,
-              }}
-            >
-              그만하기
-            </Button>
-
-            <p>본 게임은 오픈소스(play2048.co)로 제작되었습니다</p>
-          </BottomWrapper>
+          <p
+            style={{
+              fontSize: '8px',
+              textAlign: 'left',
+              color: '#c2dcff',
+              margin: '0 20px',
+            }}
+          >
+            본 게임은 오픈소스(play2048.co)로 제작되었습니다
+          </p>
         </PageContainer>
       </Page>
 
@@ -533,22 +559,22 @@ const Page = styled.div`
   overflow: hidden;
 `;
 
-const BottomWrapper = styled.div`
-  display: flex;
-  flex-flow: row;
-  justify-content: space-between;
-  // align-items: flex-end;
-  margin: 0 20px;
+// const BottomWrapper = styled.div`
+//   display: flex;
+//   flex-flow: row;
+//   justify-content: space-between;
+//   // align-items: flex-end;
+//   margin: 0 20px;
 
-  p {
-    font-style: normal;
-    font-weight: normal;
-    font-size: 8px;
-    line-height: 161.7%;
-    margin-bottom: -6px;
+//   p {
+//     font-style: normal;
+//     font-weight: normal;
+//     font-size: 8px;
+//     line-height: 161.7%;
+//     margin-bottom: -6px;
 
-    text-align: right;
+//     text-align: right;
 
-    color: #c2dcff;
-  }
-`;
+//     color: #c2dcff;
+//   }
+// `;

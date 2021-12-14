@@ -28,14 +28,16 @@ import '@karrotframe/pulltorefresh/index.css';
 import { PullToRefresh } from '@karrotframe/pulltorefresh';
 import { css } from '@emotion/css';
 
+import iconFriend from 'assets/icon/svg/icon_friend.svg';
+
 export const Home: React.FC = () => {
   const { isTop } = useCurrentScreen();
   const { push, pop } = useNavigator();
   const analytics = useAnalytics();
   const minigameApi = useMinigameApi();
   const { accessToken } = useAccessToken();
-  const { isInWebEnvironment, handleThirdPartyAgreement } = useMini();
-  const { town } = useUser();
+  const { isInWebEnvironment, handleThirdPartyAgreement, shareApp } = useMini();
+  const { user, town } = useUser();
   const { rank, gameType } = useMyGame2048Data();
   const { townLeaderboard, userLeaderboard, updateLeaderboard } =
     useLeaderboard();
@@ -50,6 +52,36 @@ export const Home: React.FC = () => {
     score: undefined,
   });
   const [isCommentModalOpen, setIsCommentModalOpen] = useState<boolean>(false);
+
+  // Share handler
+  // =================================================================
+  const runShareOnSuccess = () => {
+    analytics.logEvent('click_third_party_agreement_button', {
+      location: 'home_page',
+      game_type: '2048_puzzle',
+      button_type: 'share_button',
+    });
+    console.log('thirdpartyagreement success');
+    handleShare();
+  };
+  const handleShare = () => {
+    analytics.logEvent('click_share_button', {
+      location: 'home_page',
+      game_type: '2048_puzzle',
+    });
+    const url = 'https://daangn.onelink.me/HhUa/37719e67';
+    const text = isRanked
+      ? `${user.nickname}님은 2048 퍼즐에서 전국 ${rank}}등!`
+      : `${user.nickname}님이 이웃님을 동네대회에 초대했어요! 같이 게임할래요?`;
+    shareApp(url, text);
+  };
+  const triggerShareHandler = () => {
+    if (accessToken) {
+      handleShare();
+    } else {
+      handleThirdPartyAgreement(runShareOnSuccess);
+    }
+  };
 
   const goToPlatformPage = () => {
     analytics.logEvent('click_leave_game_button', {
@@ -224,6 +256,12 @@ export const Home: React.FC = () => {
           }}
         >
           <Nav
+            style={{
+              height: '80px',
+              paddingTop: '36px',
+              alignItems: 'flex-start',
+              background: 'transparent',
+            }}
             appendLeft={<IconArrowBack />}
             onClickLeft={goToPlatformPage}
             appendCenter={
@@ -241,8 +279,12 @@ export const Home: React.FC = () => {
                 <Refresh />
               </>
             }
-            appendRight={<button>초대하기</button>}
-            style={{ backgroundColor: 'transparent' }}
+            appendRight={
+              <ShareButton>
+                <p>초대하기</p>
+              </ShareButton>
+            }
+            onClickRight={triggerShareHandler}
           />
 
           <PageContainer
@@ -389,4 +431,38 @@ const ActionItem = styled.div`
   box-sizing: border-box;
   box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
   z-index: 100;
+`;
+
+const ShareButton = styled.div`
+  height: 26px;
+  background: #4694ff;
+  border: none;
+  box-sizing: border-box;
+  border-radius: 6px;
+  padding: 4px 10px;
+  box-shadow: 0px 4px 0px 0px #0064ed;
+  position: relative;
+
+  p {
+    font-size: ${rem(12)};
+    line-height: 161.7%;
+    color: #fff;
+  }
+
+  &::before {
+    content: '';
+    background-image: url(${iconFriend});
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    width: 40px;
+    height: 23px;
+    position: absolute;
+    top: -20px;
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    z-index: -1;
+  }
 `;
