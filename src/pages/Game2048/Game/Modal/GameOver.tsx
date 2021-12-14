@@ -21,7 +21,6 @@ type Props = {
   myPreviousRank: number;
   gameOverScore: number;
   setIsGameOver: React.Dispatch<React.SetStateAction<boolean>>;
-  reset: () => void;
 };
 
 export const GameOver: React.FC<Props> = (props) => {
@@ -169,7 +168,6 @@ export const GameOver: React.FC<Props> = (props) => {
             top: '58px',
           }}
         />
-
         <AnimatePresence>
           {showScore && (
             <SessionRank
@@ -228,12 +226,6 @@ export const GameOver: React.FC<Props> = (props) => {
           )}
         </AnimatePresence>
       </div>
-      {/* {sessionRank.rank! !== 0 && sessionRank.rank! <= 10 && (
-        <TopUserDirection>
-          <p>Top10에게 혜택이 있어요!</p>
-        </TopUserDirection>
-      )} */}
-
       <ActionItems>
         <Button
           size={`large`}
@@ -403,51 +395,3 @@ const ActionItems = styled.div`
 
   width: 100%;
 `;
-
-// const TopUserDirection = styled.div`
-//   position: relative;
-//   margin-bottom: 14px;
-//   align-self: flex-start;
-//   background: #e3efff;
-//   border-radius: 5px;
-
-//   font-family: Cafe24SsurroundAir;
-//   font-style: normal;
-//   font-size: ${rem(10)};
-//   line-height: 161.7%;
-
-//   color: #ffffff;
-
-//   width: fit-content;
-//   padding: 5px 10px;
-
-//   &:after {
-//     z-index: 1000;
-//     content: '';
-//     position: absolute;
-//     bottom: 0;
-//     left: 50%;
-//     width: 0;
-//     height: 0;
-//     border-style: solid;
-//     border-color: transparent;
-//     border-width: 14px 8px;
-//     border-radius: 10px;
-//     border-top-color: #e3efff;
-//     border-bottom: 0;
-
-//     margin-left: -15px;
-//     margin-bottom: -8px;
-//   }
-
-//   p {
-//     font-family: Cafe24SsurroundAir;
-//     font-style: normal;
-//     font-weight: normal;
-//     font-size: ${rem(10)};
-//     line-height: 161.7%;
-//     /* or 16px */
-
-//     color: #0e74ff;
-//   }
-// `;

@@ -61,36 +61,26 @@ export const Game: React.FC = () => {
     setGameData,
   } = useGame();
   const { getBoard, postBoard } = useMyGameData();
-  const { updateUserInFront, getMyRank } = useRank();
+  const { getMyRank } = useRank();
   const [isUserNew, setIsUserNew] = useState<boolean>(false);
-  const [display, setDisplay] = useState<{
-    nickname?: string;
-    rank?: number;
-    score: number;
-  }>({
-    nickname: '',
-    rank: 0,
-    score: myBestScore,
-  });
+  // const [display, setDisplay] = useState<{
+  //   nickname?: string;
+  //   rank?: number;
+  //   score: number;
+  // }>({
+  //   nickname: '',
+  //   rank: 0,
+  //   score: myBestScore,
+  // });
   const [isGameOver, setIsGameOver] = useState(gameOverStatus);
   const [gameOverScore, setGameOverScore] = useState<number>(currentScore);
   const [showHowToPlay, setShowHowToPlay] = useState<boolean>(false);
-  // reset game
-  const reset = useCallback(() => {
-    resetGame();
-    postBoard({
-      gameType: gameType,
-      board: boardByValue,
-      score: 0,
-    });
-    console.log(boardByValue);
-  }, [boardByValue, gameType, postBoard, resetGame]);
 
   // get stashed board
   // get my rank & score
-  //
   const setMyGameData = useCallback(
     async ({ gameData }: { gameData: { board: number[]; score: number } }) => {
+      console.log('set my game data', gameData.board, gameData.score);
       const tiles: {
         [id: number]: TileProps;
       } = convertArrayToObject(
@@ -109,7 +99,9 @@ export const Game: React.FC = () => {
         'id'
       );
       const byIds: number[] = Object.keys(tiles).map(Number);
-      setGameData(tiles, byIds, gameData.score);
+      const startId: number = byIds.length > 0 ? Math.max(...byIds) : 1;
+      console.log(tiles, byIds, startId, gameData.score);
+      setGameData(tiles, byIds, gameData.score, startId);
     },
     [setGameData]
   );
@@ -121,6 +113,7 @@ export const Game: React.FC = () => {
           getBoard({ gameType }),
           getMyRank({ gameType }),
         ]);
+        console.log('setup', response);
         if (typeof response[0] === 'object') {
           setMyGameData({
             gameData: { board: response[0].board, score: response[0].score },
@@ -202,7 +195,7 @@ export const Game: React.FC = () => {
     }) => {
       if (isInWebEnvironment) {
         setGameOverScore(currentScore);
-        reset();
+        resetGame();
         setIsGameOver(true);
         return;
       }
@@ -211,7 +204,7 @@ export const Game: React.FC = () => {
         button_type: 'game_end',
       });
       setGameOverScore(currentScore);
-      reset();
+      resetGame();
       if (currentScore > myBestScore) {
         const response = await updateMyBestScore({
           score: currentScore,
@@ -224,7 +217,7 @@ export const Game: React.FC = () => {
         setIsGameOver(true);
       }
     },
-    [analytics, isInWebEnvironment, reset, updateMyBestScore]
+    [analytics, isInWebEnvironment, resetGame, updateMyBestScore]
   );
 
   // game-over
@@ -242,7 +235,7 @@ export const Game: React.FC = () => {
         game_type: '2048_puzzle',
       });
       setGameOverScore(currentScore);
-      reset();
+      resetGame();
       if (currentScore > myBestScore) {
         const response = await updateMyBestScore({
           score: currentScore,
@@ -261,7 +254,7 @@ export const Game: React.FC = () => {
         }, 1500);
       }
     },
-    [analytics, reset, updateMyBestScore]
+    [analytics, resetGame, updateMyBestScore]
   );
 
   useEffect(() => {
@@ -290,10 +283,8 @@ export const Game: React.FC = () => {
       game_type: '2048_puzzle',
       button_type: 'refresh',
     });
-    // const response = await resetGame();
-    // setMyGameData({ gameData: { board: response, score: 0 } });
-    reset();
-  }, [analytics, reset]);
+    resetGame();
+  }, [analytics, resetGame]);
 
   // new user guide
   useEffect(() => {
@@ -302,38 +293,9 @@ export const Game: React.FC = () => {
     }
   }, [highestScore]);
 
-  // display current score as my best score if current score is greater than best score in db
-  const updateScoreDisplay = useCallback(
-    async ({ currentScore }: { currentScore: number }) => {
-      const response = await updateUserInFront({
-        gameType: 'GAME_2048',
-        score: currentScore,
-      });
-      if (typeof response === 'object') {
-        setDisplay({
-          nickname: response.nickname,
-          rank: response.rank,
-          score: response.score,
-        });
-      } else if (response === 'user is in the first place') {
-        setDisplay({
-          nickname: user.nickname,
-          rank: 1,
-          score: currentScore,
-        });
-      }
-    },
-    [updateUserInFront, user.nickname]
-  );
-
-  useEffect(() => {
-    if (myBestScore > display.score) {
-      updateScoreDisplay({ currentScore: myBestScore });
-    }
-  }, [display.score, myBestScore, updateScoreDisplay]);
-
   // FA view_game_page
   useEffect(() => {
+    console.log('isTop?', isTop);
     if (isTop) {
       analytics.logEvent('view_game_page', {
         game_type: '2048_puzzle',
@@ -346,6 +308,11 @@ export const Game: React.FC = () => {
   useEffect(() => {
     return history.block((location, action) => {
       if (action === 'POP') {
+        postBoard({
+          gameType: gameType,
+          board: boardByValue,
+          score: currentScore,
+        });
         if (currentScore > myBestScore) {
           updateMyBestScore({ score: currentScore, gameType: gameType });
         }
@@ -353,8 +320,45 @@ export const Game: React.FC = () => {
       }
       return undefined;
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [gameType, history]);
+  }, [
+    boardByValue,
+    currentScore,
+    gameType,
+    history,
+    myBestScore,
+    postBoard,
+    updateMyBestScore,
+  ]);
+
+  // display current score as my best score if current score is greater than best score in db
+  // const updateScoreDisplay = useCallback(
+  //   async ({ currentScore }: { currentScore: number }) => {
+  //     const response = await updateUserInFront({
+  //       gameType: 'GAME_2048',
+  //       score: currentScore,
+  //     });
+  //     if (typeof response === 'object') {
+  //       setDisplay({
+  //         nickname: response.nickname,
+  //         rank: response.rank,
+  //         score: response.score,
+  //       });
+  //     } else if (response === 'user is in the first place') {
+  //       setDisplay({
+  //         nickname: user.nickname,
+  //         rank: 1,
+  //         score: currentScore,
+  //       });
+  //     }
+  //   },
+  //   [updateUserInFront, user.nickname]
+  // );
+
+  // useEffect(() => {
+  //   if (myBestScore > display.score) {
+  //     updateScoreDisplay({ currentScore: myBestScore });
+  //   }
+  // }, [display.score, myBestScore, updateScoreDisplay]);
 
   return (
     <>
@@ -376,8 +380,8 @@ export const Game: React.FC = () => {
                 gap: '16px',
               }}
             >
-              <Button onClick={() => setShowHowToPlay(true)}>게임방법</Button>
-              <Button
+              <div onClick={() => setShowHowToPlay(true)}>게임방법</div>
+              <div
                 onClick={() =>
                   handleGameEnd({
                     currentScore: currentScore,
@@ -387,7 +391,7 @@ export const Game: React.FC = () => {
                 }
               >
                 처음부터
-              </Button>
+              </div>
             </div>
           }
         />
@@ -482,8 +486,6 @@ export const Game: React.FC = () => {
           myPreviousRank={myCurrentRank}
           gameOverScore={gameOverScore}
           setIsGameOver={setIsGameOver}
-          // updateMyGameData={updateMyGameData}
-          reset={reset}
         />
       </ReactModal>
 
