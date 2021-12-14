@@ -53,7 +53,7 @@ const DistrictLeaderboard: React.FC<Props> = (props) => {
             />
           );
         })}
-        <div style={{ padding: props.isRanked ? `75px` : `25px` }} />
+        <div style={{ height: '100px', minHeight: '100px' }} />
       </SwiperSlide>
     </Swiper>
   );

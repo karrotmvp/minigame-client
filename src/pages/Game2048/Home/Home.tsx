@@ -402,11 +402,8 @@ export const Home: React.FC = () => {
 
 const Top = styled.div`
   width: 100%;
-  // background: linear-gradient(180deg, #82b6ff 180px, #fff 0);
   position: relative;
-  // top: -${navHeight};
-  // padding-top: ${navHeight};
-
+  margin-bottom: 26px;
   div.top__my-info {
     padding: 0 20px;
   }
