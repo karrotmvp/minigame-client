@@ -313,8 +313,7 @@ export const Home: React.FC = () => {
             >
               <Top className="top">
                 <div className="top__my-info">
-                  {/* isRanked */}
-                  {true ? (
+                  {isRanked ? (
                     <MyInfo
                       myTownRank={myTownData.rank as number}
                       myTownScore={myTownData.score as number}
