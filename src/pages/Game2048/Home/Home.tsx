@@ -43,7 +43,9 @@ export const Home: React.FC = () => {
     useLeaderboard();
   const { updateMyGameData } = useMyGameData();
   const [isFirstInTown, setIsFirstInTown] = useState<boolean>(false);
-  const [isRanked, setIsRanked] = useState<boolean>(false);
+  const [isRanked, setIsRanked] = useState<boolean>(
+    user.userId !== undefined || user.userId !== '' ? false : true
+  );
   const [myTownData, setMyTownData] = useState<{
     rank: number | undefined;
     score: number | undefined;
@@ -274,7 +276,7 @@ export const Home: React.FC = () => {
                     marginBottom: `4px`,
                   }}
                 >
-                  이번주 랭킹
+                  이번 주
                 </p>
                 <Refresh />
               </>
@@ -311,6 +313,7 @@ export const Home: React.FC = () => {
             >
               <Top className="top">
                 <div className="top__my-info">
+                  {/* isRanked */}
                   {true ? (
                     <MyInfo
                       myTownRank={myTownData.rank as number}

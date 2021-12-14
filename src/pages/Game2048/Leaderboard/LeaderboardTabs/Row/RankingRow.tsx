@@ -63,7 +63,7 @@ const TownRow: React.FC<TownRowProps> = (props) => {
           </div>
           <div className="data__score">{commafy(props.score)}</div>
         </div>
-        <PlayerCount>{commafy(props.playerCount)}명 참여</PlayerCount>
+        <PlayerCount>{commafy(props.playerCount)}명</PlayerCount>
       </div>
     </Container>
   );
@@ -73,8 +73,8 @@ export const MemoizedUserRow = React.memo(UserRow);
 export const MemoizedTownRow = React.memo(TownRow);
 
 const Container = styled.div<{ me?: boolean; rank?: number }>`
-  min-height: ${rem(72)};
-  height: ${rem(7)};
+  min-height: ${rem(74)};
+  height: ${rem(74)};
   display: flex;
   flex-flow: row;
   align-items: center;
@@ -143,7 +143,7 @@ const Container = styled.div<{ me?: boolean; rank?: number }>`
 
         font-style: normal;
         font-weight: 600;
-        font-size: ${rem(16)};
+        font-size: ${rem(18)};
         line-height: 161.7%;
         /* identical to box height, or 26px */
 
@@ -156,7 +156,7 @@ const Container = styled.div<{ me?: boolean; rank?: number }>`
 
         font-style: normal;
         font-weight: normal;
-        font-size: 12px;
+        font-size: ${rem(17)};
         line-height: 161.7%;
         /* or 19px */
         color: #5b5b5b;
@@ -173,6 +173,14 @@ const SpeechBalloon = styled.div`
 
   border-radius: 5px;
 
+  font-style: normal;
+  font-weight: normal;
+  font-size: ${rem(14)};
+  line-height: 161.7%;
+  /* or 16px */
+
+  color: #7c7c7c;
+
   &:after {
     z-index: 1000;
     content: '';
@@ -184,14 +192,6 @@ const SpeechBalloon = styled.div`
     border: 6px solid transparent;
     border-right-color: #f5f5f5;
   }
-
-  font-style: normal;
-  font-weight: normal;
-  font-size: ${rem(10)};
-  line-height: 161.7%;
-  /* or 16px */
-
-  color: #7c7c7c;
 `;
 
 const PlayerCount = styled.div`
@@ -199,7 +199,7 @@ const PlayerCount = styled.div`
 
   font-style: normal;
   font-weight: noraml;
-  font-size: 10px;
+  font-size: ${rem(14)};
   line-height: 161.7%;
   /* or 19px */
 

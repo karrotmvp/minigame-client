@@ -8,8 +8,6 @@ import { useSwipeable } from 'react-swipeable';
 import { MemoizedGrid as Grid } from '.';
 
 type Props = {
-  isUserNew: boolean;
-  setIsUserNew: React.Dispatch<React.SetStateAction<boolean>>;
   tileList: TileProps[];
   moveLeft: () => void;
   moveRight: () => void;
@@ -64,16 +62,10 @@ export const Board: React.FC<Props> = (props) => {
   }, [props.tileList]);
   return (
     <Grid cellWidth={cellWidth}>
-      <TileContainer
-        {...handlers}
-        ref={refPassthrough}
-        className="game-board"
-        onPointerDown={() => props.setIsUserNew(false)}
-      >
+      <TileContainer {...handlers} ref={refPassthrough} className="game-board">
         {props.tileList.map(({ id, ...rest }) => (
           <Tile id={id} key={id} {...rest} cellWidth={cellWidth} />
         ))}
-        {/* {props.isUserNew ? <Guide cellWidth={cellWidth} /> : null} */}
       </TileContainer>
     </Grid>
   );

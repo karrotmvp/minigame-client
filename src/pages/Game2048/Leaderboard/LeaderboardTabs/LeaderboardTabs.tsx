@@ -37,7 +37,7 @@ const LeaderboardTabs: React.FC<Props> = (props) => {
         tabs={[
           {
             key: 'district',
-            buttonLabel: '지역 랭킹',
+            buttonLabel: '지역',
             component: useCallback(
               () => (
                 <DistrictLeaderboard
@@ -50,7 +50,7 @@ const LeaderboardTabs: React.FC<Props> = (props) => {
           },
           {
             key: 'individual',
-            buttonLabel: '전국 랭킹',
+            buttonLabel: '전국',
             component: useCallback(
               () => (
                 <UserLeaderboard

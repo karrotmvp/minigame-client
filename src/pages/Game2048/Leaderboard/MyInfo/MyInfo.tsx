@@ -147,15 +147,9 @@ const MyInfo: React.FC<ComponentProps> = (props) => {
   };
   return (
     <Container className="my-info">
-      <div className="my-info__data">
-        <div className="data__town-name">
-          <DistrictName
-            color="#0E74FF"
-            style={{
-              borderRadius: '10.5px',
-              padding: '2px 8px',
-            }}
-          >
+      <div className="my-info__ranking">
+        <div className="ranking">
+          <div className="ranking__title">
             <p>
               {town.name1!.replace(
                 /(특별시|광역시|특별자치시|특별자치도)$/,
@@ -163,30 +157,6 @@ const MyInfo: React.FC<ComponentProps> = (props) => {
               )}
               &nbsp;{town.name2}
             </p>
-          </DistrictName>
-        </div>
-        <div className="data__nickname">
-          <p>{user.nickname}</p>
-        </div>
-        <div className="data__comment">
-          <p>
-            {comment === '' || comment === null
-              ? '오른쪽 버튼을 눌러 한마디를 작성할 수 있어요'
-              : comment}
-          </p>
-          <IconPencil onClick={openCommentModal} />
-        </div>
-      </div>
-      <div
-        style={{
-          borderTop: `1px solid #E3EFFF`,
-          margin: `12px 0 16px`,
-        }}
-      />
-      <div className="row my-info__ranking">
-        <div className="ranking">
-          <div className="ranking__title">
-            <p>동네 랭킹</p>
           </div>
           <div className="ranking__rank">
             <p>
@@ -199,14 +169,20 @@ const MyInfo: React.FC<ComponentProps> = (props) => {
         </div>
         <div
           style={{
+            position: 'absolute',
+            width: '1px',
+            minWidth: '1px',
             borderLeft: `1px solid #E3EFFF`,
-            height: `90px`,
-            margin: `0 11px`,
+            height: '104px',
+            marginLeft: 'auto',
+            marginRight: 'auto',
+            left: 0,
+            right: 0,
           }}
         />
         <div className="ranking">
           <div className="ranking__title">
-            <p>내 랭킹</p>
+            <p>{user.nickname}</p>
           </div>
           <div className="ranking__rank">
             <p>
@@ -217,6 +193,24 @@ const MyInfo: React.FC<ComponentProps> = (props) => {
             <p>{myScore === 0 ? '-' : commafy(myScore)}점</p>
           </div>
         </div>
+      </div>
+      <div
+        style={{
+          borderTop: `1px solid #E3EFFF`,
+          margin: `20px 0 16px`,
+        }}
+      />
+      <div className="comment">
+        <p className="comment__edit">
+          나의 한 마디
+          <IconPencil onClick={openCommentModal} />
+        </p>
+
+        <p className="comment__my-comment">
+          {comment === '' || comment === null
+            ? `${town.name2} 파이팅!`
+            : comment}
+        </p>
       </div>
     </Container>
   );
@@ -229,7 +223,7 @@ const Container = styled.div`
   flex-flow: column;
   justify-content: space-between;
   width: 100%;
-  padding: ${rem(12)} ${rem(18)};
+  padding: 20px 18px 15px;
   background: #ffffff;
   border: 1px solid #4694ff;
   box-sizing: border-box;
@@ -237,38 +231,6 @@ const Container = styled.div`
   border-radius: 10px;
   font-style: normal;
   font-weight: normal;
-
-  .my-info__data {
-    display: flex;
-    flex-flow: column;
-    justify-content: center;
-    align-items: center;
-    .data__town-name {
-      align-self: flex-start;
-      p {
-        font-size: ${rem(12)};
-      }
-    }
-    .data__nickname {
-      padding: 6px 0;
-      p {
-        font-weight: bold;
-        font-size: ${rem(22)};
-        text-align: center;
-        color: #0e74ff;
-      }
-    }
-    .data__comment {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      p {
-        font-size: ${rem(12)};
-        text-align: center;
-        color: #7c7c7c;
-      }
-    }
-  }
 
   .my-info__ranking {
     display: flex;
@@ -280,6 +242,7 @@ const Container = styled.div`
       flex-flow: column;
       justify-content: center;
       align-items: center;
+      min-width: calc(160px - 18px);
       .ranking__title {
         background: #f3f8ff;
         border-radius: 12.5px;
@@ -310,6 +273,28 @@ const Container = styled.div`
           color: #5b5b5b;
         }
       }
+    }
+  }
+  .comment {
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    .comment__edit {
+      font-size: ${rem(12)};
+      line-height: 103.7%;
+      text-align: center;
+      color: #5b5b5b;
+      display: inline-flex;
+      gap: 4px;
+    }
+    .comment__my-comment {
+      font-weight: bold;
+      font-size: ${rem(16)};
+      line-height: 161.7%;
+      text-align: center;
+      color: #0e74ff;
     }
   }
 `;

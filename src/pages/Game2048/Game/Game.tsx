@@ -92,7 +92,6 @@ export const Game: React.FC = () => {
   } = useGame();
   const { getBoard, postBoard } = useMyGameData();
   const { getMyRank } = useRank();
-  const [isUserNew, setIsUserNew] = useState<boolean>(false);
   // const [display, setDisplay] = useState<{
   //   nickname?: string;
   //   rank?: number;
@@ -319,7 +318,7 @@ export const Game: React.FC = () => {
   // new user guide
   useEffect(() => {
     if (highestScore === 0) {
-      setIsUserNew(true);
+      setShowHowToPlay(true);
     }
   }, [highestScore]);
 
@@ -455,8 +454,6 @@ export const Game: React.FC = () => {
           <CurrentScore score={currentScore} />
 
           <Board
-            isUserNew={isUserNew}
-            setIsUserNew={setIsUserNew}
             tileList={tileList}
             moveRight={moveRight}
             moveLeft={moveLeft}

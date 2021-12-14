@@ -19,7 +19,7 @@ export const CommentModal: React.FC<Props> = (props) => {
   const { isInWebEnvironment } = useMini();
   const { town } = useUser();
   const { comment: prevComment, updateMyComment } = useMyGame2048Data();
-  const [comment, setComment] = useState('');
+  const [comment, setComment] = useState(prevComment);
   const handleCommentInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value, maxLength } = e.target;
     setComment(value.slice(0, maxLength));
@@ -39,7 +39,7 @@ export const CommentModal: React.FC<Props> = (props) => {
       const { data } = await minigameApi.gamePlayApi.addCommentUsingPATCH(
         'GAME_2048',
         {
-          comment: comment,
+          comment: comment.length <= 0 ? prevComment : comment,
         }
       );
       if (data.status === 200) {
@@ -113,7 +113,7 @@ export const CommentModal: React.FC<Props> = (props) => {
           maxLength={20}
           placeholder={
             prevComment === '' || prevComment === null
-              ? `예) 오예~${town.name2}짱! :)`
+              ? `${town.name2} 파이팅!`
               : `${prevComment}`
           }
           onChange={(e) => handleCommentInput(e)}

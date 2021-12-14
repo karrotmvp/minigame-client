@@ -1,22 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import styled from '@emotion/styled';
 import { Swiper, SwiperSlide } from 'swiper/react/swiper-react.js';
-import { Navigation } from 'swiper';
+import { Pagination, Autoplay } from 'swiper';
 import 'swiper/swiper.scss';
 import 'swiper/modules/pagination/pagination.scss';
 import { ReactComponent as HowToPlay1 } from 'assets/svg/game2048/how_to_play_1.svg';
+import { ReactComponent as HowToPlay2 } from 'assets/svg/game2048/how_to_play_2.svg';
 import { rem } from 'polished';
+import './swiperStyles.scss';
 
 interface Props {
   setShowHowToPlay: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const HowToPlay: React.FC<Props> = (props) => {
-  const [isLastSlide, setIsLastSlide] = useState<boolean>(false);
-
-  useEffect(() => {
-    console.log(isLastSlide);
-  }, [isLastSlide]);
   return (
     <>
       <div
@@ -47,12 +44,19 @@ export const HowToPlay: React.FC<Props> = (props) => {
           lineHeight: `160.2%`,
         }}
       >
-        처음 해보시나요?
+        어떤 게임인가요?
       </p>
       <Swiper
-        modules={[Navigation]}
-        navigation={true}
-        watchSlidesProgress={true}
+        modules={[Pagination, Autoplay]}
+        centeredSlides={true}
+        loop={false}
+        autoplay={{
+          delay: 4000,
+          disableOnInteraction: true,
+        }}
+        pagination={{
+          clickable: true,
+        }}
         className="mySwiper"
         style={{
           width: '100%',
@@ -64,7 +68,6 @@ export const HowToPlay: React.FC<Props> = (props) => {
             <div className="image">
               <HowToPlay1 />
             </div>
-
             <p className="text">
               손가락으로 밀어서
               <br />
@@ -75,9 +78,8 @@ export const HowToPlay: React.FC<Props> = (props) => {
         <SwiperSlide>
           <Container>
             <div className="image">
-              <HowToPlay1 />
+              <HowToPlay2 />
             </div>
-
             <p className="text">
               합친 숫자만큼
               <br />
@@ -88,43 +90,39 @@ export const HowToPlay: React.FC<Props> = (props) => {
         <SwiperSlide>
           <Container>
             <div className="image">
-              <HowToPlay1 />
+              <HowToPlay2 />
             </div>
-
             <p className="text">
-              손가락으로 밀어서
+              점수를 높여서 신기록을 세우고,
               <br />
-              같은 숫자끼리 합쳐요
+              우리 동네도 1등으로 만들어요!
             </p>
           </Container>
-          {({ isVisible }) => setIsLastSlide(() => isVisible)}
-          {({ isActive }) => (
-            <div>Current slide is {isActive ? 'active' : 'not active'}</div>
-          )}
         </SwiperSlide>
-        <div
-          style={{
-            margin: '22px 18px',
-          }}
-        >
-          <button
-            style={{
-              width: '100%',
-              boxShadow: `0px 6px 0px 0px #1457AE`,
-              background: `#0E74FF`,
-              padding: `6px 0`,
-              borderRadius: `10px`,
-              fontWeight: `bold`,
-              fontSize: `${rem(14)}`,
-              lineHeight: `161.7%`,
-              color: `#FFFFFF`,
-            }}
-            onClick={() => props.setShowHowToPlay(false)}
-          >
-            {isLastSlide ? '게임 시작!' : '건너뛰기'}
-          </button>
-        </div>
       </Swiper>
+      <div
+        style={{
+          width: '100%',
+          padding: '22px 18px',
+        }}
+      >
+        <button
+          style={{
+            width: '100%',
+            boxShadow: `0px 6px 0px 0px #1457AE`,
+            background: `#0E74FF`,
+            padding: `6px 0`,
+            borderRadius: `10px`,
+            fontWeight: `bold`,
+            fontSize: `${rem(14)}`,
+            lineHeight: `161.7%`,
+            color: `#FFFFFF`,
+          }}
+          onClick={() => props.setShowHowToPlay(false)}
+        >
+          건너뛰기
+        </button>
+      </div>
     </>
   );
 };
