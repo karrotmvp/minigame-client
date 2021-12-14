@@ -4,7 +4,6 @@ import {
   setGameTypeAction,
   updateUserGameDataAction,
   updateMyCommentAction,
-  getMyHighestScoreAction,
 } from 'reducers/game2048DataReducer';
 import { RootState } from 'store';
 
@@ -25,10 +24,6 @@ export const useMyGame2048Data = () => {
     gameType: state.game2048DataReducer.gameType,
   }));
 
-  const { highestScore, highestRank } = useSelector((state: RootState) => ({
-    highestScore: state.game2048DataReducer.highestScore,
-    highestRank: state.game2048DataReducer.highestRank,
-  }));
   const dispatch = useDispatch();
 
   const updateMyScore = useCallback(
@@ -48,19 +43,13 @@ export const useMyGame2048Data = () => {
     dispatch(setGameTypeAction('GAME_2048'));
   }, [dispatch]);
 
-  const updateMyHighestScore = (highestScore: number, highestRank: number) => {
-    dispatch(getMyHighestScoreAction(highestScore, highestRank));
-  };
   return {
     score,
     rank,
     comment,
     gameType,
-    highestScore,
-    highestRank,
     updateMyScore,
     updateMyComment,
     setGameTypeToGame2048,
-    updateMyHighestScore,
   };
 };

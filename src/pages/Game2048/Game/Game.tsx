@@ -13,7 +13,7 @@ import {
   // MemoizedUserInFront as UserInFront,
 } from './Score';
 import { useAnalytics } from 'services/analytics';
-import { useMini, useUser, useRank, useMyGameData } from 'hooks';
+import { useUser, useRank, useMyGameData } from 'hooks';
 import { useDebouncedCallback } from 'use-debounce';
 import ReactModal from 'react-modal';
 import { TileProps } from './Game/Tile';
@@ -69,13 +69,11 @@ export const Game: React.FC = () => {
   const { pop } = useNavigator();
   const { isTop } = useCurrentScreen();
   const minigameApi = useMinigameApi();
-  // const { isInWebEnvironment } = useMini();
   const history = useHistory();
   const { user, setUser } = useUser();
   const {
     score: myBestScore,
     rank: myCurrentRank,
-    highestScore,
     gameType,
     updateMyScore,
   } = useMyGame2048Data();
@@ -318,10 +316,10 @@ export const Game: React.FC = () => {
 
   // new user guide
   useEffect(() => {
-    if (highestScore === 0) {
+    if (myBestScore === 0) {
       setShowHowToPlay(true);
     }
-  }, [highestScore]);
+  }, [myBestScore]);
 
   // FA view_game_page
   useEffect(() => {
