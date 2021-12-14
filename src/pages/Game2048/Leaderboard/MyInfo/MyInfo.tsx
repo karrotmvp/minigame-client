@@ -6,30 +6,22 @@ import { useUser } from 'hooks';
 import { useMyGame2048Data } from 'pages/Game2048/hooks';
 import { DistrictName } from 'styles/leaderboard';
 import { ReactComponent as IconPencil } from 'assets/icon/svg/icon_pencil.svg';
+import type { Town } from 'redux/user';
 
-interface Props {
+interface ComponentProps {
   setIsCommentModalOpen?: React.Dispatch<React.SetStateAction<boolean>>;
-  myTownRank: number;
-  myTownScore: number;
+  isFirstInTown?: boolean;
+  myTownRank?: number;
+  myTownScore?: number;
 }
-export const NotLoggedIn: React.FC<Props> = (props) => {
-  const { town } = useUser();
+
+interface TownProps {
+  town: Town;
+  myTownRank?: number;
+}
+const FirstInTown: React.FC<TownProps> = (props) => {
   return (
-    <div
-      style={{
-        display: `flex`,
-        flexFlow: `column`,
-        justifyContent: `space-between`,
-        width: `100%`,
-        padding: `${rem(22)} ${rem(18)}`,
-        background: `#ffffff`,
-        border: `1px solid #4694ff`,
-        boxSizing: `border-box`,
-        boxShadow: `0px 2px 10px rgba(0, 67, 147, 0.15)`,
-        borderRadius: `10px`,
-        textAlign: `center`,
-      }}
-    >
+    <>
       <p
         style={{
           fontWeight: `bold`,
@@ -38,7 +30,53 @@ export const NotLoggedIn: React.FC<Props> = (props) => {
           color: `#0E74FF`,
         }}
       >
-        {town.name2} 이웃님,
+        {props.town.name2} 이웃님,
+        <br />
+        이웃님이 우리 동네&nbsp;
+        <span
+          style={{
+            fontWeight: `bold`,
+            fontSize: `${rem(22)}`,
+            lineHeight: `160.2%`,
+            color: `#EC9C00`,
+          }}
+        >
+          첫 주민!
+        </span>
+      </p>
+      <div
+        style={{
+          borderTop: `1px solid #E3EFFF`,
+          margin: `18px 0 18px`,
+        }}
+      />
+      <p
+        style={{
+          fontSize: `${rem(14)}`,
+          lineHeight: `161.7%`,
+          color: `#4694FF`,
+        }}
+      >
+        지금 바로 게임하고
+        <br />
+        {props.town.name2}도 랭킹에 참여해봐요
+      </p>
+    </>
+  );
+};
+
+const NotLoggedIn: React.FC<TownProps> = (props) => {
+  return (
+    <>
+      <p
+        style={{
+          fontWeight: `bold`,
+          fontSize: `${rem(22)}`,
+          lineHeight: `160.2%`,
+          color: `#0E74FF`,
+        }}
+      >
+        {props.town.name2} 이웃님,
         <br />
         우리 동네는&nbsp;
         <span
@@ -70,11 +108,38 @@ export const NotLoggedIn: React.FC<Props> = (props) => {
         <br />
         우리 동네 순위를 올릴수 있어요
       </p>
+    </>
+  );
+};
+
+export const NotRanked: React.FC<ComponentProps> = (props) => {
+  const { town } = useUser();
+  return (
+    <div
+      style={{
+        display: `flex`,
+        flexFlow: `column`,
+        justifyContent: `space-between`,
+        width: `100%`,
+        padding: `${rem(22)} ${rem(18)}`,
+        background: `#ffffff`,
+        border: `1px solid #4694ff`,
+        boxSizing: `border-box`,
+        boxShadow: `0px 2px 10px rgba(0, 67, 147, 0.15)`,
+        borderRadius: `10px`,
+        textAlign: `center`,
+      }}
+    >
+      {props.isFirstInTown ? (
+        <FirstInTown town={town} />
+      ) : (
+        <NotLoggedIn town={town} myTownRank={props.myTownRank} />
+      )}
     </div>
   );
 };
 
-const MyInfo: React.FC<Props> = (props) => {
+const MyInfo: React.FC<ComponentProps> = (props) => {
   const { user, town } = useUser();
   const { score: myScore, rank: myRank, comment } = useMyGame2048Data();
   const openCommentModal = () => {
@@ -145,11 +210,11 @@ const MyInfo: React.FC<Props> = (props) => {
           </div>
           <div className="ranking__rank">
             <p>
-              <span className="score">{myRank}</span>위
+              <span className="score">{myScore === 0 ? '-' : myRank}</span>위
             </p>
           </div>
           <div className="ranking__score">
-            <p>{commafy(myScore)}점</p>
+            <p>{myScore === 0 ? '-' : commafy(myScore)}점</p>
           </div>
         </div>
       </div>

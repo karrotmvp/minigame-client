@@ -17,7 +17,7 @@ import { Nav } from 'components/Navigation/Nav';
 import { ReactComponent as IconArrowBack } from 'assets/icon/svg/icon_arrow_back.svg';
 import { MemoizedLeaderboardTabs as LeaderboardTabs } from 'pages/Game2048/Leaderboard/LeaderboardTabs';
 import { MemoizedRefresh as Refresh } from '../Leaderboard/Refresh';
-import { MemoizedMyInfo as MyInfo, NotLoggedIn } from '../Leaderboard/MyInfo';
+import { MemoizedMyInfo as MyInfo, NotRanked } from '../Leaderboard/MyInfo';
 import { ActiveUserCount } from 'components/ActiveUserCount';
 import { useMyGame2048Data } from '../hooks';
 import { useThrottledCallback } from 'use-debounce/lib';
@@ -40,6 +40,7 @@ export const Home: React.FC = () => {
   const { townLeaderboard, userLeaderboard, updateLeaderboard } =
     useLeaderboard();
   const { updateMyGameData } = useMyGameData();
+  const [isFirstInTown, setIsFirstInTown] = useState<boolean>(false);
   const [isRanked, setIsRanked] = useState<boolean>(false);
   const [myTownData, setMyTownData] = useState<{
     rank: number | undefined;
@@ -123,11 +124,15 @@ export const Home: React.FC = () => {
       townLeaderboard: TownLeaderboardType[];
       myTownId: string;
     }) => {
-      const myTown = townLeaderboard.find((town) => town.townId === myTownId);
-      setMyTownData({
-        rank: myTown?.rank,
-        score: myTown?.score,
+      const myTown = townLeaderboard.find((town) => {
+        return town.townId === undefined ? undefined : town.townId === myTownId;
       });
+      myTown === undefined
+        ? setIsFirstInTown(true)
+        : setMyTownData({
+            rank: myTown?.rank,
+            score: myTown?.score,
+          });
     },
     []
   );
@@ -271,9 +276,12 @@ export const Home: React.FC = () => {
                       setIsCommentModalOpen={setIsCommentModalOpen}
                     />
                   ) : (
-                    <NotLoggedIn
-                      myTownRank={myTownData.rank as number}
-                      myTownScore={myTownData.score as number}
+                    <NotRanked
+                      myTownRank={myTownData.rank ? myTownData.rank : undefined}
+                      myTownScore={
+                        myTownData.score ? myTownData.score : undefined
+                      }
+                      isFirstInTown={isFirstInTown}
                     />
                   )}
                 </div>
