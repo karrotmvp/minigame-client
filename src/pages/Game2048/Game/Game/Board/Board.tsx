@@ -1,10 +1,9 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { useLayoutEffect, useRef, useState } from 'react';
 import styled from '@emotion/styled';
 import { MemoizedTile as Tile } from '../Tile';
 import type { TileProps } from '../Tile';
 import { boardMargin, boardPadding } from '../styles';
 import { useSwipeable } from 'react-swipeable';
-// import { Guide } from './Guide';
 import { MemoizedGrid as Grid } from '.';
 
 type Props = {
@@ -57,9 +56,6 @@ export const Board: React.FC<Props> = (props) => {
     return () => window.removeEventListener('resize', updateSize);
   }, []);
 
-  useEffect(() => {
-    console.log(props.tileList);
-  }, [props.tileList]);
   return (
     <Grid cellWidth={cellWidth}>
       <TileContainer {...handlers} ref={refPassthrough} className="game-board">

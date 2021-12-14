@@ -154,7 +154,7 @@ export const Home: React.FC = () => {
   };
 
   const updateMyTownData = useCallback(
-    ({
+    async ({
       townLeaderboard,
       myTownId,
     }: {
@@ -164,6 +164,7 @@ export const Home: React.FC = () => {
       const myTown = townLeaderboard.find((town) => {
         return town.townId === undefined ? undefined : town.townId === myTownId;
       });
+
       myTown === undefined
         ? setIsFirstInTown(true)
         : setMyTownData({
@@ -176,7 +177,7 @@ export const Home: React.FC = () => {
 
   // refresh leaderboard
   const handleRefresh = useCallback(async () => {
-    if (isRanked) {
+    if (accessToken) {
       const response = await updateMyGameData({ gameType: gameType });
       if (response === 'success') {
         const leaderboard = await updateLeaderboard({
@@ -187,7 +188,6 @@ export const Home: React.FC = () => {
           townLeaderboard: leaderboard?.townLeaderboard!,
           myTownId: town.id!,
         });
-        return;
       }
     } else {
       const leaderboard = await updateLeaderboard({
@@ -200,8 +200,8 @@ export const Home: React.FC = () => {
       });
     }
   }, [
+    accessToken,
     gameType,
-    isRanked,
     town.id,
     updateLeaderboard,
     updateMyGameData,

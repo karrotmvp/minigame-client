@@ -104,6 +104,34 @@ export const Game: React.FC = () => {
   const [gameOverScore, setGameOverScore] = useState<number>(currentScore);
   const [showHowToPlay, setShowHowToPlay] = useState<boolean>(false);
 
+  // update user-info
+  const updateUserInfo = useCallback(
+    async ({ userId }: { userId: string }) => {
+      if (userId) {
+        return;
+      } else {
+        try {
+          const {
+            data: { data },
+          } = await minigameApi.userApi.getUserInfoUsingGET();
+          if (data) {
+            setUser({ userId: data.id, nickname: data.nickname });
+            return 'success';
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    },
+    [minigameApi.userApi, setUser]
+  );
+
+  useEffect(() => {
+    if (user.userId === '') {
+      updateUserInfo({ userId: user.userId });
+    }
+  }, [updateUserInfo, user.userId]);
+
   // get stashed board
   // get my rank & score
   const setMyGameData = useCallback(
@@ -128,7 +156,6 @@ export const Game: React.FC = () => {
       );
       const byIds: number[] = Object.keys(tiles).map(Number);
       const startId: number = byIds.length > 0 ? Math.max(...byIds) : 1;
-      console.log(tiles, byIds, startId, gameData.score);
       setGameData(tiles, byIds, gameData.score, startId);
     },
     [setGameData]
@@ -160,34 +187,6 @@ export const Game: React.FC = () => {
     [getBoard, getMyRank, setMyGameData, updateMyScore]
   );
 
-  // update user-info
-  const updateUserInfo = useCallback(
-    async ({ userId }: { userId: string }) => {
-      if (userId) {
-        return;
-      } else {
-        try {
-          const {
-            data: { data },
-          } = await minigameApi.userApi.getUserInfoUsingGET();
-          if (data) {
-            setUser({ userId: data.id, nickname: data.nickname });
-            return 'success';
-          }
-        } catch (error) {
-          console.error(error);
-        }
-      }
-    },
-    [minigameApi.userApi, setUser]
-  );
-
-  useEffect(() => {
-    if (user.userId === '') {
-      updateUserInfo({ userId: user.userId });
-    }
-  }, [updateUserInfo, user.userId]);
-
   const updateMyBestScore = useCallback(
     async ({
       score,
@@ -197,12 +196,12 @@ export const Game: React.FC = () => {
       gameType: 'GAME_KARROT' | 'GAME_2048';
     }) => {
       try {
-        const data = await minigameApi.gamePlayApi.updateScoreUsingPATCH(
+        console.log(score);
+        const { data } = await minigameApi.gamePlayApi.updateScoreUsingPATCH(
           gameType,
-          {
-            score: score,
-          }
+          { score }
         );
+        console.log(data);
         return data;
       } catch (error) {
         console.error(error);
@@ -263,7 +262,7 @@ export const Game: React.FC = () => {
         game_type: '2048_puzzle',
       });
       setGameOverScore(currentScore);
-      resetGame();
+
       if (currentScore > myBestScore) {
         const response = await updateMyBestScore({
           score: currentScore,
@@ -271,15 +270,17 @@ export const Game: React.FC = () => {
         });
         if (response?.status === 200) {
           let timerId = setTimeout(() => {
-            setIsGameOver(() => true);
+            setIsGameOver(true);
             clearTimeout(timerId);
-          }, 1500);
+          }, 3000);
+          resetGame();
         }
       } else {
         let timerId = setTimeout(() => {
-          setIsGameOver(() => true);
+          setIsGameOver(true);
           clearTimeout(timerId);
-        }, 1500);
+        }, 3000);
+        resetGame();
       }
     },
     [analytics, resetGame, updateMyBestScore]
@@ -341,9 +342,11 @@ export const Game: React.FC = () => {
           score: currentScore,
         });
         if (currentScore > myBestScore) {
-          updateMyBestScore({ score: currentScore, gameType: gameType });
+          updateMyBestScore({
+            score: currentScore,
+            gameType: gameType,
+          });
         }
-        return;
       }
       return undefined;
     });
