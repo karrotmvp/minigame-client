@@ -69,7 +69,8 @@ export const Game: React.FC = () => {
   const { pop } = useNavigator();
   const { isTop } = useCurrentScreen();
   const minigameApi = useMinigameApi();
-  const { isInWebEnvironment } = useMini();
+  // const { isInWebEnvironment } = useMini();
+  const history = useHistory();
   const { user, setUser } = useUser();
   const {
     score: myBestScore,
@@ -212,42 +213,42 @@ export const Game: React.FC = () => {
     [minigameApi.gamePlayApi]
   );
   // game-end
-  const handleGameEnd = useCallback(
-    async ({
-      currentScore,
-      myBestScore,
-      gameType,
-    }: {
-      currentScore: number;
-      myBestScore: number;
-      gameType: 'GAME_KARROT' | 'GAME_2048';
-    }) => {
-      if (isInWebEnvironment) {
-        setGameOverScore(currentScore);
-        resetGame();
-        setIsGameOver(true);
-        return;
-      }
-      analytics.logEvent('click_game_end_button', {
-        game_type: '2048_puzzle',
-        button_type: 'game_end',
-      });
-      setGameOverScore(currentScore);
-      resetGame();
-      if (currentScore > myBestScore) {
-        const response = await updateMyBestScore({
-          score: currentScore,
-          gameType: gameType,
-        });
-        if (response?.status === 200) {
-          setIsGameOver(true);
-        }
-      } else {
-        setIsGameOver(true);
-      }
-    },
-    [analytics, isInWebEnvironment, resetGame, updateMyBestScore]
-  );
+  // const handleGameEnd = useCallback(
+  //   async ({
+  //     currentScore,
+  //     myBestScore,
+  //     gameType,
+  //   }: {
+  //     currentScore: number;
+  //     myBestScore: number;
+  //     gameType: 'GAME_KARROT' | 'GAME_2048';
+  //   }) => {
+  //     if (isInWebEnvironment) {
+  //       setGameOverScore(currentScore);
+  //       resetGame();
+  //       setIsGameOver(true);
+  //       return;
+  //     }
+  //     analytics.logEvent('click_game_end_button', {
+  //       game_type: '2048_puzzle',
+  //       button_type: 'game_end',
+  //     });
+  //     setGameOverScore(currentScore);
+  //     resetGame();
+  //     if (currentScore > myBestScore) {
+  //       const response = await updateMyBestScore({
+  //         score: currentScore,
+  //         gameType: gameType,
+  //       });
+  //       if (response?.status === 200) {
+  //         setIsGameOver(true);
+  //       }
+  //     } else {
+  //       setIsGameOver(true);
+  //     }
+  //   },
+  //   [analytics, isInWebEnvironment, resetGame, updateMyBestScore]
+  // );
 
   // game-over
   const handleGameOver = useCallback(
@@ -333,7 +334,6 @@ export const Game: React.FC = () => {
     }
   }, [analytics, gameType, isTop, setUp]);
 
-  const history = useHistory();
   useEffect(() => {
     return history.block((location, action) => {
       if (action === 'POP') {

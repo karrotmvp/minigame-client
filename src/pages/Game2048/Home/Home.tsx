@@ -17,7 +17,10 @@ import { Nav } from 'components/Navigation/Nav';
 import { ReactComponent as IconArrowBack } from 'assets/icon/svg/icon_arrow_back.svg';
 import { MemoizedLeaderboardTabs as LeaderboardTabs } from 'pages/Game2048/Leaderboard/LeaderboardTabs';
 import { MemoizedRefresh as Refresh } from '../Leaderboard/Refresh';
-import { MemoizedMyInfo as MyInfo, NotRanked } from '../Leaderboard/MyInfo';
+import {
+  MemoizedUserLoggedIn as UserLoggedIn,
+  UserNotLoggedIn,
+} from '../Leaderboard/Highlight';
 import { ActiveUserCount } from 'components/ActiveUserCount';
 import { useMyGame2048Data } from '../hooks';
 import { useThrottledCallback } from 'use-debounce/lib';
@@ -313,14 +316,14 @@ export const Home: React.FC = () => {
             >
               <Top className="top">
                 <div className="top__my-info">
-                  {isRanked ? (
-                    <MyInfo
+                  {accessToken ? (
+                    <UserLoggedIn
                       myTownRank={myTownData.rank as number}
                       myTownScore={myTownData.score as number}
                       setIsCommentModalOpen={setIsCommentModalOpen}
                     />
                   ) : (
-                    <NotRanked
+                    <UserNotLoggedIn
                       myTownRank={myTownData.rank ? myTownData.rank : undefined}
                       myTownScore={
                         myTownData.score ? myTownData.score : undefined

@@ -1,12 +1,15 @@
 import React from 'react';
 import styled from '@emotion/styled';
-import { rem } from 'polished';
-import { commafy } from 'utils/number';
 import { useUser } from 'hooks';
 import { useMyGame2048Data } from 'pages/Game2048/hooks';
-import { DistrictName } from 'styles/leaderboard';
+import { commafy } from 'utils/number';
+import { rem } from 'polished';
 import { ReactComponent as IconPencil } from 'assets/icon/svg/icon_pencil.svg';
-import type { Town } from 'redux/user';
+
+// 가입유저
+// 동네기록o 개인기록o
+// 동네기록o 개인기록x
+// 동네기록x 개인기록x
 
 interface ComponentProps {
   setIsCommentModalOpen?: React.Dispatch<React.SetStateAction<boolean>>;
@@ -15,131 +18,7 @@ interface ComponentProps {
   myTownScore?: number;
 }
 
-interface TownProps {
-  town: Town;
-  myTownRank?: number;
-}
-const FirstInTown: React.FC<TownProps> = (props) => {
-  return (
-    <>
-      <p
-        style={{
-          fontWeight: `bold`,
-          fontSize: `${rem(22)}`,
-          lineHeight: `160.2%`,
-          color: `#0E74FF`,
-        }}
-      >
-        {props.town.name2} 이웃님,
-        <br />
-        이웃님이 우리 동네&nbsp;
-        <span
-          style={{
-            fontWeight: `bold`,
-            fontSize: `${rem(22)}`,
-            lineHeight: `160.2%`,
-            color: `#EC9C00`,
-          }}
-        >
-          첫 주민!
-        </span>
-      </p>
-      <div
-        style={{
-          borderTop: `1px solid #E3EFFF`,
-          margin: `18px 0 18px`,
-        }}
-      />
-      <p
-        style={{
-          fontSize: `${rem(14)}`,
-          lineHeight: `161.7%`,
-          color: `#4694FF`,
-        }}
-      >
-        지금 바로 게임하고
-        <br />
-        {props.town.name2}도 랭킹에 참여해봐요
-      </p>
-    </>
-  );
-};
-
-const NotLoggedIn: React.FC<TownProps> = (props) => {
-  return (
-    <>
-      <p
-        style={{
-          fontWeight: `bold`,
-          fontSize: `${rem(22)}`,
-          lineHeight: `160.2%`,
-          color: `#0E74FF`,
-        }}
-      >
-        {props.town.name2} 이웃님,
-        <br />
-        우리 동네는&nbsp;
-        <span
-          style={{
-            fontWeight: `bold`,
-            fontSize: `${rem(22)}`,
-            lineHeight: `160.2%`,
-            color: `#EC9C00`,
-          }}
-        >
-          {props.myTownRank}위
-        </span>
-        에요!
-      </p>
-      <div
-        style={{
-          borderTop: `1px solid #E3EFFF`,
-          margin: `18px 0 18px`,
-        }}
-      />
-      <p
-        style={{
-          fontSize: `${rem(14)}`,
-          lineHeight: `161.7%`,
-          color: `#4694FF`,
-        }}
-      >
-        이웃님의 실력으로
-        <br />
-        우리 동네 순위를 올릴수 있어요
-      </p>
-    </>
-  );
-};
-
-export const NotRanked: React.FC<ComponentProps> = (props) => {
-  const { town } = useUser();
-  return (
-    <div
-      style={{
-        display: `flex`,
-        flexFlow: `column`,
-        justifyContent: `space-between`,
-        width: `100%`,
-        padding: `${rem(22)} ${rem(18)}`,
-        background: `#ffffff`,
-        border: `1px solid #4694ff`,
-        boxSizing: `border-box`,
-        boxShadow: `0px 2px 10px rgba(0, 67, 147, 0.15)`,
-        borderRadius: `10px`,
-        textAlign: `center`,
-      }}
-    >
-      {props.isFirstInTown ? (
-        <FirstInTown town={town} />
-      ) : (
-        <NotLoggedIn town={town} myTownRank={props.myTownRank} />
-      )}
-    </div>
-  );
-};
-
-const MyInfo: React.FC<ComponentProps> = (props) => {
+const UserLoggedIn: React.FC<ComponentProps> = (props) => {
   const { user, town } = useUser();
   const { score: myScore, rank: myRank, comment } = useMyGame2048Data();
   const openCommentModal = () => {
@@ -154,32 +33,30 @@ const MyInfo: React.FC<ComponentProps> = (props) => {
               {town.name1!.replace(
                 /(특별시|광역시|특별자치시|특별자치도)$/,
                 ''
-              )}
-              &nbsp;{town.name2}
+              )}{' '}
+              {town.name2}
             </p>
           </div>
           <div className="ranking__rank">
             <p>
-              <span className="score">{props.myTownRank}</span>위
+              <span className="score">
+                {typeof props.myTownScore === 'number' && props.myTownScore > 0
+                  ? props.myTownRank
+                  : '-'}
+              </span>
+              위
             </p>
           </div>
           <div className="ranking__score">
-            <p>{commafy(props.myTownScore)}점</p>
+            <p>
+              {typeof props.myTownScore === 'number' && props.myTownScore > 0
+                ? commafy(props.myTownScore)
+                : '-'}
+              점
+            </p>
           </div>
         </div>
-        <div
-          style={{
-            position: 'absolute',
-            width: '1px',
-            minWidth: '1px',
-            borderLeft: `1px solid #E3EFFF`,
-            height: '104px',
-            marginLeft: 'auto',
-            marginRight: 'auto',
-            left: 0,
-            right: 0,
-          }}
-        />
+        <VerticalDivider />
         <div className="ranking">
           <div className="ranking__title">
             <p>{user.nickname}</p>
@@ -194,12 +71,7 @@ const MyInfo: React.FC<ComponentProps> = (props) => {
           </div>
         </div>
       </div>
-      <div
-        style={{
-          borderTop: `1px solid #E3EFFF`,
-          margin: `20px 0 16px`,
-        }}
-      />
+      <HorizontalDivider />
       <div className="comment">
         <p className="comment__edit">
           나의 한 마디
@@ -216,7 +88,7 @@ const MyInfo: React.FC<ComponentProps> = (props) => {
   );
 };
 
-export const MemoizedMyInfo = React.memo(MyInfo);
+export const MemoizedUserLoggedIn = React.memo(UserLoggedIn);
 
 const Container = styled.div`
   display: flex;
@@ -297,4 +169,22 @@ const Container = styled.div`
       color: #0e74ff;
     }
   }
+`;
+
+const VerticalDivider = styled.div`
+  position: absolute;
+  width: 1px;
+  width: 1px;
+  min-width: 1px;
+  border-left: 1px solid #e3efff;
+  height: 104px;
+  margin-left: auto;
+  margin-right: auto;
+  left: 0;
+  right: 0;
+`;
+
+const HorizontalDivider = styled.div`
+  border-top: 1px solid #e3efff;
+  margin: 20px 0 16px;
 `;
