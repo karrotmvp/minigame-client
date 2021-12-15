@@ -1603,6 +1603,45 @@ export const NotificationApiAxiosParamCreator = function (configuration?: Config
     return {
         /**
          * 
+         * @summary 알림 신청 취소
+         * @param {NotificationRequestDto} requestDto requestDto
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        cancelNotificationUsingDELETE: async (requestDto: NotificationRequestDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'requestDto' is not null or undefined
+            assertParamExists('cancelNotificationUsingDELETE', 'requestDto', requestDto)
+            const localVarPath = `/api/notifications`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication JWT required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(requestDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary 알림 신청 여부 확인
          * @param {'OPEN_REGION' | 'OPEN_GAME' | 'NEXT_MISSION' | 'MISSION_OFF' | 'SUBSCRIBE_OFF'} type type
          * @param {*} [options] Override http request option.
@@ -1692,6 +1731,17 @@ export const NotificationApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
+         * @summary 알림 신청 취소
+         * @param {NotificationRequestDto} requestDto requestDto
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async cancelNotificationUsingDELETE(requestDto: NotificationRequestDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseResponseUnit>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.cancelNotificationUsingDELETE(requestDto, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @summary 알림 신청 여부 확인
          * @param {'OPEN_REGION' | 'OPEN_GAME' | 'NEXT_MISSION' | 'MISSION_OFF' | 'SUBSCRIBE_OFF'} type type
          * @param {*} [options] Override http request option.
@@ -1724,6 +1774,16 @@ export const NotificationApiFactory = function (configuration?: Configuration, b
     return {
         /**
          * 
+         * @summary 알림 신청 취소
+         * @param {NotificationRequestDto} requestDto requestDto
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        cancelNotificationUsingDELETE(requestDto: NotificationRequestDto, options?: any): AxiosPromise<BaseResponseUnit> {
+            return localVarFp.cancelNotificationUsingDELETE(requestDto, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @summary 알림 신청 여부 확인
          * @param {'OPEN_REGION' | 'OPEN_GAME' | 'NEXT_MISSION' | 'MISSION_OFF' | 'SUBSCRIBE_OFF'} type type
          * @param {*} [options] Override http request option.
@@ -1752,6 +1812,18 @@ export const NotificationApiFactory = function (configuration?: Configuration, b
  * @extends {BaseAPI}
  */
 export class NotificationApi extends BaseAPI {
+    /**
+     * 
+     * @summary 알림 신청 취소
+     * @param {NotificationRequestDto} requestDto requestDto
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof NotificationApi
+     */
+    public cancelNotificationUsingDELETE(requestDto: NotificationRequestDto, options?: AxiosRequestConfig) {
+        return NotificationApiFp(this.configuration).cancelNotificationUsingDELETE(requestDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
     /**
      * 
      * @summary 알림 신청 여부 확인
