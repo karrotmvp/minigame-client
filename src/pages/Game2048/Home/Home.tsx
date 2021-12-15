@@ -427,7 +427,7 @@ const ActionItem = styled.div`
   left: 0;
   width: 100%;
   height: 90px;
-  padding: 15px 18px 30px;
+  padding: 15px 0 30px;
 
   display: flex;
   justify-content: center;

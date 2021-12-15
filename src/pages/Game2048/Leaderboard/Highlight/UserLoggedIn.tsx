@@ -114,7 +114,8 @@ const Container = styled.div`
       flex-flow: column;
       justify-content: center;
       align-items: center;
-      min-width: calc(160px - 18px);
+      width: 50%;
+
       .ranking__title {
         background: #f3f8ff;
         border-radius: 12.5px;
