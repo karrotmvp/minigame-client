@@ -142,7 +142,7 @@ export const Mission: React.FC = () => {
             display: `flex`,
             alignItems: `center`,
             justifyContent: `center`,
-            padding: `15px 18px 32px`,
+            padding: `0 18px 32px`,
             background: '#82B6FF',
           }}
         >
