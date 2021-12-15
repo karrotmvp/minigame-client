@@ -69,7 +69,7 @@ const App: React.FC = () => {
 
   const retrieveUUID = () => {
     if (localStorage.getItem('uuid') !== null) {
-      console.log('localstorage uuid', localStorage.getItem('uuid'));
+      // console.log('localstorage uuid', localStorage.getItem('uuid'));
       return;
     } else {
       const uuid = uuidv4();
@@ -118,7 +118,7 @@ const App: React.FC = () => {
 
       setUser({ regionId: regionId as string });
       getDistrictInfo(regionId as string);
-      console.log(preload, code, regionId, installed, referer);
+      // console.log(preload, code, regionId, installed, referer);
 
       saveQueryString({
         uuid: localStorage.getItem('uuid') as string,

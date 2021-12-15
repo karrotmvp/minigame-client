@@ -73,7 +73,6 @@ export const Home: React.FC = () => {
       game_type: '2048_puzzle',
       button_type: 'share_button',
     });
-    console.log('thirdpartyagreement success');
     handleShare();
   };
   const handleShare = () => {

@@ -174,7 +174,6 @@ export const GameOver: React.FC<Props> = (props) => {
       };
     }
   }, [isTop, myCurrentRank.rank, sessionRank.rank]);
-
   // confetti
   const fireThrottledRandomDirectionConfetti = useThrottledCallback(() => {
     fireRandomDirectionConfetti({
@@ -193,29 +192,24 @@ export const GameOver: React.FC<Props> = (props) => {
       return data.check;
     }
   }, [minigameApi.notificationApi]);
-
   const onSubscribeSuccess = useCallback(() => {
     analytics.logEvent('click_subscribe_button', {
       game_type: '2048_puzzle',
       location: 'game_over_modal',
       is_voluntary: false,
     });
-    console.log('show subscribe?');
     setSubscription({ isSubscribed: true });
     subscribeToastEmitter();
   }, [analytics, setSubscription]);
-
   const turnOffSubscribeNotification = useCallback(async () => {
     await minigameApi.notificationApi.saveNotificationUsingPOST({
       type: 'SUBSCRIBE_OFF' as NotificationRequestDtoTypeEnum,
     });
   }, [minigameApi.notificationApi]);
-
   useEffect(() => {
     const showSubscribe = async () => {
       if (subscription.isSubscribed === false) {
         const response = await isSubscribeNotificationOff();
-        console.log(response);
         if (response !== undefined && response === false) {
           analytics.logEvent('show_subscribe_button', {
             game_type: '2048_puzzle',

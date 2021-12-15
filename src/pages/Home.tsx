@@ -96,7 +96,7 @@ export const Home: React.FC = () => {
           regionId,
           referer
         );
-        console.log('trackuser', data);
+        // console.log('trackuser', data);
         return data;
       } catch (error) {
         console.error(error);
@@ -250,7 +250,6 @@ export const Home: React.FC = () => {
       location: 'platform_page',
       button_type: 'share_button',
     });
-    console.log('thirdpartyagreement success');
     handleShare();
   };
   const handleShare = () => {

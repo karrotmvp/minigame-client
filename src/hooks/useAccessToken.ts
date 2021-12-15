@@ -24,7 +24,7 @@ export const useSignAccessToken = () => {
         });
         if (data) {
           setCookie('accessToken', data.accessToken);
-          console.log('accessToken', data);
+          // console.log('accessToken', data);
           return true;
         }
       } catch (error) {}

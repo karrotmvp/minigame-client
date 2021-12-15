@@ -15,7 +15,6 @@ export const useMyGameData = () => {
         data: { data },
       } = await minigameApi.gameUserApi.getMyRankInfoUsingGET(gameType);
       if (data) {
-        console.log(data, 'data');
         if (data.score && data.rank) {
           updateMy2048PuzzleScore({
             score: data.score,
