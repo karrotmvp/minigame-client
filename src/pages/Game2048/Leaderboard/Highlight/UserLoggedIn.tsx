@@ -95,7 +95,7 @@ const Container = styled.div`
   flex-flow: column;
   justify-content: space-between;
   width: 100%;
-  padding: 20px 18px 15px;
+  padding: 20px 0 15px;
   background: #ffffff;
   border: 1px solid #4694ff;
   box-sizing: border-box;

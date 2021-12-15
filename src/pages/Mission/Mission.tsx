@@ -143,6 +143,7 @@ export const Mission: React.FC = () => {
             alignItems: `center`,
             justifyContent: `center`,
             padding: `15px 18px 32px`,
+            background: '#82B6FF',
           }}
         >
           <Button

@@ -46,7 +46,7 @@ export const HowToPlay: React.FC<Props> = (props) => {
           lineHeight: `160.2%`,
         }}
       >
-        어떤 게임인가요?
+        게임방법
       </p>
       <Swiper
         modules={[Pagination, Autoplay]}
@@ -73,7 +73,7 @@ export const HowToPlay: React.FC<Props> = (props) => {
             <p className="text">
               손가락으로 밀어서
               <br />
-              같은 숫자끼리 합쳐요
+              <span className="text--blue">같은 숫자끼리 합쳐요</span>
             </p>
           </Container>
         </SwiperSlide>
@@ -83,7 +83,7 @@ export const HowToPlay: React.FC<Props> = (props) => {
               <HowToPlay2 />
             </div>
             <p className="text">
-              합친 숫자만큼
+              <span className="text--blue">합친 숫자만큼</span>
               <br />
               점수가 올라가요
             </p>
@@ -95,9 +95,10 @@ export const HowToPlay: React.FC<Props> = (props) => {
               <HowToPlay3 />
             </div>
             <p className="text">
-              점수를 높여서 신기록도 세우고,
+              점수를 높여서 최고기록을 세우고,
               <br />
-              우리 동네도 1등으로 만들어봐요!
+              <span className="text--blue">우리 동네도 1등</span>으로
+              만들어봐요!
             </p>
           </Container>
         </SwiperSlide>
@@ -145,5 +146,11 @@ const Container = styled.div`
     font-size: ${rem(14)};
     line-height: 161.7%;
     color: #5b5b5b;
+
+    .text--blue {
+      font-size: ${rem(14)};
+      line-height: 161.7%;
+      color: #0e74ff;
+    }
   }
 `;

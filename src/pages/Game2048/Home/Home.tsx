@@ -320,7 +320,7 @@ export const Home: React.FC = () => {
             >
               <Top className="top">
                 <div className="top__my-info">
-                  {accessToken ? (
+                  {true ? (
                     <UserLoggedIn
                       myTownRank={myTownData.rank as number}
                       myTownScore={myTownData.score as number}
@@ -427,7 +427,7 @@ const ActionItem = styled.div`
   left: 0;
   width: 100%;
   height: 90px;
-  padding: 15px 0 30px;
+  padding: 15px 18px 30px;
 
   display: flex;
   justify-content: center;

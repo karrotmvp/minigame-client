@@ -5,7 +5,6 @@ import iconMedalFirst from 'assets/icon/svg/icon_medal_first.svg';
 import iconMedalSecond from 'assets/icon/svg/icon_medal_second.svg';
 import iconMedalThird from 'assets/icon/svg/icon_medal_third.svg';
 import { rem } from 'polished';
-import { DistrictName } from 'styles/leaderboard';
 
 interface UserRowProps {
   rank: number;
@@ -40,8 +39,10 @@ const UserRow: React.FC<UserRowProps> = (props) => {
         <div className="info__data">
           <div className="data__name">
             {props.nickname}
-            <DistrictName color={`#7c7c7c`}>
-              {props.cityName} {props.districtName}
+            <DistrictName>
+              <p>
+                {props.cityName} {props.districtName}
+              </p>
             </DistrictName>
           </div>
           <div className="data__score">{commafy(props.score)}</div>
@@ -132,7 +133,7 @@ const Container = styled.div<{ me?: boolean; rank?: number }>`
       display: flex;
       flex-flow: row;
       align-items: center;
-      gap: 12px;
+      gap: 4px;
       margin-bottom: 4px;
 
       .data__name {
@@ -166,32 +167,12 @@ const Container = styled.div<{ me?: boolean; rank?: number }>`
 `;
 
 const SpeechBalloon = styled.div`
-  position: relative;
   width: fit-content;
-  padding: 1px 6px;
-  background: #f5f5f5;
-
-  border-radius: 5px;
-
   font-style: normal;
   font-weight: normal;
-  font-size: ${rem(14)};
+  font-size: ${rem(12)};
   line-height: 161.7%;
-  /* or 16px */
-
   color: #7c7c7c;
-
-  &:after {
-    z-index: 1000;
-    content: '';
-    position: absolute;
-    top: 4px;
-    left: -10px;
-    width: 0;
-    height: 0;
-    border: 6px solid transparent;
-    border-right-color: #f5f5f5;
-  }
 `;
 
 const PlayerCount = styled.div`
@@ -204,4 +185,20 @@ const PlayerCount = styled.div`
   /* or 19px */
 
   color: #7c7c7c;
+`;
+
+const DistrictName = styled.div`
+  height: fit-content;
+  width: fit-content;
+  padding: 0 8px;
+
+  box-sizing: border-box;
+  background: #f5f5f5;
+  border-radius: 9.5px;
+
+  p {
+    font-size: ${rem(12)};
+    line-height: 161.7%;
+    color: #7c7c7c;
+  }
 `;
