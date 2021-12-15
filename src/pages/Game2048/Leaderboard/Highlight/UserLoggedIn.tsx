@@ -16,11 +16,13 @@ interface ComponentProps {
   isFirstInTown?: boolean;
   myTownRank?: number;
   myTownScore?: number;
+  myRank?: number;
+  myScore?: number;
 }
 
 const UserLoggedIn: React.FC<ComponentProps> = (props) => {
   const { user, town } = useUser();
-  const { score: myScore, rank: myRank, comment } = useMyGame2048Data();
+  const { comment } = useMyGame2048Data();
   const openCommentModal = () => {
     if (props.setIsCommentModalOpen) props.setIsCommentModalOpen(true);
   };
@@ -43,7 +45,7 @@ const UserLoggedIn: React.FC<ComponentProps> = (props) => {
                 {typeof props.myTownScore === 'number' && props.myTownScore > 0
                   ? props.myTownRank
                   : '-'}
-              </span>
+              </span>{' '}
               위
             </p>
           </div>
@@ -63,11 +65,21 @@ const UserLoggedIn: React.FC<ComponentProps> = (props) => {
           </div>
           <div className="ranking__rank">
             <p>
-              <span className="score">{myScore === 0 ? '-' : myRank}</span>위
+              <span className="score">
+                {typeof props.myScore === 'number' && props.myScore > 0
+                  ? props.myRank
+                  : '-'}
+              </span>{' '}
+              위
             </p>
           </div>
           <div className="ranking__score">
-            <p>{myScore === 0 ? '-' : commafy(myScore)}점</p>
+            <p>
+              {typeof props.myScore === 'number' && props.myScore > 0
+                ? commafy(props.myScore)
+                : '-'}
+              점
+            </p>
           </div>
         </div>
       </div>

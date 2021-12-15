@@ -15,6 +15,7 @@ export const useMyGameData = () => {
         data: { data },
       } = await minigameApi.gameUserApi.getMyRankInfoUsingGET(gameType);
       if (data) {
+        console.log(data, 'data');
         if (data.score && data.rank) {
           updateMy2048PuzzleScore({
             score: data.score,
@@ -23,10 +24,10 @@ export const useMyGameData = () => {
           if (data.comment) {
             updateMy2048PuzzleComment(data.comment);
           }
-          return 'success';
+          return data;
         }
       }
-      return 'fail';
+      return undefined;
     },
     [
       minigameApi.gameUserApi,

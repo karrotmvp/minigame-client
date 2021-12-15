@@ -56,6 +56,13 @@ export const Home: React.FC = () => {
     rank: undefined,
     score: undefined,
   });
+  const [myData, setMyData] = useState<{
+    rank: number | undefined;
+    score: number | undefined;
+  }>({
+    rank: undefined,
+    score: undefined,
+  });
   const [isCommentModalOpen, setIsCommentModalOpen] = useState<boolean>(false);
 
   // Share handler
@@ -183,7 +190,12 @@ export const Home: React.FC = () => {
   const handleRefresh = useCallback(async () => {
     if (accessToken) {
       const response = await updateMyGameData({ gameType: gameType });
-      if (response === 'success') {
+      if (response) {
+        console.log(response);
+        setMyData({
+          rank: response.rank,
+          score: response.score,
+        });
         const leaderboard = await updateLeaderboard({
           gameType: 'GAME_2048',
           size: 1000,
@@ -320,8 +332,10 @@ export const Home: React.FC = () => {
             >
               <Top className="top">
                 <div className="top__my-info">
-                  {true ? (
+                  {accessToken ? (
                     <UserLoggedIn
+                      myRank={myData.rank}
+                      myScore={myData.score}
                       myTownRank={myTownData.rank as number}
                       myTownScore={myTownData.score as number}
                       setIsCommentModalOpen={setIsCommentModalOpen}

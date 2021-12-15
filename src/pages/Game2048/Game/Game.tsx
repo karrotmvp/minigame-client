@@ -341,7 +341,8 @@ export const Game: React.FC = () => {
 
   useEffect(() => {
     return history.block((location, action) => {
-      if (action === 'POP') {
+      console.log(location, gameOverStatus);
+      if (action === 'POP' && !gameOverStatus) {
         postBoard({
           gameType: gameType,
           board: boardByValue,
@@ -357,6 +358,7 @@ export const Game: React.FC = () => {
   }, [
     boardByValue,
     currentScore,
+    gameOverStatus,
     gameType,
     history,
     myBestScore,

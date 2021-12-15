@@ -17,7 +17,6 @@ import { useThrottledCallback } from 'use-debounce/lib';
 import iconLeave from 'assets/icon/svg/icon_leave.svg';
 import iconReplay from 'assets/icon/svg/icon_replay.svg';
 import { useGame } from '../hooks';
-import { useMyGameData } from 'hooks';
 import { useMini, useMyGameData, useUser } from 'hooks';
 import { NotificationRequestDtoTypeEnum } from 'services/openapi_generator';
 import { subscribeToastEmitter } from 'components/Toast';
@@ -31,7 +30,7 @@ type Props = {
 
 export const GameOver: React.FC<Props> = (props) => {
   const { isTop } = useCurrentScreen();
-  const { replace } = useNavigator();
+  const { pop } = useNavigator();
   const analytics = useAnalytics();
   const minigameApi = useMinigameApi();
   const { gameType } = useMyGame2048Data();
@@ -148,7 +147,7 @@ export const GameOver: React.FC<Props> = (props) => {
     if (response === 'success') {
       props.setUp({ gameType: gameType });
       props.setIsGameOver(false);
-      replace(`/game-2048`);
+      pop();
     }
   };
 
