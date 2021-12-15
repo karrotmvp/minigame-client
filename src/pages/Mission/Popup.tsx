@@ -67,7 +67,12 @@ export const Popup: React.FC<Props> = (props) => {
           marginBottom: `-60px`,
         }}
       />
-      <img src={missionEnvelopeOpened} alt="" style={{ zIndex: 2 }} />
+      <img
+        src={missionEnvelopeOpened}
+        alt=""
+        style={{ zIndex: 2 }}
+        onClick={goToMissionPage}
+      />
       <h3
         style={{
           fontFamily: `Cafe24Ssurround`,
