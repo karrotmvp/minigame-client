@@ -6,6 +6,8 @@ import 'swiper/swiper.scss';
 import 'swiper/modules/pagination/pagination.scss';
 import { ReactComponent as HowToPlay1 } from 'assets/svg/game2048/how_to_play_1.svg';
 import { ReactComponent as HowToPlay2 } from 'assets/svg/game2048/how_to_play_2.svg';
+import { ReactComponent as HowToPlay3 } from 'assets/svg/game2048/how_to_play_3.svg';
+
 import { rem } from 'polished';
 import './swiperStyles.scss';
 
@@ -60,7 +62,7 @@ export const HowToPlay: React.FC<Props> = (props) => {
         className="mySwiper"
         style={{
           width: '100%',
-          height: '100%',
+          height: '280px',
         }}
       >
         <SwiperSlide>
@@ -90,12 +92,12 @@ export const HowToPlay: React.FC<Props> = (props) => {
         <SwiperSlide>
           <Container>
             <div className="image">
-              <HowToPlay2 />
+              <HowToPlay3 />
             </div>
             <p className="text">
-              점수를 높여서 신기록을 세우고,
+              점수를 높여서 신기록도 세우고,
               <br />
-              우리 동네도 1등으로 만들어요!
+              우리 동네도 1등으로 만들어봐요!
             </p>
           </Container>
         </SwiperSlide>
@@ -137,6 +139,7 @@ const Container = styled.div`
     align-items: center;
     padding: 20px 38px;
     margin: 20px 0;
+    height: 140px;
   }
   .text {
     font-size: ${rem(14)};
