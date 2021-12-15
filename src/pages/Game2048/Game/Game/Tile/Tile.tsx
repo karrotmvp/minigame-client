@@ -64,7 +64,7 @@ const SingleTile = styled.div<{
   border-radius: 3px;
 
   transition-property: left, top, transform;
-  transition-duration: 100ms, 100ms, 100ms;
+  transition-duration: 150ms, 150ms, 150ms;
 
   font-style: normal;
   font-weight: 600;

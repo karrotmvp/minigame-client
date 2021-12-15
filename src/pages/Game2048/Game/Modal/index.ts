@@ -1,2 +1,2 @@
-export * from './CommentModal';
-export * from './GameOverModal';
+export * from './HowToPlay';
+export * from './GameOver';

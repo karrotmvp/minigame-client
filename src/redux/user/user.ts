@@ -41,7 +41,7 @@ export interface Mission {
     isCheckedOut: boolean;
   };
   popup?: {
-    hasSeen: boolean;
+    hasSeenSecondMission: boolean;
   };
 }
 
@@ -85,7 +85,7 @@ const initialState: UserState = {
       isCheckedOut: false,
     },
     popup: {
-      hasSeen: false,
+      hasSeenSecondMission: false,
     },
   },
   newGame: {

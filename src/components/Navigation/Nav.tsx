@@ -9,7 +9,7 @@ type Props = {
   appendRight?: React.ReactNode;
   onClickLeft?: () => void;
   onClickRight?: () => void;
-
+  appendCenter?: React.ReactNode;
   border?: string;
   style?: React.CSSProperties;
 };
@@ -18,6 +18,7 @@ export const Nav = (props: Props) => {
     // <ScreenHelmet>
     <NavContainer className="nav" border={props.border} style={props.style}>
       <a onClick={props.onClickLeft}>{props.appendLeft}</a>
+      <div className="centered">{props.appendCenter}</div>
       <a onClick={props.onClickRight}>{props.appendRight}</a>
     </NavContainer>
     // </ScreenHelmet>
@@ -47,7 +48,7 @@ const NavContainer = styled.div<{
 
   display: flex;
   flex-flow: row;
-  align-items: flex-end;
+  align-items: center;
   justify-content: space-between;
 
   border-bottom: ${(props) => (props.border ? props.border : `none`)};
@@ -60,5 +61,19 @@ const NavContainer = styled.div<{
     text-decoration: none;
     outline: none;
     z-index: 10;
+  }
+
+  div.centered {
+    position: absolute;
+    width: fit-content;
+    top: 24px;
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+    align-items: center;
   }
 `;

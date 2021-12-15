@@ -10,9 +10,11 @@ import {
   MemoizedUserLeaderboard as UserLeaderboard,
 } from './Leaderboard';
 
+import type { TownLeaderboardType, UserLeaderboardType } from 'hooks';
+
 type Props = {
-  districtLeaderboardData: any[];
-  userLeaderboardData: any[];
+  townLeaderboard: TownLeaderboardType[];
+  userLeaderboard: UserLeaderboardType[];
   isRanked: boolean;
 };
 const LeaderboardTabs: React.FC<Props> = (props) => {
@@ -35,28 +37,28 @@ const LeaderboardTabs: React.FC<Props> = (props) => {
         tabs={[
           {
             key: 'district',
-            buttonLabel: '지역 랭킹',
+            buttonLabel: '지역',
             component: useCallback(
               () => (
                 <DistrictLeaderboard
-                  districtLeaderboardData={props.districtLeaderboardData}
                   isRanked={props.isRanked}
+                  townLeaderboard={props.townLeaderboard}
                 />
               ),
-              [props.districtLeaderboardData, props.isRanked]
+              [props.isRanked, props.townLeaderboard]
             ),
           },
           {
             key: 'individual',
-            buttonLabel: '전국 랭킹',
+            buttonLabel: '전국',
             component: useCallback(
               () => (
                 <UserLeaderboard
-                  userLeaderboardData={props.userLeaderboardData}
+                  userLeaderboard={props.userLeaderboard}
                   isRanked={props.isRanked}
                 />
               ),
-              [props.isRanked, props.userLeaderboardData]
+              [props.isRanked, props.userLeaderboard]
             ),
           },
         ]}

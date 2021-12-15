@@ -8,7 +8,7 @@ import { useAnalytics } from 'services/analytics';
 import gameBackgroundUrl from 'assets/images/KarrotClicker/game_background.png';
 import { Guide } from './NewUser';
 import BigKarrot from './Animation/BigKarrot';
-import { PauseIcon } from 'assets/Icon';
+import { ReactComponent as IconPause } from 'assets/icon/svg/icon_pause_karrot_clicker.svg';
 import { useCurrentScreen } from '@karrotframe/navigator';
 import { useMyKarrotClickerData } from '../hooks';
 import { GameOver, GamePause } from './Modal';
@@ -106,7 +106,7 @@ export const Game: React.FC = () => {
             </p>
           </TotalKarrotCount>
           <button onClick={handlePause}>
-            <PauseIcon />
+            <IconPause />
           </button>
         </div>
         <ScoreWrapper>

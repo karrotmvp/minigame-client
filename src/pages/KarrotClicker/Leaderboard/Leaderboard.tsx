@@ -9,7 +9,7 @@ import { useMini, useUser } from 'hooks';
 import { useMyKarrotClickerData } from '../hooks';
 import { useMinigameApi } from 'services/api/minigameApi';
 import { Nav } from 'components/Navigation/Nav';
-import { CloseIcon } from 'assets/Icon';
+import { ReactComponent as IconClose } from 'assets/icon/svg/icon_close.svg';
 import { useGame } from '../Game/hooks';
 import { rem } from 'polished';
 interface UserScoreExistsProps {
@@ -113,7 +113,7 @@ export const Leaderboard = () => {
   }, [analytics, isTop]);
   return (
     <Page className="">
-      <Nav appendLeft={<CloseIcon />} onClickLeft={goBackToPlatform} />
+      <Nav appendLeft={<IconClose />} onClickLeft={goBackToPlatform} />
       {score === 0 ? null : (
         <Heading>
           <EmphasizedSpan>{user.nickname}</EmphasizedSpan>님은

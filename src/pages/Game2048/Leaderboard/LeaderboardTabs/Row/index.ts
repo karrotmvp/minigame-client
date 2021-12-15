@@ -1,2 +1,1 @@
-export * from './DefaultRow';
-export * from './TopRow';
+export * from './RankingRow';

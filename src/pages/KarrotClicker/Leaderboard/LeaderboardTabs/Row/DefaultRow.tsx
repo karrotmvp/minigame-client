@@ -49,7 +49,7 @@ export const DefaultDistrictRow: React.FC<DefaultDistrictRowProps> = (
           </Name>
           <Score>{commafy(props.score)}</Score>
         </Info>
-        <PlayerCount>{commafy(props.playerCount)}명 참여</PlayerCount>
+        <PlayerCount>{commafy(props.playerCount)}명</PlayerCount>
       </ContentsWrapper>
     </Container>
   );

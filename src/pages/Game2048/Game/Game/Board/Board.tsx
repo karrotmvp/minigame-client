@@ -1,15 +1,12 @@
 import React, { useLayoutEffect, useRef, useState } from 'react';
 import styled from '@emotion/styled';
-import { MemoizedTile as Tile, TileProps } from '../Tile';
+import { MemoizedTile as Tile } from '../Tile';
+import type { TileProps } from '../Tile';
 import { boardMargin, boardPadding } from '../styles';
 import { useSwipeable } from 'react-swipeable';
-import { Guide } from './Guide';
-
 import { MemoizedGrid as Grid } from '.';
 
 type Props = {
-  isUserNew: boolean;
-  setIsUserNew: React.Dispatch<React.SetStateAction<boolean>>;
   tileList: TileProps[];
   moveLeft: () => void;
   moveRight: () => void;
@@ -61,16 +58,10 @@ export const Board: React.FC<Props> = (props) => {
 
   return (
     <Grid cellWidth={cellWidth}>
-      <TileContainer
-        {...handlers}
-        ref={refPassthrough}
-        className="game-board"
-        onPointerDown={() => props.setIsUserNew(false)}
-      >
+      <TileContainer {...handlers} ref={refPassthrough} className="game-board">
         {props.tileList.map(({ id, ...rest }) => (
-          <Tile id={id} key={`tile-${id}`} {...rest} cellWidth={cellWidth} />
+          <Tile id={id} key={id} {...rest} cellWidth={cellWidth} />
         ))}
-        {props.isUserNew ? <Guide cellWidth={cellWidth} /> : null}
       </TileContainer>
     </Grid>
   );

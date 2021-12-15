@@ -1,34 +1,80 @@
 import styled from '@emotion/styled';
-import { useCurrentScreen } from '@karrotframe/navigator';
-import { Button } from 'components/Button';
+import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
 import { rem } from 'polished';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useMinigameApi } from 'services/api/minigameApi';
 import { useMyGame2048Data } from '../hooks';
 import { Board } from './Game/Board';
-import { useGame } from './hooks';
-import { GameOverModal } from './Modal';
+import { indexTocoordinate, useGame } from './hooks';
+import { GameOver, HowToPlay } from './Modal';
 import {
   MemoizedCurrentScore as CurrentScore,
   MemoizedMyBestScore as MyBestScore,
-  MemoizedTownieBestScore as TownieBestScore,
+  // MemoizedUserInFront as UserInFront,
 } from './Score';
-import refreshGameUrl from 'assets/svg/game2048/refresh_game.svg';
 import { useAnalytics } from 'services/analytics';
-import { useMini, useUser } from 'hooks';
+import { useUser, useRank, useMyGameData } from 'hooks';
 import { useDebouncedCallback } from 'use-debounce';
 import ReactModal from 'react-modal';
+import { TileProps } from './Game/Tile';
+import { Nav } from 'components/Navigation';
+import { PageContainer } from 'styles';
+import iconArrowBack from 'assets/icon/svg/icon_arrow_back_blue.svg';
+import { useHistory } from 'react-router';
+
+type TopButtonProps = {
+  onClick: () => void;
+};
+
+const TopButton: React.FC<TopButtonProps> = (props) => {
+  return (
+    <div
+      onClick={props.onClick}
+      style={{
+        height: '34px',
+        background: '#FFF',
+        border: '1px solid #C8D8EE',
+        boxSizing: 'border-box',
+        borderRadius: '10px',
+        padding: '4px 10px',
+        boxShadow: '0px 4px 0px 0px #C8D8EE',
+      }}
+    >
+      <p
+        style={{
+          color: '#82B6FF',
+          fontSize: `${rem(14)}`,
+          lineHeight: '161.7%',
+          fontWeight: 'bold',
+        }}
+      >
+        {props.children}
+      </p>
+    </div>
+  );
+};
+
+const convertArrayToObject = (array: any[], key: any) => {
+  const initialValue = {};
+  return array.reduce((obj, item) => {
+    return {
+      ...obj,
+      [item[key]]: item,
+    };
+  }, initialValue);
+};
 
 export const Game: React.FC = () => {
   const analytics = useAnalytics();
+  const { pop } = useNavigator();
   const { isTop } = useCurrentScreen();
+  const history = useHistory();
   const minigameApi = useMinigameApi();
-  const { isInWebEnvironment } = useMini();
+  // const { isInWebEnvironment } = useMini();
   const { user, setUser } = useUser();
   const {
     score: myBestScore,
     rank: myCurrentRank,
-    highestScore,
     gameType,
     updateMyScore,
   } = useMyGame2048Data();
@@ -36,17 +82,84 @@ export const Game: React.FC = () => {
     score: currentScore,
     isGameOver: gameOverStatus,
     tileList,
+    boardByValue,
     moveRight,
     moveLeft,
     moveUp,
     moveDown,
     resetGame,
+    setGameData,
   } = useGame();
-  const [isUserNew, setIsUserNew] = useState<boolean>(false);
-  const [townieBestScore, setTownieBestScore] = useState<number>(0);
-  const [myBestScoreDisplay, setMyBestScoreDisplay] =
-    useState<number>(myBestScore);
+  const { getBoard, postBoard } = useMyGameData();
+  const { getMyRank } = useRank();
+
+  // const [display, setDisplay] = useState<{
+  //   nickname?: string;
+  //   rank?: number;
+  //   score: number;
+  // }>({
+  //   nickname: '',
+  //   rank: 0,
+  //   score: myBestScore,
+  // });
   const [isGameOver, setIsGameOver] = useState(gameOverStatus);
+  const [gameOverScore, setGameOverScore] = useState<number>(currentScore);
+  const [showHowToPlay, setShowHowToPlay] = useState<boolean>(false);
+
+  // get stashed board
+  // get my rank & score
+  const setMyGameData = useCallback(
+    async ({ gameData }: { gameData: { board: number[]; score: number } }) => {
+      const tiles: {
+        [id: number]: TileProps;
+      } = convertArrayToObject(
+        gameData.board
+          .map((value, i) => {
+            return {
+              id: i + 1,
+              coordinate: indexTocoordinate({
+                index: i,
+                tileCountPerRowOrColumn: 4,
+              }),
+              value: value,
+            };
+          })
+          .filter((item) => item.value > 0),
+        'id'
+      );
+      const byIds: number[] = Object.keys(tiles).map(Number);
+      const startId: number = byIds.length > 0 ? Math.max(...byIds) : 1;
+      setGameData(tiles, byIds, gameData.score, startId);
+    },
+    [setGameData]
+  );
+
+  const setUp = useCallback(
+    async ({ gameType }: { gameType: 'GAME_KARROT' | 'GAME_2048' }) => {
+      try {
+        const response = await Promise.all([
+          getBoard({ gameType }),
+          getMyRank({ gameType }),
+        ]);
+
+        if (typeof response[0] === 'object') {
+          setMyGameData({
+            gameData: { board: response[0].board, score: response[0].score },
+          });
+        }
+        if (typeof response[1] === 'object') {
+          updateMyScore({
+            rank: response[1].rank,
+            score: response[1].score,
+          });
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    },
+
+    [getBoard, getMyRank, setMyGameData, updateMyScore]
+  );
 
   // update user-info
   const updateUserInfo = useCallback(
@@ -60,6 +173,7 @@ export const Game: React.FC = () => {
           } = await minigameApi.userApi.getUserInfoUsingGET();
           if (data) {
             setUser({ userId: data.id, nickname: data.nickname });
+            return 'success';
           }
         } catch (error) {
           console.error(error);
@@ -75,78 +189,7 @@ export const Game: React.FC = () => {
     }
   }, [updateUserInfo, user.userId]);
 
-  // FA view_game_page
-  useEffect(() => {
-    if (isTop) {
-      analytics.logEvent('view_game_page', {
-        game_type: '2048_puzzle',
-      });
-    }
-  }, [analytics, isTop]);
-
-  const getMyCurrentRank = useCallback(
-    async ({
-      gameType,
-      type,
-    }: {
-      gameType: 'GAME_KARROT' | 'GAME_2048';
-      type: 'BEST' | 'CURRENT';
-    }) => {
-      const { data } = await minigameApi.gameUserApi.getMyRankInfoUsingGET(
-        gameType,
-        'CURRENT'
-      );
-      updateMyScore({
-        score: data.data?.score as number,
-        rank: data.data?.rank as number,
-      });
-    },
-    [minigameApi, updateMyScore]
-  );
-  useEffect(() => {
-    if (isTop) {
-      getMyCurrentRank({ gameType: gameType, type: 'CURRENT' });
-    }
-  }, [gameType, getMyCurrentRank, isTop]);
-  // get rank 1's score
-  const getFirstPlaceScore = useCallback(
-    async ({ gameType }: { gameType: 'GAME_KARROT' | 'GAME_2048' }) => {
-      try {
-        const {
-          data: { data },
-        } = await minigameApi.gameUserApi.getLeaderBoardByUserUsingGET(
-          gameType,
-          undefined,
-          1
-        );
-        if (data && data[0]) {
-          setTownieBestScore(data[0].score);
-        }
-      } catch (error) {
-        console.error(error);
-        return;
-      }
-    },
-    [minigameApi.gameUserApi]
-  );
-
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      getFirstPlaceScore({ gameType: gameType });
-    }, 10000);
-    // getFirstPlaceScore({ gameType: gameType });
-    if (isGameOver) clearInterval(intervalId);
-    getFirstPlaceScore({ gameType: gameType });
-
-    return () => clearInterval(intervalId);
-  }, [gameType, getFirstPlaceScore, isGameOver]);
-
-  // constantly patch score (score log)
-  const debouncedLogScore = useDebouncedCallback(() => {
-    logScore({ score: currentScore, gameType: gameType });
-  }, 700);
-
-  const logScore = useCallback(
+  const updateMyBestScore = useCallback(
     async ({
       score,
       gameType,
@@ -155,96 +198,72 @@ export const Game: React.FC = () => {
       gameType: 'GAME_KARROT' | 'GAME_2048';
     }) => {
       try {
-        const response = await minigameApi.scoreLogApi.logScoreUsingPOST(
-          { score: score },
-          gameType
+        const data = await minigameApi.gamePlayApi.updateScoreUsingPATCH(
+          gameType,
+          {
+            score: score,
+          }
         );
-        console.log(response);
-        return response;
+        return data;
       } catch (error) {
         console.error(error);
       }
     },
-    [minigameApi.scoreLogApi]
+    [minigameApi.gamePlayApi]
   );
-
-  useEffect(() => {
-    debouncedLogScore();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentScore]);
-
-  // display current score as my best score if current score is greater than best score in db
-  useEffect(() => {
-    if (currentScore > myBestScore) {
-      setMyBestScoreDisplay(currentScore);
-    }
-  }, [currentScore, myBestScore]);
-
-  // handle game-over OR game-end
-  const updateMyBestScore = async ({
-    score,
-    gameType,
-  }: {
-    score: number;
-    gameType: 'GAME_KARROT' | 'GAME_2048';
-  }) => {
-    try {
-      const data = await minigameApi.gamePlayApi.updateScoreUsingPATCH(
-        gameType,
-        {
-          score: score,
-        }
-      );
-      return data;
-    } catch (error) {
-      console.error(error);
-    }
-  };
   // game-end
-  const handleGameEnd = async ({
-    currentScore,
-    myBestScore,
-    gameType,
-  }: {
-    currentScore: number;
-    myBestScore: number;
-    gameType: 'GAME_KARROT' | 'GAME_2048';
-  }) => {
-    if (isInWebEnvironment) {
-      setIsGameOver(true);
-      return;
-    }
-    analytics.logEvent('click_game_end_button', {
-      game_type: '2048_puzzle',
-      button_type: 'game_end',
-    });
-    if (currentScore > myBestScore) {
-      const response = await updateMyBestScore({
-        score: currentScore,
-        gameType: gameType,
-      });
-      if (response?.status === 200) {
-        setIsGameOver(true);
-      }
-    } else {
-      setIsGameOver(true);
-    }
-  };
+  // const handleGameEnd = useCallback(
+  //   async ({
+  //     currentScore,
+  //     myBestScore,
+  //     gameType,
+  //   }: {
+  //     currentScore: number;
+  //     myBestScore: number;
+  //     gameType: 'GAME_KARROT' | 'GAME_2048';
+  //   }) => {
+  //     if (isInWebEnvironment) {
+  //       setGameOverScore(currentScore);
+  //       resetGame();
+  //       setIsGameOver(true);
+  //       return;
+  //     }
+  //     analytics.logEvent('click_game_end_button', {
+  //       game_type: '2048_puzzle',
+  //       button_type: 'game_end',
+  //     });
+  //     setGameOverScore(currentScore);
+  //     resetGame();
+  //     if (currentScore > myBestScore) {
+  //       const response = await updateMyBestScore({
+  //         score: currentScore,
+  //         gameType: gameType,
+  //       });
+  //       if (response?.status === 200) {
+  //         setIsGameOver(true);
+  //       }
+  //     } else {
+  //       setIsGameOver(true);
+  //     }
+  //   },
+  //   [analytics, isInWebEnvironment, resetGame, updateMyBestScore]
+  // );
+
   // game-over
-  const handleGameOver = async ({
-    currentScore,
-    myBestScore,
-    gameType,
-  }: {
-    currentScore: number;
-    myBestScore: number;
-    gameType: 'GAME_KARROT' | 'GAME_2048';
-  }) => {
-    // let timerId: NodeJS.Timeout;
-    if (gameOverStatus) {
+  const handleGameOver = useCallback(
+    async ({
+      currentScore,
+      myBestScore,
+      gameType,
+    }: {
+      currentScore: number;
+      myBestScore: number;
+      gameType: 'GAME_KARROT' | 'GAME_2048';
+    }) => {
       analytics.logEvent('handle_game_over', {
         game_type: '2048_puzzle',
       });
+      setGameOverScore(currentScore);
       if (currentScore > myBestScore) {
         const response = await updateMyBestScore({
           score: currentScore,
@@ -262,105 +281,204 @@ export const Game: React.FC = () => {
           clearTimeout(timerId);
         }, 1500);
       }
-    }
-  };
+    },
+    [analytics, updateMyBestScore]
+  );
+
   useEffect(() => {
-    handleGameOver({
-      currentScore: currentScore,
-      myBestScore: myBestScore,
-      gameType: gameType,
-    });
+    if (gameOverStatus) {
+      handleGameOver({
+        currentScore: currentScore,
+        myBestScore: myBestScore,
+        gameType: gameType,
+      });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameOverStatus]);
 
-  // new user guide
+  // constantly post board & score (debounced 1sec)
+  const debouncedPostMyGameData = useDebouncedCallback(() => {
+    postBoard({
+      gameType: gameType,
+      board: boardByValue,
+      score: currentScore,
+    });
+  }, 1000);
+
   useEffect(() => {
-    if (isTop) {
-      if (highestScore === 0) {
-        setIsUserNew(true);
-      }
-    }
-  }, [highestScore, isTop]);
+    debouncedPostMyGameData();
+  }, [currentScore, debouncedPostMyGameData]);
 
   // Action buttons
-  const handlePlayAgain = () => {
+  const handlePlayAgain = useCallback(() => {
     analytics.logEvent('click_game_play_again_button', {
       game_type: '2048_puzzle',
       button_type: 'refresh',
     });
     resetGame();
-  };
+  }, [analytics, resetGame]);
+
+  // new user guide
+  useEffect(() => {
+    if (myBestScore === 0) {
+      setShowHowToPlay(true);
+    }
+  }, [myBestScore]);
+
+  // FA view_game_page
+  useEffect(() => {
+    if (isTop) {
+      analytics.logEvent('view_game_page', {
+        game_type: '2048_puzzle',
+      });
+    }
+  }, [analytics, isTop]);
+
+  useEffect(() => {
+    if (isTop) {
+      setUp({ gameType: gameType });
+    }
+  }, [gameType, setUp, isTop]);
+
+  useEffect(() => {
+    return history.block((location, action) => {
+      if (action === 'POP' && !gameOverStatus) {
+        postBoard({
+          gameType: gameType,
+          board: boardByValue,
+          score: currentScore,
+        });
+        if (currentScore > myBestScore) {
+          updateMyBestScore({ score: currentScore, gameType: gameType });
+        }
+        return;
+      }
+      return undefined;
+    });
+  }, [
+    boardByValue,
+    currentScore,
+    gameOverStatus,
+    gameType,
+    history,
+    myBestScore,
+    postBoard,
+    updateMyBestScore,
+  ]);
+
+  // display current score as my best score if current score is greater than best score in db
+  // const updateScoreDisplay = useCallback(
+  //   async ({ currentScore }: { currentScore: number }) => {
+  //     const response = await updateUserInFront({
+  //       gameType: 'GAME_2048',
+  //       score: currentScore,
+  //     });
+  //     if (typeof response === 'object') {
+  //       setDisplay({
+  //         nickname: response.nickname,
+  //         rank: response.rank,
+  //         score: response.score,
+  //       });
+  //     } else if (response === 'user is in the first place') {
+  //       setDisplay({
+  //         nickname: user.nickname,
+  //         rank: 1,
+  //         score: currentScore,
+  //       });
+  //     }
+  //   },
+  //   [updateUserInFront, user.nickname]
+  // );
+
+  // useEffect(() => {
+  //   if (myBestScore > display.score) {
+  //     updateScoreDisplay({ currentScore: myBestScore });
+  //   }
+  // }, [display.score, myBestScore, updateScoreDisplay]);
 
   return (
     <>
       <Page className="game-page">
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-          <div
-            style={{
-              display: `flex`,
-              flexFlow: `row`,
-              justifyContent: `center`,
-              gap: `0.625rem`,
-
-              margin: `30px 20px 0`,
-            }}
-          >
-            <MyBestScore myBestScore={myBestScoreDisplay} />
-            <TownieBestScore townieBestScore={townieBestScore} />
-          </div>
-          <div
-            style={{
-              flex: 1,
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: `center`,
-            }}
-          >
-            <CurrentScoreWrapper>
-              <img
-                src={refreshGameUrl}
-                alt="refresh-game"
-                onClick={handlePlayAgain}
-                style={{
-                  position: 'absolute',
-                  top: 14,
-                  right: 14,
-                }}
-              />
-              <CurrentScore score={currentScore} />
-            </CurrentScoreWrapper>
-            <Board
-              isUserNew={isUserNew}
-              setIsUserNew={setIsUserNew}
-              tileList={tileList}
-              moveRight={moveRight}
-              moveLeft={moveLeft}
-              moveUp={moveUp}
-              moveDown={moveDown}
-            />
-          </div>
-          <BottomWrapper>
-            <Button
-              size={`tiny`}
-              fontSize={rem(14)}
-              color={`secondary2`}
-              onClick={() =>
-                handleGameEnd({
-                  currentScore: currentScore,
-                  myBestScore: myBestScore,
-                  gameType: gameType,
-                })
-              }
+        <Nav
+          style={{
+            height: '80px',
+            paddingTop: '36px',
+            alignItems: 'flex-end',
+          }}
+          appendLeft={
+            <div
               style={{
-                border: `1px solid #C8D8EE`,
+                height: '34px',
+                background: '#FFF',
+                border: '1px solid #C8D8EE',
+                boxSizing: 'border-box',
+                borderRadius: '10px',
+                padding: '6px',
+                boxShadow: '0px 4px 0px 0px #C8D8EE',
               }}
             >
-              그만하기
-            </Button>
+              <img src={iconArrowBack} alt="go-back" />
+            </div>
+          }
+          onClickLeft={() => pop()}
+          appendRight={
+            <div
+              style={{
+                display: 'flex',
+                flexFlow: 'row',
+                gap: '16px',
+              }}
+            >
+              <TopButton onClick={() => setShowHowToPlay(true)}>
+                게임방법
+              </TopButton>
+              <TopButton onClick={() => handlePlayAgain()}>처음부터</TopButton>
+            </div>
+          }
+        />
+        <PageContainer
+          style={{
+            justifyContent: 'center',
+          }}
+        >
+          {/*           
+          {currentScore >= myBestScore ? (
+            <UserInFront
+              nickname={display.nickname}
+              rank={display.rank}
+              score={display.score}
+            />
+          ) : (
+            <MyBestScore score={myBestScore} />
+          )} */}
 
-            <p>본 게임은 오픈소스(play2048.co)로 제작되었습니다</p>
-          </BottomWrapper>
-        </div>
+          {currentScore > myBestScore ? (
+            <MyBestScore score={currentScore} />
+          ) : (
+            <MyBestScore score={myBestScore} />
+          )}
+
+          <CurrentScore score={currentScore} />
+
+          <Board
+            tileList={tileList}
+            moveRight={moveRight}
+            moveLeft={moveLeft}
+            moveUp={moveUp}
+            moveDown={moveDown}
+          />
+
+          <p
+            style={{
+              fontSize: '8px',
+              textAlign: 'left',
+              color: '#c2dcff',
+              margin: '-16px 20px 0',
+            }}
+          >
+            본 게임은 오픈소스(play2048.co)로 제작되었습니다
+          </p>
+        </PageContainer>
       </Page>
 
       <ReactModal
@@ -394,10 +512,44 @@ export const Game: React.FC = () => {
           },
         }}
       >
-        <GameOverModal
+        <GameOver
           myPreviousRank={myCurrentRank}
-          currentScore={currentScore}
+          gameOverScore={gameOverScore}
+          setIsGameOver={setIsGameOver}
+          setUp={setUp}
         />
+      </ReactModal>
+
+      <ReactModal
+        isOpen={showHowToPlay}
+        contentLabel="2048-puzzle how to play"
+        style={{
+          overlay: {
+            background: 'rgba(90, 90, 90, 0.7)',
+            backdropFilter: `blur(5px)`,
+            WebkitBackdropFilter: `blur(5px)`,
+            zIndex: 100,
+          },
+          content: {
+            width: `80%`,
+            top: '50%',
+            left: '50%',
+            right: 'auto',
+            bottom: 'auto',
+            marginRight: '-50%',
+            transform: 'translate(-50%, -50%)',
+            padding: 0,
+            display: `flex`,
+            flexFlow: `column`,
+            justifyContent: 'center',
+            alignItems: 'center',
+            border: 'none',
+            boxSizing: `border-box`,
+            borderRadius: `10px`,
+          },
+        }}
+      >
+        <HowToPlay setShowHowToPlay={setShowHowToPlay} />
       </ReactModal>
     </>
   );
@@ -408,52 +560,26 @@ const Page = styled.div`
   flex-flow: column;
   height: 100%;
   background-color: #f3f8ff;
+
+  overflow: hidden;
 `;
 
-const CurrentScoreWrapper = styled.div`
-  // display: flex;
-  // flex-flow: column;
-  // justify-content: center;
-  // align-items: center;
-  position: relative;
-  text-align: center;
-  background: #ffffff;
-  border: 1px solid #e3efff;
-  box-sizing: border-box;
-  border-radius: 10px;
+// const BottomWrapper = styled.div`
+//   display: flex;
+//   flex-flow: row;
+//   justify-content: space-between;
+//   // align-items: flex-end;
+//   margin: 0 20px;
 
-  margin: 22px 20px 0;
-  padding: ${rem(7)};
-  font-style: normal;
-  font-weight: bold;
+//   p {
+//     font-style: normal;
+//     font-weight: normal;
+//     font-size: 8px;
+//     line-height: 161.7%;
+//     margin-bottom: -6px;
 
-  p.text {
-    font-size: ${rem(18)};
-    color: #c8d8ee;
-  }
-  p.score {
-    font-size: ${rem(50)};
-    color: #0e74ff;
-    font-family: 'Montserrat', sans-serif;
-  }
-`;
+//     text-align: right;
 
-const BottomWrapper = styled.div`
-  display: flex;
-  flex-flow: row;
-  justify-content: space-between;
-  align-items: flex-end;
-  margin: 0 ${rem(20)} ${rem(40)};
-
-  p {
-    font-style: normal;
-    font-weight: normal;
-    font-size: 8px;
-    line-height: 161.7%;
-    margin-bottom: -6px;
-
-    text-align: right;
-
-    color: #c2dcff;
-  }
-`;
+//     color: #c2dcff;
+//   }
+// `;

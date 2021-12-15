@@ -4,12 +4,12 @@ import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
 import { useMinigameApi } from 'services/api/minigameApi';
 import { useAccessToken, useMini, useUser } from 'hooks';
 import { Nav } from 'components/Navigation/Nav';
-import { CloseIcon } from 'assets/Icon';
 import { rem } from 'polished';
 import { useMyGame2048Data } from './Game2048/hooks';
 import { useMyKarrotClickerData } from './KarrotClicker/hooks';
 import { useAnalytics } from 'services/analytics';
 import { color, PageContainer } from 'styles';
+import { ReactComponent as IconClose } from 'assets/icon/svg/icon_close.svg';
 import newUrl from 'assets/svg/new.svg';
 import BellUrl from 'assets/svg/bell.svg';
 import Game2048CardImgUrl from 'assets/svg/game2048/game_2048_card_img.svg';
@@ -55,7 +55,7 @@ export const Home: React.FC = () => {
     useUser();
 
   const [shouldMissionPopupShown, setShouldMissionPopupShown] =
-    useState<boolean>(!mission.popup?.hasSeen);
+    useState<boolean>(!mission.popup?.hasSeenSecondMission);
 
   // Update user info
   const updateUserInfo = useCallback(
@@ -96,7 +96,7 @@ export const Home: React.FC = () => {
           regionId,
           referer
         );
-        console.log('trackuser', data);
+        // console.log('trackuser', data);
         return data;
       } catch (error) {
         console.error(error);
@@ -250,7 +250,6 @@ export const Home: React.FC = () => {
       location: 'platform_page',
       button_type: 'share_button',
     });
-    console.log('thirdpartyagreement success');
     handleShare();
   };
   const handleShare = () => {
@@ -369,7 +368,7 @@ export const Home: React.FC = () => {
       <div style={{ height: '100%', overflowY: 'auto' }}>
         <Nav
           border={`1px solid #ECECEC`}
-          appendLeft={<CloseIcon />}
+          appendLeft={<IconClose />}
           onClickLeft={leaveMiniApp}
           appendRight={<Share />}
           onClickRight={triggerShareHandler}
@@ -678,6 +677,7 @@ const MainText = styled.div`
   margin: 20px 0 30px;
   span {
     color: #0e74ff;
+    font-weight: bold;
     font-size: ${rem(34)};
   }
 `;

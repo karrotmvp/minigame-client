@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styled from '@emotion/styled';
 import { Nav } from 'components/Navigation/Nav';
-import { BackIcon } from 'assets/Icon';
+import { ReactComponent as IconArrowBack } from 'assets/icon/svg/icon_arrow_back.svg';
 import { useCurrentScreen, useNavigator } from '@karrotframe/navigator';
 import { rem } from 'polished';
 import { color, PageContainer } from 'styles';
@@ -46,7 +46,6 @@ export const Survey: React.FC = () => {
           content,
         }
       );
-      console.log(data);
       return data;
     } catch (error) {
       console.error(error);
@@ -76,7 +75,7 @@ export const Survey: React.FC = () => {
   }, [isTop]);
   return (
     <>
-      <Nav appendLeft={<BackIcon />} onClickLeft={goToPlatformPage} />
+      <Nav appendLeft={<IconArrowBack />} onClickLeft={goToPlatformPage} />
       <PageContainer id="survey-page">
         <GameSurvey>
           <h3>하고 싶은 게임이 있나요?</h3>

@@ -4,7 +4,6 @@ import { Navigator, Screen } from '@karrotframe/navigator';
 import { Home } from 'pages/Home';
 import { Game2048Home } from 'pages/Game2048/Home';
 import { Game2048Game } from 'pages/Game2048/Game';
-import { Game2048Leaderboard } from 'pages/Game2048/Leaderboard';
 import { KarrotClickerHome } from 'pages/KarrotClicker/Home';
 import { KarrotClickerGame } from 'pages/KarrotClicker/Game';
 import { KarrotClickerLeaderboard } from 'pages/KarrotClicker/Leaderboard';
@@ -70,7 +69,7 @@ const App: React.FC = () => {
 
   const retrieveUUID = () => {
     if (localStorage.getItem('uuid') !== null) {
-      console.log('localstorage uuid', localStorage.getItem('uuid'));
+      // console.log('localstorage uuid', localStorage.getItem('uuid'));
       return;
     } else {
       const uuid = uuidv4();
@@ -98,7 +97,9 @@ const App: React.FC = () => {
       const parsedMissionPreference = JSON.parse(missionPreference);
       setMission({
         page: { isCheckedOut: parsedMissionPreference.isMissionCheckedOut },
-        popup: { hasSeen: parsedMissionPreference.hasMissionPopupSeen },
+        popup: {
+          hasSeenSecondMission: parsedMissionPreference.hasSeenSecondMission,
+        },
       });
     }
   };
@@ -117,7 +118,7 @@ const App: React.FC = () => {
 
       setUser({ regionId: regionId as string });
       getDistrictInfo(regionId as string);
-      console.log(preload, code, regionId, installed, referer);
+      // console.log(preload, code, regionId, installed, referer);
 
       saveQueryString({
         uuid: localStorage.getItem('uuid') as string,
@@ -147,7 +148,6 @@ const App: React.FC = () => {
       {/* Game 2048 */}
       <Screen path="/game-2048" component={Game2048Home} />
       <Screen path="/game-2048/game" component={Game2048Game} />
-      <Screen path="/game-2048/leaderboard" component={Game2048Leaderboard} />
       {/* Karrot Clicker */}
       <Screen path="/karrot-clicker" component={KarrotClickerHome} />
       <Screen path="/karrot-clicker/game" component={KarrotClickerGame} />
