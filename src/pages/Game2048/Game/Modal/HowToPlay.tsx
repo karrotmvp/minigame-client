@@ -7,9 +7,9 @@ import 'swiper/modules/pagination/pagination.scss';
 import { ReactComponent as HowToPlay1 } from 'assets/svg/game2048/how_to_play_1.svg';
 import { ReactComponent as HowToPlay2 } from 'assets/svg/game2048/how_to_play_2.svg';
 import { ReactComponent as HowToPlay3 } from 'assets/svg/game2048/how_to_play_3.svg';
-
+import { ReactComponent as HowToPlay4 } from 'assets/svg/game2048/how_to_play_4.svg';
+import { ReactComponent as HowToPlay5 } from 'assets/svg/game2048/how_to_play_5.svg';
 import { rem } from 'polished';
-import './swiperStyles.scss';
 
 interface Props {
   setShowHowToPlay: React.Dispatch<React.SetStateAction<boolean>>;
@@ -41,6 +41,7 @@ export const HowToPlay: React.FC<Props> = (props) => {
       <p
         style={{
           color: '#0E74FF',
+          fontFamily: 'Cafe24Ssurround',
           fontWeight: 'bold',
           fontSize: `${rem(18)}`,
           lineHeight: `160.2%`,
@@ -50,15 +51,16 @@ export const HowToPlay: React.FC<Props> = (props) => {
       </p>
       <Swiper
         modules={[Pagination, Autoplay]}
-        centeredSlides={true}
-        loop={false}
         autoplay={{
-          delay: 4000,
-          disableOnInteraction: true,
+          delay: 2500,
+          disableOnInteraction: false,
+          stopOnLastSlide: true,
         }}
+        loop={false}
         pagination={{
           clickable: true,
         }}
+        watchSlidesProgress={true}
         className="mySwiper"
         style={{
           width: '100%',
@@ -71,9 +73,9 @@ export const HowToPlay: React.FC<Props> = (props) => {
               <HowToPlay1 />
             </div>
             <p className="text">
-              손가락으로 밀어서
+              화면을 밀어서
               <br />
-              <span className="text--blue">같은 숫자끼리 합쳐요</span>
+              숫자 타일을 움직여요
             </p>
           </Container>
         </SwiperSlide>
@@ -83,9 +85,9 @@ export const HowToPlay: React.FC<Props> = (props) => {
               <HowToPlay2 />
             </div>
             <p className="text">
-              <span className="text--blue">합친 숫자만큼</span>
+              같은 타일끼리 만나면
               <br />
-              점수가 올라가요
+              합쳐져요
             </p>
           </Container>
         </SwiperSlide>
@@ -95,10 +97,33 @@ export const HowToPlay: React.FC<Props> = (props) => {
               <HowToPlay3 />
             </div>
             <p className="text">
-              점수를 높여서 최고기록을 세우고,
+              합쳐진 숫자만큼
               <br />
-              <span className="text--blue">우리 동네도 1등</span>으로
-              만들어봐요!
+              점수가 올라요
+            </p>
+          </Container>
+        </SwiperSlide>
+        <SwiperSlide>
+          <Container>
+            <div className="image">
+              <HowToPlay4 />
+            </div>
+            <p className="text">
+              타일이 움직일 때 마다
+              <br />
+              새로운 숫자 타일이 생겨요
+            </p>
+          </Container>
+        </SwiperSlide>
+        <SwiperSlide>
+          <Container>
+            <div className="image">
+              <HowToPlay5 />
+            </div>
+            <p className="text">
+              더 이상 타일을 합칠 수 없으면
+              <br />
+              게임 오버!
             </p>
           </Container>
         </SwiperSlide>
@@ -123,7 +148,7 @@ export const HowToPlay: React.FC<Props> = (props) => {
           }}
           onClick={() => props.setShowHowToPlay(false)}
         >
-          건너뛰기
+          게임 시작
         </button>
       </div>
     </>
@@ -143,14 +168,8 @@ const Container = styled.div`
     height: 140px;
   }
   .text {
-    font-size: ${rem(14)};
+    font-size: ${rem(16)};
     line-height: 161.7%;
     color: #5b5b5b;
-
-    .text--blue {
-      font-size: ${rem(14)};
-      line-height: 161.7%;
-      color: #0e74ff;
-    }
   }
 `;
