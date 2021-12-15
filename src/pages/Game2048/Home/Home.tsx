@@ -161,16 +161,20 @@ export const Home: React.FC = () => {
       townLeaderboard: TownLeaderboardType[];
       myTownId: string;
     }) => {
-      const myTown = townLeaderboard.find((town) => {
-        return town.townId === undefined ? undefined : town.townId === myTownId;
-      });
+      if (townLeaderboard) {
+        const myTown = townLeaderboard.find((town) => {
+          return town.townId === undefined
+            ? undefined
+            : town.townId === myTownId;
+        });
 
-      myTown === undefined
-        ? setIsFirstInTown(true)
-        : setMyTownData({
-            rank: myTown?.rank,
-            score: myTown?.score,
-          });
+        myTown === undefined
+          ? setIsFirstInTown(true)
+          : setMyTownData({
+              rank: myTown?.rank,
+              score: myTown?.score,
+            });
+      }
     },
     []
   );

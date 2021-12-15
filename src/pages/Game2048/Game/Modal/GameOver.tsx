@@ -16,11 +16,13 @@ import {
 import { useThrottledCallback } from 'use-debounce/lib';
 import iconLeave from 'assets/icon/svg/icon_leave.svg';
 import iconReplay from 'assets/icon/svg/icon_replay.svg';
+import { useGame } from '../hooks';
 
 type Props = {
   myPreviousRank: number;
   gameOverScore: number;
   setIsGameOver: React.Dispatch<React.SetStateAction<boolean>>;
+  setUp: () => Promise<void>;
 };
 
 export const GameOver: React.FC<Props> = (props) => {
@@ -29,6 +31,7 @@ export const GameOver: React.FC<Props> = (props) => {
   const analytics = useAnalytics();
   const minigameApi = useMinigameApi();
   const { gameType } = useMyGame2048Data();
+  const { resetGame } = useGame();
   const [sessionRank, setSessionRank] = useState<{
     rank: number | undefined;
     score: number | undefined;
@@ -103,17 +106,23 @@ export const GameOver: React.FC<Props> = (props) => {
     props.myPreviousRank,
   ]);
 
-  const playAgain = async () => {
+  const playAgain = () => {
     analytics.logEvent('click_game_play_again_button', {
       game_type: '2048_puzzle',
       button_type: 'refresh',
     });
-    props.setIsGameOver(false);
+    resetGame().then(() => {
+      // props.setUp();
+      props.setIsGameOver(false);
+    });
   };
 
   const leaveGame = () => {
-    props.setIsGameOver(false);
-    pop();
+    resetGame().then(() => {
+      // props.setUp();
+      props.setIsGameOver(false);
+      pop();
+    });
   };
 
   // animation handler
@@ -132,6 +141,7 @@ export const GameOver: React.FC<Props> = (props) => {
             : null;
         }
       }, 600);
+
       return () => {
         clearTimeout(timerId1);
         clearTimeout(timerId2);
