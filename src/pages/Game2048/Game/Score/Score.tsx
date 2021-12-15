@@ -78,7 +78,7 @@ const Container = styled.div<{ content: string }>`
 
     margin: 0 auto;
 
-    background: #4694ff;
+    background: #82b6ff;
     border-radius: 10px;
     padding: 4px 20px;
 

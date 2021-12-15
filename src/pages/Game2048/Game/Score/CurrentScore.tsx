@@ -31,11 +31,17 @@ const CurrentScoreWrapper = styled.div`
   p.text {
     font-size: ${rem(18)};
     color: #c8d8ee;
+    font-family: Montserrat;
+    font-weight: bold;
+    line-height: 161.7%;
+    color: #c8d8ee;
   }
   p.score {
     font-size: ${rem(50)};
+    font-family: Montserrat;
+    font-weight: bold;
+    line-height: 161.7%;
     color: #0e74ff;
-    font-family: 'Montserrat', sans-serif;
   }
 `;
 
