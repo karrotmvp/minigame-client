@@ -29,7 +29,7 @@ export const HowToPlay: React.FC<Props> = (props) => {
         <p
           style={{
             color: '#0E74FF',
-            fontSize: `${rem(24)}`,
+            fontSize: `${rem(28)}`,
             fontFamily: 'Montserrat',
             fontWeight: 'bold',
             lineHeight: '161.7%',

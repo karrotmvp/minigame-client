@@ -543,7 +543,7 @@ export const Game: React.FC = () => {
             flexFlow: `column`,
             justifyContent: 'center',
             alignItems: 'center',
-            border: `1px solid #0E74FF`,
+            border: 'none',
             boxSizing: `border-box`,
             borderRadius: `10px`,
           },
