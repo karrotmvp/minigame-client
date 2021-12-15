@@ -26,7 +26,7 @@ const MyBestScore: React.FC<Props> = (props) => {
   return (
     <Container content="최고기록을 세워봐요">
       <div className="info">
-        <p className="info__text">내 최고 점수</p>
+        <p className="info__text">내 현재 점수</p>
       </div>
       <p className="score">{commafy(props.score)}</p>
     </Container>

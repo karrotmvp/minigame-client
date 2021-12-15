@@ -135,7 +135,6 @@ export const useGame = () => {
   }, [retrieveTileMap]);
 
   const generateRandomTile = useCallback(() => {
-    console.log('generate tile');
     const emptyTiles = findEmptyTiles();
     if (emptyTiles.length > 0) {
       const index = Math.floor(Math.random() * emptyTiles.length);
@@ -366,19 +365,12 @@ export const useGame = () => {
 
   // reset-game
   const resetGame = useCallback(async () => {
-    console.log('reset-game');
     setIsGameOver(false);
-    // isInitialRender.current = true;
-    dispatch(resetGameAction());
-    // if (highestScore === 0) {
-    //   createTile({ coordinate: [1, 1], value: 2 });
-    //   createTile({ coordinate: [3, 1], value: 2 });
-    //   return 'success';
-    // } else {
-    generateRandomTile();
-    generateRandomTile();
 
-    // return board;
+    dispatch(resetGameAction());
+
+    generateRandomTile();
+    generateRandomTile();
   }, [generateRandomTile]);
 
   // game-over

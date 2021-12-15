@@ -110,7 +110,6 @@ export const Game: React.FC = () => {
   // get my rank & score
   const setMyGameData = useCallback(
     async ({ gameData }: { gameData: { board: number[]; score: number } }) => {
-      console.log('set my game data', gameData.board, gameData.score);
       const tiles: {
         [id: number]: TileProps;
       } = convertArrayToObject(
@@ -130,7 +129,6 @@ export const Game: React.FC = () => {
       );
       const byIds: number[] = Object.keys(tiles).map(Number);
       const startId: number = byIds.length > 0 ? Math.max(...byIds) : 1;
-      console.log(tiles, byIds, startId, gameData.score);
       setGameData(tiles, byIds, gameData.score, startId);
     },
     [setGameData]
@@ -143,7 +141,6 @@ export const Game: React.FC = () => {
           getBoard({ gameType }),
           getMyRank({ gameType }),
         ]);
-        console.log('setup', response);
         if (typeof response[0] === 'object') {
           if (response[0].board.every((item) => item === 0)) {
             resetGame();
@@ -329,7 +326,6 @@ export const Game: React.FC = () => {
 
   // FA view_game_page
   useEffect(() => {
-    console.log('isTop?', isTop);
     if (isTop) {
       analytics.logEvent('view_game_page', {
         game_type: '2048_puzzle',
@@ -338,8 +334,10 @@ export const Game: React.FC = () => {
   }, [analytics, isTop]);
 
   useEffect(() => {
-    setUp({ gameType: gameType });
-  }, [gameType, setUp]);
+    if (isTop) {
+      setUp({ gameType: gameType });
+    }
+  }, [gameType, setUp, isTop]);
 
   useEffect(() => {
     return history.block((location, action) => {
@@ -516,7 +514,7 @@ export const Game: React.FC = () => {
           myPreviousRank={myCurrentRank}
           gameOverScore={gameOverScore}
           setIsGameOver={setIsGameOver}
-          setUp={() => setUp({ gameType })}
+          setUp={setUp}
         />
       </ReactModal>
 

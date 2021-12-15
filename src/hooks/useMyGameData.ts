@@ -16,19 +16,12 @@ export const useMyGameData = () => {
       } = await minigameApi.gameUserApi.getMyRankInfoUsingGET(gameType);
       if (data) {
         if (data.score && data.rank) {
-          gameType === 'GAME_2048'
-            ? updateMy2048PuzzleScore({
-                score: data.score,
-                rank: data.rank,
-              })
-            : updateMy2048PuzzleScore({
-                score: data.score,
-                rank: data.rank,
-              });
+          updateMy2048PuzzleScore({
+            score: data.score,
+            rank: data.rank,
+          });
           if (data.comment) {
-            gameType === 'GAME_2048'
-              ? updateMy2048PuzzleComment(data.comment)
-              : updateMy2048PuzzleComment(data.comment);
+            updateMy2048PuzzleComment(data.comment);
           }
           return 'success';
         }

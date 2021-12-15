@@ -17,20 +17,22 @@ import { useThrottledCallback } from 'use-debounce/lib';
 import iconLeave from 'assets/icon/svg/icon_leave.svg';
 import iconReplay from 'assets/icon/svg/icon_replay.svg';
 import { useGame } from '../hooks';
+import { useMyGameData } from 'hooks';
 
 type Props = {
   myPreviousRank: number;
   gameOverScore: number;
   setIsGameOver: React.Dispatch<React.SetStateAction<boolean>>;
-  setUp: () => Promise<void>;
+  setUp: any;
 };
 
 export const GameOver: React.FC<Props> = (props) => {
   const { isTop } = useCurrentScreen();
-  const { pop } = useNavigator();
+  const { replace } = useNavigator();
   const analytics = useAnalytics();
   const minigameApi = useMinigameApi();
   const { gameType } = useMyGame2048Data();
+  const { postBoard } = useMyGameData();
   const { resetGame } = useGame();
   const [sessionRank, setSessionRank] = useState<{
     rank: number | undefined;
@@ -106,23 +108,40 @@ export const GameOver: React.FC<Props> = (props) => {
     props.myPreviousRank,
   ]);
 
-  const playAgain = () => {
+  const playAgain = async () => {
     analytics.logEvent('click_game_play_again_button', {
       game_type: '2048_puzzle',
       button_type: 'refresh',
     });
-    resetGame().then(() => {
-      // props.setUp();
-      props.setIsGameOver(false);
+    await resetGame();
+    const response = await postBoard({
+      gameType: gameType,
+      board: [0, 0, 0, 0, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0],
+      score: 0,
     });
+    if (response === 'success') {
+      props.setUp({ gameType: gameType });
+      props.setIsGameOver(false);
+    }
   };
 
-  const leaveGame = () => {
-    resetGame().then(() => {
-      // props.setUp();
-      props.setIsGameOver(false);
-      pop();
+  const leaveGame = async () => {
+    analytics.logEvent('click_leave_game_button', {
+      game_type: '2048_puzzle',
+      location: 'game_over_modal',
     });
+    await resetGame();
+    const response = await postBoard({
+      gameType: gameType,
+      board: [0, 0, 0, 0, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0],
+      score: 0,
+    });
+
+    if (response === 'success') {
+      props.setUp({ gameType: gameType });
+      props.setIsGameOver(false);
+      replace(`/game-2048`);
+    }
   };
 
   // animation handler
