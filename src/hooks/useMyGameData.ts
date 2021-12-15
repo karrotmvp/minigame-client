@@ -62,7 +62,13 @@ export const useMyGameData = () => {
       score: number;
     }) => {
       const { data } = await minigameApi.scoreLogApi.logScoreUsingPOST(
-        { board, score },
+        {
+          board:
+            board.every((item) => item === 0) === true
+              ? [0, 0, 0, 0, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0]
+              : board,
+          score,
+        },
         gameType
       );
       if (data.status === 200) {

@@ -141,14 +141,11 @@ export const Game: React.FC = () => {
           getBoard({ gameType }),
           getMyRank({ gameType }),
         ]);
+
         if (typeof response[0] === 'object') {
-          if (response[0].board.every((item) => item === 0)) {
-            resetGame();
-          } else {
-            setMyGameData({
-              gameData: { board: response[0].board, score: response[0].score },
-            });
-          }
+          setMyGameData({
+            gameData: { board: response[0].board, score: response[0].score },
+          });
         }
         if (typeof response[1] === 'object') {
           updateMyScore({
@@ -160,7 +157,7 @@ export const Game: React.FC = () => {
         console.error(error);
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
     [getBoard, getMyRank, setMyGameData, updateMyScore]
   );
 
@@ -301,7 +298,11 @@ export const Game: React.FC = () => {
 
   // constantly post board & score (debounced 1sec)
   const debouncedPostMyGameData = useDebouncedCallback(() => {
-    postBoard({ gameType: gameType, board: boardByValue, score: currentScore });
+    postBoard({
+      gameType: gameType,
+      board: boardByValue,
+      score: currentScore,
+    });
   }, 1000);
 
   useEffect(() => {
@@ -309,7 +310,7 @@ export const Game: React.FC = () => {
   }, [currentScore, debouncedPostMyGameData]);
 
   // Action buttons
-  const handlePlayAgain = useCallback(async () => {
+  const handlePlayAgain = useCallback(() => {
     analytics.logEvent('click_game_play_again_button', {
       game_type: '2048_puzzle',
       button_type: 'refresh',
@@ -341,7 +342,6 @@ export const Game: React.FC = () => {
 
   useEffect(() => {
     return history.block((location, action) => {
-      console.log(location, gameOverStatus);
       if (action === 'POP' && !gameOverStatus) {
         postBoard({
           gameType: gameType,
