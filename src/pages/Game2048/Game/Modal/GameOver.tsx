@@ -18,6 +18,9 @@ import iconLeave from 'assets/icon/svg/icon_leave.svg';
 import iconReplay from 'assets/icon/svg/icon_replay.svg';
 import { useGame } from '../hooks';
 import { useMyGameData } from 'hooks';
+import { useMini, useMyGameData, useUser } from 'hooks';
+import { NotificationRequestDtoTypeEnum } from 'services/openapi_generator';
+import { subscribeToastEmitter } from 'components/Toast';
 
 type Props = {
   myPreviousRank: number;
@@ -33,6 +36,9 @@ export const GameOver: React.FC<Props> = (props) => {
   const minigameApi = useMinigameApi();
   const { gameType } = useMyGame2048Data();
   const { postBoard } = useMyGameData();
+  const { handleSubscribe } = useMini();
+
+  const { subscription, setSubscription } = useUser();
   const { resetGame } = useGame();
   const [sessionRank, setSessionRank] = useState<{
     rank: number | undefined;
@@ -113,6 +119,7 @@ export const GameOver: React.FC<Props> = (props) => {
       game_type: '2048_puzzle',
       button_type: 'refresh',
     });
+
     await resetGame();
     const response = await postBoard({
       gameType: gameType,
@@ -130,6 +137,7 @@ export const GameOver: React.FC<Props> = (props) => {
       game_type: '2048_puzzle',
       location: 'game_over_modal',
     });
+
     await resetGame();
     const response = await postBoard({
       gameType: gameType,
@@ -175,6 +183,53 @@ export const GameOver: React.FC<Props> = (props) => {
     });
   }, 3000);
 
+  // show subscribe preset non-subscribed user with notificaiton not turned off
+  const isSubscribeNotificationOff = useCallback(async () => {
+    const {
+      data: { data },
+    } = await minigameApi.notificationApi.checkNotificationUsingGET(
+      'SUBSCRIBE_OFF'
+    );
+    if (data) {
+      return data.check;
+    }
+  }, [minigameApi.notificationApi]);
+
+  const onSubscribeSuccess = useCallback(() => {
+    analytics.logEvent('click_subscribe_button', {
+      game_type: '2048_puzzle',
+      location: 'game_over_modal',
+      is_voluntary: false,
+    });
+    console.log('show subscribe?');
+    setSubscription({ isSubscribed: true });
+    subscribeToastEmitter();
+  }, [analytics, setSubscription]);
+
+  const turnOffSubscribeNotification = useCallback(async () => {
+    await minigameApi.notificationApi.saveNotificationUsingPOST({
+      type: 'SUBSCRIBE_OFF' as NotificationRequestDtoTypeEnum,
+    });
+  }, [minigameApi.notificationApi]);
+
+  useEffect(() => {
+    const showSubscribe = async () => {
+      if (subscription.isSubscribed === false) {
+        const response = await isSubscribeNotificationOff();
+        console.log(response);
+        if (response !== undefined && response === false) {
+          analytics.logEvent('show_subscribe_button', {
+            game_type: '2048_puzzle',
+            location: 'game_over_modal',
+            is_voluntary: false,
+          });
+          handleSubscribe(onSubscribeSuccess, turnOffSubscribeNotification);
+        }
+      }
+    };
+    showSubscribe();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return (
     <>
       <div

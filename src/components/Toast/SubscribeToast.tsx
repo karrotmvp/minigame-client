@@ -21,6 +21,7 @@ export const SubscribeToastContainer = () => {
           opacity: 0.9;
           border-radius: 10px;
           box-shadow: none;
+          z-index: 99999;
         }
         .Toastify__toast-body {
           font-family: Pretendard;
