@@ -97,7 +97,9 @@ const App: React.FC = () => {
       const parsedMissionPreference = JSON.parse(missionPreference);
       setMission({
         page: { isCheckedOut: parsedMissionPreference.isMissionCheckedOut },
-        popup: { hasSeen: parsedMissionPreference.hasMissionPopupSeen },
+        popup: {
+          hasSeenSecondMission: parsedMissionPreference.hasSeenSecondMission,
+        },
       });
     }
   };

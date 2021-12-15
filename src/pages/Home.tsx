@@ -55,7 +55,7 @@ export const Home: React.FC = () => {
     useUser();
 
   const [shouldMissionPopupShown, setShouldMissionPopupShown] =
-    useState<boolean>(!mission.popup?.hasSeen);
+    useState<boolean>(!mission.popup?.hasSeenSecondMission);
 
   // Update user info
   const updateUserInfo = useCallback(

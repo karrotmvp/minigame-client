@@ -28,12 +28,12 @@ export const Popup: React.FC<Props> = (props) => {
       'missionPreference',
       JSON.stringify({
         isMissionCheckedOut: false,
-        hasMissionPopupSeen: true,
+        hasSeenSecondMission: true,
       })
     );
     setMission({
       page: { isCheckedOut: false },
-      popup: { hasSeen: true },
+      popup: { hasSeenSecondMission: true },
     });
     props.setShouldMissionPopupShown(false);
   };
@@ -46,12 +46,12 @@ export const Popup: React.FC<Props> = (props) => {
       'missionPreference',
       JSON.stringify({
         isMissionCheckedOut: true,
-        hasMissionPopupSeen: true,
+        hasSeenSecondMission: true,
       })
     );
     setMission({
       page: { isCheckedOut: true },
-      popup: { hasSeen: true },
+      popup: { hasSeenSecondMission: true },
     });
     props.setShouldMissionPopupShown(false);
     push(`/mission`);
@@ -94,7 +94,21 @@ export const Popup: React.FC<Props> = (props) => {
             textUnderlineOffset: `-1px`,
           }}
         >
-          첫 번째 동네대회 미션
+          <span
+            style={{
+              fontFamily: `Cafe24Ssurround`,
+              fontStyle: `normal`,
+              fontWeight: `bold`,
+              fontSize: `${rem(22)}`,
+
+              textDecoration: `underline #0E74FF 6px`,
+              textUnderlineOffset: `-1px`,
+              color: `#FFDC79`,
+            }}
+          >
+            두 번째
+          </span>{' '}
+          동네대회 미션
         </span>
         이
         <br />
