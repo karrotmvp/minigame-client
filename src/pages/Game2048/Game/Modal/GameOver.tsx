@@ -59,7 +59,7 @@ export const GameOver: React.FC<Props> = (props) => {
     }
   }, [analytics, isTop]);
 
-  const getSessionRank = useCallback(
+  const updateSessionRank = useCallback(
     async ({
       gameType,
       score,
@@ -79,7 +79,7 @@ export const GameOver: React.FC<Props> = (props) => {
     [minigameApi.gamePlayApi]
   );
 
-  const getMyCurrentRank = useCallback(
+  const updateMyCurrentRank = useCallback(
     async ({
       gameType,
       previousRank,
@@ -90,25 +90,27 @@ export const GameOver: React.FC<Props> = (props) => {
       const { data } = await minigameApi.gameUserApi.getMyRankInfoUsingGET(
         gameType
       );
-
       setMyCurrentRank({
         rank: data.data?.rank,
-        rankChange: data?.data?.rank! - previousRank,
+        rankChange:
+          previousRank === 0
+            ? 0 - data?.data?.rank!
+            : data?.data?.rank! - previousRank,
       });
     },
     [minigameApi]
   );
 
   useEffect(() => {
-    getSessionRank({ gameType: gameType, score: props.gameOverScore });
-    getMyCurrentRank({
+    updateSessionRank({ gameType: gameType, score: props.gameOverScore });
+    updateMyCurrentRank({
       gameType: gameType,
       previousRank: props.myPreviousRank,
     });
   }, [
     gameType,
-    getMyCurrentRank,
-    getSessionRank,
+    updateMyCurrentRank,
+    updateSessionRank,
     props.gameOverScore,
     props.myPreviousRank,
   ]);
