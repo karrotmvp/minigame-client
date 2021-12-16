@@ -22,6 +22,7 @@ const UserLeaderboard: React.FC<Props> = (props) => {
       mousewheel={true}
       freeMode={true}
       slidesPerView="auto"
+      className="userLeaderboardSwiper"
     >
       {props.userLeaderboard.map((user, i) => {
         return (

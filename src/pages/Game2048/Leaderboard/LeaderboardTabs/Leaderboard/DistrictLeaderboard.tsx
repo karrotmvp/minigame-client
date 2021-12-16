@@ -8,7 +8,6 @@ import 'swiper/modules/scrollbar/scrollbar.scss';
 import 'swiper/modules/mousewheel/mousewheel.scss';
 import type { TownLeaderboardType } from 'hooks';
 import { FreeMode, Scrollbar, Mousewheel } from 'swiper';
-import './leaderboard.scss';
 
 type Props = {
   townLeaderboard: TownLeaderboardType[];
@@ -24,10 +23,7 @@ const DistrictLeaderboard: React.FC<Props> = (props) => {
       mousewheel={true}
       freeMode={true}
       slidesPerView="auto"
-      style={{
-        height: '100%',
-        padding: `0 16px`,
-      }}
+      className="districtLeaderboardSwiper"
     >
       {props.townLeaderboard.map((town, i) => {
         return (

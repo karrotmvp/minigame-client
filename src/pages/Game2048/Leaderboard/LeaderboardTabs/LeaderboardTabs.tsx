@@ -75,4 +75,19 @@ const LeaderboardContainer = styled.div`
   overflow: auto;
   background: #ffffff;
   box-sizing: border-box;
+
+  .swiper {
+    height: calc(100% - 90px);
+    max-height: calc(100% - 90px);
+    padding: 0 16px;
+  }
+
+  .swiper-slide {
+    height: fit-content;
+    min-height: fit-content;
+    width: 100%;
+    padding: 14px 0;
+    position: relative;
+    border-bottom: 1px solid #ececec;
+  }
 `;

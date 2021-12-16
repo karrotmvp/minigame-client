@@ -507,7 +507,7 @@ export const Home: React.FC = () => {
                       delay: 2500,
                       disableOnInteraction: false,
                     }}
-                    className="mySwiper"
+                    className="lastWeekTopCommentsSwiper"
                   >
                     {topKarrotClickerUsers?.map((user, i) => {
                       if (user.comment === '' || user.comment === null) {
@@ -801,7 +801,7 @@ const LastWeekTopComments = styled.div`
       position: relative;
       background: #f5f5f5;
       border-radius: 10px;
-      padding: 10px 13px;
+      padding: 10px 0px 13px 10px;
       &:after {
         content: '';
         position: absolute;
