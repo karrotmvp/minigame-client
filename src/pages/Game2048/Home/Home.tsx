@@ -297,8 +297,7 @@ export const Home: React.FC = () => {
             >
               <Top className="top">
                 <div className="top__my-info">
-                  {/* remove exclamation sign */}
-                  {!accessToken ? (
+                  {accessToken ? (
                     <UserLoggedIn
                       myRank={myData.rank}
                       myScore={myData.score}
