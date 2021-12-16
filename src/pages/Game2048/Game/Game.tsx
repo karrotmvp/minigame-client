@@ -211,43 +211,6 @@ export const Game: React.FC = () => {
     },
     [minigameApi.gamePlayApi]
   );
-  // game-end
-  // const handleGameEnd = useCallback(
-  //   async ({
-  //     currentScore,
-  //     myBestScore,
-  //     gameType,
-  //   }: {
-  //     currentScore: number;
-  //     myBestScore: number;
-  //     gameType: 'GAME_KARROT' | 'GAME_2048';
-  //   }) => {
-  //     if (isInWebEnvironment) {
-  //       setGameOverScore(currentScore);
-  //       resetGame();
-  //       setIsGameOver(true);
-  //       return;
-  //     }
-  //     analytics.logEvent('click_game_end_button', {
-  //       game_type: '2048_puzzle',
-  //       button_type: 'game_end',
-  //     });
-  //     setGameOverScore(currentScore);
-  //     resetGame();
-  //     if (currentScore > myBestScore) {
-  //       const response = await updateMyBestScore({
-  //         score: currentScore,
-  //         gameType: gameType,
-  //       });
-  //       if (response?.status === 200) {
-  //         setIsGameOver(true);
-  //       }
-  //     } else {
-  //       setIsGameOver(true);
-  //     }
-  //   },
-  //   [analytics, isInWebEnvironment, resetGame, updateMyBestScore]
-  // );
 
   // game-over
   const handleGameOver = useCallback(
@@ -295,19 +258,6 @@ export const Game: React.FC = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameOverStatus]);
-
-  // constantly post board & score (debounced 1sec)
-  // const debouncedPostMyGameData = useDebouncedCallback(() => {
-  //   postBoard({
-  //     gameType: gameType,
-  //     board: boardByValue,
-  //     score: currentScore,
-  //   });
-  // }, 1000);
-
-  // useEffect(() => {
-  //   debouncedPostMyGameData();
-  // }, [currentScore, debouncedPostMyGameData]);
 
   // Action buttons
   const handlePlayAgain = useCallback(() => {
@@ -526,6 +476,8 @@ export const Game: React.FC = () => {
 
       <ReactModal
         isOpen={showHowToPlay}
+        onRequestClose={() => setShowHowToPlay(false)}
+        shouldCloseOnOverlayClick={true}
         contentLabel="2048-puzzle how to play"
         style={{
           overlay: {
@@ -567,23 +519,3 @@ const Page = styled.div`
 
   overflow: hidden;
 `;
-
-// const BottomWrapper = styled.div`
-//   display: flex;
-//   flex-flow: row;
-//   justify-content: space-between;
-//   // align-items: flex-end;
-//   margin: 0 20px;
-
-//   p {
-//     font-style: normal;
-//     font-weight: normal;
-//     font-size: 8px;
-//     line-height: 161.7%;
-//     margin-bottom: -6px;
-
-//     text-align: right;
-
-//     color: #c2dcff;
-//   }
-// `;

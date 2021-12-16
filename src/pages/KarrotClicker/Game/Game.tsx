@@ -159,6 +159,7 @@ export const Game: React.FC = () => {
       {/* new user guide */}
       <Modal
         isOpen={isUserNew}
+        onRequestClose={() => setIsUserNew(false)}
         shouldCloseOnOverlayClick={true}
         contentLabel="Game Guide"
         css={popupModalStyle}
