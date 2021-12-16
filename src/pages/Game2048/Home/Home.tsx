@@ -170,7 +170,7 @@ export const Home: React.FC = () => {
         });
         const leaderboard = await updateLeaderboard({
           gameType: 'GAME_2048',
-          size: 1000,
+          size: 100,
         });
         updateMyTownData({
           townLeaderboard: leaderboard?.townLeaderboard!,
@@ -180,7 +180,7 @@ export const Home: React.FC = () => {
     } else {
       const leaderboard = await updateLeaderboard({
         gameType: 'GAME_2048',
-        size: 1000,
+        size: 100,
       });
       updateMyTownData({
         townLeaderboard: leaderboard?.townLeaderboard!,

@@ -44,7 +44,7 @@ export const useLeaderboard = () => {
   const getUserLeaderboard = useCallback(
     async ({
       gameType,
-      size = 1000,
+      size = 100,
     }: {
       gameType: 'GAME_KARROT' | 'GAME_2048';
       size: number;
