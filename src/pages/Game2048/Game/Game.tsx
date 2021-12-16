@@ -526,6 +526,8 @@ export const Game: React.FC = () => {
 
       <ReactModal
         isOpen={showHowToPlay}
+        onRequestClose={() => setShowHowToPlay(false)}
+        shouldCloseOnOverlayClick={true}
         contentLabel="2048-puzzle how to play"
         style={{
           overlay: {

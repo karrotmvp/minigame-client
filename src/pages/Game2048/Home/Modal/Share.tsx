@@ -7,12 +7,14 @@ import { ReactComponent as ImageTownScoreExample } from 'assets/images/svg/image
 import { ReactComponent as ImageGlitter } from 'assets/images/svg/image_glitter.svg';
 import { rem } from 'polished';
 import { useCurrentScreen } from '@karrotframe/navigator';
+import { useHistory } from 'react-router';
 interface Props {
   setIsShareModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   isRanked?: boolean;
 }
 
 export const Share: React.FC<Props> = (props) => {
+  const history = useHistory();
   const { isTop } = useCurrentScreen();
   const { accessToken } = useAccessToken();
   const analytics = useAnalytics();
@@ -56,6 +58,17 @@ export const Share: React.FC<Props> = (props) => {
       });
     }
   }, [analytics, isTop]);
+
+  useEffect(() => {
+    const unblock = history.block((location, action) => {
+      if (action === 'POP') {
+        props.setIsShareModalOpen(false);
+        return false;
+      }
+      return undefined;
+    });
+    return () => unblock();
+  }, [history, props]);
 
   return (
     <ModalContainer>

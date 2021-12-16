@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from '@emotion/styled';
 import { Swiper, SwiperSlide } from 'swiper/react/swiper-react.js';
 import { Pagination, Autoplay } from 'swiper';
@@ -10,12 +10,26 @@ import { ReactComponent as HowToPlay3 } from 'assets/svg/game2048/how_to_play_3.
 import { ReactComponent as HowToPlay4 } from 'assets/svg/game2048/how_to_play_4.svg';
 import { ReactComponent as HowToPlay5 } from 'assets/svg/game2048/how_to_play_5.svg';
 import { rem } from 'polished';
+import { useHistory } from 'react-router';
 
 interface Props {
   setShowHowToPlay: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const HowToPlay: React.FC<Props> = (props) => {
+  const history = useHistory();
+
+  useEffect(() => {
+    const unblock = history.block((location, action) => {
+      if (action === 'POP') {
+        props.setShowHowToPlay(false);
+        return false;
+      }
+      return undefined;
+    });
+    return () => unblock();
+  }, [history, props]);
+
   return (
     <>
       <div

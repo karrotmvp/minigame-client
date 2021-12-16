@@ -7,12 +7,14 @@ import { useCurrentScreen } from '@karrotframe/navigator';
 import { useMinigameApi } from 'services/api/minigameApi';
 import { useMini, useUser } from 'hooks';
 import { useMyGame2048Data } from 'pages/Game2048/hooks';
+import { useHistory } from 'react-router';
 
 interface Props {
   setIsCommentModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   handleRefresh: () => Promise<void>;
 }
 export const CommentModal: React.FC<Props> = (props) => {
+  const history = useHistory();
   const analytics = useAnalytics();
   const { isTop } = useCurrentScreen();
   const minigameApi = useMinigameApi();
@@ -63,6 +65,17 @@ export const CommentModal: React.FC<Props> = (props) => {
     }
   }, [analytics, isTop]);
 
+  useEffect(() => {
+    const unblock = history.block((location, action) => {
+      if (action === 'POP') {
+        props.setIsCommentModalOpen(false);
+        return false;
+      }
+      return undefined;
+    });
+    return () => unblock();
+  }, [history, props]);
+
   return (
     <>
       <Nav
@@ -102,7 +115,7 @@ export const CommentModal: React.FC<Props> = (props) => {
           position: 'absolute',
           top: 0,
         }}
-        onClickLeft={closeCommentModal}
+        onClickLeft={() => props.setIsCommentModalOpen(false)}
         onClickRight={() => patchComment({ comment: comment })}
       />
       <CommentInput>
