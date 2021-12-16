@@ -38,7 +38,7 @@ export const IndividualLeaderboard: React.FC = () => {
       } = await minigameApi.gameUserApi.getLeaderBoardByUserUsingGET(
         gameType,
         undefined,
-        500
+        100
       );
       if (data) {
         const indexedindividualRankData = data.map(
