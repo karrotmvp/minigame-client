@@ -1,10 +1,8 @@
 import styled from '@emotion/styled';
-import { Button } from 'components/Button';
 import { useAccessToken, useMini, useUser } from 'hooks';
 import { useMyGame2048Data } from 'pages/Game2048/hooks';
 import React from 'react';
 import { useAnalytics } from 'services/analytics';
-import { ReactComponent as IconCloseCircle } from 'assets/icon/svg/icon_close_circle.svg';
 import { ReactComponent as ImageTownScoreExample } from 'assets/images/svg/image_town_score_example.svg';
 import { ReactComponent as ImageGlitter } from 'assets/images/svg/image_glitter.svg';
 import { rem } from 'polished';
@@ -17,7 +15,7 @@ export const Share: React.FC<Props> = (props) => {
   const { accessToken } = useAccessToken();
   const analytics = useAnalytics();
   const { shareApp, handleThirdPartyAgreement } = useMini();
-  const { user, town } = useUser();
+  const { user } = useUser();
   const { rank } = useMyGame2048Data();
   // Share handler
   // =================================================================

@@ -33,15 +33,13 @@ import '@karrotframe/pulltorefresh/index.css';
 import { PullToRefresh } from '@karrotframe/pulltorefresh';
 import { css } from '@emotion/css';
 
-import iconFriend from 'assets/icon/svg/icon_friend.svg';
-
 export const Home: React.FC = () => {
   const { isTop } = useCurrentScreen();
   const { push, pop } = useNavigator();
   const analytics = useAnalytics();
   const minigameApi = useMinigameApi();
   const { accessToken } = useAccessToken();
-  const { isInWebEnvironment, handleThirdPartyAgreement, shareApp } = useMini();
+  const { isInWebEnvironment, handleThirdPartyAgreement } = useMini();
   const { user, town } = useUser();
   const { rank, gameType } = useMyGame2048Data();
   const { townLeaderboard, userLeaderboard, updateLeaderboard } =
@@ -67,34 +65,6 @@ export const Home: React.FC = () => {
   });
   const [isCommentModalOpen, setIsCommentModalOpen] = useState<boolean>(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState<boolean>(false);
-  // Share handler
-  // =================================================================
-  const runShareOnSuccess = () => {
-    analytics.logEvent('click_third_party_agreement_button', {
-      location: 'home_page',
-      game_type: '2048_puzzle',
-      button_type: 'share_button',
-    });
-    handleShare();
-  };
-  const handleShare = () => {
-    analytics.logEvent('click_share_button', {
-      location: 'home_page',
-      game_type: '2048_puzzle',
-    });
-    const url = 'https://daangn.onelink.me/HhUa/37719e67';
-    const text = isRanked
-      ? `${user.nickname}님은 2048 퍼즐에서 전국 ${rank}}등!`
-      : `${user.nickname}님이 이웃님을 동네대회에 초대했어요! 같이 게임할래요?`;
-    shareApp(url, text);
-  };
-  const triggerShareHandler = () => {
-    if (accessToken) {
-      handleShare();
-    } else {
-      handleThirdPartyAgreement(runShareOnSuccess);
-    }
-  };
 
   const goToPlatformPage = () => {
     analytics.logEvent('click_leave_game_button', {
@@ -301,12 +271,6 @@ export const Home: React.FC = () => {
                 <Refresh />
               </>
             }
-            // appendRight={
-            //   <ShareButton>
-            //     <p>초대하기</p>
-            //   </ShareButton>
-            // }
-            // onClickRight={triggerShareHandler}
           />
 
           <PageContainer
