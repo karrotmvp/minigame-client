@@ -298,7 +298,7 @@ export const Game: React.FC = () => {
           board: boardByValue,
           score: currentScore,
         });
-        if (currentScore > myBestScore) {
+        if (currentScore >= myBestScore) {
           updateMyBestScore({ score: currentScore, gameType: gameType });
         }
         return;
