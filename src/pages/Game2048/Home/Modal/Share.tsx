@@ -34,7 +34,7 @@ export const Share: React.FC<Props> = (props) => {
       location: 'home_page',
       game_type: '2048_puzzle',
     });
-    const url = 'https://daangn.onelink.me/HhUa/2da74f80';
+    const url = 'https://daangn.onelink.me/HhUa/37719e67';
     const text = props.isRanked
       ? `${user.nickname}님은 2048 퍼즐에서 전국 ${rank}등!`
       : `${user.nickname}님이 이웃님을 동네대회에 초대했어요! 같이 게임할래요?`;
