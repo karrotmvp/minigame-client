@@ -94,7 +94,7 @@ const UserLoggedIn: React.FC<ComponentProps> = (props) => {
 
         <p className="comment__my-comment">
           {comment === '' || comment === null
-            ? `${town.name2} 파이팅!`
+            ? `위 버튼을 눌러 한 마디를 작성할 수 있어요`
             : comment}
         </p>
       </div>
