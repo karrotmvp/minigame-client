@@ -5,14 +5,15 @@ import { useMyGame2048Data } from 'pages/Game2048/hooks';
 import { commafy } from 'utils/number';
 import { rem } from 'polished';
 import { ReactComponent as IconPencil } from 'assets/icon/svg/icon_pencil.svg';
-
+import { ReactComponent as IconArrowFront } from 'assets/icon/svg/icon_arrow_front_small.svg';
 // 가입유저
 // 동네기록o 개인기록o
 // 동네기록o 개인기록x
 // 동네기록x 개인기록x
 
 interface ComponentProps {
-  setIsCommentModalOpen?: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsCommentModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsShareModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   isFirstInTown?: boolean;
   myTownRank?: number;
   myTownScore?: number;
@@ -23,12 +24,37 @@ interface ComponentProps {
 const UserLoggedIn: React.FC<ComponentProps> = (props) => {
   const { user, town } = useUser();
   const { comment } = useMyGame2048Data();
-  const openCommentModal = () => {
-    if (props.setIsCommentModalOpen) props.setIsCommentModalOpen(true);
-  };
+
   return (
     <Container className="my-info">
+      <ShareModalButton onClick={() => props.setIsShareModalOpen(true)}>
+        🔥 순위 올리기 <IconArrowFront />
+      </ShareModalButton>
       <div className="my-info__ranking">
+        <div className="ranking">
+          <div className="ranking__title">
+            <p>{user.nickname}</p>
+          </div>
+          <div className="ranking__rank">
+            <p>
+              <span className="score">
+                {typeof props.myScore === 'number' && props.myScore > 0
+                  ? props.myRank
+                  : '-'}
+              </span>{' '}
+              위
+            </p>
+          </div>
+          <div className="ranking__score">
+            <p>
+              {typeof props.myScore === 'number' && props.myScore > 0
+                ? commafy(props.myScore)
+                : '-'}
+              점
+            </p>
+          </div>
+        </div>
+        <VerticalDivider />
         <div className="ranking">
           <div className="ranking__title">
             <p>
@@ -58,41 +84,17 @@ const UserLoggedIn: React.FC<ComponentProps> = (props) => {
             </p>
           </div>
         </div>
-        <VerticalDivider />
-        <div className="ranking">
-          <div className="ranking__title">
-            <p>{user.nickname}</p>
-          </div>
-          <div className="ranking__rank">
-            <p>
-              <span className="score">
-                {typeof props.myScore === 'number' && props.myScore > 0
-                  ? props.myRank
-                  : '-'}
-              </span>{' '}
-              위
-            </p>
-          </div>
-          <div className="ranking__score">
-            <p>
-              {typeof props.myScore === 'number' && props.myScore > 0
-                ? commafy(props.myScore)
-                : '-'}
-              점
-            </p>
-          </div>
-        </div>
       </div>
       <HorizontalDivider />
       <div className="comment">
         <p className="comment__edit">
           나의 한 마디
-          <IconPencil onClick={openCommentModal} />
+          <IconPencil onClick={() => props.setIsCommentModalOpen(true)} />
         </p>
 
         <p className="comment__my-comment">
           {comment === '' || comment === null
-            ? `${town.name2} 파이팅!`
+            ? `위 버튼을 눌러 한 마디를 작성할 수 있어요`
             : comment}
         </p>
       </div>
@@ -102,7 +104,41 @@ const UserLoggedIn: React.FC<ComponentProps> = (props) => {
 
 export const MemoizedUserLoggedIn = React.memo(UserLoggedIn);
 
+const ShareModalButton = styled.button`
+  
+  border-radius: 5px;
+  font-style: normal;
+  font-weight: bold;
+  font-size: ${rem(12)};
+  line-height: 161.7%;
+  color: #ffffff;
+
+  width: fit-content;
+  padding: 4px 8px;
+
+  background: #0E74FF;
+  box-shadow: 0px 4px 0px 0px #1457AE;
+
+  position: absolute;
+  width: fit-content;
+  top: -25px;
+  right: 16px;
+  
+  &:after {
+    z-index: 1000;
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border: 6px solid transparent;
+    border-top-color: #1457AE;
+    border-bottom: 0;
+`;
+
 const Container = styled.div`
+  position: relative;
   display: flex;
   flex-flow: column;
   justify-content: space-between;

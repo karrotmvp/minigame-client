@@ -471,9 +471,13 @@ export const Game: React.FC = () => {
           <p
             style={{
               fontSize: '8px',
-              textAlign: 'left',
+              textAlign: 'center',
               color: '#c2dcff',
-              margin: '-16px 20px 0',
+              margin: '0 auto',
+              position: 'absolute',
+              bottom: '4px',
+              left: 0,
+              right: 0,
             }}
           >
             본 게임은 오픈소스(play2048.co)로 제작되었습니다
