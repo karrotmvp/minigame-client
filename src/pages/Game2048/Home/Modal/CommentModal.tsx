@@ -27,10 +27,6 @@ export const CommentModal: React.FC<Props> = (props) => {
     setComment(value.slice(0, maxLength));
   };
 
-  const closeCommentModal = () => {
-    props.setIsCommentModalOpen(false);
-  };
-
   const patchComment = async ({ comment }: { comment: string }) => {
     if (isInWebEnvironment) {
       updateMyComment(comment);
