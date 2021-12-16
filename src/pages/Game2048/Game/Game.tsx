@@ -14,7 +14,7 @@ import {
 } from './Score';
 import { useAnalytics } from 'services/analytics';
 import { useUser, useRank, useMyGameData } from 'hooks';
-import { useDebouncedCallback } from 'use-debounce';
+// import { useDebouncedCallback } from 'use-debounce';
 import ReactModal from 'react-modal';
 import { TileProps } from './Game/Tile';
 import { Nav } from 'components/Navigation';
@@ -297,17 +297,17 @@ export const Game: React.FC = () => {
   }, [gameOverStatus]);
 
   // constantly post board & score (debounced 1sec)
-  const debouncedPostMyGameData = useDebouncedCallback(() => {
-    postBoard({
-      gameType: gameType,
-      board: boardByValue,
-      score: currentScore,
-    });
-  }, 1000);
+  // const debouncedPostMyGameData = useDebouncedCallback(() => {
+  //   postBoard({
+  //     gameType: gameType,
+  //     board: boardByValue,
+  //     score: currentScore,
+  //   });
+  // }, 1000);
 
-  useEffect(() => {
-    debouncedPostMyGameData();
-  }, [currentScore, debouncedPostMyGameData]);
+  // useEffect(() => {
+  //   debouncedPostMyGameData();
+  // }, [currentScore, debouncedPostMyGameData]);
 
   // Action buttons
   const handlePlayAgain = useCallback(() => {
