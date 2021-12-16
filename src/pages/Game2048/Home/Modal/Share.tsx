@@ -1,17 +1,19 @@
 import styled from '@emotion/styled';
 import { useAccessToken, useMini, useUser } from 'hooks';
 import { useMyGame2048Data } from 'pages/Game2048/hooks';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useAnalytics } from 'services/analytics';
 import { ReactComponent as ImageTownScoreExample } from 'assets/images/svg/image_town_score_example.svg';
 import { ReactComponent as ImageGlitter } from 'assets/images/svg/image_glitter.svg';
 import { rem } from 'polished';
+import { useCurrentScreen } from '@karrotframe/navigator';
 interface Props {
   setIsShareModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   isRanked?: boolean;
 }
 
 export const Share: React.FC<Props> = (props) => {
+  const { isTop } = useCurrentScreen();
   const { accessToken } = useAccessToken();
   const analytics = useAnalytics();
   const { shareApp, handleThirdPartyAgreement } = useMini();
@@ -32,12 +34,13 @@ export const Share: React.FC<Props> = (props) => {
       location: 'home_page',
       game_type: '2048_puzzle',
     });
-    const url = 'https://daangn.onelink.me/HhUa/37719e67';
+    const url = 'https://daangn.onelink.me/HhUa/2da74f80';
     const text = props.isRanked
-      ? `${user.nickname}님은 2048 퍼즐에서 전국 ${rank}}등!`
+      ? `${user.nickname}님은 2048 퍼즐에서 전국 ${rank}등!`
       : `${user.nickname}님이 이웃님을 동네대회에 초대했어요! 같이 게임할래요?`;
     shareApp(url, text);
   };
+
   const triggerShareHandler = () => {
     if (accessToken) {
       handleShare();
@@ -45,6 +48,14 @@ export const Share: React.FC<Props> = (props) => {
       handleThirdPartyAgreement(runShareOnSuccess);
     }
   };
+
+  useEffect(() => {
+    if (isTop) {
+      analytics.logEvent('view_share_modal', {
+        game_type: '2048_puzzle',
+      });
+    }
+  }, [analytics, isTop]);
 
   return (
     <ModalContainer>
