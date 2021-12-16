@@ -242,7 +242,7 @@ export const GameOver: React.FC<Props> = (props) => {
           alt="gameOverSvgUrl"
           style={{
             position: 'absolute',
-            top: '58px',
+            top: '114px',
           }}
         />
         <AnimatePresence>
