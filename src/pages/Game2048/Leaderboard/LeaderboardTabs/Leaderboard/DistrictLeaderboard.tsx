@@ -8,6 +8,7 @@ import 'swiper/modules/scrollbar/scrollbar.scss';
 import 'swiper/modules/mousewheel/mousewheel.scss';
 import type { TownLeaderboardType } from 'hooks';
 import { FreeMode, Scrollbar, Mousewheel } from 'swiper';
+import './leaderboard.scss';
 
 type Props = {
   townLeaderboard: TownLeaderboardType[];
@@ -19,30 +20,18 @@ const DistrictLeaderboard: React.FC<Props> = (props) => {
   return (
     <Swiper
       modules={[FreeMode, Scrollbar, Mousewheel]}
-      // direction={'vertical'}
-      // slidesPerView={'auto'}
-      // mousewheel={true}
+      direction="vertical"
+      mousewheel={true}
+      freeMode={true}
+      slidesPerView="auto"
       style={{
         height: '100%',
-        padding: `0 18px`,
-        overflow: `auto`,
+        padding: `0 16px`,
       }}
     >
-      <SwiperSlide>
-        {props.townLeaderboard.map((town) => {
-          return userTown.id === town.townId ? (
-            <TownRow
-              key={town.townId}
-              rank={town.rank}
-              cityName={town.name1}
-              districtName={town.name2}
-              playerCount={town.playerCount as number}
-              score={town.score}
-              style={{
-                border: `1px solid #4694FF`,
-              }}
-            />
-          ) : (
+      {props.townLeaderboard.map((town, i) => {
+        return (
+          <SwiperSlide key={i}>
             <TownRow
               key={town.townId}
               rank={town.rank}
@@ -51,12 +40,17 @@ const DistrictLeaderboard: React.FC<Props> = (props) => {
               playerCount={town.playerCount as number}
               score={town.score}
             />
-          );
-        })}
-        <div style={{ height: '100px', minHeight: '100px' }} />
-      </SwiperSlide>
+          </SwiperSlide>
+        );
+      })}
     </Swiper>
   );
 };
 
 export const MemoizedDistrictLeaderboard = React.memo(DistrictLeaderboard);
+
+// style={{
+//   border: `${
+//     userTown.id === town.townId ? `1px solid #4694FF` : `none`
+//   }`,
+// }}

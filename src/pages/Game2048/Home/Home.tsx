@@ -442,7 +442,7 @@ const Top = styled.div`
   margin-top: 25px;
   margin-bottom: 26px;
   div.top__my-info {
-    padding: 0 20px;
+    padding: 0 16px;
   }
 `;
 

@@ -118,7 +118,6 @@ export const GameOver: React.FC<Props> = (props) => {
   const playAgain = async () => {
     analytics.logEvent('click_game_play_again_button', {
       game_type: '2048_puzzle',
-      button_type: 'refresh',
     });
 
     await resetGame();

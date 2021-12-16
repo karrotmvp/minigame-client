@@ -18,28 +18,14 @@ const UserLeaderboard: React.FC<Props> = (props) => {
   return (
     <Swiper
       modules={[FreeMode, Scrollbar, Mousewheel]}
-      style={{
-        height: '100%',
-        padding: `0 18px`,
-        overflow: `auto`,
-      }}
+      direction="vertical"
+      mousewheel={true}
+      freeMode={true}
+      slidesPerView="auto"
     >
-      <SwiperSlide>
-        {props.userLeaderboard.map((user) => {
-          return user.userId === myself.userId ? (
-            <UserRow
-              key={user.userId}
-              rank={user.rank}
-              nickname={user.nickname}
-              comment={user.comment as string}
-              score={user.score}
-              cityName={user.town.name1}
-              districtName={user.town.name2}
-              style={{
-                border: `1px solid #4694FF`,
-              }}
-            />
-          ) : (
+      {props.userLeaderboard.map((user, i) => {
+        return (
+          <SwiperSlide key={i}>
             <UserRow
               key={user.userId}
               rank={user.rank}
@@ -49,12 +35,20 @@ const UserLeaderboard: React.FC<Props> = (props) => {
               cityName={user.town.name1}
               districtName={user.town.name2}
             />
-          );
-        })}
-        <div style={{ height: '100px', minHeight: '100px' }} />
-      </SwiperSlide>
+          </SwiperSlide>
+        );
+      })}
     </Swiper>
   );
 };
 
 export const MemoizedUserLeaderboard = React.memo(UserLeaderboard);
+
+// style={{
+//   border: `${
+//     user.userId === myself.userId ? `1px solid #4694FF` : `none`
+//   }`,
+//   borderRadius: `${
+//     user.userId === myself.userId ? `10px` : `none`
+//   }`,
+// }}

@@ -33,64 +33,55 @@ const UserRow: React.FC<UserRowProps> = (props) => {
     userComment = `${props.comment}`;
   }
   return (
-    <Container rank={props.rank} style={props.style}>
-      <div className="rank">{props.rank <= 3 ? ' ' : commafy(props.rank)}</div>
-      <div className="info">
-        <div className="info__data">
-          <div className="data__name">
-            {props.nickname}
-            <DistrictName>
-              <p>
-                {props.cityName} {props.districtName}
-              </p>
-            </DistrictName>
+    <>
+      <Container rank={props.rank}>
+        <div className="rank">{props.rank <= 3 ? 0 : commafy(props.rank)}</div>
+        <div className="info">
+          <div className="info__data">
+            <div className="data__name">
+              {props.nickname}
+              <DistrictName>
+                <p>
+                  {props.cityName} {props.districtName}
+                </p>
+              </DistrictName>
+            </div>
+            <div className="data__score">{commafy(props.score)}</div>
           </div>
-          <div className="data__score">{commafy(props.score)}</div>
+          <SpeechBalloon>{userComment}</SpeechBalloon>
         </div>
-        <SpeechBalloon>{userComment}</SpeechBalloon>
-      </div>
-    </Container>
+      </Container>
+    </>
   );
 };
 
 const TownRow: React.FC<TownRowProps> = (props) => {
   return (
-    <Container rank={props.rank} style={props.style}>
-      <div className="rank">{props.rank <= 3 ? ' ' : commafy(props.rank)}</div>
-      <div className="info">
-        <div className="info__data">
-          <div className="data__name">
-            {props.cityName} {props.districtName}
+    <>
+      <Container rank={props.rank}>
+        <div className="rank">{props.rank <= 3 ? 0 : commafy(props.rank)}</div>
+        <div className="info">
+          <div className="info__data">
+            <div className="data__name">
+              {props.cityName} {props.districtName}
+            </div>
+            <div className="data__score">{commafy(props.score)}</div>
           </div>
-          <div className="data__score">{commafy(props.score)}</div>
+          <PlayerCount>{commafy(props.playerCount)}명</PlayerCount>
         </div>
-        <PlayerCount>{commafy(props.playerCount)}명</PlayerCount>
-      </div>
-    </Container>
+      </Container>
+    </>
   );
 };
 
 export const MemoizedUserRow = React.memo(UserRow);
 export const MemoizedTownRow = React.memo(TownRow);
 
-const Container = styled.div<{ me?: boolean; rank?: number }>`
-  min-height: ${rem(74)};
-  height: ${rem(74)};
+const Container = styled.div<{ rank?: number }>`
   display: flex;
   flex-flow: row;
-  align-items: center;
-  justify-content: center;
-  padding: 12px 20px 10px 26px;
 
-  margin: 8px 0px;
-
-  width: 100%;
-  border-radius: 10px;
-  border: 1px solid #ececec;
-  background-color: #fff;
-
-  position: relative;
-
+  padding-left: 6px;
   &::before {
     content: '';
     background-image: ${(props) =>
@@ -100,25 +91,21 @@ const Container = styled.div<{ me?: boolean; rank?: number }>`
         ? `url(${iconMedalSecond})`
         : props.rank === 3
         ? `url(${iconMedalThird})`
-        : `transparent`};
+        : undefined};
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center center;
-    width: 15px;
-    height: 20px;
+    width: 19px;
+    height: 25px;
     position: absolute;
     top: 18px;
-    left: 22px;
+    left: 2px;
   }
 
   .rank {
-    min-width: 25px;
-    width: 25px;
-    display: flex;
-    align-self: flex-start;
+    width: ${rem(30)};
 
     margin-top: 3px;
-    // margin-left: 5px;
 
     font-weight: bold;
     font-size: 12px;
@@ -157,7 +144,7 @@ const Container = styled.div<{ me?: boolean; rank?: number }>`
 
         font-style: normal;
         font-weight: normal;
-        font-size: ${rem(17)};
+        font-size: ${rem(15)};
         line-height: 161.7%;
         /* or 19px */
         color: #5b5b5b;
@@ -197,8 +184,14 @@ const DistrictName = styled.div`
   border-radius: 9.5px;
 
   p {
-    font-size: ${rem(12)};
+    font-size: 12px;
     line-height: 161.7%;
     color: #7c7c7c;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: fit-content;
+    max-width: 80px;
   }
 `;
