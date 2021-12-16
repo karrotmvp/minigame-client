@@ -57,7 +57,7 @@ export const Share: React.FC<Props> = (props) => {
       />
 
       <MainText>
-        <span className="highlight">{user.nickname}</span>님!,
+        <span className="highlight">{user.nickname}</span>님,
         <br />
         친구를 초대해
         <br />
@@ -92,6 +92,8 @@ const MainText = styled.h3`
   color: #0e74ff;
 
   .highlight {
+    font-weight: bold;
+    font-size: ${rem(18)};
     color: #ec9c00;
   }
 `;
