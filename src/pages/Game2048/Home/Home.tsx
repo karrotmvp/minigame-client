@@ -32,6 +32,7 @@ import { CommentModal, Share } from './Modal';
 import '@karrotframe/pulltorefresh/index.css';
 import { PullToRefresh } from '@karrotframe/pulltorefresh';
 import { css } from '@emotion/css';
+import './home.scss';
 
 export const Home: React.FC = () => {
   const { isTop } = useCurrentScreen();
