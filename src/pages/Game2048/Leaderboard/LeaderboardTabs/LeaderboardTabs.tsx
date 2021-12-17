@@ -77,8 +77,8 @@ const LeaderboardContainer = styled.div`
   box-sizing: border-box;
 
   .swiper {
-    height: calc(100% - 90px);
-    max-height: calc(100% - 90px);
+    height: calc(100% - 80px);
+    max-height: calc(100% - 80px);
     padding: 0 16px;
   }
 
