@@ -29,11 +29,13 @@ const UserLeaderboard: React.FC<Props> = (props) => {
           <SwiperSlide
             key={i}
             style={{
-              border: `${
-                user.userId === myself.userId ? `1px solid #4694FF` : `none`
+              borderTop: `${
+                user.userId === myself.userId ? `0.5px solid #4694FF` : `none`
               }`,
-              borderRadius: `${
-                user.userId === myself.userId ? `10px` : `none`
+              borderBottom: `${
+                user.userId === myself.userId
+                  ? `1px solid #4694FF`
+                  : `1px solid #ececec`
               }`,
             }}
           >

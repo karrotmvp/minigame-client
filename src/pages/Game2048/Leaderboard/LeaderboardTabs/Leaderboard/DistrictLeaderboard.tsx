@@ -30,10 +30,14 @@ const DistrictLeaderboard: React.FC<Props> = (props) => {
           <SwiperSlide
             key={i}
             style={{
-              border: `${
-                userTown.id === town.townId ? `1px solid #4694FF` : `none`
+              borderTop: `${
+                userTown.id === town.townId ? `0.5px solid #4694FF` : `none`
               }`,
-              borderRadius: `${userTown.id === town.townId ? `10px` : `none`}`,
+              borderBottom: `${
+                userTown.id === town.townId
+                  ? `0.5px solid #4694FF`
+                  : `1px solid #ececec`
+              }`,
             }}
           >
             <TownRow
