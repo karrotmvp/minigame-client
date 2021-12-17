@@ -436,10 +436,10 @@ export const Home: React.FC = () => {
           </Section>
           <Break />
           <Section>
-            <SectionTitle style={{ marginBottom: `10px` }}>
+            <SectionTitle style={{ marginBottom: `15px` }}>
               지난주 전국 Top 10의 한 마디
             </SectionTitle>
-            <p
+            {/* <p
               style={{
                 fontStyle: 'normal',
                 fontWeight: 'normal',
@@ -450,7 +450,7 @@ export const Home: React.FC = () => {
               }}
             >
               Top 10에 들면 이웃들에게 한 마디 외칠 수 있어요
-            </p>
+            </p> */}
             <LastWeekTopComments>
               <div className="game">
                 <Circle2048Puzzle />
@@ -596,10 +596,10 @@ export const Home: React.FC = () => {
           </Section>
           <Break />
           <Section>
-            <SectionTitle>하고 싶은 게임이 있나요?</SectionTitle>
+            <SectionTitle>이웃 여러분의 소중한 의견을 들려주세요</SectionTitle>
             <GameSurvey>
               <ModalOpenButton onClick={goToSurveyPage}>
-                <p className="left-text">예) 테트리스</p>
+                <p className="left-text">동네대회 피드백 남기기</p>
                 <p className="right-text">보내기</p>
               </ModalOpenButton>
             </GameSurvey>

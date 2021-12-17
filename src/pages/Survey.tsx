@@ -59,7 +59,7 @@ export const Survey: React.FC = () => {
       content: gameSurveyInput,
     });
     if (response?.status === 200) {
-      analytics.logEvent('click_submit_game_request_button');
+      analytics.logEvent('click_survey_feedback_submit_button');
       setGameSurveyInput('');
       surveyToastEmitter();
     }
@@ -67,18 +67,29 @@ export const Survey: React.FC = () => {
 
   useEffect(() => {
     if (isTop) {
+      analytics.logEvent('view_survey_page');
       const timerId = setTimeout(() => {
         inputRef.current.focus();
       }, 300);
       return clearTimeout(timerId);
     }
-  }, [isTop]);
+  }, [analytics, isTop]);
   return (
     <>
       <Nav appendLeft={<IconArrowBack />} onClickLeft={goToPlatformPage} />
       <PageContainer id="survey-page">
         <GameSurvey>
-          <h3>하고 싶은 게임이 있나요?</h3>
+          <h3>이웃 여러분의 의견을 들려주세요</h3>
+          <p>
+            동네대회 서비스에 바라는 점이 있나요?
+            <br />
+            또는, 아쉬웠던 점이 있나요?
+            <br />
+            <br />
+            이웃 여러분의 소중한 의견은 <br />
+            동네대회를 더욱 재밌는 서비스로 발전시킬 수 있는 큰 도움이 돼요
+            <br />
+          </p>
           <div>
             <input
               ref={inputRef}
@@ -87,7 +98,6 @@ export const Survey: React.FC = () => {
               value={gameSurveyInput}
             />
           </div>
-          <p>예) 테트리스, 공룡점프</p>
         </GameSurvey>
         <ActionItems>
           {gameSurveyInput.length <= 0 ? (
@@ -129,7 +139,7 @@ const GameSurvey = styled.div`
 
     color: #3f3f3f;
 
-    margin-left: 40px;
+    margin-left: 20px;
   }
 
   div {
@@ -158,12 +168,12 @@ const GameSurvey = styled.div`
     font-style: normal;
     font-weight: normal;
     font-size: 12px;
-    line-height: 161.7%;
+    line-height: 170%;
     /* or 19px */
 
     color: #a9a9a9;
 
-    margin-left: 34px;
+    margin: 20px;
   }
 `;
 
