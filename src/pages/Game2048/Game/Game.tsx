@@ -141,10 +141,14 @@ export const Game: React.FC = () => {
           getBoard({ gameType }),
           getMyRank({ gameType }),
         ]);
-
         if (typeof response[0] === 'object') {
           setMyGameData({
             gameData: { board: response[0].board, score: response[0].score },
+          });
+          postBoard({
+            gameType: gameType,
+            board: response[0].board,
+            score: response[0].score,
           });
         }
         if (typeof response[1] === 'object') {
@@ -158,7 +162,7 @@ export const Game: React.FC = () => {
       }
     },
 
-    [getBoard, getMyRank, setMyGameData, updateMyScore]
+    [getBoard, getMyRank, postBoard, setMyGameData, updateMyScore]
   );
 
   // update user-info
