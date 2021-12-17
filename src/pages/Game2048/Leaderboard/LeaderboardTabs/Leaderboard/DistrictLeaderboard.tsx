@@ -27,7 +27,15 @@ const DistrictLeaderboard: React.FC<Props> = (props) => {
     >
       {props.townLeaderboard.map((town, i) => {
         return (
-          <SwiperSlide key={i}>
+          <SwiperSlide
+            key={i}
+            style={{
+              border: `${
+                userTown.id === town.townId ? `1px solid #4694FF` : `none`
+              }`,
+              borderRadius: `${userTown.id === town.townId ? `10px` : `none`}`,
+            }}
+          >
             <TownRow
               key={town.townId}
               rank={town.rank}
@@ -44,9 +52,3 @@ const DistrictLeaderboard: React.FC<Props> = (props) => {
 };
 
 export const MemoizedDistrictLeaderboard = React.memo(DistrictLeaderboard);
-
-// style={{
-//   border: `${
-//     userTown.id === town.townId ? `1px solid #4694FF` : `none`
-//   }`,
-// }}

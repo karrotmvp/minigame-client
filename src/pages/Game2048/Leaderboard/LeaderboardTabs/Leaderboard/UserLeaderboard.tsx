@@ -26,7 +26,17 @@ const UserLeaderboard: React.FC<Props> = (props) => {
     >
       {props.userLeaderboard.map((user, i) => {
         return (
-          <SwiperSlide key={i}>
+          <SwiperSlide
+            key={i}
+            style={{
+              border: `${
+                user.userId === myself.userId ? `1px solid #4694FF` : `none`
+              }`,
+              borderRadius: `${
+                user.userId === myself.userId ? `10px` : `none`
+              }`,
+            }}
+          >
             <UserRow
               key={user.userId}
               rank={user.rank}
@@ -44,12 +54,3 @@ const UserLeaderboard: React.FC<Props> = (props) => {
 };
 
 export const MemoizedUserLeaderboard = React.memo(UserLeaderboard);
-
-// style={{
-//   border: `${
-//     user.userId === myself.userId ? `1px solid #4694FF` : `none`
-//   }`,
-//   borderRadius: `${
-//     user.userId === myself.userId ? `10px` : `none`
-//   }`,
-// }}
