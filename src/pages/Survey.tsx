@@ -76,7 +76,10 @@ export const Survey: React.FC = () => {
   }, [analytics, isTop]);
   return (
     <>
-      <Nav appendLeft={<IconArrowBack />} onClickLeft={goToPlatformPage} />
+      <Nav
+        appendLeft={<IconArrowBack style={{ fill: '#7c7c7c' }} />}
+        onClickLeft={goToPlatformPage}
+      />
       <PageContainer id="survey-page">
         <GameSurvey>
           <h3>이웃 여러분의 의견을 들려주세요</h3>
@@ -84,12 +87,12 @@ export const Survey: React.FC = () => {
             동네대회 서비스에 바라는 점이 있나요?
             <br />
             또는, 아쉬웠던 점이 있나요?
-            <br />
-            <br />
-            이웃 여러분의 소중한 의견은 <br />
-            동네대회를 더욱 재밌는 서비스로 발전시킬 수 있는 큰 도움이 돼요
-            <br />
           </p>
+          <p>
+            이웃 여러분의 소중한 의견은 동네대회를 더욱 재밌는 <br />
+            서비스로 발전시킬 수 있는 큰 도움이 돼요
+          </p>
+
           <div>
             <input
               ref={inputRef}
@@ -167,13 +170,11 @@ const GameSurvey = styled.div`
     font-family: Pretendard;
     font-style: normal;
     font-weight: normal;
-    font-size: 12px;
+    font-size: ${rem(14)};
     line-height: 170%;
-    /* or 19px */
-
-    color: #a9a9a9;
-
+    color: #7c7c7c;
     margin: 20px;
+    overflow-wrap: break-word;
   }
 `;
 

@@ -255,7 +255,7 @@ export const Home: React.FC = () => {
               alignItems: 'flex-start',
               background: 'transparent',
             }}
-            appendLeft={<IconArrowBack />}
+            appendLeft={<IconArrowBack style={{ fill: '#fff' }} />}
             onClickLeft={goToPlatformPage}
             appendCenter={
               <>
