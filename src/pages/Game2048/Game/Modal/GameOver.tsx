@@ -20,6 +20,9 @@ import { useGame } from '../hooks';
 import { useMini, useMyGameData, useUser } from 'hooks';
 import { NotificationRequestDtoTypeEnum } from 'services/openapi_generator';
 import { subscribeToastEmitter } from 'components/Toast';
+import { toast, ToastContainer } from 'react-toastify';
+import { ReactComponent as Logo } from 'assets/icon/svg/icon_logo.svg';
+import { css } from '@emotion/css';
 
 type Props = {
   myPreviousRank: number;
@@ -202,10 +205,47 @@ export const GameOver: React.FC<Props> = (props) => {
     setSubscription({ isSubscribed: true });
     subscribeToastEmitter();
   }, [analytics, setSubscription]);
-  const turnOffSubscribeNotification = useCallback(async () => {
-    await minigameApi.notificationApi.saveNotificationUsingPOST({
-      type: 'SUBSCRIBE_OFF' as NotificationRequestDtoTypeEnum,
-    });
+  const turnOffSubscribeNotification = useCallback(() => {
+    minigameApi.notificationApi
+      .saveNotificationUsingPOST({
+        type: 'SUBSCRIBE_OFF' as NotificationRequestDtoTypeEnum,
+      })
+      .then(() =>
+        toast(
+          <p
+            style={{
+              fontSize: '14px',
+              lineHeight: '171.1%',
+              color: '#5B5B5B',
+            }}
+          >
+            <span
+              style={{
+                fontSize: '14px',
+
+                color: '#0E74FF',
+              }}
+            >
+              내 근처 {'>'} 생활서비스 {'>'} 동네대회
+            </span>
+            에서
+            <br />
+            게임을 다시 할 수 있어요
+          </p>,
+          {
+            toastId: 'revisit-guide-toast',
+            icon: <Logo />,
+            position: 'bottom-center',
+            autoClose: false,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            closeButton: false,
+          }
+        )
+      );
   }, [minigameApi.notificationApi]);
   useEffect(() => {
     const showSubscribe = async () => {
@@ -224,17 +264,16 @@ export const GameOver: React.FC<Props> = (props) => {
     showSubscribe();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
   return (
     <>
       <div
         style={{
           flex: 1,
-          display: `flex`,
-          flexFlow: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
+
           width: '100%',
-          gap: `8px`,
+
+          marginTop: '200px',
         }}
         onClick={fireThrottledRandomDirectionConfetti}
       >
@@ -244,67 +283,86 @@ export const GameOver: React.FC<Props> = (props) => {
           style={{
             position: 'absolute',
             top: '114px',
+            marginLeft: 'auto',
+            marginRight: 'auto',
+            left: 0,
+            right: 0,
           }}
         />
-        <AnimatePresence>
-          {showScore && (
-            <SessionRank
-              key="session-score-rank"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1 }}
-            >
-              <div className="row">
-                <p className="text">스코어</p>
-                <p className="number">
-                  {sessionRank.score === undefined
-                    ? ''
-                    : commafy(sessionRank.score)}
-                </p>
-              </div>
-              <div className="row">
-                <p className="text">랭킹</p>
-                <p className="number">
-                  {sessionRank.rank === undefined ? '' : sessionRank.rank}
-                </p>
-              </div>
-            </SessionRank>
-          )}
-          {showRank && (
-            <FinalRank
-              className="final-rank"
-              key="final-rank"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1 }}
-            >
-              <div className="row">
-                <p className="text">
-                  최종 랭킹
-                  <span
-                    className={
-                      myCurrentRank.rankChange > 0
-                        ? 'down'
-                        : myCurrentRank.rankChange < 0
-                        ? 'up'
-                        : 'no-change'
-                    }
-                  />
-                  <span className="rank-changed">
-                    {isNaN(Math.abs(myCurrentRank.rankChange))
+        <div
+          style={{
+            width: '100%',
+            display: 'flex',
+            flexFlow: 'column',
+            gap: '12px',
+            marginTop: '20px',
+          }}
+        >
+          <AnimatePresence>
+            {showScore && (
+              <SessionRank
+                key="session-score-rank"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1 }}
+              >
+                <div className="row">
+                  <p className="text">스코어</p>
+                  <p className="number">
+                    {sessionRank.score === undefined
                       ? ''
-                      : Math.abs(myCurrentRank.rankChange)}
-                  </span>
-                </p>
-                <p className="number">
-                  {myCurrentRank.rank === undefined ? '' : myCurrentRank.rank}
-                </p>
-              </div>
-            </FinalRank>
-          )}
-        </AnimatePresence>
+                      : commafy(sessionRank.score)}
+                  </p>
+                </div>
+                <div className="row">
+                  <p className="text">랭킹</p>
+                  <p className="number">
+                    {sessionRank.rank === undefined ? '' : sessionRank.rank}
+                  </p>
+                </div>
+              </SessionRank>
+            )}
+            {showRank && (
+              <FinalRank
+                className="final-rank"
+                key="final-rank"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1 }}
+              >
+                <div className="row">
+                  <p className="text">
+                    최종 랭킹
+                    <span
+                      className={
+                        myCurrentRank.rankChange > 0
+                          ? 'down'
+                          : myCurrentRank.rankChange < 0
+                          ? 'up'
+                          : 'no-change'
+                      }
+                    />
+                    <span className="rank-changed">
+                      {isNaN(Math.abs(myCurrentRank.rankChange))
+                        ? ''
+                        : Math.abs(myCurrentRank.rankChange)}
+                    </span>
+                  </p>
+                  <p className="number">
+                    {myCurrentRank.rank === undefined ? '' : myCurrentRank.rank}
+                  </p>
+                </div>
+              </FinalRank>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
-      <ActionItems>
+      <ActionItems
+        style={{
+          height: '45px',
+          maxHeight: 'fit-content',
+        }}
+      >
         <Button
           size={`large`}
           fontSize={rem(16)}
@@ -358,6 +416,28 @@ export const GameOver: React.FC<Props> = (props) => {
           </div>
         </Button>
       </ActionItems>
+
+      <ToastContainer
+        position="bottom-center"
+        autoClose={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        className={css`
+          .Toastify__toast {
+            margin: 0 32px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.7);
+            bottom: 100px;
+          }
+
+          .Toastify__toast-icon {
+            width: 50px;
+          }
+        `}
+      />
     </>
   );
 };
@@ -368,7 +448,7 @@ const SessionRank = styled(motion.div)`
   gap: 8px;
 
   width: 100%;
-  padding: 12px 18px 12px 26px;
+  padding: 16px 20px;
   text-align: center;
   font-style: normal;
   background: #ffffff;
@@ -398,7 +478,7 @@ const SessionRank = styled(motion.div)`
 
 const FinalRank = styled(motion.div)`
   width: 100%;
-  padding: 8px 18px 8px 26px;
+  padding: 16px 20px;
   text-align: center;
   font-style: normal;
   background: #e3efff;

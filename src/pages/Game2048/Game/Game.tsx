@@ -459,7 +459,7 @@ export const Game: React.FC = () => {
             marginRight: '-50%',
             transform: 'translate(-50%, -50%)',
 
-            padding: `58px 34px`,
+            padding: `40px 32px`,
             display: `flex`,
             flexFlow: `column`,
 

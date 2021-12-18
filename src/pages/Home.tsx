@@ -33,6 +33,8 @@ import missionEnvelopeClosed1 from 'assets/svg/mission/mission_envelope_closed_1
 import ReactModal from 'react-modal';
 import { Popup as MissionPopup } from './Mission';
 import { RefererEnum } from 'redux/user';
+import { ReactComponent as Logo } from 'assets/icon/svg/icon_logo_border.svg';
+
 export const Home: React.FC = () => {
   const analytics = useAnalytics();
   const minigameApi = useMinigameApi();
@@ -434,23 +436,48 @@ export const Home: React.FC = () => {
               </Card>
             </CardContainer>
           </Section>
-          <Break />
+          <div
+            style={{
+              display: `flex`,
+              flexFlow: `row`,
+              background: `#FAFAFA`,
+              borderTop: `1px solid #ECECEC`,
+              borderBottom: `1px solid #ECECEC`,
+              justifyContent: `center`,
+              alignItems: `center`,
+              padding: `20px 0`,
+              gap: `20px`,
+              marginTop: `36px`,
+              marginBottom: `28px`,
+            }}
+          >
+            <Logo />
+            <p
+              style={{
+                fontSize: `${rem(14)}`,
+                lineHeight: `171.1%`,
+                color: `#5B5B5B`,
+              }}
+            >
+              <span
+                style={{
+                  fontSize: `${rem(14)}`,
+                  lineHeight: `171.1%`,
+                  color: `#0E74FF`,
+                }}
+              >
+                내 근처 {'>'} 생활서비스 {'>'} 동네대회
+              </span>
+              에서
+              <br />
+              게임을 다시 할 수 있어요
+            </p>
+          </div>
+
           <Section>
             <SectionTitle style={{ marginBottom: `15px` }}>
               지난주 전국 Top 10의 한 마디
             </SectionTitle>
-            {/* <p
-              style={{
-                fontStyle: 'normal',
-                fontWeight: 'normal',
-                fontSize: `${rem(12)}`,
-                lineHeight: `161.7%`,
-                color: `#9F9F9F`,
-                marginBottom: `20px`,
-              }}
-            >
-              Top 10에 들면 이웃들에게 한 마디 외칠 수 있어요
-            </p> */}
             <LastWeekTopComments>
               <div className="game">
                 <Circle2048Puzzle />
