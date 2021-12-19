@@ -83,7 +83,7 @@ export const useLeaderboard = () => {
     [minigameApi.gameUserApi]
   );
 
-  const updateLeaderboard = useCallback(
+  const updateUserLeaderboard = useCallback(
     async ({
       gameType,
       size,
@@ -91,32 +91,34 @@ export const useLeaderboard = () => {
       gameType: 'GAME_KARROT' | 'GAME_2048';
       size: number;
     }) => {
-      try {
-        getTownLeaderboard({ gameType }).then((response) => {
-          if (response) setTownLeaderboard(response);
-        });
-        getUserLeaderboard({ gameType, size }).then((response) => {
-          if (response) setUserLeaderboard(response);
-        });
-        // const [townLeaderboard, userLeaderboard] = await Promise.all([
-        //   getTownLeaderboard({ gameType }),
-        //   getUserLeaderboard({ gameType, size }),
-        // ]);
-        // if (userLeaderboard && townLeaderboard) {
-        //   setTownLeaderboard(townLeaderboard);
-        //   setUserLeaderboard(userLeaderboard);
-
-        // }
-      } catch (error) {
-        console.error(error);
+      const response = await getUserLeaderboard({ gameType, size });
+      if (response) {
+        setUserLeaderboard(response);
+        return response;
+      } else {
+        return null;
       }
     },
-    [getTownLeaderboard, getUserLeaderboard]
+    [getUserLeaderboard]
+  );
+
+  const updateTownLeaderboard = useCallback(
+    async ({ gameType }: { gameType: 'GAME_KARROT' | 'GAME_2048' }) => {
+      const response = await getTownLeaderboard({ gameType });
+      if (response) {
+        setTownLeaderboard(response);
+        return response;
+      } else {
+        return null;
+      }
+    },
+    [getTownLeaderboard]
   );
 
   return {
     townLeaderboard,
     userLeaderboard,
-    updateLeaderboard,
+    updateUserLeaderboard,
+    updateTownLeaderboard,
   };
 };
