@@ -28,8 +28,8 @@ import 'swiper/swiper.scss';
 import { Autoplay } from 'swiper';
 import { lastWeek } from 'utils/date';
 import { DistrictName } from 'styles/leaderboard';
-import missionEnvelopeClosed from 'assets/svg/mission/mission_envelope_closed.svg';
-import missionEnvelopeClosed1 from 'assets/svg/mission/mission_envelope_closed_1.svg';
+// import missionEnvelopeClosed from 'assets/svg/mission/mission_envelope_closed.svg';
+// import missionEnvelopeClosed1 from 'assets/svg/mission/mission_envelope_closed_1.svg';
 import ReactModal from 'react-modal';
 import { Popup as MissionPopup } from './Mission';
 import { RefererEnum } from 'redux/user';
@@ -165,12 +165,12 @@ export const Home: React.FC = () => {
     analytics.logEvent('click_survey_button');
     push(`/survey`);
   };
-  const goToMissionPage = () => {
-    analytics.logEvent('click_mission_button', {
-      location: 'platform_page',
-    });
-    push(`/mission`);
-  };
+  // const goToMissionPage = () => {
+  //   analytics.logEvent('click_mission_button', {
+  //     location: 'platform_page',
+  //   });
+  //   push(`/mission`);
+  // };
   const goToGame2048 = async () => {
     setGameTypeToGame2048();
     // bypass in web environment
@@ -634,14 +634,14 @@ export const Home: React.FC = () => {
           </Section>
         </PageContainer>
       </div>
-      <button
+      {/* // don't show mission pop-up as no mission is available this week */}
+
+      {/* <button
         onClick={goToMissionPage}
         style={{ position: `absolute`, right: 0, bottom: 0, zIndex: 99 }}
       >
-        {/* // don't show mission pop-up as no mission is available this week */}
 
-        {/* {mission.notification?.isOn ? ( */}
-        {true ? (
+        {mission.notification?.isOn ? (
           <img src={missionEnvelopeClosed} alt="mission-button" />
         ) : (
           <img
@@ -649,7 +649,7 @@ export const Home: React.FC = () => {
             alt="mission-button-one-notification"
           />
         )}
-      </button>
+      </button> */}
       <ReactModal
         // don't show mission pop-up as no mission is available this week
         isOpen={false}
