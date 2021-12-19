@@ -14,8 +14,12 @@ export interface UserLeaderboardType extends UserRankingDtoWithTown {
 
 export const useLeaderboard = () => {
   const minigameApi = useMinigameApi();
-  const [townLeaderboard, setTownLeaderboard] = useState<any[]>([]);
-  const [userLeaderboard, setUserLeaderboard] = useState<any[]>([]);
+  const [townLeaderboard, setTownLeaderboard] = useState<TownLeaderboardType[]>(
+    []
+  );
+  const [userLeaderboard, setUserLeaderboard] = useState<UserLeaderboardType[]>(
+    []
+  );
 
   const getTownLeaderboard = useCallback(
     async ({ gameType }: { gameType: 'GAME_KARROT' | 'GAME_2048' }) => {
@@ -79,27 +83,36 @@ export const useLeaderboard = () => {
     [minigameApi.gameUserApi]
   );
 
-  const updateLeaderboard = async ({
-    gameType,
-    size,
-  }: {
-    gameType: 'GAME_KARROT' | 'GAME_2048';
-    size: number;
-  }) => {
-    try {
-      const [townLeaderboard, userLeaderboard] = await Promise.all([
-        getTownLeaderboard({ gameType }),
-        getUserLeaderboard({ gameType, size }),
-      ]);
-      if (userLeaderboard && townLeaderboard) {
-        setTownLeaderboard(townLeaderboard);
-        setUserLeaderboard(userLeaderboard);
-        return { townLeaderboard, userLeaderboard };
+  const updateLeaderboard = useCallback(
+    async ({
+      gameType,
+      size,
+    }: {
+      gameType: 'GAME_KARROT' | 'GAME_2048';
+      size: number;
+    }) => {
+      try {
+        getTownLeaderboard({ gameType }).then((response) => {
+          if (response) setTownLeaderboard(response);
+        });
+        getUserLeaderboard({ gameType, size }).then((response) => {
+          if (response) setUserLeaderboard(response);
+        });
+        // const [townLeaderboard, userLeaderboard] = await Promise.all([
+        //   getTownLeaderboard({ gameType }),
+        //   getUserLeaderboard({ gameType, size }),
+        // ]);
+        // if (userLeaderboard && townLeaderboard) {
+        //   setTownLeaderboard(townLeaderboard);
+        //   setUserLeaderboard(userLeaderboard);
+
+        // }
+      } catch (error) {
+        console.error(error);
       }
-    } catch (error) {
-      console.error(error);
-    }
-  };
+    },
+    [getTownLeaderboard, getUserLeaderboard]
+  );
 
   return {
     townLeaderboard,

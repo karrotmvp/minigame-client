@@ -17,7 +17,7 @@ import { Nav } from 'components/Navigation/Nav';
 import { ReactComponent as IconCloseCircle } from 'assets/icon/svg/icon_close_circle.svg';
 
 import { ReactComponent as IconArrowBack } from 'assets/icon/svg/icon_arrow_back.svg';
-import { MemoizedLeaderboardTabs as LeaderboardTabs } from 'pages/Game2048/Leaderboard/LeaderboardTabs';
+import { LeaderboardTabs } from 'pages/Game2048/Leaderboard/LeaderboardTabs';
 import { MemoizedRefresh as Refresh } from '../Leaderboard/Refresh';
 import {
   MemoizedUserLoggedIn as UserLoggedIn,
@@ -160,37 +160,54 @@ export const Home: React.FC = () => {
 
   // refresh leaderboard
   const handleRefresh = useCallback(async () => {
-    if (accessToken) {
-      const response = await updateMyGameData({ gameType: gameType });
-      if (response) {
-        console.log(response);
-        setMyData({
-          rank: response.rank,
-          score: response.score,
-        });
-        const leaderboard = await updateLeaderboard({
+    try {
+      if (accessToken) {
+        const response = await updateMyGameData({ gameType: gameType });
+        if (response) {
+          console.log(response);
+          setMyData({
+            rank: response.rank,
+            score: response.score,
+          });
+          updateLeaderboard({
+            gameType: 'GAME_2048',
+            size: 100,
+          }).then(() => {
+            updateMyTownData({
+              townLeaderboard: townLeaderboard,
+              myTownId: town.id!,
+            });
+          });
+        }
+      } else {
+        updateLeaderboard({
           gameType: 'GAME_2048',
           size: 100,
-        });
-        updateMyTownData({
-          townLeaderboard: leaderboard?.townLeaderboard!,
-          myTownId: town.id!,
+        }).then((response) => {
+          updateMyTownData({
+            townLeaderboard: townLeaderboard,
+            myTownId: town.id!,
+          });
         });
       }
-    } else {
-      const leaderboard = await updateLeaderboard({
+    } catch (error) {
+      console.error(error);
+      updateLeaderboard({
         gameType: 'GAME_2048',
         size: 100,
-      });
-      updateMyTownData({
-        townLeaderboard: leaderboard?.townLeaderboard!,
-        myTownId: town.id!,
+      }).then((response) => {
+        updateMyTownData({
+          townLeaderboard: townLeaderboard,
+          myTownId: town.id!,
+        });
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     accessToken,
     gameType,
     town.id,
+
     updateLeaderboard,
     updateMyGameData,
     updateMyTownData,
@@ -206,8 +223,7 @@ export const Home: React.FC = () => {
     if (rank !== 0) {
       setIsRanked(true);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isTop]);
+  }, [handleRefresh, isTop, rank]);
 
   // const [shouldSticky, setShouldSticky] = useState(false);
 
