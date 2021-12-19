@@ -166,7 +166,7 @@ export const GameOver: React.FC<Props> = (props) => {
       const timerId2 = setTimeout(() => {
         setShowRank(true);
         if (sessionRank.rank) {
-          return sessionRank.rank > 0 && sessionRank.rank <= 10
+          return sessionRank.rank > 0 && sessionRank.rank <= 1000
             ? fireConfetti({ colors: [`#0E74FF`, `#82B6FF`, `#E3EFFF`] })
             : null;
         }
