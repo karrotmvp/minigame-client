@@ -40,14 +40,14 @@ const UserLeaderboard: React.FC<Props> = (props) => {
                 width: calc(100% + 32px);
                 height: 2px;
                 background-color: #4694ff;
-              }
+              };
               &::after {
                 z-index: 1000;
                 content: '';
                 position: absolute;
                 bottom: 0;
                 left: -16px;
-                width: calc(100% + 32px)
+                width: calc(100% + 32px);
                 height: 2px;
                 background-color: #4694ff;
               }`

@@ -48,7 +48,7 @@ const DistrictLeaderboard: React.FC<Props> = (props) => {
               position: absolute;
               bottom: 0;
               left: -16px;
-              width: calc(100% + 32px)
+              width: calc(100% + 32px);
               height: 2px;
               background-color: #4694ff;
             }`
