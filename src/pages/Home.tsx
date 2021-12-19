@@ -56,8 +56,9 @@ export const Home: React.FC = () => {
   const { user, town, mission, newGame, setUser, setMission, setNewGame } =
     useUser();
 
-  const [shouldMissionPopupShown, setShouldMissionPopupShown] =
-    useState<boolean>(!mission.popup?.hasSeenSecondMission);
+  const [, setShouldMissionPopupShown] = useState<boolean>(
+    !mission.popup?.hasSeenSecondMission
+  );
 
   // Update user info
   const updateUserInfo = useCallback(
@@ -637,7 +638,10 @@ export const Home: React.FC = () => {
         onClick={goToMissionPage}
         style={{ position: `absolute`, right: 0, bottom: 0, zIndex: 99 }}
       >
-        {mission.notification?.isOn ? (
+        {/* // don't show mission pop-up as no mission is available this week */}
+
+        {/* {mission.notification?.isOn ? ( */}
+        {true ? (
           <img src={missionEnvelopeClosed} alt="mission-button" />
         ) : (
           <img
@@ -647,7 +651,9 @@ export const Home: React.FC = () => {
         )}
       </button>
       <ReactModal
-        isOpen={shouldMissionPopupShown}
+        // don't show mission pop-up as no mission is available this week
+        isOpen={false}
+        // isOpen={shouldMissionPopupShown}
         shouldCloseOnOverlayClick={false}
         contentLabel="Mission Pop-up"
         style={{
