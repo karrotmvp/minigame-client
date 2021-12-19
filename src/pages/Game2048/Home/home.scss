@@ -2,30 +2,32 @@
   top: 20px;
 }
 
-._1gxio611 {
-  display: flex;
-  gap: 12px;
-  padding: 0 20px;
-}
-._1gxio613 {
-  width: 100%;
-  padding: 6px 0;
-  min-height: 35px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #fafafa !important;
-  border-radius: 10px;
-  color: #7c7c7c !important;
-}
-._1gxio614 {
-  width: 100%;
-  padding: 6px 0;
-  min-height: 35px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #e3efff !important;
-  border-radius: 10px;
-  color: #0e74ff !important;
+.game-2048__tabs {
+  ._1gxio611 {
+    display: flex;
+    gap: 12px;
+    padding: 0 20px;
+  }
+  ._1gxio613 {
+    width: 100%;
+    padding: 6px 0;
+    min-height: 35px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #fafafa !important;
+    border-radius: 10px;
+    color: #7c7c7c !important;
+  }
+  ._1gxio614 {
+    width: 100%;
+    padding: 6px 0;
+    min-height: 35px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #e3efff !important;
+    border-radius: 10px;
+    color: #0e74ff !important;
+  }
 }
