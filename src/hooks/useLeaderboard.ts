@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 import { useMinigameApi } from 'services/api/minigameApi';
 import type {
   TownRankingDto,
@@ -14,12 +14,12 @@ export interface UserLeaderboardType extends UserRankingDtoWithTown {
 
 export const useLeaderboard = () => {
   const minigameApi = useMinigameApi();
-  const [townLeaderboard, setTownLeaderboard] = useState<TownLeaderboardType[]>(
-    []
-  );
-  const [userLeaderboard, setUserLeaderboard] = useState<UserLeaderboardType[]>(
-    []
-  );
+  // const [townLeaderboard, setTownLeaderboard] = useState<TownLeaderboardType[]>(
+  //   []
+  // );
+  // const [userLeaderboard, setUserLeaderboard] = useState<UserLeaderboardType[]>(
+  //   []
+  // );
 
   const getTownLeaderboard = useCallback(
     async ({ gameType }: { gameType: 'GAME_KARROT' | 'GAME_2048' }) => {
@@ -38,8 +38,6 @@ export const useLeaderboard = () => {
           })
         );
         return indexedDistrictRankData;
-      } else {
-        return undefined;
       }
     },
     [minigameApi.gameTownApi]
@@ -76,49 +74,44 @@ export const useLeaderboard = () => {
         );
 
         return indexedUserRankData;
-      } else {
-        return undefined;
       }
     },
     [minigameApi.gameUserApi]
   );
 
-  const updateUserLeaderboard = useCallback(
-    async ({
-      gameType,
-      size,
-    }: {
-      gameType: 'GAME_KARROT' | 'GAME_2048';
-      size: number;
-    }) => {
-      const response = await getUserLeaderboard({ gameType, size });
-      if (response) {
-        setUserLeaderboard(response);
-        return response;
-      } else {
-        return null;
-      }
-    },
-    [getUserLeaderboard]
-  );
+  // const updateUserLeaderboard = useCallback(
+  //   async ({
+  //     gameType,
+  //     size,
+  //   }: {
+  //     gameType: 'GAME_KARROT' | 'GAME_2048';
+  //     size: number;
+  //   }) => {
+  //     const response = await getUserLeaderboard({ gameType, size });
+  //     if (response) {
+  //       return data
+  //     }
+  //   },
+  //   [getUserLeaderboard]
+  // );
 
-  const updateTownLeaderboard = useCallback(
-    async ({ gameType }: { gameType: 'GAME_KARROT' | 'GAME_2048' }) => {
-      const response = await getTownLeaderboard({ gameType });
-      if (response) {
-        setTownLeaderboard(response);
-        return response;
-      } else {
-        return null;
-      }
-    },
-    [getTownLeaderboard]
-  );
+  // const updateTownLeaderboard = useCallback(
+  //   async ({ gameType }: { gameType: 'GAME_KARROT' | 'GAME_2048' }) => {
+  //     const response = await getTownLeaderboard({ gameType });
+  //     if (response) {
+  //       setTownLeaderboard(response);
+  //       return response;
+  //     } else {
+  //       return null;
+  //     }
+  //   },
+  //   [getTownLeaderboard]
+  // );
 
   return {
-    townLeaderboard,
-    userLeaderboard,
-    updateUserLeaderboard,
-    updateTownLeaderboard,
+    // townLeaderboard,
+    // userLeaderboard,
+    getUserLeaderboard,
+    getTownLeaderboard,
   };
 };
