@@ -27,7 +27,7 @@ export const LeaderboardTabs: React.FC<Props> = (props) => {
   };
 
   return (
-    <LeaderboardContainer>
+    <LeaderboardContainer className="game-2048__tabs">
       <Tabs
         className={css`
           --kf_tabs_tabBar-borderColor: none;
