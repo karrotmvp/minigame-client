@@ -8,6 +8,7 @@ import 'swiper/modules/scrollbar/scrollbar.scss';
 import 'swiper/modules/mousewheel/mousewheel.scss';
 import type { TownLeaderboardType } from 'hooks';
 import { FreeMode, Scrollbar, Mousewheel } from 'swiper';
+import { css } from '@emotion/css';
 
 type Props = {
   townLeaderboard: TownLeaderboardType[];
@@ -29,16 +30,30 @@ const DistrictLeaderboard: React.FC<Props> = (props) => {
         return (
           <SwiperSlide
             key={i}
-            style={{
-              borderTop: `${
-                userTown.id === town.townId ? `0.5px solid #4694FF` : `none`
-              }`,
-              borderBottom: `${
-                userTown.id === town.townId
-                  ? `0.5px solid #4694FF`
-                  : `1px solid #ececec`
-              }`,
-            }}
+            className={css`
+              ${userTown.id === town.townId
+                ? `&::before {
+              z-index: 1000;
+              content: '';
+              position: absolute;
+              top: 0;
+              left: -16px;
+              width: calc(100% + 32px);
+              height: 2px;
+              background-color: #4694ff;
+            }
+            &::after {
+              z-index: 1000;
+              content: '';
+              position: absolute;
+              bottom: 0;
+              left: -16px;
+              width: calc(100% + 32px)
+              height: 2px;
+              background-color: #4694ff;
+            }`
+                : ``}
+            `}
           >
             <TownRow
               key={town.townId}

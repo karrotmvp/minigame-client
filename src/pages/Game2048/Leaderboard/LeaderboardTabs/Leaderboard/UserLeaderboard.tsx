@@ -1,3 +1,4 @@
+import { css } from '@emotion/css';
 import React from 'react';
 import { MemoizedUserRow as UserRow } from '../Row';
 import { FreeMode, Scrollbar, Mousewheel } from 'swiper';
@@ -28,16 +29,30 @@ const UserLeaderboard: React.FC<Props> = (props) => {
         return (
           <SwiperSlide
             key={i}
-            style={{
-              borderTop: `${
-                user.userId === myself.userId ? `0.5px solid #4694FF` : `none`
-              }`,
-              borderBottom: `${
-                user.userId === myself.userId
-                  ? `1px solid #4694FF`
-                  : `1px solid #ececec`
-              }`,
-            }}
+            className={css`
+              ${user.userId === myself.userId
+                ? `&::before {
+                z-index: 1000;
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -16px;
+                width: calc(100% + 32px);
+                height: 2px;
+                background-color: #4694ff;
+              }
+              &::after {
+                z-index: 1000;
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: -16px;
+                width: calc(100% + 32px)
+                height: 2px;
+                background-color: #4694ff;
+              }`
+                : ``}
+            `}
           >
             <UserRow
               key={user.userId}
