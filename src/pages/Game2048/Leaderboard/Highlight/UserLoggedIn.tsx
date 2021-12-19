@@ -27,9 +27,6 @@ const UserLoggedIn: React.FC<ComponentProps> = (props) => {
 
   return (
     <Container className="my-info">
-      <ShareModalButton onClick={() => props.setIsShareModalOpen(true)}>
-        🔥 순위 올리기 <IconArrowFront />
-      </ShareModalButton>
       <div className="my-info__ranking">
         <div className="ranking">
           <div className="ranking__title">
@@ -55,7 +52,11 @@ const UserLoggedIn: React.FC<ComponentProps> = (props) => {
           </div>
         </div>
         <VerticalDivider />
+
         <div className="ranking">
+          <ShareModalButton onClick={() => props.setIsShareModalOpen(true)}>
+            🔥 순위 올리기 <IconArrowFront />
+          </ShareModalButton>
           <div className="ranking__title">
             <p>
               {town.name1!.replace(
@@ -122,14 +123,17 @@ const ShareModalButton = styled.button`
   position: absolute;
   width: fit-content;
   top: -25px;
-  right: 16px;
+  
   
   &:after {
     z-index: 1000;
     content: '';
     position: absolute;
     bottom: -10px;
-    left: 50%;
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
     width: 0;
     height: 0;
     border: 6px solid transparent;
