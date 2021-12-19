@@ -25,7 +25,7 @@ import {
 } from '../Leaderboard/Highlight';
 import { ActiveUserCount } from 'components/ActiveUserCount';
 import { useMyGame2048Data } from '../hooks';
-import { useThrottledCallback } from 'use-debounce/lib';
+// import { useThrottledCallback } from 'use-debounce/lib';
 import { navHeight, PageContainer, pageHeight } from 'styles';
 import ReactModal from 'react-modal';
 import { CommentModal, Share } from './Modal';
@@ -43,8 +43,12 @@ export const Home: React.FC = () => {
   const { isInWebEnvironment, handleThirdPartyAgreement } = useMini();
   const { user, town } = useUser();
   const { rank, gameType } = useMyGame2048Data();
-  const { townLeaderboard, userLeaderboard, updateLeaderboard } =
-    useLeaderboard();
+  const {
+    townLeaderboard,
+    userLeaderboard,
+    updateTownLeaderboard,
+    updateUserLeaderboard,
+  } = useLeaderboard();
   const { updateMyGameData } = useMyGameData();
   const [isFirstInTown, setIsFirstInTown] = useState<boolean>(false);
   const [isRanked, setIsRanked] = useState<boolean>(
@@ -137,7 +141,7 @@ export const Home: React.FC = () => {
       townLeaderboard,
       myTownId,
     }: {
-      townLeaderboard: TownLeaderboardType[];
+      townLeaderboard: TownLeaderboardType[] | null;
       myTownId: string;
     }) => {
       if (townLeaderboard) {
@@ -159,66 +163,73 @@ export const Home: React.FC = () => {
   );
 
   // refresh leaderboard
-  const handleRefresh = useCallback(async () => {
-    try {
-      if (accessToken) {
-        const response = await updateMyGameData({ gameType: gameType });
-        if (response) {
-          console.log(response);
-          setMyData({
-            rank: response.rank,
-            score: response.score,
-          });
-          updateLeaderboard({
-            gameType: 'GAME_2048',
-            size: 100,
-          }).then(() => {
+  const handleRefresh = useCallback(
+    async ({
+      gameType,
+      size,
+    }: {
+      gameType: 'GAME_KARROT' | 'GAME_2048';
+      size: number;
+    }) => {
+      try {
+        if (accessToken) {
+          const response = await updateMyGameData({ gameType: gameType });
+          if (response) {
+            setMyData({
+              rank: response.rank,
+              score: response.score,
+            });
+            updateUserLeaderboard({ gameType, size });
+            updateTownLeaderboard({
+              gameType,
+            }).then((response) => {
+              updateMyTownData({
+                townLeaderboard: response,
+                myTownId: town.id!,
+              });
+            });
+          }
+        } else {
+          updateUserLeaderboard({ gameType, size });
+          updateTownLeaderboard({
+            gameType,
+          }).then((response) => {
             updateMyTownData({
-              townLeaderboard: townLeaderboard,
+              townLeaderboard: response,
               myTownId: town.id!,
             });
           });
         }
-      } else {
-        updateLeaderboard({
-          gameType: 'GAME_2048',
-          size: 100,
+      } catch (error) {
+        console.error(error);
+        updateUserLeaderboard({ gameType, size });
+        updateTownLeaderboard({
+          gameType,
         }).then((response) => {
           updateMyTownData({
-            townLeaderboard: townLeaderboard,
+            townLeaderboard: response,
             myTownId: town.id!,
           });
         });
       }
-    } catch (error) {
-      console.error(error);
-      updateLeaderboard({
-        gameType: 'GAME_2048',
-        size: 100,
-      }).then((response) => {
-        updateMyTownData({
-          townLeaderboard: townLeaderboard,
-          myTownId: town.id!,
-        });
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    accessToken,
-    gameType,
-    town.id,
-
-    updateLeaderboard,
-    updateMyGameData,
-    updateMyTownData,
-  ]);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    },
+    [
+      accessToken,
+      town.id,
+      updateMyGameData,
+      updateMyTownData,
+      updateTownLeaderboard,
+      updateUserLeaderboard,
+    ]
+  );
 
   // Throttle refresh for 5 seconds
-  const throttledRefresh = useThrottledCallback(handleRefresh, 3000);
+  // const throttledRefresh = useThrottledCallback(()=>handleRefresh, 3000);
 
   useEffect(() => {
     if (isTop) {
-      handleRefresh();
+      handleRefresh({ gameType: 'GAME_2048', size: 100 });
     }
     if (rank !== 0) {
       setIsRanked(true);
@@ -302,9 +313,11 @@ export const Home: React.FC = () => {
           >
             <PullToRefresh
               onPull={(dispose) => {
-                throttledRefresh()!.then(() => {
-                  dispose();
-                });
+                handleRefresh({ gameType: 'GAME_2048', size: 100 })?.then(
+                  () => {
+                    dispose();
+                  }
+                );
               }}
               className={css`
                 --kf_pulltorefresh_backgroundColor: transparent;
@@ -394,7 +407,9 @@ export const Home: React.FC = () => {
       >
         <CommentModal
           setIsCommentModalOpen={setIsCommentModalOpen}
-          handleRefresh={handleRefresh}
+          handleRefresh={() =>
+            handleRefresh({ gameType: 'GAME_2048', size: 100 })
+          }
         />
       </ReactModal>
 

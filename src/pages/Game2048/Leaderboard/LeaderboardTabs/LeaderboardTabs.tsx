@@ -19,7 +19,7 @@ type Props = {
 };
 export const LeaderboardTabs: React.FC<Props> = (props) => {
   const { isTop } = useCurrentScreen();
-  const [activeTabKey, setActiveTabKey] = useState<string>('district');
+  const [activeTabKey, setActiveTabKey] = useState<string>('town');
   const handleTabChange = (key: string) => {
     if (isTop) {
       setActiveTabKey(key);
@@ -37,7 +37,7 @@ export const LeaderboardTabs: React.FC<Props> = (props) => {
         activeTabKey={activeTabKey}
         tabs={[
           {
-            key: 'district',
+            key: 'town',
             buttonLabel: '지역',
             component: useCallback(
               () => (
@@ -50,7 +50,7 @@ export const LeaderboardTabs: React.FC<Props> = (props) => {
             ),
           },
           {
-            key: 'individual',
+            key: 'user',
             buttonLabel: '개인',
             component: useCallback(
               () => (
