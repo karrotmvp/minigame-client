@@ -10,14 +10,14 @@ import {
   MemoizedUserLeaderboard as UserLeaderboard,
 } from './Leaderboard';
 
-import type { TownLeaderboardType, UserLeaderboardType } from 'hooks';
+import { TownLeaderboardType, UserLeaderboardType } from 'hooks';
 
 type Props = {
   townLeaderboard: TownLeaderboardType[];
   userLeaderboard: UserLeaderboardType[];
   isRanked: boolean;
 };
-const LeaderboardTabs: React.FC<Props> = (props) => {
+export const LeaderboardTabs: React.FC<Props> = (props) => {
   const { isTop } = useCurrentScreen();
   const [activeTabKey, setActiveTabKey] = useState<string>('district');
   const handleTabChange = (key: string) => {
@@ -25,6 +25,7 @@ const LeaderboardTabs: React.FC<Props> = (props) => {
       setActiveTabKey(key);
     }
   };
+
   return (
     <LeaderboardContainer>
       <Tabs
@@ -41,8 +42,8 @@ const LeaderboardTabs: React.FC<Props> = (props) => {
             component: useCallback(
               () => (
                 <DistrictLeaderboard
-                  isRanked={props.isRanked}
                   townLeaderboard={props.townLeaderboard}
+                  isRanked={props.isRanked}
                 />
               ),
               [props.isRanked, props.townLeaderboard]
@@ -68,7 +69,6 @@ const LeaderboardTabs: React.FC<Props> = (props) => {
   );
 };
 
-export const MemoizedLeaderboardTabs = React.memo(LeaderboardTabs);
 const LeaderboardContainer = styled.div`
   flex: 1;
   height: 100%;
