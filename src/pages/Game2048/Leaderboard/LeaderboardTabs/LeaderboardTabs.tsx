@@ -1,7 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { css } from '@emotion/css';
 import styled from '@emotion/styled';
-import { useCurrentScreen } from '@karrotframe/navigator';
 import { Tabs } from '@karrotframe/tabs';
 import '@karrotframe/tabs/index.css';
 import { useCallback, useState } from 'react';
@@ -18,14 +17,11 @@ type Props = {
   isRanked: boolean;
 };
 export const LeaderboardTabs: React.FC<Props> = (props) => {
-  const { isTop } = useCurrentScreen();
   const [activeTabKey, setActiveTabKey] = useState<string>('town');
-  const handleTabChange = (key: string) => {
-    if (isTop) {
-      setActiveTabKey(key);
-    }
-  };
 
+  useEffect(() => {
+    console.log('asdf', props.userLeaderboard, props.townLeaderboard);
+  });
   return (
     <LeaderboardContainer>
       <Tabs
@@ -63,7 +59,9 @@ export const LeaderboardTabs: React.FC<Props> = (props) => {
             ),
           },
         ]}
-        onTabChange={handleTabChange}
+        onTabChange={(key) => {
+          setActiveTabKey(key);
+        }}
       />
     </LeaderboardContainer>
   );
