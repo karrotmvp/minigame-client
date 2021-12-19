@@ -50,7 +50,7 @@ const LeaderboardTabs: React.FC<Props> = (props) => {
           },
           {
             key: 'individual',
-            buttonLabel: '전국',
+            buttonLabel: '개인',
             component: useCallback(
               () => (
                 <UserLeaderboard
