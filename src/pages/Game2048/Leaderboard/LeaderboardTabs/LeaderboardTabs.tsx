@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { css } from '@emotion/css';
 import styled from '@emotion/styled';
 import { Tabs } from '@karrotframe/tabs';
@@ -19,9 +19,6 @@ type Props = {
 export const LeaderboardTabs: React.FC<Props> = (props) => {
   const [activeTabKey, setActiveTabKey] = useState<string>('town');
 
-  useEffect(() => {
-    console.log('asdf', props.userLeaderboard, props.townLeaderboard);
-  });
   return (
     <LeaderboardContainer className="game-2048__tabs">
       <Tabs

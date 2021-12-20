@@ -8,7 +8,6 @@ import {
   useLeaderboard,
   useMini,
   useUser,
-  useMyGameData,
   useAccessToken,
   UserLeaderboardType,
 } from 'hooks';
@@ -43,14 +42,14 @@ export const Home: React.FC = () => {
   const { accessToken } = useAccessToken();
   const { isInWebEnvironment, handleThirdPartyAgreement } = useMini();
   const { user, town } = useUser();
-  const { rank, gameType } = useMyGame2048Data();
+  const { rank, gameType, updateMyScore, updateMyComment } =
+    useMyGame2048Data();
   const {
     // townLeaderboard,
     // userLeaderboard,
     getUserLeaderboard,
     getTownLeaderboard,
   } = useLeaderboard();
-  const { updateMyGameData } = useMyGameData();
   const [townLeaderboard, setTownLeaderboard] = useState<TownLeaderboardType[]>(
     []
   );
@@ -143,6 +142,64 @@ export const Home: React.FC = () => {
     }
   };
 
+  // const getMyGameData = useCallback(
+  //   async ({ gameType }: { gameType: 'GAME_KARROT' | 'GAME_2048' }) => {
+  //     const {
+  //       data: { data },
+  //     } = await minigameApi.gameUserApi.getMyRankInfoUsingGET(gameType);
+  //     console.log('2', data);
+  //     if (data) {
+  //       console.log('2-1', data);
+  //       if (data.score && data.rank) {
+  //         console.log('2-1', data.score, data.rank);
+  //         updateMyScore({
+  //           score: data.score,
+  //           rank: data.rank,
+  //         });
+  //         if (data.comment) {
+  //           updateMyComment(data.comment);
+  //         }
+
+  //         return data;
+  //       }
+  //     }
+  //     return undefined;
+  //   },
+  //   [minigameApi.gameUserApi, updateMyComment, updateMyScore]
+  // );
+
+  const getMyGameData = useCallback(
+    async ({ gameType }: { gameType: 'GAME_KARROT' | 'GAME_2048' }) => {
+      const {
+        data: { data },
+      } = await minigameApi.gameUserApi.getMyRankInfoUsingGET(gameType);
+
+      return data;
+    },
+    [minigameApi.gameUserApi]
+  );
+  const updateMyGameData = useCallback(
+    async ({ gameType }: { gameType: 'GAME_KARROT' | 'GAME_2048' }) => {
+      getMyGameData({ gameType }).then((response) => {
+        if (response) {
+          updateMyScore({
+            score: response.score,
+            rank: response.rank,
+          });
+          if (response.comment) {
+            updateMyComment(response.comment);
+          }
+
+          setMyData({
+            rank: response.rank,
+            score: response.score,
+          });
+        }
+      });
+    },
+    [getMyGameData, updateMyComment, updateMyScore]
+  );
+
   const updateMyTownData = useCallback(
     async ({
       townLeaderboard,
@@ -204,14 +261,8 @@ export const Home: React.FC = () => {
       size: number;
     }) => {
       updateMyGameData({ gameType })
-        .then((response) => {
-          if (response) {
-            setMyData({
-              rank: response.rank,
-              score: response.score,
-            });
-            updateLeaderboard({ gameType, size });
-          }
+        .then(() => {
+          updateLeaderboard({ gameType, size });
         })
         .catch((error) => {
           console.error(error);
