@@ -1388,13 +1388,14 @@ export const GameUserApiAxiosParamCreator = function (configuration?: Configurat
          * @summary 유저 리더보드 조회
          * @param {'GAME_KARROT' | 'GAME_2048'} gameType gameType
          * @param {number} [month] month
+         * @param {number} [offset] offset
          * @param {number} [size] size
          * @param {number} [week] week
          * @param {number} [year] year
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getLeaderBoardByUserUsingGET: async (gameType: 'GAME_KARROT' | 'GAME_2048', month?: number, size?: number, week?: number, year?: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getLeaderBoardByUserUsingGET: async (gameType: 'GAME_KARROT' | 'GAME_2048', month?: number, offset?: number, size?: number, week?: number, year?: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'gameType' is not null or undefined
             assertParamExists('getLeaderBoardByUserUsingGET', 'gameType', gameType)
             const localVarPath = `/api/games/{gameType}/users/leaderboard`
@@ -1415,6 +1416,10 @@ export const GameUserApiAxiosParamCreator = function (configuration?: Configurat
 
             if (month !== undefined) {
                 localVarQueryParameter['month'] = month;
+            }
+
+            if (offset !== undefined) {
+                localVarQueryParameter['offset'] = offset;
             }
 
             if (size !== undefined) {
@@ -1497,14 +1502,15 @@ export const GameUserApiFp = function(configuration?: Configuration) {
          * @summary 유저 리더보드 조회
          * @param {'GAME_KARROT' | 'GAME_2048'} gameType gameType
          * @param {number} [month] month
+         * @param {number} [offset] offset
          * @param {number} [size] size
          * @param {number} [week] week
          * @param {number} [year] year
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getLeaderBoardByUserUsingGET(gameType: 'GAME_KARROT' | 'GAME_2048', month?: number, size?: number, week?: number, year?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseResponseListUserRankingDtoWithTown>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getLeaderBoardByUserUsingGET(gameType, month, size, week, year, options);
+        async getLeaderBoardByUserUsingGET(gameType: 'GAME_KARROT' | 'GAME_2048', month?: number, offset?: number, size?: number, week?: number, year?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseResponseListUserRankingDtoWithTown>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getLeaderBoardByUserUsingGET(gameType, month, offset, size, week, year, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -1534,14 +1540,15 @@ export const GameUserApiFactory = function (configuration?: Configuration, baseP
          * @summary 유저 리더보드 조회
          * @param {'GAME_KARROT' | 'GAME_2048'} gameType gameType
          * @param {number} [month] month
+         * @param {number} [offset] offset
          * @param {number} [size] size
          * @param {number} [week] week
          * @param {number} [year] year
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getLeaderBoardByUserUsingGET(gameType: 'GAME_KARROT' | 'GAME_2048', month?: number, size?: number, week?: number, year?: number, options?: any): AxiosPromise<BaseResponseListUserRankingDtoWithTown> {
-            return localVarFp.getLeaderBoardByUserUsingGET(gameType, month, size, week, year, options).then((request) => request(axios, basePath));
+        getLeaderBoardByUserUsingGET(gameType: 'GAME_KARROT' | 'GAME_2048', month?: number, offset?: number, size?: number, week?: number, year?: number, options?: any): AxiosPromise<BaseResponseListUserRankingDtoWithTown> {
+            return localVarFp.getLeaderBoardByUserUsingGET(gameType, month, offset, size, week, year, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -1569,6 +1576,7 @@ export class GameUserApi extends BaseAPI {
      * @summary 유저 리더보드 조회
      * @param {'GAME_KARROT' | 'GAME_2048'} gameType gameType
      * @param {number} [month] month
+     * @param {number} [offset] offset
      * @param {number} [size] size
      * @param {number} [week] week
      * @param {number} [year] year
@@ -1576,8 +1584,8 @@ export class GameUserApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof GameUserApi
      */
-    public getLeaderBoardByUserUsingGET(gameType: 'GAME_KARROT' | 'GAME_2048', month?: number, size?: number, week?: number, year?: number, options?: AxiosRequestConfig) {
-        return GameUserApiFp(this.configuration).getLeaderBoardByUserUsingGET(gameType, month, size, week, year, options).then((request) => request(this.axios, this.basePath));
+    public getLeaderBoardByUserUsingGET(gameType: 'GAME_KARROT' | 'GAME_2048', month?: number, offset?: number, size?: number, week?: number, year?: number, options?: AxiosRequestConfig) {
+        return GameUserApiFp(this.configuration).getLeaderBoardByUserUsingGET(gameType, month, offset, size, week, year, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
