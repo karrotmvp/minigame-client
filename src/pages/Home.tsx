@@ -308,9 +308,9 @@ export const Home: React.FC = () => {
           data: { data },
         } = await minigameApi.gameUserApi.getLeaderBoardByUserUsingGET(
           gameType,
-          lastWeek.month,
+          undefined,
           10,
-          lastWeek.week,
+          lastWeek.weekOfYear,
           lastWeek.year
         );
         return data;
