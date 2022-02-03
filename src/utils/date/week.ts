@@ -1,21 +1,19 @@
-import { getYear, getMonth, getWeekOfMonth, getWeek } from 'date-fns';
+import { getYear, getMonth, getWeekOfMonth, getWeek } from "date-fns";
 
-const previousWeek = new Date(Date.now() - 7 * (24 * 60 * 60 * 1000));
-const year = getYear(previousWeek);
-const month = getMonth(previousWeek) + 1;
-const week = getWeekOfMonth(previousWeek, {
-  weekStartsOn: 1,
-});
+const oneWeekBeforeToday = new Date(Date.now() - 7 * (24 * 60 * 60 * 1000));
 
 export const lastWeek = {
-  year: year,
-  month: month,
-  week: week,
-  weekOfYear: weekOfYear(),
+  year: getYear(oneWeekBeforeToday),
+  month: getMonth(oneWeekBeforeToday) + 1,
+  week: getWeekOfMonth(oneWeekBeforeToday, {
+    weekStartsOn: 1,
+  }),
+  weekOfYear: weekOfYear(oneWeekBeforeToday),
 };
 
-export function weekOfYear(selectedWeek: Date = previousWeek) {
+function weekOfYear(selectedWeek: Date = oneWeekBeforeToday) {
   return getWeek(selectedWeek, {
     weekStartsOn: 1,
+    firstWeekContainsDate: 4,
   });
 }
