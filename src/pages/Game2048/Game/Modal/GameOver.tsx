@@ -226,7 +226,7 @@ export const GameOver: React.FC<Props> = (props) => {
                 color: '#0E74FF',
               }}
             >
-              내 근처 {'>'} 생활서비스 {'>'} 동네대회
+              내 근처 {'>'} 당근미니 {'>'} 동네대회
             </span>
             에서
             <br />
