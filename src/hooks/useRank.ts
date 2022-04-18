@@ -13,7 +13,7 @@ export const useRank = () => {
     score: 0,
   });
 
-  // // get my current rank
+  // get my current rank
   const getMyRank = useCallback(
     async ({ gameType }: { gameType: 'GAME_KARROT' | 'GAME_2048' }) => {
       const { data } = await minigameApi.gameUserApi.getMyRankInfoUsingGET(

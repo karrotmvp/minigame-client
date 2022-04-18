@@ -58,21 +58,8 @@ const oldButtonStyle = ({ size, color }: any) => css`
         `
       : null
   };
-
-  //  padding: 0;
-  //   font: inherit;
-  //   outline: none;
-  //   user-select: none;
-  //   display: flex;
-  //   justify-content: center;
-  //   align-items: center;
-
-  &:active {
-    // outline: none;
-
-   -moz-user-select
-  }
-`;
+  
+`
 
 interface ButtonProps {
   size: string;
